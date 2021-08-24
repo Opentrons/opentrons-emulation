@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  emulator:
+    build:
+      context: ./emulator
+      network: host
+      target: echo
+    container_name: echo
