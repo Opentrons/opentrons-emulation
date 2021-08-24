@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 as builder
+FROM ubuntu:20.04 as base
 
 ENV DEBIAN_FRONTEND noninteractive
 ARG CLONE_LOCATION=/tmp/ot3-firmware/
@@ -36,7 +36,7 @@ RUN git checkout cmake-changes # temporary
 RUN cmake --preset host-gcc10
 RUN cmake --build ./build-host --target can-simulator
 
-FROM builder as echo
+FROM base as echo
 
 WORKDIR /
 COPY echo.sh echo.sh
