@@ -1,4 +1,5 @@
 #!/bin/bash
+# This script will create a SocketCan network, vcan0
 
 sudo ip link add dev vcan0 type vcan 2> /dev/null
 if [ $? == 2 ]; then
