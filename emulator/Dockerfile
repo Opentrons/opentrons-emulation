@@ -32,7 +32,6 @@ RUN git clone https://github.com/Opentrons/ot3-firmware.git
 
 WORKDIR /ot3-firmware
 
-RUN git checkout cmake-changes # temporary
 RUN cmake --preset host-gcc10
 RUN cmake --build ./build-host --target can-simulator
 
