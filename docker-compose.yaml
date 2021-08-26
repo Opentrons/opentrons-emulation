@@ -1,11 +1,13 @@
 version: '3.8'
 services:
-  emulator:
+
+  echo:
     build:
       context: ./emulator
       target: echo
     container_name: echo
     network_mode: host
+
   python-can:
     build:
       context: ./python-can
