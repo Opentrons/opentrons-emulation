@@ -28,6 +28,8 @@ RUN make
 RUN make install
 
 WORKDIR /
+# This checks if there has been changes in the ot3 repo and if there has breaks the cache
+ADD https://api.github.com/repos/opentrons/ot3-firmware/compare/main...HEAD /dev/null
 RUN git clone https://github.com/Opentrons/ot3-firmware.git
 
 WORKDIR /ot3-firmware
