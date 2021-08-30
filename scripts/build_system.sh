@@ -28,6 +28,7 @@ while :; do
   shift
 done
 
+# Grabs firmware and puts it where Docker can build it
 if [ $PULL_FIRMWARE == "YES" ]
 then
   if [ -z "$PULL_FROM" ]
@@ -47,6 +48,7 @@ then
     rm -f ot3-firmware.zip && \
     mv ot3-firmware* ot3-firmware
   )
+
 fi
 
 ./setup_can.sh
