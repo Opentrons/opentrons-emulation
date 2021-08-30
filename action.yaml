@@ -1,0 +1,11 @@
+name: 'OT-3 Emulator'
+description: 'Spin up emulator with specific version of firmware code'
+inputs:
+  ot3-firmware-commit-id:
+    description: 'Full commit id in ot3-firmware to pull.'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - run: ${{ github.action_path }}/scripts/build_system.sh --pull-from ${{ inputs.ot3-firmware-commit-id }}
+      shell: bash
