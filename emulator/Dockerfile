@@ -20,25 +20,16 @@ RUN apt-get install -y \
 # Install cmake
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.21.1/cmake-3.21.1.tar.gz && \
     tar -zxvf cmake-3.21.1.tar.gz
+RUN (cd /cmake-3.21.1 && ./bootstrap)
+RUN (cd /cmake-3.21.1 && make)
+RUN (cd /cmake-3.21.1 && make install)
 
-WORKDIR /cmake-3.21.1
-
-RUN ./bootstrap
-RUN make
-RUN make install
-
-WORKDIR /
-# This checks if there has been changes in the ot3 repo and if there has breaks the cache
-ADD https://api.github.com/repos/opentrons/ot3-firmware/compare/main...HEAD /dev/null
-RUN git clone https://github.com/Opentrons/ot3-firmware.git
-
-WORKDIR /ot3-firmware
-
-RUN cmake --preset host-gcc10
-RUN cmake --build ./build-host --target can-simulator
+# Build firmware
+ADD ./ot3-firmware/ /ot3-firmware/
+RUN (cd ot3-firmware && cmake --preset host-gcc10)
+RUN (cd ot3-firmware && cmake --build ./build-host --target can-simulator)
 
 FROM base as echo
 
-WORKDIR /
 COPY echo.sh echo.sh
-CMD ["./echo.sh"]
+ENTRYPOINT ["/echo.sh"]
