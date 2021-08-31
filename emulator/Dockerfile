@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ARG CLONE_LOCATION=/tmp/ot3-firmware/
 
 RUN rm -rf /var/lib/apt/lists/*
-RUN apt-get update
+RUN echo "Updating apt" && apt-get update > /dev/null
 RUN apt-get install -y \
     libgtest-dev \
     libboost-test-dev \
@@ -15,7 +15,7 @@ RUN apt-get install -y \
     libssl-dev \
     git \
     lsb-release \
-    software-properties-common
+    software-properties-common > /dev/null
 
 # Install cmake
 RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2-linux-x86_64.tar.gz && \
