@@ -1,6 +1,7 @@
 #!/bin/bash
 
 PULL_FIRMWARE="YES"
+HEADLESS="NO"
 PULL_FROM=""
 while :; do
   case $1 in
@@ -13,6 +14,9 @@ while :; do
       ;;
     --pull-from)
       PULL_FROM="$2"
+      ;;
+    --headless)
+      HEADLESS="YES"
       ;;
     --)
       shift
@@ -53,4 +57,12 @@ fi
 
 ./setup_can.sh
 docker-compose -f ../docker-compose.yaml build
-docker-compose -f ../docker-compose.yaml up -d
+
+if [ $HEADLESS == "YES" ]
+then
+  docker-compose -f ../docker-compose.yaml up -d
+else
+  docker-compose -f ../docker-compose.yaml up --abort-on-container-exit
+fi
+
+
