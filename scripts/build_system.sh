@@ -47,8 +47,8 @@ then
   (
     cd ../emulator/ && \
     rm -rf ot3-firmware && \
-    wget -O ot3-firmware.zip "$DOWNLOAD_PATH" && \
-    unzip ot3-firmware.zip && \
+    wget -q -O ot3-firmware.zip "$DOWNLOAD_PATH" && \
+    unzip -q ot3-firmware.zip && \
     rm -f ot3-firmware.zip && \
     mv ot3-firmware* ot3-firmware
   )
