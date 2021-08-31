@@ -18,11 +18,11 @@ RUN apt-get install -y \
     software-properties-common
 
 # Install cmake
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.21.1/cmake-3.21.1.tar.gz && \
-    tar -zxvf cmake-3.21.1.tar.gz
-RUN (cd /cmake-3.21.1 && ./bootstrap)
-RUN (cd /cmake-3.21.1 && make)
-RUN (cd /cmake-3.21.1 && make install)
+RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2-linux-x86_64.tar.gz && \
+    tar -zxf cmake-3.21.2-linux-x86_64.tar.gz && \
+    rm cmake-3.21.2-linux-x86_64.tar.gz && \
+    mv cmake-3.21.2-linux-x86_64 cmake && \
+    (cd /usr/bin/ && ln -s /cmake/bin/cmake cmake)
 
 # Build firmware
 ADD ./ot3-firmware/ /ot3-firmware/
