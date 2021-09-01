@@ -61,3 +61,7 @@ follow these steps
    the commit id you want to pull. e.g. `./build_system.sh --pull-from cbbca2dd4dd33d93831b9220d0b1fa36e9001a77`
    2. If you want to use your local version of the ot3-firmware repo copy and paste it to
    `ot3-emulator/emulator/`
+
+## Github Action
+This repository provides a Github Action to spin up the emulator in other repositories.
+For an example, see [this action in ot3-firmware](https://github.com/Opentrons/ot3-firmware/blob/main/.github/workflows/run_emulation.yaml).
