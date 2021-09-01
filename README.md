@@ -54,4 +54,10 @@ follow these steps
 2. Inside the shell script add an absolute call to your executable
    1. See `echo.sh` for an example
 3. Inside `docker-compose.yaml` add a service for your executable
-4. Run `run.sh` inside the `scripts` directory
+4. Run `build_system.sh` inside the `scripts` directory. This will build using the latest 
+   commit to the `main` branch of the [ot3-firmware](https://github.com/Opentrons/ot3-firmware)
+   repository.
+   1. If you want to build from a different commit of ot3-firmware pass the --pull-from option with
+   the commit id you want to pull. e.g. `./build_system.sh --pull-from cbbca2dd4dd33d93831b9220d0b1fa36e9001a77`
+   2. If you want to use your local version of the ot3-firmware repo copy and paste it to
+   `ot3-emulator/emulator/`

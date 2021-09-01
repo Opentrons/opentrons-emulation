@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ARG CLONE_LOCATION=/tmp/ot3-firmware/
 
 RUN rm -rf /var/lib/apt/lists/*
-RUN apt-get update
+RUN echo "Updating apt" && apt-get update > /dev/null
 RUN apt-get install -y \
     libgtest-dev \
     libboost-test-dev \
@@ -15,21 +15,23 @@ RUN apt-get install -y \
     libssl-dev \
     git \
     lsb-release \
-    software-properties-common
+    software-properties-common > /dev/null
 
 # Install cmake
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.21.1/cmake-3.21.1.tar.gz && \
-    tar -zxvf cmake-3.21.1.tar.gz
-RUN (cd /cmake-3.21.1 && ./bootstrap)
-RUN (cd /cmake-3.21.1 && make)
-RUN (cd /cmake-3.21.1 && make install)
+RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2-linux-x86_64.tar.gz && \
+    tar -zxf cmake-3.21.2-linux-x86_64.tar.gz && \
+    rm cmake-3.21.2-linux-x86_64.tar.gz && \
+    mv cmake-3.21.2-linux-x86_64 cmake && \
+    (cd /usr/bin/ && ln -s /cmake/bin/cmake cmake)
+
+FROM base as firmware
 
 # Build firmware
 ADD ./ot3-firmware/ /ot3-firmware/
 RUN (cd ot3-firmware && cmake --preset host-gcc10)
 RUN (cd ot3-firmware && cmake --build ./build-host --target can-simulator)
 
-FROM base as echo
+FROM firmware as echo
 
 COPY echo.sh echo.sh
 ENTRYPOINT ["/echo.sh"]

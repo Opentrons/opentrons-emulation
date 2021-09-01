@@ -1,7 +1,7 @@
 #!/bin/bash
 # This script will create a SocketCan network, vcan0
 
-sudo ip link add dev vcan0 type vcan 2> /dev/null
+sudo ip link add dev vcan0 type vcan
 if [ $? == 2 ]; then
   echo "CAN Virtual Network already exists"
   exit 1
