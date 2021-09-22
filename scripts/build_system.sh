@@ -54,8 +54,9 @@ then
   )
 
 fi
-
+./teardown_can.sh
 ./setup_can.sh
+docker-compose -f ../docker-compose.yaml rm -fs
 docker-compose -f ../docker-compose.yaml build
 
 if [ $HEADLESS == "YES" ]
