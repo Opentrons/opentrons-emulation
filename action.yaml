@@ -3,7 +3,8 @@ description: 'Spin up emulator with specific version of firmware code'
 inputs:
   ot3-firmware-commit-id:
     description: 'Full commit id in ot3-firmware to pull.'
-    required: true
+    required: false
+    default: ""
 runs:
   using: 'composite'
   steps:

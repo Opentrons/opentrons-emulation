@@ -7,10 +7,3 @@ services:
       target: echo
     container_name: echo
     network_mode: host
-
-  python-can:
-    build:
-      context: ./python-can
-      target: runtime
-    container_name: python-can
-    network_mode: host
