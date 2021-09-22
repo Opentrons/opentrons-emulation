@@ -1,7 +1,9 @@
 #!/bin/bash
 # This script will create a SocketCan network, vcan0
 
-if [ -z "${CAN_CHANNEL}" ]; then
+if [[ "$#" -eq 1 ]]; then
+  NETWORK=$1
+elif [ -z "${CAN_CHANNEL}" ]; then
   NETWORK="vcan0"
 else
   NETWORK=${CAN_CHANNEL}
