@@ -23,7 +23,7 @@ Open Virtual Box
    4. Leave the file location default
    5. Select a size for the disk and click Create (I selected 10.00 GB)
 4. Configure Boot Disk
-   1. Download Ubuntu Server 
+   1. [Download Ubuntu Server](https://releases.ubuntu.com/20.04.3/ubuntu-20.04.3-live-server-amd64.iso) 
    2. Select your Virtual Machine from the left pane
    3. Click Settings
    4. Go to Storage
