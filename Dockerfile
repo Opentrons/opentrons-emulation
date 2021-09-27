@@ -1,7 +1,6 @@
 FROM ubuntu:20.04 as base
 
 ENV DEBIAN_FRONTEND noninteractive
-ARG CLONE_LOCATION=/tmp/ot3-firmware/
 
 RUN rm -rf /var/lib/apt/lists/*
 RUN echo "Updating apt" && apt-get update > /dev/null
@@ -24,14 +23,14 @@ RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.2
     mv cmake-3.21.2-linux-x86_64 cmake && \
     (cd /usr/bin/ && ln -s /cmake/bin/cmake cmake)
 
-FROM base as firmware
+###################
+# FIRMWARE BUILDS #
+###################
 
-# Build firmware
-ADD ./ot3-firmware/ /ot3-firmware/
-RUN (cd ot3-firmware && cmake --preset host-gcc10)
-RUN (cd ot3-firmware && cmake --build ./build-host --target can-simulator)
+FROM base as ot3-firmware-echo
+ENV OPENTRONS_HARDWARE "ot3-firmware-echo"
 
-FROM firmware as echo
+FROM base as heater-shaker
+ENV OPENTRONS_HARDWARE "heater-shaker"
 
-COPY echo.sh echo.sh
-ENTRYPOINT ["/echo.sh"]
+

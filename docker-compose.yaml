@@ -1,9 +1,22 @@
 version: '3.8'
 services:
+#
+#  echo:
+#    build:
+#      context: .
+#      target: echo
+#    container_name: echo
+#    network_mode: host
 
-  echo:
+  heater-shaker-sim:
     build:
-      context: ./emulator
-      target: echo
-    container_name: echo
+      context: .
+      target: heater-shaker
+    container_name: heater-shaker-sim
     network_mode: host
+    tty: true
+    command: /bin/bash
+    volumes:
+      - $HOME/Documents/repos/opentrons-modules:/opentrons-modules
+      - $HOME/Documents/repos/ot3-firmware:/ot3-firmware
+      - ./entrypoint.sh:/entrypoint.sh
