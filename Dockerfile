@@ -36,15 +36,16 @@ RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.2
 ###############
 
 FROM ubuntu-base as firmware-source
+ADD "https://github.com/Opentrons/ot3-firmware/archive/refs/heads/main.zip" /ot3-firmware.zip
 RUN (cd / &&  \
-    wget -q -O ot3-firmware.zip "https://github.com/Opentrons/ot3-firmware/archive/refs/heads/main.zip" && \
     unzip -q ot3-firmware.zip && \
     rm -f ot3-firmware.zip && \
     mv ot3-firmware* ot3-firmware)
 
 FROM ubuntu-base as modules-source
+ADD "https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip" /opentrons-modules.zip
+
 RUN (cd / &&  \
-    wget -q -O opentrons-modules.zip "https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip" && \
     unzip -q opentrons-modules.zip && \
     rm -f opentrons-modules.zip && \
     mv opentrons-modules* opentrons-modules)
@@ -66,6 +67,10 @@ ENV OPENTRONS_HARDWARE "heater-shaker"
 
 FROM ot3-firmware-echo as ot3-firmware-echo-prod
 COPY --from=firmware-source /ot3-firmware/ /ot3-firmware/
+#COPY entrypoint.sh /entrypoint.sh
+#RUN /entrypoint.sh build
 
 FROM heater-shaker as heater-shaker-prod
 COPY --from=modules-source /opentrons-modules/ /opentrons-modules/
+#COPY entrypoint.sh /entrypoint.sh
+#RUN /entrypoint.sh build
