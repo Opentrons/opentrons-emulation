@@ -46,16 +46,16 @@ while :; do
   shift
 done
 
-$SCRIPT_DIR/../teardown_can.sh
-$SCRIPT_DIR/../setup_can.sh
-docker-compose -f $SCRIPT_DIR/../../$DOCKER_COMPOSE_FILE_NAME rm -fs
-COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose -f $SCRIPT_DIR/../../$DOCKER_COMPOSE_FILE_NAME build
+$SCRIPT_DIR/teardown_can.sh
+$SCRIPT_DIR/setup_can.sh
+docker-compose -f $SCRIPT_DIR/../$DOCKER_COMPOSE_FILE_NAME rm -fs
+COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose -f $SCRIPT_DIR/../$DOCKER_COMPOSE_FILE_NAME build
 
 if [ $HEADLESS == "YES" ]
 then
-  docker-compose -f $SCRIPT_DIR/../../$DOCKER_COMPOSE_FILE_NAME up -d
+  docker-compose -f $SCRIPT_DIR/../$DOCKER_COMPOSE_FILE_NAME up -d
 else
-  docker-compose -f $SCRIPT_DIR/../../$DOCKER_COMPOSE_FILE_NAME up
+  docker-compose -f $SCRIPT_DIR/../$DOCKER_COMPOSE_FILE_NAME up
 fi
 
 
