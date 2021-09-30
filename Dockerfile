@@ -60,6 +60,7 @@ RUN (cd / &&  \
     mv ot3-firmware* ot3-firmware)
 COPY entrypoint.sh /entrypoint.sh
 RUN /entrypoint.sh build
+CMD ["/entrypoint.sh", "run"]
 
 FROM heater-shaker-dev as heater-shaker
 ADD "https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip" /opentrons-modules.zip
@@ -69,3 +70,4 @@ RUN (cd / &&  \
     mv opentrons-modules* opentrons-modules)
 COPY entrypoint.sh /entrypoint.sh
 RUN /entrypoint.sh build
+CMD ["/entrypoint.sh", "run"]

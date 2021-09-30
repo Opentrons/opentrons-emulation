@@ -7,7 +7,6 @@ services:
     container_name: echo-prod
     network_mode: host
     tty: true
-    command: /bin/bash
 
   heater-shaker-prod:
     build:
@@ -16,4 +15,3 @@ services:
     container_name: heater-shaker-prod
     network_mode: host
     tty: true
-    command: /bin/bash

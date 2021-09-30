@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [ $# -lt 1 ]; then
   echo "Must provide \"command\""
   echo "Usage: $(basename "${BASH_SOURCE[0]}") <command>"
