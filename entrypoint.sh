@@ -1,20 +1,7 @@
-usage() {
-        cat <<EOF
-Usage: $(basename "${BASH_SOURCE[0]}") <command>
-
-command               What command you want to execute (build, run)
-
-Available options:
--h, --help              Print this help and exit
-
-EOF
-        exit
-}
-
-
-if [ $# -ne 1 ]; then
-  echo "Must provide arg \"command\""
-  usage
+if [ $# -lt 1 ]; then
+  echo "Must provide \"command\""
+  echo "Usage: $(basename "${BASH_SOURCE[0]}") <command>"
+  exit 1
 fi
 
 COMMAND=$1
@@ -22,10 +9,12 @@ COMMAND=$1
 if [ "$COMMAND" != "build" ] && [ "$COMMAND" != "run" ]; then
   echo "Valid commands are \"build\" and \"run\""
   echo "You passed $COMMAND"
-  usage
+  echo "Usage: $(basename "${BASH_SOURCE[0]}") <command>"
+  exit 1
 fi
 
 FULL_COMMAND="$COMMAND"-"$OPENTRONS_HARDWARE"
+OTHER_ARGS=`echo "${@:2}"`
 
 case $FULL_COMMAND in
   build-heater-shaker)
@@ -36,7 +25,7 @@ case $FULL_COMMAND in
     )
     ;;
   run-heater-shaker)
-    /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator
+    bash -c "/opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator $OTHER_ARGS"
     ;;
   build-ot3-firmware-echo)
     (
