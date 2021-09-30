@@ -1,23 +1,25 @@
 version: '3.8'
 services:
-  echo-prod:
+  echo-dev:
     build:
       context: .
-      target: ot3-firmware-echo-prod
-    container_name: echo-prod
+      target: ot3-firmware-echo
+    container_name: echo-dev
     network_mode: host
     tty: true
     command: /bin/bash
     volumes:
+      - $HOME/Documents/repos/ot3-firmware:/ot3-firmware
       - ./entrypoint.sh:/entrypoint.sh
 
-  heater-shaker-prod:
+  heater-shaker-dev:
     build:
       context: .
-      target: heater-shaker-prod
-    container_name: heater-shaker-prod
+      target: heater-shaker
+    container_name: heater-shaker-dev
     network_mode: host
     tty: true
     command: /bin/bash
     volumes:
+      - $HOME/Documents/repos/opentrons-modules:/opentrons-modules
       - ./entrypoint.sh:/entrypoint.sh
