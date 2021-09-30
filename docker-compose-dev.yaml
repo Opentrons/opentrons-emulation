@@ -3,7 +3,7 @@ services:
   echo-dev:
     build:
       context: .
-      target: ot3-firmware-echo
+      target: ot3-firmware-echo-dev
     container_name: echo-dev
     network_mode: host
     tty: true
@@ -15,7 +15,7 @@ services:
   heater-shaker-dev:
     build:
       context: .
-      target: heater-shaker
+      target: heater-shaker-dev
     container_name: heater-shaker-dev
     network_mode: host
     tty: true

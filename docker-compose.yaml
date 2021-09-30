@@ -3,21 +3,17 @@ services:
   echo-prod:
     build:
       context: .
-      target: ot3-firmware-echo-prod
+      target: ot3-firmware-echo
     container_name: echo-prod
     network_mode: host
     tty: true
     command: /bin/bash
-    volumes:
-      - ./entrypoint.sh:/entrypoint.sh
 
   heater-shaker-prod:
     build:
       context: .
-      target: heater-shaker-prod
+      target: heater-shaker
     container_name: heater-shaker-prod
     network_mode: host
     tty: true
     command: /bin/bash
-    volumes:
-      - ./entrypoint.sh:/entrypoint.sh
