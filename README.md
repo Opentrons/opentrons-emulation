@@ -7,13 +7,13 @@ pieces of hardware using [Docker](https://www.docker.com/) and [Docker Compose](
 
 The following emulators are planned to be included:
 
-| Hardware                                        | Emulation Level <sup>[[1]](#emulation-level)</sup> | Status               |
+| Hardware                                        | Emulation Level <sup>[1](#emulation-level)</sup> | Status               |
 |-------------------------------------------------|----------------------------------------------------|----------------------|
 | [OT-2](#ot-2)                                   | Driver                                             | Awaiting Development |
 | [Single Container OT-3](#single-container-ot-3) | Firmware                                           | Awaiting Development |
 | [Multi Container OT-3](#multi-container-ot-3)   | Firmware                                           | Work in Progress     |
 | [Heater Shaker](#heater-shaker)                 | Firmware                                           | Work in Progress     |
-| [Thermocycler](#thermocycler)                   | Firmware <sup>[[2]](#thermocycler-note)</sup>      | Awaiting Development |
+| [Thermocycler](#thermocycler)                   | Firmware <sup>[2](#thermocycler-note)</sup>      | Awaiting Development |
 | [Temp Deck](#temp-deck)                         | Driver                                             | Awaiting Development |
 | [Mag Deck](#mag-deck)                           | Driver                                             | Awaiting Development |
 
@@ -35,7 +35,7 @@ that behaves like the actual robot.
 **Emulation Level:** Firmware
 
 **Requirements:** [Docker](https://docs.docker.com/engine/install/ubuntu/), [Docker Compose](https://docs.docker.com/compose/install/),
-[Ubuntu](https://ubuntu.com/) <sup>[[3]](#ubuntu-requirement)</sup>
+[Ubuntu](https://ubuntu.com/) <sup>[3](#ubuntu-requirement)</sup>
 
 The single container OT-3 emulator will have all the firmware running on a single Ubuntu container.
 They will be connected through a CAN network that is private to the container.
@@ -220,7 +220,7 @@ For an example, see [this action in ot3-firmware](https://github.com/Opentrons/o
 
 ## Footnotes
 
-### 1. Emulation Level
+### Emulation Level
 
 **TL:DR** - Firmware level emulator more closely emulates a piece of hardware than driver level does. 
 
@@ -228,12 +228,12 @@ Emulators can either be at the `Driver` level or the `Firmware` level. Driver le
 cover the stack from driver level and up. Firmware level emulators cover the stack from firmware
 level and up.
 
-### 2. Thermocycler Note
+### Thermocycler Note
 
 The thermocycler is in a "refresh" cycle to be updated to use a STM32 board. 
 When that happens it can be emulated at the firmware level
 
-### 3. Ubuntu Requirement
+### Ubuntu Requirement
 
 For running either OT-3 a system running [Ubuntu](https://ubuntu.com/) is required.
 This is due to the usage of the [SocketCan](https://en.wikipedia.org/wiki/SocketCAN) library
