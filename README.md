@@ -62,7 +62,6 @@ They will be connected through the host's CAN network.
 
 **Requirements:** [Docker](https://docs.docker.com/engine/install/ubuntu/), [Docker Compose](https://docs.docker.com/compose/install/)
 
-
 **Development Images:**
 * `heater-shaker-dev`
 
@@ -199,6 +198,21 @@ scripts inside of `scripts/docker_convenience_scripts` have been provided.
 * Build - `./build.sh <container_name>`
 * Run - `./run.sh <container_name> <optional_args>...`
 * Build & Run - `./build_and_run.sh <container_name> <optional_args>...`
+
+#### Heater Shaker Specific Run Args
+
+When running the Heater-Shaker emulator you need to specify the runtime configuration. 
+The emulator can either accept input from stdin or a socket. 
+
+To run using stdin, execute the following command:
+
+`./run.sh <heater-shaker-container> --stdin`
+
+To run using a socket, execute the following command:
+
+`./run.sh <heater-shaker-container> --socket "http://<your_host>:<your_port>"`
+
+`./run.sh <heater-shaker-container> --socket "http://127.0.0.1:9999"`
 
 ## Github Action
 This repository provides a Github Action to spin up the emulators in other repositories.
