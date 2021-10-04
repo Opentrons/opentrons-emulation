@@ -20,7 +20,7 @@ if __name__ == '__main__':
         print(f"Connection from {address} has been established.")
 
         sleep_time = 0.005
-        for _ in range(100):
+        for _ in range(10):
             sleep(sleep_time)
             send_code(clientsocket, 'M3 S2000')
             sleep(sleep_time)
