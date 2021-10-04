@@ -19,7 +19,7 @@ usage() {
         cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") [-h] [--detached] [--dev] [--ot3-firmware-sha full-commit-sha] [--modules-sha full-commit-sha]
 
-This script will create fully-automated Ubuntu 20.04 Focal Fossa installation media.
+This script will create an emulated system of opentrons hardware
 
 Available Options:
   -h, --help                      Print this help and exit

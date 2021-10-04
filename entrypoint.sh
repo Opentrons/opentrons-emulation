@@ -15,6 +15,8 @@ if [ "$COMMAND" != "build" ] && [ "$COMMAND" != "run" ]; then
   exit 1
 fi
 
+# OPENTRONS_HARDWARE is an env variable that is passed to every container
+
 FULL_COMMAND="$COMMAND"-"$OPENTRONS_HARDWARE"
 OTHER_ARGS=`echo "${@:2}"`
 
