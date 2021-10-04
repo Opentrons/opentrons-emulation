@@ -13,7 +13,7 @@ Open Virtual Box
    3. Leave Machine Folder as default
    4. Set Type to Linux
    5. Set Version to Ubuntu (64-bit)
-   6. Click Next 
+   6. Click Create 
 2. Configure Memory Size
    1. Set memory size, I set it to 8192 MB (8GB)
 3. Configure Hard Disk
@@ -67,7 +67,7 @@ Open Virtual Box
    4. Click Storage
    5. Delete the optical disk you installed earlier
 8. Reboot 
-    1. Go back to the Virtual Machine command line and select Reboot Now
+    1. Go back to the Virtual Machine's window and select Reboot Now
     2. You will get an error saying you need to remove the installation media. Hit Enter
     3. Wait for system to finish rebooting
 
