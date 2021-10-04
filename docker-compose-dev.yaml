@@ -8,7 +8,7 @@ services:
     network_mode: host
     tty: true
     volumes:
-      - ${FIRMWARE_DIRECTORY}:/ot3-firmware
+      - ${OT3_FIRMWARE_DIRECTORY}:/ot3-firmware
       - ./entrypoint.sh:/entrypoint.sh
 
   heater-shaker-dev:
@@ -19,5 +19,5 @@ services:
     network_mode: host
     tty: true
     volumes:
-      - ${MODULES_DIRECTORY}:/opentrons-modules
+      - ${OPENTRONS_MODULES_DIRECTORY}:/opentrons-modules
       - ./entrypoint.sh:/entrypoint.sh
