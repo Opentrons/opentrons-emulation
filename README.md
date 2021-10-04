@@ -92,19 +92,39 @@ Currently, there are 2 different container configurations offered: `production` 
 
 ### Production Configuration
 
-The production configuration downloads the latest version of both `ot3-firmware` and
-`opentrons-modules` and adds them to your containers. It also copies the `entrypoint.sh` file
-into each container.
+The production configuration handles downloading the necessary source code and inserting
+it into each container's Dockerfile. It also builds and runs the emulator inside each container.
 
 ### Development Configuration
 
-The development configuration requires that you provide a path to both your `ot3-firmware`
-and `opentrons-modules` repositories. These will be mounted into the containers.
-It also mounts the `entrypoint.sh` file into each container.
+The development configuration allows you to mount your source code into each of your
+repositories. It also mounts the `entrypoint.sh` file into each container. This allows
+you to have control over building and running your changes.
 
 #### Environment File
 
+You must specify an `.env` file. This file will configure your containers to your system. You will
+have to specify the following variables. See `.env` file in this repo for an example.
 
+`OT3_FIRMWARE_DIRECTORY`
+* Used In - Development Configuration
+* Description - Absolute path to your ot3-firmware source code 
+* Example - `"${HOME}/Documents/repos/ot3-firmware"`
+
+`OPENTRONS_MODULES_DIRECTORY`
+* Used In - Development Configuration
+* Description - Absolute path to your opentrons-modules source code
+* Example - `"${HOME}/Documents/repos/opentrons-modules"`
+
+`HEATER_SHAKER_SOCKET_HOST`
+* Used In - Production Configuration
+* Description - Host to connect socket to
+* Example - `"127.0.0.1"`
+
+`HEATER_SHAKER_SOCKET_PORT`
+* Used In - Production Configuration
+* Description - Port to connect socket to 
+* Example - `"9999"`
 
 ### Creating System
 
@@ -112,13 +132,58 @@ To create systems use the `create_system.sh` script inside of the `scripts` dire
 
 #### Production System
 
-To run a production system configuration just run `./create_system.sh`
+To run a production system configuration run the base script.
+
+`./create_system.sh`
 
 #### Development System
 
-Running a 
+To run a development system configuration add the `--dev` option.
+
+`./create_system.sh --dev`
 
 #### Headless
+
+Both Production and Development systems can be run in the background. 
+To do this add either the `--headless` or `--detached` option.
+
+`./create_system.sh --dev --headless` -OR- `./create_system.sh --headless`
+
+#### Specifying Commit Sha
+
+Production systems can be run from spefic commit shas that are on Github. 
+To do this, specify `--ot3-firmware-sha` for ot3-firwamre or `--modules-sha` for opentrons-modules.
+
+#### Example Commands
+
+```shell
+# Create a production system.
+# Uses the latest commit from the master branch of both ot3-firmware and opentrons-modules
+./create_system.sh
+
+# Create same production system as above but run it in the background
+./create_system.sh --headless
+./create_system.sh --detached
+
+# Create production system, pull specific commit for ot3-firmware
+./create_system.sh \
+  --headless \
+  --ot3-firmware-sha 7ec96029946054c9b6d55846bd5e909b55591adb
+
+# Create production system, pull specific commit for opentrons-modules
+./create_system.sh \
+  --headless \
+  --modules-sha 80f30ad3f99a7bbc22ec885371c592013a7cbe6c
+
+# Create production system, pull specific commit for opentrons-modules and ot3-firmware
+./create_system.sh \
+  --headless \
+  --ot3-firmware-sha 7ec96029946054c9b6d55846bd5e909b55591adb \
+  --modules-sha 80f30ad3f99a7bbc22ec885371c592013a7cbe6c
+  
+# Create headless dev system. Will look at .env file for where to pull source code
+./create_system.sh --dev
+```
 
 ### Building and Running
 
