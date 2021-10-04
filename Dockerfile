@@ -29,7 +29,6 @@ RUN apt-get install -y \
     lsb-release \
     software-properties-common > /dev/null
 
-# Install cmake
 RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2-linux-x86_64.tar.gz && \
     tar -zxf cmake-3.21.2-linux-x86_64.tar.gz && \
     rm cmake-3.21.2-linux-x86_64.tar.gz && \
@@ -42,11 +41,9 @@ RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.2
 # Targets for all dev builds of emulators
 
 FROM cpp-base as ot3-firmware-echo-dev
-ARG FIRMWARE_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/ot3-firmware/archive/refs/heads/main.zip"
 ENV OPENTRONS_HARDWARE "ot3-firmware-echo"
 
 FROM cpp-base as heater-shaker-dev
-ARG MODULE_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip"
 ENV OPENTRONS_HARDWARE "heater-shaker"
 
 #########################
@@ -55,6 +52,7 @@ ENV OPENTRONS_HARDWARE "heater-shaker"
 # Targets for all prod builds of emulators
 
 FROM ot3-firmware-echo-dev as ot3-firmware-echo
+ARG FIRMWARE_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/ot3-firmware/archive/refs/heads/main.zip"
 ADD $FIRMWARE_SOURCE_DOWNLOAD_LOCATION /ot3-firmware.zip
 RUN (cd / &&  \
     unzip -q ot3-firmware.zip && \
@@ -62,9 +60,10 @@ RUN (cd / &&  \
     mv ot3-firmware* ot3-firmware)
 COPY entrypoint.sh /entrypoint.sh
 RUN /entrypoint.sh build
-CMD ["/entrypoint.sh", "run"]
+ENTRYPOINT ["/entrypoint.sh", "run"]
 
 FROM heater-shaker-dev as heater-shaker
+ARG MODULE_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip"
 ADD $MODULE_SOURCE_DOWNLOAD_LOCATION /opentrons-modules.zip
 RUN (cd / &&  \
     unzip -q opentrons-modules.zip && \
@@ -72,4 +71,4 @@ RUN (cd / &&  \
     mv opentrons-modules* opentrons-modules)
 COPY entrypoint.sh /entrypoint.sh
 RUN /entrypoint.sh build
-CMD ["/entrypoint.sh", "run"]
+ENTRYPOINT ["/entrypoint.sh", "run"]

@@ -14,4 +14,5 @@ services:
       target: heater-shaker
     container_name: heater-shaker-prod
     network_mode: host
+    command: ["--socket", "http://${HEATER_SHAKER_SOCKET_HOST}:${HEATER_SHAKER_SOCKET_PORT}"]
     tty: true
