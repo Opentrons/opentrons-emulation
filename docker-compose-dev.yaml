@@ -7,9 +7,8 @@ services:
     container_name: echo-dev
     network_mode: host
     tty: true
-    command: /bin/bash
     volumes:
-      - $HOME/Documents/repos/ot3-firmware:/ot3-firmware
+      - ${FIRMWARE_DIRECTORY}:/ot3-firmware
       - ./entrypoint.sh:/entrypoint.sh
 
   heater-shaker-dev:
@@ -19,7 +18,6 @@ services:
     container_name: heater-shaker-dev
     network_mode: host
     tty: true
-    command: /bin/bash
     volumes:
-      - $HOME/Documents/repos/opentrons-modules:/opentrons-modules
+      - ${MODULES_DIRECTORY}:/opentrons-modules
       - ./entrypoint.sh:/entrypoint.sh
