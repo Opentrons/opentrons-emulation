@@ -158,30 +158,30 @@ To do this, specify `--ot3-firmware-sha` for ot3-firwamre or `--modules-sha` for
 ```shell
 # Create a production system.
 # Uses the latest commit from the master branch of both ot3-firmware and opentrons-modules
-./create_system.sh
+./run_emulation.sh
 
 # Create same production system as above but run it in the background
-./create_system.sh --headless
-./create_system.sh --detached
+./run_emulation.sh --headless
+./run_emulation.sh --detached
 
 # Create production system, pull specific commit for ot3-firmware
-./create_system.sh \
+./run_emulation.sh \
   --headless \
   --ot3-firmware-sha 7ec96029946054c9b6d55846bd5e909b55591adb
 
 # Create production system, pull specific commit for opentrons-modules
-./create_system.sh \
+./run_emulation.sh \
   --headless \
   --modules-sha 80f30ad3f99a7bbc22ec885371c592013a7cbe6c
 
 # Create production system, pull specific commit for opentrons-modules and ot3-firmware
-./create_system.sh \
+./run_emulation.sh \
   --headless \
   --ot3-firmware-sha 7ec96029946054c9b6d55846bd5e909b55591adb \
   --modules-sha 80f30ad3f99a7bbc22ec885371c592013a7cbe6c
   
 # Create headless dev system. Will look at .env file for where to pull source code
-./create_system.sh --dev
+./run_emulation.sh --dev
 ```
 
 ### Building and Running
