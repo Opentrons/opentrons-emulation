@@ -133,7 +133,7 @@ To create systems use the `create_system.sh` script inside of the `scripts` dire
 
 To run a production system configuration run the base script.
 
-`./create_system.sh`
+`./create_system.sh --prod`
 
 #### Development System
 
@@ -144,9 +144,9 @@ To run a development system configuration add the `--dev` option.
 #### Headless
 
 Both Production and Development systems can be run in the background. 
-To do this add either the `--headless` or `--detached` option.
+To do this add the `--headless` option.
 
-`./create_system.sh --dev --headless` -OR- `./create_system.sh --headless`
+`./create_system.sh --dev --headless` -OR- `./create_system.sh --prod --headless`
 
 #### Specifying Commit Sha
 
@@ -162,20 +162,22 @@ To do this, specify `--ot3-firmware-sha` for ot3-firwamre or `--modules-sha` for
 
 # Create same production system as above but run it in the background
 ./run_emulation.sh --headless
-./run_emulation.sh --detached
 
 # Create production system, pull specific commit for ot3-firmware
 ./run_emulation.sh \
+  --prod \
   --headless \
   --ot3-firmware-sha 7ec96029946054c9b6d55846bd5e909b55591adb
 
 # Create production system, pull specific commit for opentrons-modules
 ./run_emulation.sh \
+  --prod \
   --headless \
   --modules-sha 80f30ad3f99a7bbc22ec885371c592013a7cbe6c
 
 # Create production system, pull specific commit for opentrons-modules and ot3-firmware
 ./run_emulation.sh \
+  --prod \
   --headless \
   --ot3-firmware-sha 7ec96029946054c9b6d55846bd5e909b55591adb \
   --modules-sha 80f30ad3f99a7bbc22ec885371c592013a7cbe6c
