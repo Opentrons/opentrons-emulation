@@ -9,7 +9,8 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN rm -rf /var/lib/apt/lists/*
 RUN echo "Updating apt" && apt-get update > /dev/null
-RUN apt-get install -y wget unzip
+RUN apt-get update \
+    && apt-get install -y wget unzip
 
 ####################
 # C++ MODULES BASE #
