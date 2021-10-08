@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  echo-dev:
+    build:
+      context: .
+      target: ot3-firmware-echo-dev
+    container_name: echo-dev
+    network_mode: host
+    tty: true
+    volumes:
+      - ${OT3_FIRMWARE_DIRECTORY}:/ot3-firmware
+      - ./entrypoint.sh:/entrypoint.sh
+
+  heater-shaker-dev:
+    build:
+      context: .
+      target: heater-shaker-dev
+    container_name: heater-shaker-dev
+    network_mode: host
+    tty: true
+    volumes:
+      - ${OPENTRONS_MODULES_DIRECTORY}:/opentrons-modules
+      - ./entrypoint.sh:/entrypoint.sh
