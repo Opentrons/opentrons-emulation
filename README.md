@@ -103,7 +103,7 @@ you to have control over building and running your changes.
 #### Environment File
 
 You must specify an `.env` file. This file will configure your containers to your system. You will
-have to specify the following variables. See `.env` file in this repo for an example.
+have to specify the following variables. See `.env.default` file in this repo for an example.
 
 `OT3_FIRMWARE_DIRECTORY`
 * Used In - Development Configuration
