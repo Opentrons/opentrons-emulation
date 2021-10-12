@@ -138,8 +138,10 @@ _PROD=0
 _VERBOSE=0
 _SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 _COMPOSE_FILE_NAME=
-_OT3_FIRMWARE="https://github.com/Opentrons/ot3-firmware/archive/refs/heads/main.zip"
-_MODULES="https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip"
+_DEFAULT_OT3_FIRMWARE_DOWNLOAD_LOCATION="https://github.com/Opentrons/ot3-firmware/archive/refs/heads/main.zip"
+_DEFAULT_MODULES_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip"
+_OT3_FIRMWARE=
+_MODULES=
 
 # __get_option_value()
 #
@@ -186,14 +188,18 @@ do
       ;;
     --ot3-firmware-sha)
       _FIRMWARE_TEMP_VAL=$(__get_option_value "${__arg}" "${__val:-}")
-      if [[ $_FIRMWARE_TEMP_VAL != "latest" ]]; then
+      if [[ $_FIRMWARE_TEMP_VAL == "latest" ]]; then
+         _OT3_FIRMWARE=${_DEFAULT_OT3_FIRMWARE_DOWNLOAD_LOCATION}
+      else
         _OT3_FIRMWARE="https://github.com/Opentrons/ot3-firmware/archive/${_FIRMWARE_TEMP_VAL}.zip"
       fi
       shift
       ;;
     --modules-sha)
       _MODULES_TEMP_VAL=$(__get_option_value "${__arg}" "${__val:-}")
-      if [[ $_MODULES_TEMP_VAL != "latest" ]]; then
+      if [[ $_MODULES_TEMP_VAL == "latest" ]]; then
+        _MODULES=${_DEFAULT_MODULES_DOWNLOAD_LOCATION}
+      else
         _MODULES="https://github.com/Opentrons/opentrons-modules/archive/${_MODULES_TEMP_VAL}.zip"
       fi
       shift
