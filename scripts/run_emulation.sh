@@ -119,6 +119,7 @@ Options:
   --headless          Run system headless
   --ot3-firmware-sha  Full commit sha to base the ot3-firmware repo off of
   --modules-sha       Full commit sha to base the opentrons-modules repo off of
+  -v --verbose        Show more output
 HEREDOC
 }
 
@@ -134,6 +135,7 @@ _USE_DEBUG=0
 _HEADLESS=0
 _DEV=0
 _PROD=0
+_VERBOSE=0
 _SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 _COMPOSE_FILE_NAME=
 _OT3_FIRMWARE="https://github.com/Opentrons/ot3-firmware/archive/refs/heads/main.zip"
@@ -196,6 +198,9 @@ do
       fi
       shift
       ;;
+    -v|--verbose)
+      _VERBOSE=1
+      ;;
     --endopts)
       # Terminate option parsing.
       break
@@ -230,6 +235,12 @@ _use_debug() {
     _DEV_DEBUG_MESSAGE="${_DEV_DEBUG_MESSAGE} production mode\\n"
   fi
 
+  if (( _VERBOSE )); then
+    _VERBOSE_DEBUG_MESSAGE="${_VERBOSE_DEBUG_MESSAGE} verbose mode\\n"
+  else
+    _VERBOSE_DEBUG_MESSAGE="${_VERBOSE_DEBUG_MESSAGE} quiet mode\\n"
+  fi
+
   if [[ -n "${_OT3_FIRMWARE}" ]];  then
     _OT3_FIRMWARE_DEBUG_MESSAGE="${_OT3_FIRMWARE_DEBUG_MESSAGE} commit \"${_OT3_FIRMWARE}\" from ot3-firmware\\n"
   else
@@ -243,12 +254,17 @@ _use_debug() {
   fi
   _debug printf "${_HEADLESS_DEBUG_MESSAGE}"
   _debug printf "${_DEV_DEBUG_MESSAGE}"
+  _debug printf "${_VERBOSE_DEBUG_MESSAGE}"
   _debug printf "${_OT3_FIRMWARE_DEBUG_MESSAGE}"
   _debug printf "${_MODULES_DEBUG_MESSAGE}"
 }
 
 _construct_build_command() {
   _BUILD_COMMAND="COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --verbose -f ${_COMPOSE_FILE_PATH} build "
+
+  if (( ! _VERBOSE )); then
+    _BUILD_COMMAND="${_BUILD_COMMAND} --quiet"
+  fi
 
   if [[ -n "${_OT3_FIRMWARE}" ]];  then
     _BUILD_COMMAND="${_BUILD_COMMAND} --build-arg FIRMWARE_SOURCE_DOWNLOAD_LOCATION=\"${_OT3_FIRMWARE}\""
@@ -258,6 +274,9 @@ _construct_build_command() {
     _BUILD_COMMAND="${_BUILD_COMMAND} --build-arg MODULE_SOURCE_DOWNLOAD_LOCATION=\"${_MODULES}\""
   fi
 
+    if (( _VERBOSE )); then
+      printf "BUILD COMMAND: ${_BUILD_COMMAND}\\n"
+    fi
 }
 
 _teardown_can_network() {
