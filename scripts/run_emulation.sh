@@ -188,7 +188,7 @@ do
       ;;
     --ot3-firmware-sha)
       _FIRMWARE_TEMP_VAL=$(__get_option_value "${__arg}" "${__val:-}")
-      if [[ $_FIRMWARE_TEMP_VAL == "latest" ]]; then
+      if [[ $_FIRMWARE_TEMP_VAL = "latest" ]]; then
          _OT3_FIRMWARE=${_DEFAULT_OT3_FIRMWARE_DOWNLOAD_LOCATION}
       else
         _OT3_FIRMWARE="https://github.com/Opentrons/ot3-firmware/archive/${_FIRMWARE_TEMP_VAL}.zip"
@@ -197,7 +197,7 @@ do
       ;;
     --modules-sha)
       _MODULES_TEMP_VAL=$(__get_option_value "${__arg}" "${__val:-}")
-      if [[ $_MODULES_TEMP_VAL == "latest" ]]; then
+      if [[ $_MODULES_TEMP_VAL = "latest" ]]; then
         _MODULES=${_DEFAULT_MODULES_DOWNLOAD_LOCATION}
       else
         _MODULES="https://github.com/Opentrons/opentrons-modules/archive/${_MODULES_TEMP_VAL}.zip"
@@ -348,13 +348,13 @@ _check_prod_and_dev_not_both_specified() {
 }
 
 _check_prod_or_dev_specified() {
-    if [[ ${_PROD} == 0 && ${_DEV} == 0 ]]; then
+    if [[ ${_PROD} -eq 0 && ${_DEV} -eq 0 ]]; then
       _exit_1 printf "Must specify either --prod or --dev\\n"
     fi
 }
 
 _check_commit_sha_not_specified_in_dev_mode() {
-    if [[ ${_DEV} == 1 && ( -n "${_OT3_FIRMWARE}" || -n "${_MODULES}" ) ]]; then
+    if [[ ${_DEV} -eq 1 && ( -n "${_OT3_FIRMWARE}" || -n "${_MODULES}" ) ]]; then
       _exit_1 printf "Cannot specify --dev with either --ot3-firmware-sha or --modules-sha\\n"
     fi
 }
