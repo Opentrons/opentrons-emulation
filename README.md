@@ -148,6 +148,10 @@ To do this add the `--headless` option.
 
 `./create_system.sh --dev --headless` -OR- `./create_system.sh --prod --headless`
 
+#### Verbose
+
+To output more verbose logs use the `--verbose` or `-v` option
+
 #### Specifying Commit Sha
 
 Production systems can be run from spefic commit shas that are on Github. 

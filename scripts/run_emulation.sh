@@ -119,6 +119,7 @@ Options:
   --headless          Run system headless
   --ot3-firmware-sha  Full commit sha to base the ot3-firmware repo off of
   --modules-sha       Full commit sha to base the opentrons-modules repo off of
+  -v --verbose        Show more output
 HEREDOC
 }
 
@@ -134,10 +135,13 @@ _USE_DEBUG=0
 _HEADLESS=0
 _DEV=0
 _PROD=0
+_VERBOSE=0
 _SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 _COMPOSE_FILE_NAME=
-_OT3_FIRMWARE="https://github.com/Opentrons/ot3-firmware/archive/refs/heads/main.zip"
-_MODULES="https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip"
+_DEFAULT_OT3_FIRMWARE_DOWNLOAD_LOCATION="https://github.com/Opentrons/ot3-firmware/archive/refs/heads/main.zip"
+_DEFAULT_MODULES_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip"
+_OT3_FIRMWARE=
+_MODULES=
 
 # __get_option_value()
 #
@@ -184,17 +188,24 @@ do
       ;;
     --ot3-firmware-sha)
       _FIRMWARE_TEMP_VAL=$(__get_option_value "${__arg}" "${__val:-}")
-      if [[ $_FIRMWARE_TEMP_VAL != "latest" ]]; then
+      if [[ $_FIRMWARE_TEMP_VAL = "latest" ]]; then
+         _OT3_FIRMWARE=${_DEFAULT_OT3_FIRMWARE_DOWNLOAD_LOCATION}
+      else
         _OT3_FIRMWARE="https://github.com/Opentrons/ot3-firmware/archive/${_FIRMWARE_TEMP_VAL}.zip"
       fi
       shift
       ;;
     --modules-sha)
       _MODULES_TEMP_VAL=$(__get_option_value "${__arg}" "${__val:-}")
-      if [[ $_MODULES_TEMP_VAL != "latest" ]]; then
+      if [[ $_MODULES_TEMP_VAL = "latest" ]]; then
+        _MODULES=${_DEFAULT_MODULES_DOWNLOAD_LOCATION}
+      else
         _MODULES="https://github.com/Opentrons/opentrons-modules/archive/${_MODULES_TEMP_VAL}.zip"
       fi
       shift
+      ;;
+    -v|--verbose)
+      _VERBOSE=1
       ;;
     --endopts)
       # Terminate option parsing.
@@ -217,6 +228,7 @@ _use_debug() {
   _DEV_DEBUG_MESSAGE="DEV OPTION: Running in"
   _OT3_FIRMWARE_DEBUG_MESSAGE="OT3_FIRMWARE: Pulling"
   _MODULES_DEBUG_MESSAGE="MODULES:"
+  _VERBOSE_DEBUG_MESSAGE="VERBOSE: Running in"
 
   if (( _HEADLESS )); then
     _HEADLESS_DEBUG_MESSAGE="${_HEADLESS_DEBUG_MESSAGE} Running headless\\n"
@@ -228,6 +240,12 @@ _use_debug() {
     _DEV_DEBUG_MESSAGE="${_DEV_DEBUG_MESSAGE} development mode\\n"
   else
     _DEV_DEBUG_MESSAGE="${_DEV_DEBUG_MESSAGE} production mode\\n"
+  fi
+
+  if (( _VERBOSE )); then
+    _VERBOSE_DEBUG_MESSAGE="${_VERBOSE_DEBUG_MESSAGE} verbose mode\\n"
+  else
+    _VERBOSE_DEBUG_MESSAGE="${_VERBOSE_DEBUG_MESSAGE} quiet mode\\n"
   fi
 
   if [[ -n "${_OT3_FIRMWARE}" ]];  then
@@ -243,12 +261,17 @@ _use_debug() {
   fi
   _debug printf "${_HEADLESS_DEBUG_MESSAGE}"
   _debug printf "${_DEV_DEBUG_MESSAGE}"
+  _debug printf "${_VERBOSE_DEBUG_MESSAGE}"
   _debug printf "${_OT3_FIRMWARE_DEBUG_MESSAGE}"
   _debug printf "${_MODULES_DEBUG_MESSAGE}"
 }
 
 _construct_build_command() {
   _BUILD_COMMAND="COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --verbose -f ${_COMPOSE_FILE_PATH} build "
+
+  if (( ! _VERBOSE )); then
+    _BUILD_COMMAND="${_BUILD_COMMAND} --quiet"
+  fi
 
   if [[ -n "${_OT3_FIRMWARE}" ]];  then
     _BUILD_COMMAND="${_BUILD_COMMAND} --build-arg FIRMWARE_SOURCE_DOWNLOAD_LOCATION=\"${_OT3_FIRMWARE}\""
@@ -258,6 +281,9 @@ _construct_build_command() {
     _BUILD_COMMAND="${_BUILD_COMMAND} --build-arg MODULE_SOURCE_DOWNLOAD_LOCATION=\"${_MODULES}\""
   fi
 
+    if (( _VERBOSE )); then
+      printf "BUILD COMMAND: ${_BUILD_COMMAND}\\n"
+    fi
 }
 
 _teardown_can_network() {
@@ -293,7 +319,51 @@ _build_system() {
   _bring_up_docker_containers
 }
 
+###############################################################################
+# Input Validation Functions
+###############################################################################
 
+_check_env_file_exists() {
+    if [[ ! -f "${_SCRIPT_DIR}/../.env" ]]; then
+          _exit_1 printf ".env file does not exist. \\nPlease copy .env.default to .env and modify fields\\n"
+    fi
+}
+
+_check_env_file_different_from_default_env() {
+    if cmp --silent -- "${_SCRIPT_DIR}/../.env" "${_SCRIPT_DIR}/../.env.default" ; then
+      _warn printf ".env file and .env.default have the same content. \\nDid you update the values in .env to be valid?\\n\\n"
+    fi
+}
+
+_check_for_print_help() {
+    if (( _PRINT_HELP )); then
+      _print_help
+    fi
+}
+
+_check_prod_and_dev_not_both_specified() {
+    if (( _PROD && _DEV )); then
+      _exit_1 printf "Cannot specify --prod and --dev at the same time\\n"
+    fi
+}
+
+_check_prod_or_dev_specified() {
+    if [[ ${_PROD} -eq 0 && ${_DEV} -eq 0 ]]; then
+      _exit_1 printf "Must specify either --prod or --dev\\n"
+    fi
+}
+
+_check_commit_sha_not_specified_in_dev_mode() {
+    if [[ ${_DEV} -eq 1 && ( -n "${_OT3_FIRMWARE}" || -n "${_MODULES}" ) ]]; then
+      _exit_1 printf "Cannot specify --dev with either --ot3-firmware-sha or --modules-sha\\n"
+    fi
+}
+
+_check_for_debug_mode() {
+    if (( _USE_DEBUG )); then
+      _use_debug
+    fi
+}
 
 ###############################################################################
 # Main
@@ -307,20 +377,15 @@ _build_system() {
 # Description:
 #   Entry point for the program, handling basic option parsing and dispatching.
 _main() {
-  if (( _USE_DEBUG )); then
-    _use_debug
-  fi
-  if (( _PRINT_HELP )); then
-    _print_help
-  elif (( _PROD && _DEV )); then
-    _exit_1 printf "Cannot specify --prod and --dev at the same time\\n"
-  elif [[ ${_PROD} == 0 && ${_DEV} == 0 ]]; then
-    _exit_1 printf "Must specify either --prod or --dev\\n"
-  elif [[ ${_DEV} == 1 && ( -n "${_OT3_FIRMWARE}" || -n "${_MODULES}" ) ]]; then
-    _exit_1 printf "Cannot specify --dev with either --ot3-firmware-sha or --modules-sha\\n"
-  else
-    _build_system "$@"
-  fi
+  _check_env_file_exists
+  _check_env_file_different_from_default_env
+  _check_for_print_help
+  _check_prod_and_dev_not_both_specified
+  _check_prod_or_dev_specified
+  _check_commit_sha_not_specified_in_dev_mode
+  _check_for_debug_mode
+  _build_system "$@"
+
 }
 
 # Call `_main` after everything has been defined.
