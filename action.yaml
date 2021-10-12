@@ -1,13 +1,21 @@
-name: 'OT-3 Emulator'
+name: 'Opentrons Emulation'
 description: 'Spin up emulator with specific version of firmware code'
 inputs:
   ot3-firmware-commit-id:
     description: 'Full commit id in ot3-firmware to pull.'
     required: false
-    default: ""
+    default: "latest"
+  modules-commit-id:
+    description: 'Full commit id in opentrons-modules to pull.'
+    required: false
+    default: "latest"
 runs:
   using: 'composite'
   steps:
-    - run: ./run_emulation.sh --headless --ot3-firmware-sha ${{ inputs.ot3-firmware-commit-id }}
+    - run: |
+      ./run_emulation.sh \
+        --headless \
+        --ot3-firmware-sha ${{ inputs.ot3-firmware-commit-id }} \
+        --modules-sha ${{ inputs.modules-commit-id }}
       shell: bash
       working-directory: ${{ github.action_path }}/scripts
