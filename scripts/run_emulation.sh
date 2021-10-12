@@ -321,6 +321,37 @@ _build_system() {
 
 
 
+
+_check_for_print_help() {
+    if (( _PRINT_HELP )); then
+      _print_help
+    fi
+}
+
+_check_prod_and_dev_not_both_specified() {
+    if (( _PROD && _DEV )); then
+      _exit_1 printf "Cannot specify --prod and --dev at the same time\\n"
+    fi
+}
+
+_check_prod_or_dev_specified() {
+    if [[ ${_PROD} == 0 && ${_DEV} == 0 ]]; then
+      _exit_1 printf "Must specify either --prod or --dev\\n"
+    fi
+}
+
+_check_commit_sha_not_specified_in_dev_mode() {
+    if [[ ${_DEV} == 1 && ( -n "${_OT3_FIRMWARE}" || -n "${_MODULES}" ) ]]; then
+      _exit_1 printf "Cannot specify --dev with either --ot3-firmware-sha or --modules-sha\\n"
+    fi
+}
+
+_check_for_debug_mode() {
+    if (( _USE_DEBUG )); then
+      _use_debug
+    fi
+}
+
 ###############################################################################
 # Main
 ###############################################################################
@@ -335,18 +366,13 @@ _build_system() {
 _main() {
   if (( _USE_DEBUG )); then
     _use_debug
-  fi
-  if (( _PRINT_HELP )); then
-    _print_help
-  elif (( _PROD && _DEV )); then
-    _exit_1 printf "Cannot specify --prod and --dev at the same time\\n"
-  elif [[ ${_PROD} == 0 && ${_DEV} == 0 ]]; then
-    _exit_1 printf "Must specify either --prod or --dev\\n"
-  elif [[ ${_DEV} == 1 && ( -n "${_OT3_FIRMWARE}" || -n "${_MODULES}" ) ]]; then
-    _exit_1 printf "Cannot specify --dev with either --ot3-firmware-sha or --modules-sha\\n"
-  else
-    _build_system "$@"
-  fi
+  _check_for_print_help
+  _check_prod_and_dev_not_both_specified
+  _check_prod_or_dev_specified
+  _check_commit_sha_not_specified_in_dev_mode
+  _check_for_debug_mode
+  _build_system "$@"
+
 }
 
 # Call `_main` after everything has been defined.
