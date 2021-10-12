@@ -319,8 +319,21 @@ _build_system() {
   _bring_up_docker_containers
 }
 
+###############################################################################
+# Input Validation Functions
+###############################################################################
 
+_check_env_file_exists() {
+    if [[ ! -f "${_SCRIPT_DIR}/../.env" ]]; then
+          _exit_1 printf ".env file does not exist. \\nPlease copy .env.default to .env and modify fields\\n"
+    fi
+}
 
+_check_env_file_different_from_default_env() {
+    if cmp --silent -- "${_SCRIPT_DIR}/../.env" "${_SCRIPT_DIR}/../.env.default" ; then
+      _warn printf ".env file and .env.default have the same content. \\nDid you update the values in .env to be valid?\\n\\n"
+    fi
+}
 
 _check_for_print_help() {
     if (( _PRINT_HELP )); then
@@ -364,8 +377,8 @@ _check_for_debug_mode() {
 # Description:
 #   Entry point for the program, handling basic option parsing and dispatching.
 _main() {
-  if (( _USE_DEBUG )); then
-    _use_debug
+  _check_env_file_exists
+  _check_env_file_different_from_default_env
   _check_for_print_help
   _check_prod_and_dev_not_both_specified
   _check_prod_or_dev_specified
