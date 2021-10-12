@@ -13,7 +13,7 @@ fi
 sudo ip link delete $NETWORK 2> /dev/null
 if [ $? == 1 ]; then
   echo "CAN Virtual Network \"$NETWORK\" does not exist"
-  exit 1
+  exit 0
 fi
 
 echo "CAN Virtual Network \"$NETWORK\" successfully removed"

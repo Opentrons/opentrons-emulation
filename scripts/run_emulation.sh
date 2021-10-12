@@ -314,6 +314,8 @@ _main() {
     _print_help
   elif (( _PROD && _DEV )); then
     _exit_1 printf "Cannot specify --prod and --dev at the same time\\n"
+  elif [[ ${_PROD} == 0 && ${_DEV} == 0 ]]; then
+    _exit_1 printf "Must specify either --prod or --dev\\n"
   elif [[ ${_DEV} == 1 && ( -n "${_OT3_FIRMWARE}" || -n "${_MODULES}" ) ]]; then
     _exit_1 printf "Cannot specify --dev with either --ot3-firmware-sha or --modules-sha\\n"
   else
