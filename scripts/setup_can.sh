@@ -14,7 +14,7 @@ fi
 sudo ip link add dev $NETWORK type vcan fd on
 if [ $? == 2 ]; then
   echo "CAN Virtual Network \"$NETWORK\" already exists"
-  exit 1
+  exit 0
 fi
 
 sudo ip link set up $NETWORK
@@ -23,5 +23,6 @@ if [ $? == 0 ]; then
   echo "CAN Virtual Network \"$NETWORK\" successfully created"
 else
   echo "Error creating CAN Virtual Network \"$NETWORK\""
+  exit 1
 fi
 
