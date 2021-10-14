@@ -1,3 +1,4 @@
 .idea/
 ot3-firmware/
 .env
+.vagrant/
