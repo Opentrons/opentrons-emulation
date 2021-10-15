@@ -114,14 +114,20 @@ _bring_up_prod_vm() {
     _check_for_vagrantfile
     vagrant destroy prod -f
     vagrant up prod
-    vagrant ssh prod -c "/opentrons-emulation/scripts/run_emulation.sh --prod --headless"
+}
+
+_bring_up_prod_emulator() {
+  vagrant ssh prod -c "/opentrons-emulation/scripts/run_emulation.sh --prod --headless"
 }
 
 _bring_up_dev_vm() {
     _check_for_vagrantfile
     vagrant destroy dev -f
     vagrant up dev
-    vagrant ssh dev -c "/opentrons-emulation/scripts/run_emulation.sh --dev --headless"
+}
+
+_bring_up_dev_emulator() {
+  vagrant ssh dev -c "/opentrons-emulation/scripts/run_emulation.sh --dev --headless"
 }
 
 ###############################################################################
@@ -150,11 +156,17 @@ _main() {
       printf "Vagrant already installed. Skipping installation\\n"
     fi
 
-  elif [[ "$1"  = 'prod' ]]; then
+  elif [[ "$1"  = 'prod_vm' ]]; then
     _bring_up_prod_vm
 
-  elif [[ "$1"  = 'dev' ]]; then
+  elif [[ "$1"  = 'dev_vm' ]]; then
     _bring_up_dev_vm
+
+  elif [[ "$1"  = 'prod_em' ]]; then
+    _bring_up_prod_emulator
+
+  elif [[ "$1"  = 'dev_em' ]]; then
+    _bring_up_dev_emulator
 
   elif [[ "$1"  = 'set_default_env' ]]; then
     cp "${_SCRIPT_DIR}/../../.env.vagrant" ${_SCRIPT_DIR}/../../.env
