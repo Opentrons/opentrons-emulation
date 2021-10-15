@@ -2,3 +2,4 @@
 ot3-firmware/
 .env
 .vagrant/
+Vagrantfile
