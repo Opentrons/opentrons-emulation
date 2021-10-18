@@ -130,6 +130,11 @@ _bring_up_dev_emulator() {
   vagrant ssh dev -c "/opentrons-emulation/scripts/run_emulation.sh --dev --headless"
 }
 
+_set_default_env() {
+  printf "Copying .env.vagrant to .env"
+  cp "${_SCRIPT_DIR}/../../.env.vagrant" ${_SCRIPT_DIR}/../../.env
+}
+
 ###############################################################################
 # Main
 ###############################################################################
@@ -169,7 +174,7 @@ _main() {
     _bring_up_dev_emulator
 
   elif [[ "$1"  = 'set_default_env' ]]; then
-    cp "${_SCRIPT_DIR}/../../.env.vagrant" ${_SCRIPT_DIR}/../../.env
+    _set_default_env
   fi
 
 
