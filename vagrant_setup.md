@@ -3,6 +3,10 @@
 This document will go through the steps of using Vagrant to set up an Ubuntu Server instance
 in VirtualBox to run the OT-3 Emulator
 
+## Requirments
+
+- [Virtual Box](https://www.virtualbox.org/wiki/Downloads) installed
+
 ## Install Vagrant 
 
 1. Navigate to `scripts/vagrant/` directory
@@ -32,7 +36,7 @@ replace `/your/absolute/path/to/` to absolute paths to each of your source code 
 
 ## Build VM
 
-1. Run either `./run_vagrant.sh prod_vm` or `./run_vagrant.sh prod_dev` to build vm
+1. Run either `./run_vagrant.sh prod_vm` or `./run_vagrant.sh dev_vm` to build vm
 
 ## Start Emulator
 
