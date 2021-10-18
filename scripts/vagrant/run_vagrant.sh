@@ -175,6 +175,10 @@ _main() {
 
   elif [[ "$1"  = 'set_default_env' ]]; then
     _set_default_env
+
+  else
+    _print_help
+    exit 1
   fi
 
 
