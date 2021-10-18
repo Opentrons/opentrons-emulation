@@ -11,12 +11,12 @@ in VirtualBox to run the OT-3 Emulator
 
 1. Navigate to `scripts/vagrant/` directory
 2. Run `./run_vagrant.sh install` to install Vagrant
-3. Verify that a `Vagrantfile` was created in the `vagrant` directory
+3. Verify that a `Vagrantfile` was created in the `scripts/vagrant/` directory
    1. If not, copy and paste `sample.Vagrantfile` as `Vagrantfile` 
 
 ## Configuring Vagrantfile
 
-1. Open `Vagrantfile` in text editor
+1. Open `scripts/vagrant/Vagrantfile` in text editor
 2. Navigate to bottom of file and edit `dev.vm.synced_folder` entries to 
 replace `/your/absolute/path/to/` to absolute paths to each of your source code directories. 
 ```shell
@@ -32,11 +32,11 @@ replace `/your/absolute/path/to/` to absolute paths to each of your source code 
 
 ## Setup .env file
 
-1. Run `./run_vagrant.sh set_default_env` to set up docker-compose .env file for Vagrant
+1. Run `scripts/vagrant/run_vagrant.sh set_default_env` to set up docker-compose .env file for Vagrant
 
 ## Build VM
 
-1. Run either `./run_vagrant.sh prod_vm` or `./run_vagrant.sh dev_vm` to build vm
+1. Run either `scripts/vagrant/run_vagrant.sh prod_vm` or `scripts/vagrant/run_vagrant.sh dev_vm` to build vm
 
 ## Start Emulator
 
@@ -45,4 +45,4 @@ replace `/your/absolute/path/to/` to absolute paths to each of your source code 
 1. Ssh into vm by using `vagrant ssh prod` or `vagrant ssh dev` and follow top level README to run commands
 
 ### Option 2
-1. Run `./run_vagrant.sh prod_em` or `./run_vagrant.sh dev_em`
+1. Run `scripts/vagrant/run_vagrant.sh prod_em` or `scripts/vagrant/run_vagrant.sh dev_em`
