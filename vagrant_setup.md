@@ -42,7 +42,7 @@ replace `/your/absolute/path/to/` to absolute paths to each of your source code 
 
 ### Option 1
 
-1. Ssh into vm by using `vagrant ssh prod` or `vagrant ssh dev` and follow top level README to run commands
+1. Ssh into vm by using `vagrant ssh prod_em` or `vagrant ssh dev_em` and follow top level README to run commands
 
 ### Option 2
 1. Run `scripts/vagrant/run_vagrant.sh prod_em` or `scripts/vagrant/run_vagrant.sh dev_em`

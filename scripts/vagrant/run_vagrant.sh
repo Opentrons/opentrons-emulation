@@ -48,18 +48,14 @@ _warn() {
 
 _print_help() {
   cat <<HEREDOC
-      _                 _
-  ___(_)_ __ ___  _ __ | | ___
- / __| | '_ \` _ \\| '_ \\| |/ _ \\
- \\__ \\ | | | | | | |_) | |  __/
- |___/_|_| |_| |_| .__/|_|\\___|
-                 |_|
 Boilerplate for creating a simple bash script with some basic strictness
 checks and help features.
 Usage:
   ${_ME} install        Install Vagrant
-  ${_ME} prod           Create production VM
-  ${_ME} dev            Create development VM
+  ${_ME} prod_vm        Create production VM
+  ${_ME} prod_em        Bring up emulator on production VM
+  ${_ME} dev_vm         Create development VM
+  ${_ME} dev_em         Bring up emulator on development VM
   ${_ME} -h | --help    Print this help message
 Options:
   -h --help  Show this screen.
