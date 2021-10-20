@@ -1,3 +1,5 @@
 .idea/
 ot3-firmware/
 .env
+scripts/vagrant/.vagrant/
+scripts/vagrant/Vagrantfile
