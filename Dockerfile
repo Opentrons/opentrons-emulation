@@ -51,9 +51,8 @@ ENV OPENTRONS_HARDWARE "heater-shaker"
 # PROD FIRMWARE TARGETS #
 #########################
 # Targets for all prod builds of emulators
-
 FROM ot3-firmware-echo-dev as ot3-firmware-echo
-ARG FIRMWARE_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/ot3-firmware/archive/refs/heads/main.zip"
+ARG FIRMWARE_SOURCE_DOWNLOAD_LOCATION
 ADD $FIRMWARE_SOURCE_DOWNLOAD_LOCATION /ot3-firmware.zip
 RUN (cd / &&  \
     unzip -q ot3-firmware.zip && \
@@ -63,8 +62,9 @@ COPY entrypoint.sh /entrypoint.sh
 RUN /entrypoint.sh build
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
+
 FROM heater-shaker-dev as heater-shaker
-ARG MODULE_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip"
+ARG MODULE_SOURCE_DOWNLOAD_LOCATION
 ADD $MODULE_SOURCE_DOWNLOAD_LOCATION /opentrons-modules.zip
 RUN (cd / &&  \
     unzip -q opentrons-modules.zip && \

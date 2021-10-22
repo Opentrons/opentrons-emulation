@@ -140,8 +140,8 @@ _SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd 
 _COMPOSE_FILE_NAME=
 _DEFAULT_OT3_FIRMWARE_DOWNLOAD_LOCATION="https://github.com/Opentrons/ot3-firmware/archive/refs/heads/main.zip"
 _DEFAULT_MODULES_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip"
-_OT3_FIRMWARE=
-_MODULES=
+_OT3_FIRMWARE=${_DEFAULT_OT3_FIRMWARE_DOWNLOAD_LOCATION}
+_MODULES=${_DEFAULT_MODULES_DOWNLOAD_LOCATION}
 
 # __get_option_value()
 #
@@ -188,18 +188,14 @@ do
       ;;
     --ot3-firmware-sha)
       _FIRMWARE_TEMP_VAL=$(__get_option_value "${__arg}" "${__val:-}")
-      if [[ $_FIRMWARE_TEMP_VAL = "latest" ]]; then
-         _OT3_FIRMWARE=${_DEFAULT_OT3_FIRMWARE_DOWNLOAD_LOCATION}
-      else
+      if ! [[ ${_FIRMWARE_TEMP_VAL} = "latest" ]]; then
         _OT3_FIRMWARE="https://github.com/Opentrons/ot3-firmware/archive/${_FIRMWARE_TEMP_VAL}.zip"
       fi
       shift
       ;;
     --modules-sha)
       _MODULES_TEMP_VAL=$(__get_option_value "${__arg}" "${__val:-}")
-      if [[ $_MODULES_TEMP_VAL = "latest" ]]; then
-        _MODULES=${_DEFAULT_MODULES_DOWNLOAD_LOCATION}
-      else
+      if ! [[ $_MODULES_TEMP_VAL = "latest" ]]; then
         _MODULES="https://github.com/Opentrons/opentrons-modules/archive/${_MODULES_TEMP_VAL}.zip"
       fi
       shift
@@ -313,6 +309,7 @@ _bring_up_docker_containers() {
 _build_system() {
   _COMPOSE_FILE_PATH="${_SCRIPT_DIR}/../${_COMPOSE_FILE_NAME}"
   _construct_build_command
+  _build_docker_images
   _teardown_can_network
   _setup_can_network
   _remove_existing_docker_containers
