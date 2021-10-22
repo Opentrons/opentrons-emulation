@@ -33,7 +33,7 @@ case $FULL_COMMAND in
     ;;
   build-ot3-firmware-echo)
     (
-      cd ot3-firmware && \
+      cd /ot3-firmware && \
       cmake --preset host-gcc10 && \
       cmake --build ./build-host --target can-simulator
     )
