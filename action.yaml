@@ -12,6 +12,7 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - run: cp ../.env.ci ../.env
     - run: ./run_emulation.sh --prod --headless --ot3-firmware-sha ${{ inputs.ot3-firmware-commit-id }} --modules-sha ${{ inputs.modules-commit-id }}
       shell: bash
       working-directory: ${{ github.action_path }}/scripts
