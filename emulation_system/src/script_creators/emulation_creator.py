@@ -1,12 +1,15 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict
+from consts import (
+    PRODUCTION_MODE_NAME,
+    DEVELOPMENT_MODE_NAME
+)
 
 
 class EmulationSubCommands(str, Enum):
-    PROD_MODE = "prod"
-    DEV_MODE = "dev"
+    PROD_MODE = PRODUCTION_MODE_NAME
+    DEV_MODE = DEVELOPMENT_MODE_NAME
 
 
 class EmulationOptions(str, Enum):

@@ -1,5 +1,10 @@
 from __future__ import annotations
 from dataclasses import dataclass
+from consts import (
+    OPENTRONS_MODULES_REPO_DEFAULT_PATH,
+    OT3_FIRMWARE_REPO_DEFAULT_PATH,
+    OPENTRONS_REPO_DEFAULT_PATH
+)
 from enum import Enum
 
 
@@ -16,9 +21,9 @@ class VirtualMachineSubCommandOptions(str, Enum):
 class VMSettingsDefaults(str, Enum):
     PRODUCTION_VM_NAME = "Production VM"
     DEVELOPMENT_VM_NAME = "Development VM"
-    OPENTRONS_MODULES_PATH = "/home/opentrons-modules"
-    OT3_FIRMWARE_PATH = "/home/ot3-firmware"
-    MONOREPO_PATH = "/home/opentrons"
+    OPENTRONS_MODULES_PATH = OPENTRONS_MODULES_REPO_DEFAULT_PATH
+    OT3_FIRMWARE_PATH = OT3_FIRMWARE_REPO_DEFAULT_PATH
+    OPENTRONS_PATH = OPENTRONS_MODULES_PATH
     VM_MEMORY = "4096"
     VM_CPUS = "2"
 
