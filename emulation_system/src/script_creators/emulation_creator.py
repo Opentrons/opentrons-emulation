@@ -14,7 +14,7 @@ class InvalidModeError(ValueError):
     pass
 
 @dataclass
-class EmulationInfo:
+class EmulationCreator:
     PROD_MODE = "prod"
     DEV_MODE = "dev"
 
@@ -24,7 +24,7 @@ class EmulationInfo:
     modules_sha: str = ''
 
     @classmethod
-    def from_cli_input(cls, args) -> EmulationInfo:
+    def from_cli_input(cls, args) -> EmulationCreator:
         return cls(
             mode=args.mode,
             detached=args.detached,
