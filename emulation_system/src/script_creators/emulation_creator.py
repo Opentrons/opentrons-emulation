@@ -1,9 +1,12 @@
 from __future__ import annotations
+
+import subprocess
 from dataclasses import dataclass
 from enum import Enum
 from consts import (
     PRODUCTION_MODE_NAME,
-    DEVELOPMENT_MODE_NAME
+    DEVELOPMENT_MODE_NAME,
+    ROOT_DIR
 )
 
 class EmulationSubCommands(str, Enum):
@@ -50,16 +53,55 @@ class ProdEmulationCreator:
 
 @dataclass
 class DevEmulationCreator:
+
+    OT3_FIRMWARE_DOCKER_ENV_VAR_NAME = "OT3_FIRMWARE_DIRECTORY"
+    MODULES_DOCKER_ENV_VAR_NAME = "OPENTRONS_MODULES_DIRECTORY"
+    OPENTRONS_DOCKER_ENV_VAR_NAME = 'OPENTRONS_DIRECTORY'
+
     detached: bool = False
     ot3_firmware_path: str = ''
     modules_path: str = ''
     opentrons_path: str = ''
 
     @classmethod
-    def from_cli_input(cls, args) -> DevEmulationCreator:
-        return cls(
+    def from_cli_input(cls, args) -> None:
+        obj = cls(
             detached=args.detached,
             ot3_firmware_path=args.ot3_firmware_repo_path,
             modules_path=args.opentrons_modules_repo_path,
             opentrons_path=args.opentrons_repo_path
         )
+        obj.clean()
+        obj.build()
+        obj.run()
+
+    def build(self):
+        cmd = (
+            "COMPOSE_DOCKER_CLI_BUILD=1 "
+            "DOCKER_BUILDKIT=1 "
+            f"{self.OT3_FIRMWARE_DOCKER_ENV_VAR_NAME}={self.ot3_firmware_path} "
+            f"{self.MODULES_DOCKER_ENV_VAR_NAME}={self.modules_path} "
+            f"{self.OPENTRONS_DOCKER_ENV_VAR_NAME}={self.opentrons_path} "
+            "docker-compose "
+            "--verbose "
+            "-f docker-compose-dev.yaml build "
+
+        )
+        subprocess.run(cmd, cwd=ROOT_DIR, shell=True).check_returncode()
+
+    def clean(self):
+        cmd = "docker-compose kill && docker-compose rm -f"
+        subprocess.run(cmd, cwd=ROOT_DIR, shell=True).check_returncode()
+
+    def run(self):
+        cmd = (
+            f"{self.OT3_FIRMWARE_DOCKER_ENV_VAR_NAME}={self.ot3_firmware_path} "
+            f"{self.MODULES_DOCKER_ENV_VAR_NAME}={self.modules_path} "
+            f"{self.OPENTRONS_DOCKER_ENV_VAR_NAME}={self.opentrons_path} "
+            "docker-compose up "
+        )
+
+        if self.detached:
+            cmd += "-d"
+
+        subprocess.run(cmd, cwd=ROOT_DIR, shell=True).check_returncode()
