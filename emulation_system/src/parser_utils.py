@@ -2,7 +2,7 @@ import argparse
 import sys
 
 
-class CLIHelpFormatter(argparse.HelpFormatter):
+class CLIHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
     """
     Corrected _max_action_length for the indenting of subactions
     """
