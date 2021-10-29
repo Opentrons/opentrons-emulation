@@ -1,5 +1,14 @@
+# JetBrains Config
 .idea/
-ot3-firmware/
+
+# .env file that is actually used by the system
 .env
+
+# Vagrant state files
 scripts/vagrant/.vagrant/
+
+# Vagrantfile that is actually used by the system
 scripts/vagrant/Vagrantfile
+
+# Runtime python files
+__pycache__/
