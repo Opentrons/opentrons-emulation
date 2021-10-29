@@ -5,8 +5,6 @@ from enum import Enum
 
 class VirtualMachineSubCommands(str, Enum):
     CREATE = "create"
-    START = "start"
-    STOP = "stop"
     SHELL = "shell"
     REMOVE = "remove"
 
@@ -15,18 +13,31 @@ class VirtualMachineSubCommandOptions(str, Enum):
     MODE = "mode"
 
 
+class VMSettingsDefaults(str, Enum):
+    PRODUCTION_VM_NAME = "Production VM"
+    DEVELOPMENT_VM_NAME = "Development VM"
+    OPENTRONS_MODULES_PATH = "/home/opentrons-modules"
+    OT3_FIRMWARE_PATH = "/home/ot3-firmware"
+    MONOREPO_PATH = "/home/opentrons"
+    VM_MEMORY = "4096"
+    VM_CPUS = "2"
+
+
 class InvalidCommandError(ValueError):
     pass
 
 
 @dataclass
 class VirtualMachineCreator:
+
+    VAGRANTFILE_LOCATION = "resources/vagrant/Vagrantfile"
+    SETTINGS_FILE_LOCATION = "resources/vagrant/settings.json"
+
     command: str
     mode: str
 
-
     @classmethod
-    def from_cli_input(cls, args) -> None:
+    def from_cli_input(cls, args) -> str:
         return cls(
             command=args.vm_command,
             mode=args.mode
@@ -35,8 +46,6 @@ class VirtualMachineCreator:
     def __post_init__(self):
         self.command_mapping = {
             VirtualMachineSubCommands.CREATE.value: self.create,
-            VirtualMachineSubCommands.START.value: self.start,
-            VirtualMachineSubCommands.STOP.value: self.stop,
             VirtualMachineSubCommands.SHELL.value: self.shell,
             VirtualMachineSubCommands.REMOVE.value: self.remove,
         }
@@ -46,20 +55,15 @@ class VirtualMachineCreator:
                 f"\"command\" must be one of the following values: {command_string}"
             )
 
-    def run_command(self):
-        self.command_mapping[self.command]()
+    def run_command(self) -> str:
+        return self.command_mapping[self.command]()
 
-    def create(self):
-        print(f"Creating {self.mode}")
+    def create(self) -> str:
+        return f"vagrant up {self.mode}"
 
-    def start(self):
-        print(f"Starting {self.mode}")
+    def shell(self) -> str:
+        return f"vagrant ssh {self.mode}"
 
-    def stop(self):
-        print(f"Stopping {self.mode}")
+    def remove(self) -> str:
+        return f"vagrant destroy {self.mode}"
 
-    def shell(self):
-        print(f"Shelling {self.mode}")
-
-    def remove(self):
-        print(f"Removing {self.mode}")
