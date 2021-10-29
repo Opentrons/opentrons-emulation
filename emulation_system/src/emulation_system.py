@@ -1,6 +1,6 @@
 import argparse
 from textwrap import dedent
-from emulation_creator import EmulationOptions, EmulationInfo
+from script_creators.emulation_creator import EmulationOptions, EmulationCreator
 from parser_utils import ParserWithError, get_formatter
 
 
@@ -40,7 +40,7 @@ class CLI:
             formatter_class=get_formatter(),
 
         )
-        emulation_parser.set_defaults(func=EmulationInfo.from_cli_input)
+        emulation_parser.set_defaults(func=EmulationCreator.from_cli_input)
         emulation_parser.add_argument(
             EmulationOptions.MODE.value,
             action="store",
