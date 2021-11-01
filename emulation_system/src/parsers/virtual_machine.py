@@ -1,10 +1,10 @@
 import argparse
-from parser_utils import ParserWithError, get_formatter
+from parser_utils import get_formatter
 from command_creators.virtual_machine_creator import \
     VirtualMachineCreator, VirtualMachineSubCommandOptions, VirtualMachineSubCommands
 
 
-def virtual_machine_parser(parser: ParserWithError) -> None:
+def virtual_machine_parser(parser: argparse.ArgumentParser) -> None:
     subparser = parser.add_parser(
         'virtual-machine',
         aliases=['vm'],
