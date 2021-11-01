@@ -77,15 +77,11 @@ class DevEmulationCreator:
 
     def build(self):
         cmd = (
-            "COMPOSE_DOCKER_CLI_BUILD=1 "
-            "DOCKER_BUILDKIT=1 "
+            "COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 "
             f"{self.OT3_FIRMWARE_DOCKER_ENV_VAR_NAME}={self.ot3_firmware_path} "
             f"{self.MODULES_DOCKER_ENV_VAR_NAME}={self.modules_path} "
             f"{self.OPENTRONS_DOCKER_ENV_VAR_NAME}={self.opentrons_path} "
-            "docker-compose "
-            "--verbose "
-            "-f docker-compose-dev.yaml build "
-
+            "docker-compose --verbose -f docker-compose-dev.yaml build"
         )
         subprocess.run(cmd, cwd=ROOT_DIR, shell=True).check_returncode()
 

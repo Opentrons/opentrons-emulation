@@ -12,7 +12,7 @@ SUBPARSER_FUNCTIONS = [
 
 def main_parser() -> ParserWithError:
     parser = ParserWithError(
-        description="Utility for managing Opentrons Emulation system",
+        description="Utility for managing Opentrons Emulation systems",
         formatter_class=get_formatter(),
         prog="opentrons-emulation"
     )
