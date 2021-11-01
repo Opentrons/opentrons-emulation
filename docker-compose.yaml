@@ -1,14 +1,16 @@
 version: '3.8'
 services:
-  echo-prod:
+  ot3-echo-prod:
+    image: ot3-echo-prod:latest
     build:
       context: .
       target: ot3-firmware-echo
-    container_name: echo-prod
+    container_name: ot3-echo-prod
     network_mode: host
     tty: true
 
   heater-shaker-prod:
+    image: heater-shaker-prod:latest
     build:
       context: .
       target: heater-shaker
