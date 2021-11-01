@@ -7,6 +7,9 @@ from settings_models import ConfigurationSettings
 PRODUCTION_MODE_NAME = 'prod'
 DEVELOPMENT_MODE_NAME = 'dev'
 
+# Latest Git Commit
+LATEST_KEYWORD = "latest"
+
 # Root of repo
 ROOT_DIR = os.path.normpath(
     os.path.join(

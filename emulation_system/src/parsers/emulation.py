@@ -1,6 +1,6 @@
 import argparse
 from parser_utils import get_formatter
-from settings import SETTINGS
+from settings import SETTINGS, LATEST_KEYWORD
 from command_creators.emulation_creator import (
     CommonEmulationOptions,
     ProductionEmulationOptions,
@@ -9,8 +9,6 @@ from command_creators.emulation_creator import (
     ProdEmulationCreator,
     DevEmulationCreator
 )
-
-
 
 class EmulationParser:
 
@@ -48,19 +46,22 @@ class EmulationParser:
             f"--{ProductionEmulationOptions.OT3_FIRMWARE_SHA.value}",
             action="store",
             help="Commit ID to download from ot3-firmware repo",
-            metavar="<commit-sha>"
+            metavar="<commit-sha>",
+            default=LATEST_KEYWORD
         )
         prod_parser.add_argument(
             f'--{ProductionEmulationOptions.MODULES_SHA.value}',
             action="store",
             help="Commit ID to download from opentrons-modules repo",
-            metavar="<commit-sha>"
+            metavar="<commit-sha>",
+            default=LATEST_KEYWORD
         )
         prod_parser.add_argument(
             f'--{ProductionEmulationOptions.MONOREPO_SHA.value}',
             action="store",
             help="Commit ID to download from opentrons repo",
-            metavar="<commit-sha>"
+            metavar="<commit-sha>",
+            default=LATEST_KEYWORD
         )
 
         dev_parser = sub_subparser.add_parser(

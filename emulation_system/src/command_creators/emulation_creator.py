@@ -1,7 +1,9 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
-from settings import PRODUCTION_MODE_NAME, DEVELOPMENT_MODE_NAME
+from settings import (
+    PRODUCTION_MODE_NAME, DEVELOPMENT_MODE_NAME, LATEST_KEYWORD, SETTINGS
+)
 from command_creators.command import CommandList, Command
 from command_creators.command_creator import CommandCreator
 
@@ -44,15 +46,32 @@ class ProdEmulationCreator:
     modules_sha: str = ''
     opentrons_sha: str = ''
 
+    OT3_FIRMWARE_DOCKER_BUILD_ARG_NAME = "FIRMWARE_SOURCE_DOWNLOAD_LOCATION"
+    OT3_FIRMWARE_DOWNLOAD_URL = "FIRMWARE_SOURCE_DOWNLOAD_LOCATION"
+
+    MODULES_DOCKER_BUILD_ARG_NAME = "MODULE_SOURCE_DOWNLOAD_LOCATION"
+    OPENTRONS_DOCKER_BUILD_ARG_NAME = "OPENTRONS_SOURCE_DOWNLOAD_LOCATION"
+
     @classmethod
     def from_cli_input(cls, args) -> ProdEmulationCreator:
+        print(args)
         return cls(
             detached=args.detached,
-            ot3_firmware_sha=args.ot3_firmware_repo_sha,
-            modules_sha=args.opentrons_modules_repo_sha,
-            opentrons_sha=args.opentrons_repo_sha
+            ot3_firmware_sha=cls._parse_download_location('ot3_firmware', args.ot3_firmware_repo_sha),
+            modules_sha=cls._parse_download_location('modules', args.opentrons_modules_repo_sha),
+            opentrons_sha=cls._parse_download_location('opentrons', args.opentrons_repo_sha)
         )
 
+    @staticmethod
+    def _parse_download_location(key, location):
+        download_locations = SETTINGS.emulation_settings.source_download_locations
+        if location == LATEST_KEYWORD:
+            download_location = download_locations.heads.__getattribute__(key)
+        else:
+            download_location = download_locations.commits.__getattribute__(
+                key
+            ).replace("{{commit-sha}}", location)
+        return download_location
 
 @dataclass
 class DevEmulationCreator(CommandCreator):

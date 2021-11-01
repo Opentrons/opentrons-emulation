@@ -47,9 +47,9 @@ class VirtualMachineSettings(BaseModel):
 
 class ConfigurationSettings(BaseModel):
     global_settings: GlobalSettings = Field(..., alias='global-settings')
-    emulation: EmulationSettings = Field(..., alias="emulation-settings")
-    virtual_machine: VirtualMachineSettings = Field(..., alias='virtual-machine-settings')
-    aws_ecr: Dict[str, Any] = Field(..., alias='aws-ecr-settings')
+    emulation_settings: EmulationSettings = Field(..., alias="emulation-settings")
+    virtual_machine_settings: VirtualMachineSettings = Field(..., alias='virtual-machine-settings')
+    aws_ecr_settings: Dict[str, Any] = Field(..., alias='aws-ecr-settings')
 
     @classmethod
     def from_file_path(cls, json_file_path: str) -> ConfigurationSettings:
