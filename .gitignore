@@ -14,3 +14,6 @@ pyproject.toml
 
 # Runtime python files
 __pycache__/
+
+# Configuration File
+configuration.json

@@ -6,8 +6,10 @@ name = "pypi"
 [packages]
 emulation-system = {editable = true, path = "."}
 
+
 [dev-packages]
 pytest = "6.2.5"
+pydantic = "1.8.2"
 
 [requires]
 python_version = "3.7"

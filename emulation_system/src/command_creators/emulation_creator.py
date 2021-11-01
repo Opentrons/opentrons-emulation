@@ -1,7 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
-from consts import PRODUCTION_MODE_NAME, DEVELOPMENT_MODE_NAME
+from settings import PRODUCTION_MODE_NAME, DEVELOPMENT_MODE_NAME
 from command_creators.command import CommandList, Command
 from command_creators.command_creator import CommandCreator
 

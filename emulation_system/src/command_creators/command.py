@@ -1,7 +1,7 @@
 import subprocess
 from dataclasses import dataclass
 from typing import List
-from consts import ROOT_DIR
+from settings import ROOT_DIR
 
 
 class CommandExecutionError(ValueError):
