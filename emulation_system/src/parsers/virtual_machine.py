@@ -1,6 +1,6 @@
 import argparse
 from parser_utils import ParserWithError, get_formatter
-from script_creators.virtual_machine_creator import \
+from command_creators.virtual_machine_creator import \
     VirtualMachineCreator, VirtualMachineSubCommandOptions, VirtualMachineSubCommands
 
 

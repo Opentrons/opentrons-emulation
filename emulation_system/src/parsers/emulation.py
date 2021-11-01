@@ -1,6 +1,6 @@
 import argparse
 from parser_utils import ParserWithError, get_formatter
-from script_creators.emulation_creator import (
+from command_creators.emulation_creator import (
     CommonEmulationOptions,
     ProductionEmulationOptions,
     DevelopmentEmulationOptions,
