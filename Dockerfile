@@ -132,11 +132,11 @@ COPY entrypoint.sh /entrypoint.sh
 # The Exectuable Builder should build the executable file and the Production Target should copy over to itself
 # Building separately from the Production Target to reduce image size
 
-FROM ot3-firmware-builder as ot3-echo-builder
+FROM ot3-firmware-source as ot3-echo-builder
 ENV OPENTRONS_HARDWARE "ot3-firmware-echo"
 RUN /entrypoint.sh build
 
-FROM modules-builder as heater-shaker-builder
+FROM opentrons-modules-source as heater-shaker-builder
 ENV OPENTRONS_HARDWARE "heater-shaker"
 RUN /entrypoint.sh build
 
