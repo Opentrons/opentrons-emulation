@@ -1,3 +1,5 @@
+import argparse
+
 from parser_utils import ParserWithError, get_formatter
 from parsers.emulation import emulation_parser
 from parsers.repo import repo_parser
@@ -10,8 +12,8 @@ SUBPARSER_FUNCTIONS = [
     repo_parser
 ]
 
-def main_parser() -> ParserWithError:
-    parser = ParserWithError(
+def top_level_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
         description="Utility for managing Opentrons Emulation systems",
         formatter_class=get_formatter(),
         prog="opentrons-emulation"

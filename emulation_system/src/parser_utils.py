@@ -29,13 +29,5 @@ class CLIHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
             self._add_item(self._format_action, [action])
 
 
-class ParserWithError(argparse.ArgumentParser):
-    pass
-    def error(self, message):
-        sys.stderr.write('error: %s\n\n' % message)
-        self.print_help()
-        sys.exit(2)
-
-
 def get_formatter():
     return lambda prog: CLIHelpFormatter(prog, max_help_position=100, width=200)
