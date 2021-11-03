@@ -43,6 +43,14 @@ class TopLevelParser:
 
         return ConfigurationSettings.from_file_path(file_path)
 
-    def parse(self) -> CommandList:
-        args = self._parser.parse_args(sys.argv[1:])
+    def parse(self, passed_args=[]) -> CommandList:
+        if len(passed_args) == 0:
+            parsed_args = self._parser.parse_args(sys.argv[1:])
+        else:
+            parsed_args = self._parser.parse_args(passed_args)
+
+        return parsed_args
+
+    def parse_to_commands(self, passed_args=[]):
+        args = self.parse(passed_args)
         return args.func(args, self._settings).get_commands()
