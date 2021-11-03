@@ -1,6 +1,8 @@
 import argparse
 from parser_utils import get_formatter
-from settings import SETTINGS, LATEST_KEYWORD
+from parsers.abstract_parser import AbstractParser
+from settings import LATEST_KEYWORD
+from settings_models import ConfigurationSettings
 from command_creators.emulation_creator import (
     CommonEmulationOptions,
     ProductionEmulationOptions,
@@ -10,10 +12,12 @@ from command_creators.emulation_creator import (
     DevEmulationCreator
 )
 
-class EmulationParser:
 
+class EmulationParser(AbstractParser):
     @classmethod
-    def get_parser(cls, parser: argparse.ArgumentParser) -> None:
+    def get_parser(
+            cls, parser: argparse.ArgumentParser, settings: ConfigurationSettings
+    ) -> None:
         em_parser = parser.add_parser(
             'emulator',
             aliases=['em'],
@@ -29,7 +33,7 @@ class EmulationParser:
         common_parser = argparse.ArgumentParser()
 
         common_parser.add_argument(
-            f"--{CommonEmulationOptions.DETACHED.value}",
+            f"{CommonEmulationOptions.DETACHED.value}",
             action="store_true",
             help="Release stdout after emulation system creation"
         )
@@ -43,21 +47,21 @@ class EmulationParser:
         )
         prod_parser.set_defaults(func=ProdEmulationCreator.from_cli_input)
         prod_parser.add_argument(
-            f"--{ProductionEmulationOptions.OT3_FIRMWARE_SHA.value}",
+            f"{ProductionEmulationOptions.OT3_FIRMWARE_SHA.value}",
             action="store",
             help="Commit ID to download from ot3-firmware repo",
             metavar="<commit-sha>",
             default=LATEST_KEYWORD
         )
         prod_parser.add_argument(
-            f'--{ProductionEmulationOptions.MODULES_SHA.value}',
+            f'{ProductionEmulationOptions.MODULES_SHA.value}',
             action="store",
             help="Commit ID to download from opentrons-modules repo",
             metavar="<commit-sha>",
             default=LATEST_KEYWORD
         )
         prod_parser.add_argument(
-            f'--{ProductionEmulationOptions.MONOREPO_SHA.value}',
+            f'{ProductionEmulationOptions.MONOREPO_SHA.value}',
             action="store",
             help="Commit ID to download from opentrons repo",
             metavar="<commit-sha>",
@@ -75,18 +79,18 @@ class EmulationParser:
         dev_parser.add_argument(
             DevelopmentEmulationOptions.MODULES_PATH.value,
             help="Path to opentrons-modules repo source code",
-            default=SETTINGS.global_settings.default_folder_paths.modules,
+            default=settings.global_settings.default_folder_paths.modules,
             metavar="<absolute_path>"
         )
         dev_parser.add_argument(
             DevelopmentEmulationOptions.OT3_FIRMWARE_PATH.value,
             help="Path to ot3-firmware repo source code",
-            default=SETTINGS.global_settings.default_folder_paths.ot3_firmware,
+            default=settings.global_settings.default_folder_paths.ot3_firmware,
             metavar="<absolute_path>"
         )
         dev_parser.add_argument(
             DevelopmentEmulationOptions.OPENTRONS_REPO.value,
             help="Path to opentrons repo source code",
-            default=SETTINGS.global_settings.default_folder_paths.opentrons,
+            default=settings.global_settings.default_folder_paths.opentrons,
             metavar="<absolute_path>"
         )

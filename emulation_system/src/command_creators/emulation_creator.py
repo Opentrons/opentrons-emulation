@@ -17,14 +17,14 @@ class EmulationSubCommands(str, Enum):
 
 class CommonEmulationOptions(str, Enum):
     """Options shared by all sub-commands"""
-    DETACHED = "detached"
+    DETACHED = "--detached"
 
 
 class ProductionEmulationOptions(str, Enum):
     """Options specific to `prod` sub-command"""
-    OT3_FIRMWARE_SHA = 'ot3-firmware-repo-sha'
-    MODULES_SHA = 'opentrons-modules-repo-sha'
-    MONOREPO_SHA = 'opentrons-repo-sha'
+    OT3_FIRMWARE_SHA = '--ot3-firmware-repo-sha'
+    MODULES_SHA = '--opentrons-modules-repo-sha'
+    MONOREPO_SHA = '--opentrons-repo-sha'
 
 
 class DevelopmentEmulationOptions(str, Enum):
