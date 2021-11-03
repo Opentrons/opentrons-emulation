@@ -4,10 +4,11 @@ from typing import Any, Dict
 
 from pydantic import BaseModel, Field, parse_obj_as
 
+OT3_FIRMWARE_ALIAS = "ot3-firmware"
 
 class DefaultFolderPaths(BaseModel):
     opentrons: str
-    ot3_firmware: str = Field(..., alias='ot3-firmware')
+    ot3_firmware: str = Field(..., alias=OT3_FIRMWARE_ALIAS)
     modules: str
 
 
@@ -17,13 +18,13 @@ class GlobalSettings(BaseModel):
 
 class Heads(BaseModel):
     opentrons: str
-    ot3_firmware: str = Field(..., alias='ot3-firmware')
+    ot3_firmware: str = Field(..., alias=OT3_FIRMWARE_ALIAS)
     modules: str
 
 
 class Commits(BaseModel):
     opentrons: str
-    ot3_firmware: str = Field(..., alias='ot3-firmware')
+    ot3_firmware: str = Field(..., alias=OT3_FIRMWARE_ALIAS)
     modules: str
 
 
