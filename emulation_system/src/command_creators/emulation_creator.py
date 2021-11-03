@@ -5,7 +5,8 @@ from settings import (
     PRODUCTION_MODE_NAME, DEVELOPMENT_MODE_NAME, LATEST_KEYWORD, SETTINGS
 )
 from command_creators.command import CommandList, Command
-from command_creators.command_creator import CommandCreator
+from command_creators.abstract_command_creator import AbstractCommandCreator
+from settings_models import ConfigurationSettings
 
 
 class EmulationSubCommands(str, Enum):
@@ -42,29 +43,31 @@ class InvalidModeError(ValueError):
 @dataclass
 class ProdEmulationCreator:
     detached: bool = False
-    ot3_firmware_sha: str = ''
-    modules_sha: str = ''
-    opentrons_sha: str = ''
+    ot3_firmware_download_location: str = ''
+    modules_download_location: str = ''
+    opentrons_download_location: str = ''
 
     OT3_FIRMWARE_DOCKER_BUILD_ARG_NAME = "FIRMWARE_SOURCE_DOWNLOAD_LOCATION"
-    OT3_FIRMWARE_DOWNLOAD_URL = "FIRMWARE_SOURCE_DOWNLOAD_LOCATION"
-
     MODULES_DOCKER_BUILD_ARG_NAME = "MODULE_SOURCE_DOWNLOAD_LOCATION"
     OPENTRONS_DOCKER_BUILD_ARG_NAME = "OPENTRONS_SOURCE_DOWNLOAD_LOCATION"
 
+
+
     @classmethod
-    def from_cli_input(cls, args) -> ProdEmulationCreator:
-        print(args)
+    def from_cli_input(
+            cls, args, settings: ConfigurationSettings
+    ) -> ProdEmulationCreator:
+        download_locations = settings.emulation_settings.source_download_locations
         return cls(
             detached=args.detached,
-            ot3_firmware_sha=cls._parse_download_location('ot3_firmware', args.ot3_firmware_repo_sha),
-            modules_sha=cls._parse_download_location('modules', args.opentrons_modules_repo_sha),
-            opentrons_sha=cls._parse_download_location('opentrons', args.opentrons_repo_sha)
+            ot3_firmware_download_location=cls._parse_download_location('ot3_firmware', args.ot3_firmware_repo_sha, download_locations),
+            modules_download_location=cls._parse_download_location('modules', args.opentrons_modules_repo_sha, download_locations),
+            opentrons_download_location=cls._parse_download_location('opentrons', args.opentrons_repo_sha, download_locations)
         )
 
     @staticmethod
-    def _parse_download_location(key, location):
-        download_locations = SETTINGS.emulation_settings.source_download_locations
+    def _parse_download_location(key, location, download_locations):
+        """Parse download location from passed `location` parameter."""
         if location == LATEST_KEYWORD:
             download_location = download_locations.heads.__getattribute__(key)
         else:
@@ -74,7 +77,7 @@ class ProdEmulationCreator:
         return download_location
 
 @dataclass
-class DevEmulationCreator(CommandCreator):
+class DevEmulationCreator(AbstractCommandCreator):
     """Command creator for `dev` sub-command of `emulation` command.
     Supports `build`, `clean`, and `run` commands"""
 
@@ -92,7 +95,7 @@ class DevEmulationCreator(CommandCreator):
     opentrons_path: str = ''
 
     @classmethod
-    def from_cli_input(cls, args) -> CommandList:
+    def from_cli_input(cls, args) -> DevEmulationCreator:
         """Parse input from CLI into a runnable command"""
         return cls(
             detached=args.detached,

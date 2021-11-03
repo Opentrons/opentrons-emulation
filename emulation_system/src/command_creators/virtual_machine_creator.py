@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from enum import Enum
 from settings import SETTINGS
 
+from settings import DEFAULT_CONFIGURATION_FILE_PATH
+from settings_models import ConfigurationSettings
 
 class VirtualMachineSubCommands(str, Enum):
     CREATE = "create"
@@ -38,11 +40,11 @@ class VirtualMachineCreator:
     mode: str
 
     @classmethod
-    def from_cli_input(cls, args) -> str:
+    def from_cli_input(cls, args) -> VirtualMachineCreator:
         return cls(
             command=args.vm_command,
             mode=args.mode
-        ).run_command()
+        )
 
     def __post_init__(self):
         self.command_mapping = {
