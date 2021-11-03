@@ -96,6 +96,7 @@ RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.2
 # TODO: python-emulators-source
 #  * Will be based off of python-base
 #  * Will contain opentrons source and entrypoint.sh
+#  * Use OPENTRONS_SOURCE_DOWNLOAD_LOCATION for build arg
 
 #######################
 # ot3-firmware-source #
