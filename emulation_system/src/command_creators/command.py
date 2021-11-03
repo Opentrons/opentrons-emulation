@@ -22,15 +22,13 @@ class Command:
                 check=True,
                 shell=True,
                 cwd=ROOT_DIR,
-                capture_output=True
             )
         except subprocess.CalledProcessError as err:
             raise CommandExecutionError(err.stderr)
         else:
             return CommandOutput(
                 command_name=self.command_name,
-                command=command_output.args,
-                output=command_output.stdout.decode("utf-8").strip()
+                command=command_output.args
             )
 
 
@@ -39,7 +37,7 @@ class CommandOutput:
     """Output from command run by subprocess"""
     command_name: str
     command: str
-    output: str
+    # output: str
 
 
 @dataclass
