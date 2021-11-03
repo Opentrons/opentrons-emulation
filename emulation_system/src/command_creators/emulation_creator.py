@@ -40,8 +40,23 @@ class InvalidModeError(ValueError):
     pass
 
 
+class EmulationCreatorMixin:
+
+    BUILD_COMMAND_NAME = "Build Emulation"
+    CLEAN_COMMAND_NAME = "Clean Emulation"
+    RUN_COMMAND_NAME = "Run Emulation"
+
+    def clean(self):
+        """Kill and remove any existing dev containers"""
+        cmd = (
+            f"docker-compose -f {self.compose_file_name} kill "
+            f"&& docker-compose -f {self.compose_file_name} rm -f"
+        )
+        return Command(self.CLEAN_COMMAND_NAME, cmd)
+
+
 @dataclass
-class ProdEmulationCreator:
+class ProdEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
     detached: bool = False
     ot3_firmware_download_location: str = ''
     modules_download_location: str = ''
@@ -51,7 +66,9 @@ class ProdEmulationCreator:
     MODULES_DOCKER_BUILD_ARG_NAME = "MODULE_SOURCE_DOWNLOAD_LOCATION"
     OPENTRONS_DOCKER_BUILD_ARG_NAME = "OPENTRONS_SOURCE_DOWNLOAD_LOCATION"
 
-
+    @property
+    def compose_file_name(self) -> str:
+        return 'docker-compose.yaml'
 
     @classmethod
     def from_cli_input(
@@ -60,9 +77,21 @@ class ProdEmulationCreator:
         download_locations = settings.emulation_settings.source_download_locations
         return cls(
             detached=args.detached,
-            ot3_firmware_download_location=cls._parse_download_location('ot3_firmware', args.ot3_firmware_repo_sha, download_locations),
-            modules_download_location=cls._parse_download_location('modules', args.opentrons_modules_repo_sha, download_locations),
-            opentrons_download_location=cls._parse_download_location('opentrons', args.opentrons_repo_sha, download_locations)
+            ot3_firmware_download_location=cls._parse_download_location(
+                'ot3_firmware',
+                args.ot3_firmware_repo_sha,
+                download_locations
+            ),
+            modules_download_location=cls._parse_download_location(
+                'modules',
+                args.opentrons_modules_repo_sha,
+                download_locations
+            ),
+            opentrons_download_location=cls._parse_download_location(
+                'opentrons',
+                args.opentrons_repo_sha,
+                download_locations
+            )
         )
 
     @staticmethod
@@ -76,8 +105,37 @@ class ProdEmulationCreator:
             ).replace("{{commit-sha}}", location)
         return download_location
 
+    def build(self):
+        cmd = (
+            "COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 "
+            f"docker-compose -f {self.compose_file_name} build "
+            f"--build-arg {self.OT3_FIRMWARE_DOCKER_BUILD_ARG_NAME}={self.ot3_firmware_download_location} "
+            f"--build-arg {self.MODULES_DOCKER_BUILD_ARG_NAME}={self.modules_download_location} "
+            f"--build-arg {self.OPENTRONS_DOCKER_BUILD_ARG_NAME}={self.opentrons_download_location} "
+        )
+
+        return Command(self.BUILD_COMMAND_NAME, cmd)
+
+    def run(self):
+        cmd = f"docker-compose -f {self.compose_file_name} up "
+
+        if self.detached:
+            cmd += "-d"
+
+        return Command(self.CLEAN_COMMAND_NAME, cmd)
+
+    def get_commands(self) -> CommandList:
+        return CommandList(
+            [
+                self.clean(),
+                self.build(),
+                self.run(),
+            ]
+        )
+
+
 @dataclass
-class DevEmulationCreator(AbstractCommandCreator):
+class DevEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
     """Command creator for `dev` sub-command of `emulation` command.
     Supports `build`, `clean`, and `run` commands"""
 
@@ -85,17 +143,19 @@ class DevEmulationCreator(AbstractCommandCreator):
     MODULES_DOCKER_ENV_VAR_NAME = "OPENTRONS_MODULES_DIRECTORY"
     OPENTRONS_DOCKER_ENV_VAR_NAME = 'OPENTRONS_DIRECTORY'
 
-    BUILD_COMMAND_NAME = "Build Emulation"
-    CLEAN_COMMAND_NAME = "Clean Emulation"
-    RUN_COMMAND_NAME = "Run Emulation"
-
     detached: bool = False
     ot3_firmware_path: str = ''
     modules_path: str = ''
     opentrons_path: str = ''
 
+    @property
+    def compose_file_name(self) -> str:
+        return 'docker-compose-dev.yaml'
+
     @classmethod
-    def from_cli_input(cls, args) -> DevEmulationCreator:
+    def from_cli_input(
+            cls, args, settings: ConfigurationSettings
+    ) -> DevEmulationCreator:
         """Parse input from CLI into a runnable command"""
         return cls(
             detached=args.detached,
@@ -103,7 +163,6 @@ class DevEmulationCreator(AbstractCommandCreator):
             modules_path=args.opentrons_modules_repo_path,
             opentrons_path=args.opentrons_repo_path
         )
-
 
     def build(self) -> Command:
         """Build dev images with Docker Buildkit.
@@ -114,14 +173,9 @@ class DevEmulationCreator(AbstractCommandCreator):
             f"{self.OT3_FIRMWARE_DOCKER_ENV_VAR_NAME}={self.ot3_firmware_path} "
             f"{self.MODULES_DOCKER_ENV_VAR_NAME}={self.modules_path} "
             f"{self.OPENTRONS_DOCKER_ENV_VAR_NAME}={self.opentrons_path} "
-            "docker-compose --verbose -f docker-compose-dev.yaml build"
+            f"docker-compose --verbose -f {self.compose_file_name} build"
         )
         return Command(self.BUILD_COMMAND_NAME, cmd)
-
-    def clean(self):
-        """Kill and remove any existing dev containers"""
-        cmd = "docker-compose kill && docker-compose rm -f"
-        return Command(self.CLEAN_COMMAND_NAME, cmd)
 
     def run(self):
         """Start containers"""
@@ -129,7 +183,7 @@ class DevEmulationCreator(AbstractCommandCreator):
             f"{self.OT3_FIRMWARE_DOCKER_ENV_VAR_NAME}={self.ot3_firmware_path} "
             f"{self.MODULES_DOCKER_ENV_VAR_NAME}={self.modules_path} "
             f"{self.OPENTRONS_DOCKER_ENV_VAR_NAME}={self.opentrons_path} "
-            "docker-compose up "
+            f"docker-compose -f {self.compose_file_name} up "
         )
 
         if self.detached:
@@ -145,3 +199,4 @@ class DevEmulationCreator(AbstractCommandCreator):
                 self.run(),
             ]
         )
+

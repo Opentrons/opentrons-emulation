@@ -6,7 +6,9 @@ from settings_models import ConfigurationSettings
 
 class AbstractCommandCreator(abc.ABC):
     """Interface for AbstractCommandCreator classes"""
+
     @classmethod
+    @abc.abstractmethod
     def from_cli_input(
             cls, args, settings: ConfigurationSettings
     ) -> AbstractCommandCreator:
@@ -14,4 +16,9 @@ class AbstractCommandCreator(abc.ABC):
 
     @abc.abstractmethod
     def get_commands(self) -> CommandList:
+        ...
+
+    @property
+    @abc.abstractmethod
+    def compose_file_name(self) -> str:
         ...
