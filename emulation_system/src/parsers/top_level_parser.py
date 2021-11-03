@@ -1,6 +1,8 @@
 import argparse
 import os
 import sys
+
+from command_creators.command import CommandList
 from parser_utils import get_formatter
 from parsers.emulation_parser import EmulationParser
 from parsers.repo_parser import RepoParser
@@ -22,7 +24,7 @@ class TopLevelParser:
         self._parser = argparse.ArgumentParser(
             description="Utility for managing Opentrons Emulation systems",
             formatter_class=get_formatter(),
-            prog="opentrons-emulation"
+            prog="opentrons-emulation",
         )
 
         subparsers = self._parser.add_subparsers(
@@ -41,6 +43,6 @@ class TopLevelParser:
 
         return ConfigurationSettings.from_file_path(file_path)
 
-    def parse(self):
+    def parse(self) -> CommandList:
         args = self._parser.parse_args(sys.argv[1:])
-        args.func(args, self._settings)
+        return args.func(args, self._settings).get_commands()
