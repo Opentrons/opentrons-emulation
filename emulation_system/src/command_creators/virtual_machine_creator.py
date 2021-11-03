@@ -1,10 +1,10 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
-from settings import SETTINGS
 
 from settings import DEFAULT_CONFIGURATION_FILE_PATH
 from settings_models import ConfigurationSettings
+
 
 class VirtualMachineSubCommands(str, Enum):
     CREATE = "create"
@@ -14,16 +14,6 @@ class VirtualMachineSubCommands(str, Enum):
 
 class VirtualMachineSubCommandOptions(str, Enum):
     MODE = "mode"
-
-
-class VMSettingsDefaults(str, Enum):
-    PRODUCTION_VM_NAME = "Production VM"
-    DEVELOPMENT_VM_NAME = "Development VM"
-    OPENTRONS_MODULES_PATH = SETTINGS.global_settings.default_folder_paths.modules
-    OT3_FIRMWARE_PATH = SETTINGS.global_settings.default_folder_paths.ot3_firmware
-    OPENTRONS_PATH = SETTINGS.global_settings.default_folder_paths.opentrons
-    VM_MEMORY = "4096"
-    VM_CPUS = "2"
 
 
 class InvalidCommandError(ValueError):

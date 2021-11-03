@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 from settings import (
-    PRODUCTION_MODE_NAME, DEVELOPMENT_MODE_NAME, LATEST_KEYWORD, SETTINGS
+    PRODUCTION_MODE_NAME, DEVELOPMENT_MODE_NAME, LATEST_KEYWORD
 )
 from command_creators.command import CommandList, Command
 from command_creators.abstract_command_creator import AbstractCommandCreator
