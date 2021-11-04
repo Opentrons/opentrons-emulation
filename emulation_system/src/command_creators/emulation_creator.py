@@ -117,12 +117,12 @@ class ProdEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
         return Command(self.BUILD_COMMAND_NAME, cmd)
 
     def run(self):
-        cmd = f"docker-compose -f {self.compose_file_name} up "
+        cmd = f"docker-compose -f {self.compose_file_name} up"
 
         if self.detached:
-            cmd += "-d"
+            cmd += " -d"
 
-        return Command(self.CLEAN_COMMAND_NAME, cmd)
+        return Command(self.RUN_COMMAND_NAME, cmd)
 
     def get_commands(self) -> CommandList:
         return CommandList(
@@ -175,7 +175,7 @@ class DevEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
             f"{self.OT3_FIRMWARE_DOCKER_ENV_VAR_NAME}={self.ot3_firmware_path} "
             f"{self.MODULES_DOCKER_ENV_VAR_NAME}={self.modules_path} "
             f"{self.OPENTRONS_DOCKER_ENV_VAR_NAME}={self.opentrons_path} "
-            f"docker-compose --verbose -f {self.compose_file_name} build"
+            f"docker-compose -f {self.compose_file_name} build"
         )
         return Command(self.BUILD_COMMAND_NAME, cmd)
 
@@ -185,11 +185,11 @@ class DevEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
             f"{self.OT3_FIRMWARE_DOCKER_ENV_VAR_NAME}={self.ot3_firmware_path} "
             f"{self.MODULES_DOCKER_ENV_VAR_NAME}={self.modules_path} "
             f"{self.OPENTRONS_DOCKER_ENV_VAR_NAME}={self.opentrons_path} "
-            f"docker-compose -f {self.compose_file_name} up "
+            f"docker-compose -f {self.compose_file_name} up"
         )
 
         if self.detached:
-            cmd += "-d"
+            cmd += " -d"
 
         return Command(self.RUN_COMMAND_NAME, cmd)
 
