@@ -1,5 +1,7 @@
 from __future__ import annotations
 import abc
+import argparse
+
 from command_creators.command import CommandList
 from settings_models import ConfigurationSettings
 
@@ -10,7 +12,7 @@ class AbstractCommandCreator(abc.ABC):
     @classmethod
     @abc.abstractmethod
     def from_cli_input(
-            cls, args, settings: ConfigurationSettings
+            cls, args: argparse.Namespace, settings: ConfigurationSettings
     ) -> AbstractCommandCreator:
         ...
 
@@ -18,7 +20,3 @@ class AbstractCommandCreator(abc.ABC):
     def get_commands(self) -> CommandList:
         ...
 
-    @property
-    @abc.abstractmethod
-    def compose_file_name(self) -> str:
-        ...
