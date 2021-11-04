@@ -2,11 +2,18 @@ from typing import List
 
 import pytest
 import os.path
+
+from command_creators.command import CommandList, Command
 from emulation_system.src.parsers.top_level_parser import TopLevelParser
 from emulation_system.src.settings_models import (
     ConfigurationSettings, DefaultFolderPaths
 )
 from emulation_system.src.settings import CONFIGURATION_FILE_LOCATION_VAR_NAME
+from emulation_system.src.command_creators.emulation_creator import (
+    EmulationCreatorMixin,
+    ProdEmulationCreator,
+    DevEmulationCreator
+)
 
 
 # Pulled from emulation_system/tests/test_configuration.json
@@ -29,6 +36,35 @@ MADE_UP_FIRMWARE_PATH = "/the/force/is/strong/with/this/firmware"
 MADE_UP_MODULES_SHA = "modulessha"
 MADE_UP_OPENTRONS_SHA = "opentrons"
 MADE_UP_FIRMWARE_SHA = "firmwaresha"
+
+BASIC_DEV_CMDS_TO_RUN = CommandList(
+    [
+        Command(
+            EmulationCreatorMixin.CLEAN_COMMAND_NAME,
+            "docker-compose -f docker-compose-dev.yaml kill "
+            "&& docker-compose -f docker-compose-dev.yaml rm -f"
+        ),
+        Command(
+            EmulationCreatorMixin.BUILD_COMMAND_NAME,
+            (
+                "COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 "
+                "OT3_FIRMWARE_DIRECTORY=/home/Documents/repos/ot3-firmware "
+                "OPENTRONS_MODULES_DIRECTORY=/home/Documents/repos/opentrons-modules "
+                "OPENTRONS_DIRECTORY=/home/Documents/repos/opentrons "
+                "docker-compose --verbose -f docker-compose-dev.yaml build"
+            )
+        ),
+        Command(
+            EmulationCreatorMixin.RUN_COMMAND_NAME,
+            (
+                "OT3_FIRMWARE_DIRECTORY=/home/Documents/repos/ot3-firmware "
+                "OPENTRONS_MODULES_DIRECTORY=/home/Documents/repos/opentrons-modules "
+                "OPENTRONS_DIRECTORY=/home/Documents/repos/opentrons "
+                "docker-compose -f docker-compose-dev.yaml up "
+            )
+        )
+    ]
+)
 
 
 @pytest.fixture
@@ -89,42 +125,46 @@ def test_basic_dev_em(
         set_config_file_env_var, default_folder_paths, basic_dev_cmd
 ):
 
-    args = TopLevelParser().parse(basic_dev_cmd)
-    assert args.command == "emulator"
-    assert args.em_command == "dev"
-    assert args.detached is False
-    assert args.opentrons_modules_repo_path == TEST_CONF_MODULES_PATH
-    assert args.opentrons_repo_path == TEST_CONF_OPENTRONS_PATH
-    assert args.ot3_firmware_repo_path == TEST_CONF_FIRMWARE_PATH
+    dev_em_creator = TopLevelParser().parse(basic_dev_cmd)
+    assert dev_em_creator.detached is False
+    assert dev_em_creator.modules_path == TEST_CONF_MODULES_PATH
+    assert dev_em_creator.opentrons_path == TEST_CONF_OPENTRONS_PATH
+    assert dev_em_creator.ot3_firmware_path == TEST_CONF_FIRMWARE_PATH
 
 
-def test_complex_dev(complex_dev_cmd):
-    args = TopLevelParser().parse(complex_dev_cmd)
-    assert args.command == "em"
-    assert args.em_command == "dev"
-    assert args.detached is True
-    assert args.opentrons_modules_repo_path == MADE_UP_MODULES_PATH
-    assert args.opentrons_repo_path == MADE_UP_OPENTRONS_PATH
-    assert args.ot3_firmware_repo_path == MADE_UP_FIRMWARE_PATH
+def test_complex_dev(set_config_file_env_var, complex_dev_cmd):
+    dev_em_creator = TopLevelParser().parse(complex_dev_cmd)
+    assert dev_em_creator.detached is True
+    assert dev_em_creator.modules_path == MADE_UP_MODULES_PATH
+    assert dev_em_creator.opentrons_path == MADE_UP_OPENTRONS_PATH
+    assert dev_em_creator.ot3_firmware_path == MADE_UP_FIRMWARE_PATH
 
 
-def test_basic_prod_em(basic_prod_cmd):
-    args = TopLevelParser().parse(basic_prod_cmd)
-    assert args.command == "emulator"
-    assert args.em_command == "prod"
-    assert args.detached is False
-    assert args.ot3_firmware_repo_sha == "latest"
-    assert args.opentrons_modules_repo_sha == "latest"
-    assert args.opentrons_repo_sha == "latest"
+def test_basic_prod_em(set_config_file_env_var, basic_prod_cmd):
+    prod_em_creator = TopLevelParser().parse(basic_prod_cmd)
+    assert prod_em_creator.detached is False
+    assert prod_em_creator.ot3_firmware_download_location == TEST_CONF_FIRMWARE_HEAD
+    assert prod_em_creator.modules_download_location == TEST_CONF_MODULES_HEAD
+    assert prod_em_creator.opentrons_download_location == TEST_CONF_OPENTRONS_HEAD
 
 
+def test_complex_prod_em(set_config_file_env_var, complex_prod_cmd):
+    prod_em_creator = TopLevelParser().parse(complex_prod_cmd)
+    assert prod_em_creator.detached is False
+    assert prod_em_creator.ot3_firmware_download_location == \
+           TEST_CONF_FIRMWARE_EXPECTED_COMMIT.replace(
+               "{{commit-sha}}", MADE_UP_FIRMWARE_SHA
+           )
+    assert prod_em_creator.modules_download_location == \
+           TEST_CONF_MODULES_EXPECTED_COMMIT.replace(
+               "{{commit-sha}}", MADE_UP_MODULES_SHA
+           )
+    assert prod_em_creator.opentrons_download_location == \
+           TEST_CONF_OPENTRONS_EXPECTED_COMMIT.replace(
+               "{{commit-sha}}", MADE_UP_OPENTRONS_SHA
+           )
 
-def test_complex_prod_em(complex_prod_cmd):
-    args = TopLevelParser().parse(complex_prod_cmd)
-    assert args.command == "emulator"
-    assert args.em_command == "prod"
-    assert args.detached is False
-    assert args.ot3_firmware_repo_sha == MADE_UP_FIRMWARE_SHA
-    assert args.opentrons_modules_repo_sha == MADE_UP_MODULES_SHA
-    assert args.opentrons_repo_sha == MADE_UP_OPENTRONS_SHA
 
+def test_basic_dev_em_commands(set_config_file_env_var, basic_dev_cmd):
+    dev_em_creator = TopLevelParser().parse(basic_dev_cmd)
+    assert dev_em_creator.get_commands() == BASIC_DEV_CMDS_TO_RUN

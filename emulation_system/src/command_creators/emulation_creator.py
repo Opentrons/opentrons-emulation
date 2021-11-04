@@ -168,6 +168,8 @@ class DevEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
         """Build dev images with Docker Buildkit.
         Use inline env vars for source code folders
         """
+        # Need to specify env vars to satisfy docker-compose file even though nothing
+        # is done with the env vars
         cmd = (
             "COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 "
             f"{self.OT3_FIRMWARE_DOCKER_ENV_VAR_NAME}={self.ot3_firmware_path} "

@@ -11,7 +11,7 @@
         "source-download-locations": {
             "heads": {
                 "opentrons": "https://github.com/AnotherOrg/opentrons/archive/refs/heads/edge.zip",
-                "ot3-firmware": "https://github.com/AnotherOrg/ot3-firmware/archive/refs/heads/edge.zip",
+                "ot3-firmware": "https://github.com/AnotherOrg/ot3-firmware/archive/refs/heads/main.zip",
                 "modules": "https://github.com/AnotherOrg/opentrons-modules/archive/refs/heads/edge.zip"
             },
             "commits": {
