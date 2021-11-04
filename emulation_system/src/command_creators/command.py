@@ -14,6 +14,7 @@ class Command:
     """Command to be run by subprocess"""
     command_name: str
     command: str
+    cwd: str = ROOT_DIR
 
     def run_command(self):
         try:
@@ -21,7 +22,7 @@ class Command:
                 self.command,
                 check=True,
                 shell=True,
-                cwd=ROOT_DIR,
+                cwd=self.cwd,
             )
         except subprocess.CalledProcessError as err:
             raise CommandExecutionError(err.stderr)
