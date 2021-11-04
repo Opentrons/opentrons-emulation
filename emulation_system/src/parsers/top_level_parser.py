@@ -3,17 +3,23 @@ import os
 import sys
 
 from command_creators.abstract_command_creator import AbstractCommandCreator
-from command_creators.command import CommandList
 from parser_utils import get_formatter
 from parsers.emulation_parser import EmulationParser
 from parsers.repo_parser import RepoParser
 from parsers.virtual_machine_parser import VirtualMachineParser
-from settings import CONFIGURATION_FILE_LOCATION_VAR_NAME, \
+from settings import (
+    CONFIGURATION_FILE_LOCATION_VAR_NAME,
     DEFAULT_CONFIGURATION_FILE_PATH
+)
 from settings_models import ConfigurationSettings
 
 
 class TopLevelParser:
+    """Top-level parser for emulation cli.
+    All commands should be a subcommand of this parser"""
+
+    # Add subcommand parsers here
+    # Parsers must inherit from emulation_system/src/parsers/abstract_parser.py
     SUBPARSERS = [
         EmulationParser,
         RepoParser,
