@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 
+from command_creators.abstract_command_creator import AbstractCommandCreator
 from command_creators.command import CommandList
 from parser_utils import get_formatter
 from parsers.emulation_parser import EmulationParser
@@ -43,14 +44,10 @@ class TopLevelParser:
 
         return ConfigurationSettings.from_file_path(file_path)
 
-    def parse(self, passed_args=[]) -> CommandList:
+    def parse(self, passed_args=[]) -> AbstractCommandCreator:
         if len(passed_args) == 0:
             parsed_args = self._parser.parse_args(sys.argv[1:])
         else:
             parsed_args = self._parser.parse_args(passed_args)
 
-        return parsed_args
-
-    def parse_to_commands(self, passed_args=[]):
-        args = self.parse(passed_args)
-        return args.func(args, self._settings).get_commands()
+        return parsed_args.func(parsed_args, self._settings)
