@@ -43,7 +43,7 @@ class VirtualMachineSettings(BaseModel):
     dev_vm_name: str = Field(..., alias='dev-vm-name')
     prod_vm_name: str = Field(..., alias='prod-vm-name')
     vm_memory: int = Field(..., alias='vm-memory')
-    vm_cpu: int = Field(..., alias='vm-cpu')
+    vm_cpus: int = Field(..., alias='vm-cpus')
 
 
 class ConfigurationSettings(BaseModel):
