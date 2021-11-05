@@ -55,6 +55,7 @@ class VirtualMachineCreator(AbstractCommandCreator):
 
     command: str
     mode: str
+    dry_run: bool = False
 
     def __post_init__(self):
         self.command_mapping = {
@@ -75,7 +76,8 @@ class VirtualMachineCreator(AbstractCommandCreator):
         cls._create_json_settings_file(settings)
         return cls(
             command=args.vm_command,
-            mode=args.mode
+            mode=args.mode,
+            dry_run=args.dry_run
         )
 
     @classmethod
@@ -99,7 +101,10 @@ class VirtualMachineCreator(AbstractCommandCreator):
         settings_file.close()
 
     def get_commands(self) -> CommandList:
-        return CommandList([self.command_mapping[self.command]()])
+        return CommandList(
+            command_list=[self.command_mapping[self.command]()],
+            dry_run=self.dry_run
+        )
 
     def create(self) -> Command:
         return Command(

@@ -34,6 +34,12 @@ class TopLevelParser:
             prog="opentrons-emulation",
         )
 
+        self._parser.add_argument(
+            "--dry-run",
+            action="store_true",
+            help="Print out commands to be run by system"
+        )
+
         subparsers = self._parser.add_subparsers(
             dest="command", title="subcommands", required=True
         )

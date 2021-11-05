@@ -45,14 +45,23 @@ class CommandOutput:
 class CommandList:
     """List of commands for subprocess to run"""
     command_list: List[Command]
+    dry_run: bool = False
 
     def add_command(self, command: Command):
         self.command_list.append(command)
 
-    def run_commands(self):
-        return [
-            command.run_command()
+    def _generate_dry_run(self) -> str:
+        command_str_list = [
+            f"(cd {command.cwd} && {command.command})"
             for command
             in self.command_list
         ]
+        return '\n'.join(command_str_list)
+
+    def run_commands(self):
+        if self.dry_run:
+            print(self._generate_dry_run())
+        else:
+            for command in self.command_list:
+                command.run_command()
 

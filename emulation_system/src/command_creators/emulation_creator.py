@@ -63,6 +63,7 @@ class ProdEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
     ot3_firmware_download_location: str = ''
     modules_download_location: str = ''
     opentrons_download_location: str = ''
+    dry_run: bool = False
 
     OT3_FIRMWARE_DOCKER_BUILD_ARG_NAME = "FIRMWARE_SOURCE_DOWNLOAD_LOCATION"
     MODULES_DOCKER_BUILD_ARG_NAME = "MODULE_SOURCE_DOWNLOAD_LOCATION"
@@ -95,7 +96,8 @@ class ProdEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
                 'opentrons',
                 args.opentrons_repo_sha,
                 download_locations
-            )
+            ),
+            dry_run=args.dry_run
         )
 
     @staticmethod
@@ -136,11 +138,12 @@ class ProdEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
     def get_commands(self) -> CommandList:
         """Get a list of commands to create emulation"""
         return CommandList(
-            [
+            command_list=[
                 self.clean(),
                 self.build(),
                 self.run(),
-            ]
+            ],
+            dry_run=self.dry_run
         )
 
 
@@ -158,6 +161,7 @@ class DevEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
     ot3_firmware_path: str = ''
     modules_path: str = ''
     opentrons_path: str = ''
+    dry_run: bool = False
 
     @property
     def compose_file_name(self) -> str:
@@ -173,7 +177,8 @@ class DevEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
             detached=args.detached,
             ot3_firmware_path=args.ot3_firmware_repo_path,
             modules_path=args.opentrons_modules_repo_path,
-            opentrons_path=args.opentrons_repo_path
+            opentrons_path=args.opentrons_repo_path,
+            dry_run=args.dry_run
         )
 
     def build(self) -> Command:
@@ -206,10 +211,11 @@ class DevEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
     def get_commands(self) -> CommandList:
         """Get a list of commands to create emulation"""
         return CommandList(
-            [
+            command_list=[
                 self.clean(),
                 self.build(),
                 self.run(),
-            ]
+            ],
+            dry_run=self.dry_run
         )
 
