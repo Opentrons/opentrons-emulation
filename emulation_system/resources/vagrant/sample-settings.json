@@ -1,9 +1,0 @@
-{
-  "PRODUCTION_VM_NAME": "PROD VM",
-  "DEVELOPMENT_VM_NAME": "DEV VM",
-  "OPENTRONS_MODULES_PATH":  "/home/derek-maggio/Documents/repos/opentrons-modules",
-  "OT3_FIRMWARE_PATH": "/home/derek-maggio/Documents/repos/ot3-firmware",
-  "MONOREPO_PATH":  "/home/derek-maggio/Documents/repos/opentrons",
-  "VM_MEMORY": 4096,
-  "VM_CPUS": 2
-}
