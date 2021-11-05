@@ -44,6 +44,7 @@ class VirtualMachineSettings(BaseModel):
     prod_vm_name: str = Field(..., alias='prod-vm-name')
     vm_memory: int = Field(..., alias='vm-memory')
     vm_cpus: int = Field(..., alias='vm-cpus')
+    num_socket_can_networks: int = Field(..., alias="num-socket-can-networks")
 
 
 class ConfigurationSettings(BaseModel):

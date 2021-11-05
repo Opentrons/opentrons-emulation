@@ -35,6 +35,7 @@ class VirtualMachineConfig(pydantic.BaseModel):
     OPENTRONS_MODULES_PATH: str
     OT3_FIRMWARE_PATH: str
     OPENTRONS_PATH: str
+    NUM_SOCKET_CAN_NETWORKS: str
 
 
 @dataclass
@@ -89,7 +90,8 @@ class VirtualMachineCreator(AbstractCommandCreator):
             DEVELOPMENT_VM_NAME=vm_settings.dev_vm_name,
             OPENTRONS_MODULES_PATH=default_folder_paths.modules,
             OT3_FIRMWARE_PATH=default_folder_paths.ot3_firmware,
-            OPENTRONS_PATH=default_folder_paths.opentrons
+            OPENTRONS_PATH=default_folder_paths.opentrons,
+            NUM_SOCKET_CAN_NETWORKS=vm_settings.num_socket_can_networks
         ).json(indent=4)
 
         settings_file = open(cls.SETTINGS_FILE_LOCATION, 'w')

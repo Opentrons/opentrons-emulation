@@ -26,7 +26,8 @@
         "dev-vm-name": "Development VM",
         "prod-vm-name": "Production VM",
         "vm-memory": 4096,
-        "vm-cpus": 2
+        "vm-cpus": 2,
+        "num-socket-can-networks": 1
 
 
     },
