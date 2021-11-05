@@ -25,7 +25,6 @@ def test_good_command(hello_world):
     command_name = "Good Command"
     output = Command(command_name=command_name, command=hello_world).run_command()
     assert output.command_name == command_name
-    assert output.output == "Hello Cruel World"
     assert output.command == hello_world
 
 
@@ -48,9 +47,7 @@ def test_command_list(hello_world, goodbye_world):
     outputs = CommandList([hello_world_cmd, goodbye_world_cmd]).run_commands()
 
     assert outputs[0].command_name == hello_world_command_name
-    assert outputs[0].output == "Hello Cruel World"
     assert outputs[0].command == hello_world
 
     assert outputs[1].command_name == goodbye_world_command_name
-    assert outputs[1].output == "Goodbye Cruel World"
     assert outputs[1].command == goodbye_world

@@ -1,20 +1,14 @@
+# Pulled from emulation_system/tests/test_configuration.json
+import os
 from typing import List
 
 import pytest
-import os.path
 
 from command_creators.command import CommandList, Command
-from emulation_system.src.parsers.top_level_parser import TopLevelParser
-from emulation_system.src.settings_models import (
-    ConfigurationSettings, DefaultFolderPaths
-)
-from emulation_system.src.settings import CONFIGURATION_FILE_LOCATION_VAR_NAME
-from emulation_system.src.command_creators.emulation_creator import (
-    EmulationCreatorMixin
-)
+from command_creators.emulation_creator import EmulationCreatorMixin
+from settings import CONFIGURATION_FILE_LOCATION_VAR_NAME
+from settings_models import ConfigurationSettings, DefaultFolderPaths
 
-
-# Pulled from emulation_system/tests/test_configuration.json
 TEST_CONF_OPENTRONS_PATH = "/home/Documents/repos/opentrons"
 TEST_CONF_FIRMWARE_PATH = "/home/Documents/repos/ot3-firmware"
 TEST_CONF_MODULES_PATH = "/home/Documents/repos/opentrons-modules"
@@ -206,60 +200,3 @@ def set_config_file_env_var(test_json_path) -> None:
     os.environ[CONFIGURATION_FILE_LOCATION_VAR_NAME] = test_json_path
     yield
     del os.environ[CONFIGURATION_FILE_LOCATION_VAR_NAME]
-
-
-def test_basic_dev_em(
-        set_config_file_env_var, default_folder_paths, basic_dev_cmd
-):
-
-    dev_em_creator = TopLevelParser().parse(basic_dev_cmd)
-    assert dev_em_creator.detached is False
-    assert dev_em_creator.modules_path == TEST_CONF_MODULES_PATH
-    assert dev_em_creator.opentrons_path == TEST_CONF_OPENTRONS_PATH
-    assert dev_em_creator.ot3_firmware_path == TEST_CONF_FIRMWARE_PATH
-
-
-def test_complex_dev(set_config_file_env_var, complex_dev_cmd):
-    dev_em_creator = TopLevelParser().parse(complex_dev_cmd)
-    assert dev_em_creator.detached is True
-    assert dev_em_creator.modules_path == MADE_UP_MODULES_PATH
-    assert dev_em_creator.opentrons_path == MADE_UP_OPENTRONS_PATH
-    assert dev_em_creator.ot3_firmware_path == MADE_UP_FIRMWARE_PATH
-
-
-def test_basic_prod_em(set_config_file_env_var, basic_prod_cmd):
-    prod_em_creator = TopLevelParser().parse(basic_prod_cmd)
-    assert prod_em_creator.detached is False
-    assert prod_em_creator.ot3_firmware_download_location == TEST_CONF_FIRMWARE_HEAD
-    assert prod_em_creator.modules_download_location == TEST_CONF_MODULES_HEAD
-    assert prod_em_creator.opentrons_download_location == TEST_CONF_OPENTRONS_HEAD
-
-
-def test_complex_prod_em(set_config_file_env_var, complex_prod_cmd):
-    prod_em_creator = TopLevelParser().parse(complex_prod_cmd)
-    assert prod_em_creator.detached is True
-    assert prod_em_creator.ot3_firmware_download_location == EXPECTED_FIRMWARE_COMMIT
-
-    assert prod_em_creator.modules_download_location == EXPECTED_MODULES_COMMIT
-
-    assert prod_em_creator.opentrons_download_location == EXPECTED_OPENTRONS_COMMIT
-
-
-def test_basic_dev_em_commands(set_config_file_env_var, basic_dev_cmd):
-    dev_em_creator = TopLevelParser().parse(basic_dev_cmd)
-    assert dev_em_creator.get_commands() == BASIC_DEV_CMDS_TO_RUN
-
-
-def test_complex_dev_em_commands(set_config_file_env_var, complex_dev_cmd):
-    dev_em_creator = TopLevelParser().parse(complex_dev_cmd)
-    assert dev_em_creator.get_commands() == COMPLEX_DEV_COMMANDS_TO_RUN
-
-
-def test_basic_prod_em_commands(set_config_file_env_var, basic_prod_cmd):
-    prod_em_creator = TopLevelParser().parse(basic_prod_cmd)
-    assert prod_em_creator.get_commands() == BASIC_PROD_COMMANDS_TO_RUN
-
-
-def test_complex_prod_em_commands(set_config_file_env_var, complex_prod_cmd):
-    prod_em_creator = TopLevelParser().parse(complex_prod_cmd)
-    assert prod_em_creator.get_commands() == COMPLEX_PROD_COMMANDS_TO_RUN
