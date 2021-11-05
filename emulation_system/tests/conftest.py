@@ -1,181 +1,46 @@
 # Pulled from emulation_system/tests/test_configuration.json
+import json
 import os
-from typing import List
+from typing import Dict
 
 import pytest
-
-from command_creators.command import CommandList, Command
-from command_creators.emulation_creator import EmulationCreatorMixin
 from settings import CONFIGURATION_FILE_LOCATION_VAR_NAME
 from settings_models import ConfigurationSettings, DefaultFolderPaths
 
-TEST_CONF_OPENTRONS_PATH = "/home/Documents/repos/opentrons"
-TEST_CONF_FIRMWARE_PATH = "/home/Documents/repos/ot3-firmware"
-TEST_CONF_MODULES_PATH = "/home/Documents/repos/opentrons-modules"
-
-MADE_UP_MODULES_PATH = "/these/are/not/the/modules/you/are/looking/for"
-MADE_UP_OPENTRONS_PATH = "/otie/I/am/your/father"
-MADE_UP_FIRMWARE_PATH = "/the/force/is/strong/with/this/firmware"
-
-TEST_CONF_OPENTRONS_HEAD = "https://github.com/AnotherOrg/opentrons/archive/refs/heads/edge.zip"
-TEST_CONF_FIRMWARE_HEAD = "https://github.com/AnotherOrg/ot3-firmware/archive/refs/heads/main.zip"
-TEST_CONF_MODULES_HEAD = "https://github.com/AnotherOrg/opentrons-modules/archive/refs/heads/edge.zip"
-
-TEST_CONF_OPENTRONS_EXPECTED_COMMIT = "https://github.com/AnotherOrg/opentrons/archive/{{commit-sha}}.zip"
-TEST_CONF_FIRMWARE_EXPECTED_COMMIT = "https://github.com/AnotherOrg/ot3-firmware/archive/{{commit-sha}}.zip"
-TEST_CONF_MODULES_EXPECTED_COMMIT = "https://github.com/AnotherOrg/opentrons-modules/archive/{{commit-sha}}.zip"
-
-MADE_UP_MODULES_SHA = "modulessha"
-MADE_UP_OPENTRONS_SHA = "opentrons"
-MADE_UP_FIRMWARE_SHA = "firmwaresha"
-
-EXPECTED_FIRMWARE_COMMIT = TEST_CONF_FIRMWARE_EXPECTED_COMMIT.replace(
-    "{{commit-sha}}", MADE_UP_FIRMWARE_SHA
-)
-EXPECTED_MODULES_COMMIT = TEST_CONF_MODULES_EXPECTED_COMMIT.replace(
-    "{{commit-sha}}", MADE_UP_MODULES_SHA
-)
-EXPECTED_OPENTRONS_COMMIT = TEST_CONF_OPENTRONS_EXPECTED_COMMIT.replace(
-    "{{commit-sha}}", MADE_UP_OPENTRONS_SHA
-)
-
-BASIC_DEV_CMDS_TO_RUN = CommandList(
-    [
-        Command(
-            EmulationCreatorMixin.CLEAN_COMMAND_NAME,
-            "docker-compose -f docker-compose-dev.yaml kill "
-            "&& docker-compose -f docker-compose-dev.yaml rm -f"
-        ),
-        Command(
-            EmulationCreatorMixin.BUILD_COMMAND_NAME,
-            (
-                "COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 "
-                f"OT3_FIRMWARE_DIRECTORY={TEST_CONF_FIRMWARE_PATH} "
-                f"OPENTRONS_MODULES_DIRECTORY={TEST_CONF_MODULES_PATH} "
-                f"OPENTRONS_DIRECTORY={TEST_CONF_OPENTRONS_PATH} "
-                "docker-compose -f docker-compose-dev.yaml build"
-            )
-        ),
-        Command(
-            EmulationCreatorMixin.RUN_COMMAND_NAME,
-            (
-                f"OT3_FIRMWARE_DIRECTORY={TEST_CONF_FIRMWARE_PATH} "
-                f"OPENTRONS_MODULES_DIRECTORY={TEST_CONF_MODULES_PATH} "
-                f"OPENTRONS_DIRECTORY={TEST_CONF_OPENTRONS_PATH} "
-                "docker-compose -f docker-compose-dev.yaml up"
-            )
-        )
-    ]
-)
-
-COMPLEX_DEV_COMMANDS_TO_RUN = CommandList(
-    [
-        Command(
-            EmulationCreatorMixin.CLEAN_COMMAND_NAME,
-            "docker-compose -f docker-compose-dev.yaml kill "
-            "&& docker-compose -f docker-compose-dev.yaml rm -f"
-        ),
-        Command(
-            EmulationCreatorMixin.BUILD_COMMAND_NAME,
-            (
-                "COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 "
-                f"OT3_FIRMWARE_DIRECTORY={MADE_UP_FIRMWARE_PATH} "
-                f"OPENTRONS_MODULES_DIRECTORY={MADE_UP_MODULES_PATH} "
-                f"OPENTRONS_DIRECTORY={MADE_UP_OPENTRONS_PATH} "
-                "docker-compose -f docker-compose-dev.yaml build"
-            )
-        ),
-        Command(
-            EmulationCreatorMixin.RUN_COMMAND_NAME,
-            (
-                f"OT3_FIRMWARE_DIRECTORY={MADE_UP_FIRMWARE_PATH} "
-                f"OPENTRONS_MODULES_DIRECTORY={MADE_UP_MODULES_PATH} "
-                f"OPENTRONS_DIRECTORY={MADE_UP_OPENTRONS_PATH} "
-                "docker-compose -f docker-compose-dev.yaml up -d"
-            )
-        )
-    ]
-)
-
-BASIC_PROD_COMMANDS_TO_RUN = CommandList(
-    [
-        Command(
-            EmulationCreatorMixin.CLEAN_COMMAND_NAME,
-            "docker-compose -f docker-compose.yaml kill "
-            "&& docker-compose -f docker-compose.yaml rm -f"
-        ),
-        Command(
-            EmulationCreatorMixin.BUILD_COMMAND_NAME,
-            (
-                "COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 "
-                "docker-compose -f docker-compose.yaml build " 
-                f"--build-arg FIRMWARE_SOURCE_DOWNLOAD_LOCATION={TEST_CONF_FIRMWARE_HEAD} "
-                f"--build-arg MODULE_SOURCE_DOWNLOAD_LOCATION={TEST_CONF_MODULES_HEAD} "
-                f"--build-arg OPENTRONS_SOURCE_DOWNLOAD_LOCATION={TEST_CONF_OPENTRONS_HEAD} "
-
-            )
-        ),
-        Command(
-            EmulationCreatorMixin.RUN_COMMAND_NAME,
-            "docker-compose -f docker-compose.yaml up"
-        )
-    ]
-)
-
-COMPLEX_PROD_COMMANDS_TO_RUN = CommandList(
-    [
-        Command(
-            EmulationCreatorMixin.CLEAN_COMMAND_NAME,
-            "docker-compose -f docker-compose.yaml kill "
-            "&& docker-compose -f docker-compose.yaml rm -f"
-        ),
-        Command(
-            EmulationCreatorMixin.BUILD_COMMAND_NAME,
-            (
-                "COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 "
-                "docker-compose -f docker-compose.yaml build "
-                f"--build-arg FIRMWARE_SOURCE_DOWNLOAD_LOCATION={EXPECTED_FIRMWARE_COMMIT} "
-                f"--build-arg MODULE_SOURCE_DOWNLOAD_LOCATION={EXPECTED_MODULES_COMMIT} "
-                f"--build-arg OPENTRONS_SOURCE_DOWNLOAD_LOCATION={EXPECTED_OPENTRONS_COMMIT} "
-
-            )
-        ),
-        Command(
-            EmulationCreatorMixin.RUN_COMMAND_NAME,
-            "docker-compose -f docker-compose.yaml up -d"
-        )
-    ]
-)
+from emulation_system.src.settings import ROOT_DIR
 
 
-@pytest.fixture
-def basic_dev_cmd() -> List[str]:
-    return "emulator dev".split(" ")
+def get_test_conf() -> Dict[str, str]:
+    conf_path = os.path.normpath(
+        os.path.join(ROOT_DIR, 'emulation_system', 'tests', 'test_configuration.json')
+    )
+    json_file = open(conf_path, 'r')
+    return json.load(json_file)
 
 
-@pytest.fixture
-def complex_dev_cmd() -> List[str]:
-    return (
-        "em dev --detached "
-        f"--opentrons-modules-repo-path={MADE_UP_MODULES_PATH} "
-        f"--opentrons-repo-path={MADE_UP_OPENTRONS_PATH} "
-        f"--ot3-firmware-repo-path={MADE_UP_FIRMWARE_PATH}"
-    ).split(" ")
+def get_default_folder_path(name: str) -> str:
+    return get_test_conf()['global-settings']['default-folder-paths'][name]
 
 
-@pytest.fixture
-def basic_prod_cmd() -> List[str]:
-    return "emulator prod".split(" ")
+def get_head(name: str) -> str:
+    return get_test_conf()['emulation-settings']['source-download-locations']['heads'][name]
 
 
-@pytest.fixture
-def complex_prod_cmd() -> List[str]:
-    return (
-        "emulator prod --detached "
-        f"--ot3-firmware-repo-sha={MADE_UP_FIRMWARE_SHA} "
-        f"--opentrons-modules-repo-sha={MADE_UP_MODULES_SHA} "
-        f"--opentrons-repo-sha={MADE_UP_OPENTRONS_SHA}"
-    ).split(" ")
+def get_commit(name: str) -> str:
+    return get_test_conf()['emulation-settings']['source-download-locations']['commits'][name]
+
+
+TEST_CONF_OPENTRONS_PATH = get_default_folder_path('opentrons')
+TEST_CONF_FIRMWARE_PATH = get_default_folder_path('ot3-firmware')
+TEST_CONF_MODULES_PATH = get_default_folder_path('modules')
+
+TEST_CONF_OPENTRONS_HEAD = get_head('opentrons')
+TEST_CONF_FIRMWARE_HEAD = get_head('ot3-firmware')
+TEST_CONF_MODULES_HEAD = get_head('modules')
+
+TEST_CONF_OPENTRONS_EXPECTED_COMMIT = get_commit('opentrons')
+TEST_CONF_FIRMWARE_EXPECTED_COMMIT = get_commit('ot3-firmware')
+TEST_CONF_MODULES_EXPECTED_COMMIT = get_commit('modules')
 
 
 @pytest.fixture
