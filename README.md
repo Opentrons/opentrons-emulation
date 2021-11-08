@@ -1,9 +1,151 @@
 # opentrons-emulation
 
-The `opentrons-emulation` repository contains software emulations of Opentron's various
-pieces of hardware using [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/).
+The `opentrons-emulation` repository contains everything related to building and running
+emulated hardware. Currently, it supports the following functionality
 
-## Emulators
+[**Emulation Creation**](#emulation-creation) - Create emulated hardware using [Docker](https://www.docker.com/) and 
+[Docker Compose](https://docs.docker.com/compose/).
+
+[**Virtual Machine Creation/Provisioning**](#virtual-machine-creation) - 
+Create Virtual Machines inside [Virtual Box](https://www.virtualbox.org/) **(Needed for MacOS and Windows users)**
+
+[**Docker Image Upload (Opentrons Employees Only)**](#docker-image-upload) - 
+Upload Docker images to [AWS Elastic Container Registry](https://aws.amazon.com/ecr/)
+
+The functionality can be accessed by using the `opentrons-emulation` executable in the root of the repository
+
+## Required Software
+
+### Running in Virtual Machine (MacOS, Windows, Linux)
+
+- [Virtual Box](https://www.virtualbox.org/wiki/Downloads)
+
+### Running Locally (Native Linux Only)
+
+- [Docker](https://docs.docker.com/engine/install/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+- [Vagrant](https://www.vagrantup.com/downloads)
+- [AWS CLI (Opentrons Employees only)](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+  - Opentrons Employees - contact Global Infrastructure about setting up AWS account if you need push access
+
+## Configuration File
+
+The `opentrons-emulation` repository requires that you specify a `configuration.json` file in the root of the
+repository. See `configuration_sample.json` for an example. 
+
+**File Format**
+
+- `global-settings` - global settings used by all functionality subsets in the repo
+  - `default-folder-paths` - folder paths on your local system
+    - `opentrons` - path to the `opentrons` mono repo
+    - `ot3-firmware` - path to the `ot3-firmware` repo
+    - `modules` - path to the `opentrons-modules` repo
+- `emulation-settings` - settings that affect only emulation
+  - `source-download-locations` - settings defining where to pull remote source code from
+    - `heads` - where to download the latest version of repositories from. 
+    (On Github, link can be found by copying the download link)
+      - `opentrons` - link to the head of the `opentrons` mono repo
+      - `ot3-firmware` - link to the head of the `ot3-firmware` repo
+      - `modules` - link to the head of the `opentrons-modules` repo
+    - `commits` - template for downloading a specific commit from repo. Use `{{commit-sha}}` variable
+    as denote where to insert sha
+      - `opentrons` - template for downloading specific commit from the `opentrons` mono repo
+      - `ot3-firmware` - template for downloading specific commit from the `ot3-firmware` repo
+      - `modules` - template for downloading specific commit from the `opentrons-modules` repo
+  - `heater-shaker-settings` - settings pertaining to the Heater-Shaker module
+    - `host` - url to socket connection at
+    - `port` - port to access socket connection at
+- `virtual-machine-settings`
+  - `dev-vm-name` - the name for your development vm
+  - `prod-vm-name` - the name for your production vm
+  - `vm-memory` - the amount of memory in MB to allocate to each vm
+  - `vm-cpus` - the number of cpus to allocate to each vm
+  - `num-socket-can-networks` - the number of virtual SocketCan networks to create on VM startup
+
+
+## Emulation Creation
+
+The `emulation (em)` command allows for creating emulated hardware in 2 fashions: 
+Production and Development modes
+
+### Production Mode
+
+When working in Production mode, the source for the emulated hardware is downloaded from Github and 
+inserted into the Docker image during build time. 
+
+This should be the default use case for any user that is not actively developing
+against a container
+
+**Options** 
+
+The following options are supported when using Production mode
+
+- `--dry-run` - Prints commands that will be executed internally by the CLI
+- `--detached` - After building and running containers, return control flow to shell
+- `--ot3-firmware-repo-sha` - Commit sha to download for `ot3-firmware` repository. Defaults 
+to downloading the latest version from the repo
+- `--opentrons-modules-repo-sha` - Commit sha to download for `opentrons-modules` repository. Defaults
+to downloading the latest version from the repo
+- `--opentrons-repo-sha` - Commit sha to download for `opentrons` repository. Defaults
+to downloading the latest version from the repo
+
+### Development Mode
+
+When working in Development mode, the source for the emulated hardware is mounted into the container
+at runtime. 
+
+This use case is suitable for developers who are actively developing against a container
+
+**Options** 
+
+The following options are supported when using Development mode
+
+- `--dry-run` - Prints commands that will be executed internally by the CLI
+- `--detached` - After building and running containers, return control flow to shell
+- `--ot3-firmware-repo-path` - Path on host system to `ot3-firmware` repo. Defaults to value provided in
+`configuration.json`
+- `--opentrons-modules-repo-path` - Path on host system to `opentrons-modules` repo. Defaults to value provided in
+`configuration.json`
+- `--opentrons-repo-path` - Path on host system to `opentrons` monorepo. Defaults to value provided in
+`configuration.json`
+
+### Examples Commands
+
+#### (Production) Latest Versions
+
+System with the latest version of all repos
+
+`./opentrons-emulation emulation prod`
+
+#### (Production) Specific Commit from Repo
+
+Create production system with specific version of `ot3-firmware` repo and latest version of the others
+
+`./opentrons-emulation emulation prod --ot3-firmware-repo-sha="afakereposha"`
+
+#### (Development) Config File Defaults
+
+Create development system with folders specified in `configuration.json` bind-mounted in
+
+`./opentrons-emulation emulation dev`
+
+#### (Production or Development) Detached System
+
+Create production system running in detached mode
+
+`./opentrons-emulation emulation prod --detached`
+
+Create development system running in detached mode
+
+`./opentrons-emulation emulation dev --detached`
+
+#### (Production or Development) Dry Run
+
+Print out commands that will be run internally by CLI to create system
+
+`./opentrons-emulation emulation --dry-run prod`
+
+### Emulators
 
 The following emulators are planned to be included:
 
@@ -18,7 +160,7 @@ The following emulators are planned to be included:
 | [Mag Deck](#mag-deck)                           | Driver                                             | Awaiting Development |
 
 
-### OT-2 
+#### OT-2 
 
 **Emulation Level:** Driver
 
@@ -30,7 +172,9 @@ Needs to be pulled into this repository.
 Using [SocketCan](https://en.wikipedia.org/wiki/SocketCAN) we are able to run a virtual OT-3
 that behaves like the actual robot.
 
-### Single Container OT-3
+---
+
+#### Single Container OT-3
 
 **Emulation Level:** Firmware
 
@@ -40,7 +184,9 @@ that behaves like the actual robot.
 The single container OT-3 emulator will have all the firmware running on a single Ubuntu container.
 They will be connected through a CAN network that is private to the container.
 
-### Multi Container OT-3
+----
+
+#### Multi Container OT-3
 
 **Emulation Level:** Firmware
 
@@ -56,7 +202,9 @@ They will be connected through the host's CAN network.
 **Production Images:**
 * `ot3-firmware-echo`
 
-### Heater-Shaker
+----
+
+#### Heater-Shaker
 
 **Emulation Level:** Firmware
 
@@ -68,127 +216,25 @@ They will be connected through the host's CAN network.
 **Production Images:**
 * `heater-shaker`
 
-### Thermocycler
+----
+
+#### Thermocycler
 
 **Emulation Level:** Driver
 
-### Mag Deck
+----
+
+#### Mag Deck
 
 **Emulation Level:** Driver
 
-### Temp Deck
+----
+
+#### Temp Deck
 
 **Emulation Level:** Driver
 
-## Usage
-
-Using this repository consists of 2 steps:
-
-1. Creating Containers 
-2. Building and running firmware inside containers
-
-Currently, there are 2 different container configurations offered: `production` and `development`
-
-### Production Configuration
-
-The production configuration handles downloading the necessary source code and inserting
-it into each container's Dockerfile. It also builds and runs the emulator inside each container.
-
-### Development Configuration
-
-The development configuration allows you to mount your source code into each of your
-repositories. It also mounts the `entrypoint.sh` file into each container. This allows
-you to have control over building and running your changes.
-
-#### Environment File
-
-You must specify an `.env` file. This file will configure your containers to your system. You will
-have to specify the following variables. See `.env.default` file in this repo for an example.
-
-`OT3_FIRMWARE_DIRECTORY`
-* Used In - Development Configuration
-* Description - Absolute path to your ot3-firmware source code 
-* Example - `"${HOME}/Documents/repos/ot3-firmware"`
-
-`OPENTRONS_MODULES_DIRECTORY`
-* Used In - Development Configuration
-* Description - Absolute path to your opentrons-modules source code
-* Example - `"${HOME}/Documents/repos/opentrons-modules"`
-
-`HEATER_SHAKER_SOCKET_HOST`
-* Used In - Production Configuration
-* Description - Host to connect socket to
-* Example - `"127.0.0.1"`
-
-`HEATER_SHAKER_SOCKET_PORT`
-* Used In - Production Configuration
-* Description - Port to connect socket to 
-* Example - `"9999"`
-
-### Creating System
-
-To create systems use the `create_system.sh` script inside of the `scripts` directory.
-
-#### Production System
-
-To run a production system configuration run the base script.
-
-`./create_system.sh --prod`
-
-#### Development System
-
-To run a development system configuration add the `--dev` option.
-
-`./create_system.sh --dev`
-
-#### Headless
-
-Both Production and Development systems can be run in the background. 
-To do this add the `--headless` option.
-
-`./create_system.sh --dev --headless` -OR- `./create_system.sh --prod --headless`
-
-#### Verbose
-
-To output more verbose logs use the `--verbose` or `-v` option
-
-#### Specifying Commit Sha
-
-Production systems can be run from spefic commit shas that are on Github. 
-To do this, specify `--ot3-firmware-sha` for ot3-firwamre or `--modules-sha` for opentrons-modules.
-
-#### Example Commands
-
-```shell
-# Create a production system.
-# Uses the latest commit from the master branch of both ot3-firmware and opentrons-modules
-./run_emulation.sh
-
-# Create same production system as above but run it in the background
-./run_emulation.sh --headless
-
-# Create production system, pull specific commit for ot3-firmware
-./run_emulation.sh \
-  --prod \
-  --headless \
-  --ot3-firmware-sha 7ec96029946054c9b6d55846bd5e909b55591adb
-
-# Create production system, pull specific commit for opentrons-modules
-./run_emulation.sh \
-  --prod \
-  --headless \
-  --modules-sha 80f30ad3f99a7bbc22ec885371c592013a7cbe6c
-
-# Create production system, pull specific commit for opentrons-modules and ot3-firmware
-./run_emulation.sh \
-  --prod \
-  --headless \
-  --ot3-firmware-sha 7ec96029946054c9b6d55846bd5e909b55591adb \
-  --modules-sha 80f30ad3f99a7bbc22ec885371c592013a7cbe6c
-  
-# Create headless dev system. Will look at .env file for where to pull source code
-./run_emulation.sh --dev
-```
+----
 
 ### Building and Running
 
