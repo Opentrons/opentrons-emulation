@@ -14,6 +14,7 @@ from settings_models import ConfigurationSettings
 
 
 class VirtualMachineSubCommands(str, Enum):
+    """Sub-command available to virtual-machine cli command"""
     CREATE = "create"
     SHELL = "shell"
     REMOVE = "remove"

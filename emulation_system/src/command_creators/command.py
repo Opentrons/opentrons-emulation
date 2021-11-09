@@ -16,9 +16,10 @@ class Command:
     command: str
     cwd: str = ROOT_DIR
 
-    def run_command(self):
+    def run_command(self) -> None:
+        """Execute shell command using subprocess"""
         try:
-            command_output = subprocess.run(
+            subprocess.run(
                 self.command,
                 check=True,
                 shell=True,
@@ -26,19 +27,6 @@ class Command:
             )
         except subprocess.CalledProcessError as err:
             raise CommandExecutionError(err.stderr)
-        else:
-            return CommandOutput(
-                command_name=self.command_name,
-                command=command_output.args
-            )
-
-
-@dataclass
-class CommandOutput:
-    """Output from command run by subprocess"""
-    command_name: str
-    command: str
-    # output: str
 
 
 @dataclass
@@ -47,10 +35,12 @@ class CommandList:
     command_list: List[Command]
     dry_run: bool = False
 
-    def add_command(self, command: Command):
+    def add_command(self, command: Command) -> None:
+        """Add command to list of commands to run"""
         self.command_list.append(command)
 
     def _generate_dry_run(self) -> str:
+        """Return runnable list of cli commands"""
         command_str_list = [
             f"(cd {command.cwd} && {command.command})"
             for command
@@ -58,7 +48,8 @@ class CommandList:
         ]
         return '\n'.join(command_str_list)
 
-    def run_commands(self):
+    def run_commands(self) -> None:
+        """Run commands in shell. Prints output to stdout"""
         if self.dry_run:
             print(self._generate_dry_run())
         else:

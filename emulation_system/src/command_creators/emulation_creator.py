@@ -9,16 +9,15 @@ from command_creators.command import CommandList, Command
 from command_creators.abstract_command_creator import AbstractCommandCreator
 from settings_models import ConfigurationSettings, SourceDownloadLocations
 
+class CommonEmulationOptions(str, Enum):
+    """Options shared by all sub-commands"""
+    DETACHED = "--detached"
+
 
 class EmulationSubCommands(str, Enum):
     """Sub-Commands available to the `emulation` command"""
     PROD_MODE = PRODUCTION_MODE_NAME
     DEV_MODE = DEVELOPMENT_MODE_NAME
-
-
-class CommonEmulationOptions(str, Enum):
-    """Options shared by all sub-commands"""
-    DETACHED = "--detached"
 
 
 class ProductionEmulationOptions(str, Enum):
@@ -58,13 +57,15 @@ class EmulationCreatorMixin:
 
 @dataclass
 class ProdEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
-    """Class to build docker commands for creating a Production Emulator"""
+    """Class to build docker commands for creating a Production Emulator
+    Supports `build`, `clean`, and `run` commands"""
     detached: bool = False
     ot3_firmware_download_location: str = ''
     modules_download_location: str = ''
     opentrons_download_location: str = ''
     dry_run: bool = False
 
+    # Pulled from Dockerfile in root of repo
     OT3_FIRMWARE_DOCKER_BUILD_ARG_NAME = "FIRMWARE_SOURCE_DOWNLOAD_LOCATION"
     MODULES_DOCKER_BUILD_ARG_NAME = "MODULE_SOURCE_DOWNLOAD_LOCATION"
     OPENTRONS_DOCKER_BUILD_ARG_NAME = "OPENTRONS_SOURCE_DOWNLOAD_LOCATION"
@@ -103,7 +104,7 @@ class ProdEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
     @staticmethod
     def _parse_download_location(
             key: str, location: str, download_locations: SourceDownloadLocations
-    ):
+    ) -> str:
         """Parse download location from passed `location` parameter into a
         downloadable source code zip file"""
         if location == LATEST_KEYWORD:
@@ -149,7 +150,6 @@ class ProdEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
 
 @dataclass
 class DevEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
-    """Class to build docker commands for creating a Development Emulator"""
     """Command creator for `dev` sub-command of `emulation` command.
     Supports `build`, `clean`, and `run` commands"""
 
