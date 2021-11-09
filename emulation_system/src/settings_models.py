@@ -6,6 +6,9 @@ from pydantic import BaseModel, Field, parse_obj_as
 
 OT3_FIRMWARE_ALIAS = "ot3-firmware"
 
+class ConfigurationFileNotFoundError(FileNotFoundError):
+    pass
+
 class DefaultFolderPaths(BaseModel):
     opentrons: str
     ot3_firmware: str = Field(..., alias=OT3_FIRMWARE_ALIAS)
@@ -55,4 +58,13 @@ class ConfigurationSettings(BaseModel):
 
     @classmethod
     def from_file_path(cls, json_file_path: str) -> ConfigurationSettings:
-        return parse_obj_as(cls, json.load(open(json_file_path, 'r')))
+        try:
+            file = open(json_file_path, 'r')
+        except FileNotFoundError:
+            raise ConfigurationFileNotFoundError(
+                f"\nError loading configuration file.\n"
+                f"Configuration file not found at: {json_file_path}\n"
+                f"Please create a JSON configuration file"
+            )
+
+        return parse_obj_as(cls, json.load(file))
