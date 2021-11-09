@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # This script will delete SocketCan network vcan0
 
 if [[ "$#" -eq 1 ]]; then

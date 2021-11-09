@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # This script will create a SocketCan network, vcan0
 
 if [[ "$#" -eq 1 ]]; then
