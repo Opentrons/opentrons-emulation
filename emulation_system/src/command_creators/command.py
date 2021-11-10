@@ -1,3 +1,4 @@
+import shlex
 import subprocess
 from dataclasses import dataclass
 from typing import List
@@ -10,23 +11,56 @@ class CommandExecutionError(ValueError):
 
 
 @dataclass
-class Command:
-    """Command to be run by subprocess"""
+class CommandOutput:
     command_name: str
     command: str
-    cwd: str = ROOT_DIR
+    command_output: str
 
-    def run_command(self) -> None:
+
+class Command:
+    """Command to be run by subprocess"""
+
+    def __init__(self, command_name: str, command: str, cwd=ROOT_DIR):
+        self.command_name = command_name
+        self.command = shlex.split(command)
+        self.cwd = cwd
+
+    @staticmethod
+    def _capture_and_print_output(process: subprocess.Popen) -> str:
+        """Capture command output in a list of strings and print it to stdout.
+        Return single string containing all output at end"""
+        stdout = []
+        while True:
+            line = process.stdout.readline().strip()
+            stdout.append(line)
+            print(line)
+            if line == '' and process.poll() is not None:
+                break
+        return ''.join(stdout)
+
+    def get_command_str(self) -> str:
+        """Get command string that subshells to the current working directory
+        and executes command"""
+        return f"(cd {self.cwd} && {self.command})"
+
+    def run_command(self) -> CommandOutput:
         """Execute shell command using subprocess"""
         try:
-            subprocess.run(
+            p = subprocess.Popen(
                 self.command,
-                check=True,
-                shell=True,
-                cwd=self.cwd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                cwd=self.cwd
             )
         except subprocess.CalledProcessError as err:
             raise CommandExecutionError(err.stderr)
+
+        return CommandOutput(
+            command_name=self.command_name,
+            command=self.command,
+            command_output=self._capture_and_print_output(p)
+        )
 
 
 @dataclass
@@ -39,19 +73,14 @@ class CommandList:
         """Add command to list of commands to run"""
         self.command_list.append(command)
 
-    def _generate_dry_run(self) -> str:
-        """Return runnable list of cli commands"""
-        command_str_list = [
-            f"(cd {command.cwd} && {command.command})"
-            for command
-            in self.command_list
-        ]
-        return '\n'.join(command_str_list)
-
     def run_commands(self) -> None:
         """Run commands in shell. Prints output to stdout"""
         if self.dry_run:
-            print(self._generate_dry_run())
+            print(
+                '\n'.join(
+                    command.get_command_str() for command in self.command_list
+                )
+            )
         else:
             for command in self.command_list:
                 command.run_command()
