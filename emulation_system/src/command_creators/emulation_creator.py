@@ -72,6 +72,17 @@ class EmulationCreatorMixin:
             cwd=self.DOCKER_RESOURCES_LOCATION
         )
 
+    def _get_commands(self) -> CommandList:
+        return CommandList(
+            command_list=[
+                self.kill(),
+                self.remove(),
+                self.build(),
+                self.run(),
+            ],
+            dry_run=self.dry_run
+        )
+
 
 @dataclass
 class ProdEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
@@ -164,15 +175,7 @@ class ProdEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
 
     def get_commands(self) -> CommandList:
         """Get a list of commands to create emulation"""
-        return CommandList(
-            command_list=[
-                self.kill(),
-                self.remove(),
-                self.build(),
-                self.run(),
-            ],
-            dry_run=self.dry_run
-        )
+        return self._get_commands()
 
 
 @dataclass
@@ -247,12 +250,5 @@ class DevEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
 
     def get_commands(self) -> CommandList:
         """Get a list of commands to create emulation"""
-        return CommandList(
-            command_list=[
-                self.clean(),
-                self.build(),
-                self.run(),
-            ],
-            dry_run=self.dry_run
-        )
+        return self._get_commands()
 
