@@ -1,5 +1,5 @@
 from emulation_system.command_creators.command import CommandList, Command
-from emulation_system.command_creators.emulation_creator import EmulationCreatorMixin
+from emulation_system.command_creators.emulation_creator import AbstractEmulationCreator
 from tests.conftest import (
     TEST_CONF_MODULES_EXPECTED_COMMIT,
     TEST_CONF_OPENTRONS_EXPECTED_COMMIT,
@@ -34,19 +34,19 @@ EXPECTED_OPENTRONS_COMMIT = TEST_CONF_OPENTRONS_EXPECTED_COMMIT.replace(
 BASIC_DEV_CMDS_TO_RUN = CommandList(
     [
         Command(
-            command_name=EmulationCreatorMixin.KILL_COMMAND_NAME,
+            command_name=AbstractEmulationCreator.KILL_COMMAND_NAME,
             command="docker-compose -f docker-compose-dev.yaml kill",
-            cwd=EmulationCreatorMixin.DOCKER_RESOURCES_LOCATION
+            cwd=AbstractEmulationCreator.DOCKER_RESOURCES_LOCATION
         ),
         Command(
-            command_name=EmulationCreatorMixin.REMOVE_COMMAND_NAME,
+            command_name=AbstractEmulationCreator.REMOVE_COMMAND_NAME,
             command="docker-compose -f docker-compose-dev.yaml rm -f",
-            cwd=EmulationCreatorMixin.DOCKER_RESOURCES_LOCATION
+            cwd=AbstractEmulationCreator.DOCKER_RESOURCES_LOCATION
         ),
         Command(
-            command_name=EmulationCreatorMixin.BUILD_COMMAND_NAME,
+            command_name=AbstractEmulationCreator.BUILD_COMMAND_NAME,
             command="docker-compose -f docker-compose-dev.yaml build",
-            cwd=EmulationCreatorMixin.DOCKER_RESOURCES_LOCATION,
+            cwd=AbstractEmulationCreator.DOCKER_RESOURCES_LOCATION,
             env={
                 "COMPOSE_DOCKER_CLI_BUILD": "1",
                 "DOCKER_BUILDKIT": "1",
@@ -56,9 +56,9 @@ BASIC_DEV_CMDS_TO_RUN = CommandList(
             }
         ),
         Command(
-            command_name=EmulationCreatorMixin.RUN_COMMAND_NAME,
+            command_name=AbstractEmulationCreator.RUN_COMMAND_NAME,
             command="docker-compose -f docker-compose-dev.yaml up",
-            cwd=EmulationCreatorMixin.DOCKER_RESOURCES_LOCATION,
+            cwd=AbstractEmulationCreator.DOCKER_RESOURCES_LOCATION,
             env={
                 "OT3_FIRMWARE_DIRECTORY": TEST_CONF_FIRMWARE_PATH,
                 "OPENTRONS_MODULES_DIRECTORY": TEST_CONF_MODULES_PATH,
@@ -72,19 +72,19 @@ BASIC_DEV_CMDS_TO_RUN = CommandList(
 COMPLEX_DEV_COMMANDS_TO_RUN = CommandList(
     [
         Command(
-            command_name=EmulationCreatorMixin.KILL_COMMAND_NAME,
+            command_name=AbstractEmulationCreator.KILL_COMMAND_NAME,
             command="docker-compose -f docker-compose-dev.yaml kill",
-            cwd=EmulationCreatorMixin.DOCKER_RESOURCES_LOCATION
+            cwd=AbstractEmulationCreator.DOCKER_RESOURCES_LOCATION
         ),
         Command(
-            command_name=EmulationCreatorMixin.REMOVE_COMMAND_NAME,
+            command_name=AbstractEmulationCreator.REMOVE_COMMAND_NAME,
             command="docker-compose -f docker-compose-dev.yaml rm -f",
-            cwd=EmulationCreatorMixin.DOCKER_RESOURCES_LOCATION
+            cwd=AbstractEmulationCreator.DOCKER_RESOURCES_LOCATION
         ),
         Command(
-            command_name=EmulationCreatorMixin.BUILD_COMMAND_NAME,
+            command_name=AbstractEmulationCreator.BUILD_COMMAND_NAME,
             command="docker-compose -f docker-compose-dev.yaml build",
-            cwd=EmulationCreatorMixin.DOCKER_RESOURCES_LOCATION,
+            cwd=AbstractEmulationCreator.DOCKER_RESOURCES_LOCATION,
             env={
                 "COMPOSE_DOCKER_CLI_BUILD": "1",
                 "DOCKER_BUILDKIT": "1",
@@ -94,9 +94,9 @@ COMPLEX_DEV_COMMANDS_TO_RUN = CommandList(
             }
         ),
         Command(
-            EmulationCreatorMixin.RUN_COMMAND_NAME,
+            AbstractEmulationCreator.RUN_COMMAND_NAME,
             command="docker-compose -f docker-compose-dev.yaml up -d",
-            cwd=EmulationCreatorMixin.DOCKER_RESOURCES_LOCATION,
+            cwd=AbstractEmulationCreator.DOCKER_RESOURCES_LOCATION,
             env={
                 "OT3_FIRMWARE_DIRECTORY": MADE_UP_FIRMWARE_PATH,
                 "OPENTRONS_MODULES_DIRECTORY": MADE_UP_MODULES_PATH,
@@ -110,30 +110,30 @@ COMPLEX_DEV_COMMANDS_TO_RUN = CommandList(
 BASIC_PROD_COMMANDS_TO_RUN = CommandList(
     [
         Command(
-            command_name=EmulationCreatorMixin.KILL_COMMAND_NAME,
+            command_name=AbstractEmulationCreator.KILL_COMMAND_NAME,
             command="docker-compose -f docker-compose.yaml kill",
-            cwd=EmulationCreatorMixin.DOCKER_RESOURCES_LOCATION
+            cwd=AbstractEmulationCreator.DOCKER_RESOURCES_LOCATION
         ),
         Command(
-            command_name=EmulationCreatorMixin.REMOVE_COMMAND_NAME,
+            command_name=AbstractEmulationCreator.REMOVE_COMMAND_NAME,
             command="docker-compose -f docker-compose.yaml rm -f",
-            cwd=EmulationCreatorMixin.DOCKER_RESOURCES_LOCATION
+            cwd=AbstractEmulationCreator.DOCKER_RESOURCES_LOCATION
         ),
         Command(
-            EmulationCreatorMixin.BUILD_COMMAND_NAME,
+            AbstractEmulationCreator.BUILD_COMMAND_NAME,
             (
                 "docker-compose -f docker-compose.yaml build " 
                 f"--build-arg FIRMWARE_SOURCE_DOWNLOAD_LOCATION={TEST_CONF_FIRMWARE_HEAD} "
                 f"--build-arg MODULE_SOURCE_DOWNLOAD_LOCATION={TEST_CONF_MODULES_HEAD} "
                 f"--build-arg OPENTRONS_SOURCE_DOWNLOAD_LOCATION={TEST_CONF_OPENTRONS_HEAD} "
             ),
-            cwd=EmulationCreatorMixin.DOCKER_RESOURCES_LOCATION,
-            env=EmulationCreatorMixin.DOCKER_BUILD_ENV_VARS
+            cwd=AbstractEmulationCreator.DOCKER_RESOURCES_LOCATION,
+            env=AbstractEmulationCreator.DOCKER_BUILD_ENV_VARS
         ),
         Command(
-            EmulationCreatorMixin.RUN_COMMAND_NAME,
+            AbstractEmulationCreator.RUN_COMMAND_NAME,
             "docker-compose -f docker-compose.yaml up",
-            cwd=EmulationCreatorMixin.DOCKER_RESOURCES_LOCATION,
+            cwd=AbstractEmulationCreator.DOCKER_RESOURCES_LOCATION,
         )
     ]
 )
@@ -141,30 +141,30 @@ BASIC_PROD_COMMANDS_TO_RUN = CommandList(
 COMPLEX_PROD_COMMANDS_TO_RUN = CommandList(
     [
         Command(
-            command_name=EmulationCreatorMixin.KILL_COMMAND_NAME,
+            command_name=AbstractEmulationCreator.KILL_COMMAND_NAME,
             command="docker-compose -f docker-compose.yaml kill",
-            cwd=EmulationCreatorMixin.DOCKER_RESOURCES_LOCATION
+            cwd=AbstractEmulationCreator.DOCKER_RESOURCES_LOCATION
         ),
         Command(
-            command_name=EmulationCreatorMixin.REMOVE_COMMAND_NAME,
+            command_name=AbstractEmulationCreator.REMOVE_COMMAND_NAME,
             command="docker-compose -f docker-compose.yaml rm -f",
-            cwd=EmulationCreatorMixin.DOCKER_RESOURCES_LOCATION
+            cwd=AbstractEmulationCreator.DOCKER_RESOURCES_LOCATION
         ),
         Command(
-            EmulationCreatorMixin.BUILD_COMMAND_NAME,
+            AbstractEmulationCreator.BUILD_COMMAND_NAME,
             (
                 "docker-compose -f docker-compose.yaml build "
                 f"--build-arg FIRMWARE_SOURCE_DOWNLOAD_LOCATION={EXPECTED_FIRMWARE_COMMIT} "
                 f"--build-arg MODULE_SOURCE_DOWNLOAD_LOCATION={EXPECTED_MODULES_COMMIT} "
                 f"--build-arg OPENTRONS_SOURCE_DOWNLOAD_LOCATION={EXPECTED_OPENTRONS_COMMIT} "
             ),
-            cwd=EmulationCreatorMixin.DOCKER_RESOURCES_LOCATION,
-            env=EmulationCreatorMixin.DOCKER_BUILD_ENV_VARS
+            cwd=AbstractEmulationCreator.DOCKER_RESOURCES_LOCATION,
+            env=AbstractEmulationCreator.DOCKER_BUILD_ENV_VARS
         ),
         Command(
-            EmulationCreatorMixin.RUN_COMMAND_NAME,
+            AbstractEmulationCreator.RUN_COMMAND_NAME,
             "docker-compose -f docker-compose.yaml up -d",
-            cwd=EmulationCreatorMixin.DOCKER_RESOURCES_LOCATION,
+            cwd=AbstractEmulationCreator.DOCKER_RESOURCES_LOCATION,
         )
     ]
 )

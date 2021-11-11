@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import abc
 import argparse
 import os
 from dataclasses import dataclass
@@ -44,7 +46,7 @@ class InvalidModeError(ValueError):
     pass
 
 
-class EmulationCreatorMixin:
+class AbstractEmulationCreator(AbstractCommandCreator):
     """Things common to both EmulationCreator classes"""
     BUILD_COMMAND_NAME = "Build Emulation"
     KILL_COMMAND_NAME = "Kill Emulation"
@@ -57,6 +59,24 @@ class EmulationCreatorMixin:
     )
 
     DOCKER_BUILD_ENV_VARS = {"COMPOSE_DOCKER_CLI_BUILD": "1", "DOCKER_BUILDKIT": "1"}
+
+    @property
+    @abc.abstractmethod
+    def compose_file_name(self):
+        ...
+
+    @abc.abstractmethod
+    def build(self):
+        ...
+
+    @abc.abstractmethod
+    def run(self):
+        ...
+
+    @property
+    @abc.abstractmethod
+    def dry_run(self):
+        ...
 
     def kill(self) -> Command:
         """Kill and remove any existing dev containers"""
@@ -87,7 +107,7 @@ class EmulationCreatorMixin:
 
 
 @dataclass
-class ProdEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
+class ProdEmulationCreator(AbstractEmulationCreator):
     """Class to build docker commands for creating a Production Emulator
     Supports `build`, `clean`, and `run` commands"""
     detached: bool = False
@@ -181,7 +201,7 @@ class ProdEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
 
 
 @dataclass
-class DevEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
+class DevEmulationCreator(AbstractEmulationCreator):
     """Command creator for `dev` sub-command of `emulation` command.
     Supports `build`, `clean`, and `run` commands"""
 
