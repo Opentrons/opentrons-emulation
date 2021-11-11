@@ -1,8 +1,8 @@
 import os
 import shlex
 import subprocess
-from dataclasses import dataclass
-from typing import List, Dict
+from dataclasses import dataclass, field
+from typing import List, Dict, Union
 from settings import ROOT_DIR
 
 
@@ -18,16 +18,14 @@ class CommandOutput:
     command_output: str
 
 
+@dataclass
 class Command:
     """Command to be run by subprocess"""
 
-    def __init__(
-            self, command_name: str, command: str, cwd=ROOT_DIR, env_vars_to_add={}
-    ):
-        self.command_name = command_name
-        self.command = shlex.split(command)
-        self.cwd = cwd
-        self.env = self._gen_env(env_vars_to_add)
+    command_name: str
+    command: str
+    cwd: str = ROOT_DIR
+    env: Dict = field(default_factory=dict)
 
     @staticmethod
     def _capture_and_print_output(process: subprocess.Popen) -> str:
@@ -57,12 +55,12 @@ class Command:
         """Execute shell command using subprocess"""
         try:
             p = subprocess.Popen(
-                self.command,
+                shlex.split(self.command),
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
                 cwd=self.cwd,
-                env=self.env
+                env=self._gen_env(self.env)
             )
         except subprocess.CalledProcessError as err:
             raise CommandExecutionError(err.stderr)
@@ -84,7 +82,7 @@ class CommandList:
         """Add command to list of commands to run"""
         self.command_list.append(command)
 
-    def run_commands(self) -> None:
+    def run_commands(self) -> Union[None, List[CommandOutput]]:
         """Run commands in shell. Prints output to stdout"""
         if self.dry_run:
             print(
@@ -93,6 +91,8 @@ class CommandList:
                 )
             )
         else:
-            for command in self.command_list:
+            return[
                 command.run_command()
+                for command in self.command_list
+            ]
 

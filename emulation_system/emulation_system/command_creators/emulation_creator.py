@@ -3,6 +3,8 @@ import argparse
 import os
 from dataclasses import dataclass
 from enum import Enum
+from typing import Dict
+
 from settings import (
     PRODUCTION_MODE_NAME, DEVELOPMENT_MODE_NAME, LATEST_KEYWORD, ROOT_DIR
 )
@@ -157,7 +159,7 @@ class ProdEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
             command_name=self.BUILD_COMMAND_NAME,
             command=cmd,
             cwd=self.DOCKER_RESOURCES_LOCATION,
-            env_vars_to_add=self.DOCKER_BUILD_ENV_VARS
+            env=self.DOCKER_BUILD_ENV_VARS
         )
 
     def run(self) -> Command:
@@ -193,15 +195,16 @@ class DevEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
     opentrons_path: str = ''
     dry_run: bool = False
 
-    def _get_dev_env_vars(self):
+    def _get_run_env_vars(self) -> Dict[str, str]:
+        return {
+            self.OT3_FIRMWARE_DOCKER_ENV_VAR_NAME: self.ot3_firmware_path,
+            self.MODULES_DOCKER_ENV_VAR_NAME: self.modules_path,
+            self.OPENTRONS_DOCKER_ENV_VAR_NAME: self.opentrons_path,
+        }
+
+    def _get_build_env_vars(self):
         default_vars_copy = self.DOCKER_BUILD_ENV_VARS.copy()
-        default_vars_copy.update(
-            {
-                self.OT3_FIRMWARE_DOCKER_ENV_VAR_NAME: self.ot3_firmware_path,
-                self.MODULES_DOCKER_ENV_VAR_NAME: self.modules_path,
-                self.OPENTRONS_DOCKER_ENV_VAR_NAME: self.opentrons_path,
-            }
-        )
+        default_vars_copy.update(self._get_run_env_vars())
         return default_vars_copy
 
     @property
@@ -231,7 +234,7 @@ class DevEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
             command_name=self.BUILD_COMMAND_NAME,
             command=f"docker-compose -f {self.compose_file_name} build",
             cwd=self.DOCKER_RESOURCES_LOCATION,
-            env_vars_to_add=self._get_dev_env_vars()
+            env=self._get_build_env_vars()
         )
 
     def run(self) -> Command:
@@ -245,7 +248,7 @@ class DevEmulationCreator(AbstractCommandCreator, EmulationCreatorMixin):
             command_name=self.RUN_COMMAND_NAME,
             command=cmd,
             cwd=self.DOCKER_RESOURCES_LOCATION,
-            env_vars_to_add=self._get_dev_env_vars()
+            env=self._get_run_env_vars()
         )
 
     def get_commands(self) -> CommandList:
