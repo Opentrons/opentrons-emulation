@@ -3,8 +3,6 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
-[packages]
-emulation_system = {editable = true, path = "."}
 
 [dev-packages]
 pytest = "6.2.5"

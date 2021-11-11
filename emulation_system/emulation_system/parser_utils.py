@@ -15,7 +15,7 @@ class CLIHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
             for subaction in self._iter_indented_subactions(action):
                 # compensate for the indent that will be added
                 indent_chg = self._current_indent - current_indent
-                added_indent = 'x'*indent_chg
+                added_indent = 'x' * indent_chg
                 invocations.append(added_indent+get_invocation(subaction))
 
             # update the maximum item length
