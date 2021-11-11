@@ -20,3 +20,7 @@ configuration.json
 
 # Generated Vagrant Settings File
 emulation_system/resources/vagrant/settings.json
+
+# Test Coverage Files
+.coverage
+coverage.xml
