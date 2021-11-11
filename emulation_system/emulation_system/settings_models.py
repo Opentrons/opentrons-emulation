@@ -6,8 +6,10 @@ from pydantic import BaseModel, Field, parse_obj_as
 
 OT3_FIRMWARE_ALIAS = "ot3-firmware"
 
+
 class ConfigurationFileNotFoundError(FileNotFoundError):
     pass
+
 
 class DefaultFolderPaths(BaseModel):
     opentrons: str

@@ -1,6 +1,6 @@
 import abc
 import argparse
-from settings_models import ConfigurationSettings
+from emulation_system.settings_models import ConfigurationSettings
 
 
 class AbstractParser(abc.ABC):

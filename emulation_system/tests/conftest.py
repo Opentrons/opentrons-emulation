@@ -4,10 +4,10 @@ import os
 from typing import Dict
 
 import pytest
-from settings import CONFIGURATION_FILE_LOCATION_VAR_NAME
-from settings_models import ConfigurationSettings, DefaultFolderPaths
+from emulation_system.settings import CONFIGURATION_FILE_LOCATION_VAR_NAME
+from emulation_system.settings_models import ConfigurationSettings, DefaultFolderPaths
 
-from settings import ROOT_DIR
+from emulation_system.settings import ROOT_DIR
 
 
 def get_test_conf() -> Dict[str, str]:

@@ -2,16 +2,16 @@ import argparse
 import os
 import sys
 
-from command_creators.abstract_command_creator import AbstractCommandCreator
-from parser_utils import get_formatter
-from parsers.emulation_parser import EmulationParser
-from parsers.repo_parser import RepoParser
-from parsers.virtual_machine_parser import VirtualMachineParser
-from settings import (
+from emulation_system.command_creators.abstract_command_creator import AbstractCommandCreator
+from emulation_system.parser_utils import get_formatter
+from emulation_system.parsers.emulation_parser import EmulationParser
+from emulation_system.parsers.repo_parser import RepoParser
+from emulation_system.parsers.virtual_machine_parser import VirtualMachineParser
+from emulation_system.settings import (
     CONFIGURATION_FILE_LOCATION_VAR_NAME,
     DEFAULT_CONFIGURATION_FILE_PATH
 )
-from settings_models import ConfigurationSettings
+from emulation_system.settings_models import ConfigurationSettings
 
 
 class TopLevelParser:

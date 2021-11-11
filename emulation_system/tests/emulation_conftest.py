@@ -1,5 +1,5 @@
-from command_creators.command import CommandList, Command
-from command_creators.emulation_creator import EmulationCreatorMixin
+from emulation_system.command_creators.command import CommandList, Command
+from emulation_system.command_creators.emulation_creator import EmulationCreatorMixin
 from tests.conftest import (
     TEST_CONF_MODULES_EXPECTED_COMMIT,
     TEST_CONF_OPENTRONS_EXPECTED_COMMIT,

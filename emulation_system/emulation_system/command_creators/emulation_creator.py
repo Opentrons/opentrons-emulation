@@ -5,12 +5,12 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict
 
-from settings import (
+from emulation_system.settings import (
     PRODUCTION_MODE_NAME, DEVELOPMENT_MODE_NAME, LATEST_KEYWORD, ROOT_DIR
 )
-from command_creators.command import CommandList, Command
-from command_creators.abstract_command_creator import AbstractCommandCreator
-from settings_models import ConfigurationSettings, SourceDownloadLocations
+from emulation_system.command_creators.command import CommandList, Command
+from emulation_system.command_creators.abstract_command_creator import AbstractCommandCreator
+from emulation_system.settings_models import ConfigurationSettings, SourceDownloadLocations
 
 
 class CommonEmulationOptions(str, Enum):

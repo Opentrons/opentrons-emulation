@@ -2,8 +2,8 @@ from __future__ import annotations
 import abc
 import argparse
 
-from command_creators.command import CommandList
-from settings_models import ConfigurationSettings
+from emulation_system.command_creators.command import CommandList
+from emulation_system.settings_models import ConfigurationSettings
 
 
 class AbstractCommandCreator(abc.ABC):

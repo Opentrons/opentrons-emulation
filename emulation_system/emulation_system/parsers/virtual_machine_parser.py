@@ -1,9 +1,9 @@
 import argparse
-from parser_utils import get_formatter
-from command_creators.virtual_machine_creator import \
+from emulation_system.parser_utils import get_formatter
+from emulation_system.command_creators.virtual_machine_creator import \
     VirtualMachineCreator, VirtualMachineSubCommandOptions, VirtualMachineSubCommands
-from parsers.abstract_parser import AbstractParser
-from settings_models import ConfigurationSettings
+from emulation_system.parsers.abstract_parser import AbstractParser
+from emulation_system.settings_models import ConfigurationSettings
 
 
 class VirtualMachineParser(AbstractParser):

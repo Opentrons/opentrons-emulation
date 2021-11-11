@@ -1,10 +1,10 @@
 import pytest
 from typing import List
-from command_creators.virtual_machine_creator import (
+from emulation_system.command_creators.virtual_machine_creator import (
     VirtualMachineCreator
 )
-from command_creators.command import CommandList, Command
-from parsers.top_level_parser import TopLevelParser
+from emulation_system.command_creators.command import CommandList, Command
+from emulation_system.parsers.top_level_parser import TopLevelParser
 
 EXPECTED_DEV_CREATE = CommandList(
     [

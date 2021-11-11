@@ -7,10 +7,10 @@ import pydantic
 from dataclasses import dataclass
 from enum import Enum
 
-from command_creators.command import CommandList, Command
-from settings import ROOT_DIR
-from command_creators.abstract_command_creator import AbstractCommandCreator
-from settings_models import ConfigurationSettings
+from emulation_system.command_creators.command import CommandList, Command
+from emulation_system.settings import ROOT_DIR
+from emulation_system.command_creators.abstract_command_creator import AbstractCommandCreator
+from emulation_system.settings_models import ConfigurationSettings
 
 
 class VirtualMachineSubCommands(str, Enum):

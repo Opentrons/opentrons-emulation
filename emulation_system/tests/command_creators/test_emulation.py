@@ -2,7 +2,7 @@ from typing import List
 
 import pytest
 
-from parsers.top_level_parser import TopLevelParser
+from emulation_system.parsers.top_level_parser import TopLevelParser
 from tests.emulation_conftest import (
     BASIC_DEV_CMDS_TO_RUN,
     COMPLEX_DEV_COMMANDS_TO_RUN,

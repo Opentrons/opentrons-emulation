@@ -1,9 +1,9 @@
 import argparse
-from parser_utils import get_formatter
-from parsers.abstract_parser import AbstractParser
-from settings import LATEST_KEYWORD
-from settings_models import ConfigurationSettings
-from command_creators.emulation_creator import (
+from emulation_system.parser_utils import get_formatter
+from emulation_system.parsers.abstract_parser import AbstractParser
+from emulation_system.settings import LATEST_KEYWORD
+from emulation_system.settings_models import ConfigurationSettings
+from emulation_system.command_creators.emulation_creator import (
     CommonEmulationOptions,
     ProductionEmulationOptions,
     DevelopmentEmulationOptions,
