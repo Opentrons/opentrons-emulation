@@ -8,11 +8,7 @@ class RepoParser(AbstractParser):
 
     @classmethod
     def get_parser(
-            cls, parser: argparse.ArgumentParser, settings: ConfigurationSettings
+        cls, parser: argparse.ArgumentParser, settings: ConfigurationSettings
     ) -> None:
         """Build parser for aws-ecr command"""
-        parser.add_parser(
-            'aws-ecr',
-            help="Manage remote AWS ECR Docker image repo",
-            aliases=['repo']
-        )
+        pass

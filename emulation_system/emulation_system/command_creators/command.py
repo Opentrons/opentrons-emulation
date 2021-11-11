@@ -2,12 +2,13 @@ import os
 import shlex
 import subprocess
 from dataclasses import dataclass, field
-from typing import List, Dict, Union
+from typing import List, Dict
 from emulation_system.settings import ROOT_DIR
 
 
 class CommandExecutionError(ValueError):
     """Thrown when there is an error executing a command"""
+
     pass
 
 
@@ -33,12 +34,15 @@ class Command:
         Return single string containing all output at end"""
         stdout = []
         while True:
-            line = process.stdout.readline().strip()
+            output = process.stdout
+            if output is None:
+                continue
+            line = output.readline().strip()
             stdout.append(line)
             print(line)
-            if line == '' and process.poll() is not None:
+            if line == "" and process.poll() is not None:
                 break
-        return ''.join(stdout)
+        return "".join(stdout)
 
     @staticmethod
     def _gen_env(var_dict: Dict[str, str]):
@@ -60,7 +64,7 @@ class Command:
                 stderr=subprocess.STDOUT,
                 text=True,
                 cwd=self.cwd,
-                env=self._gen_env(self.env)
+                env=self._gen_env(self.env),
             )
         except subprocess.CalledProcessError as err:
             raise CommandExecutionError(err.stderr)
@@ -68,13 +72,14 @@ class Command:
         return CommandOutput(
             command_name=self.command_name,
             command=self.command,
-            command_output=self._capture_and_print_output(p)
+            command_output=self._capture_and_print_output(p),
         )
 
 
 @dataclass
 class CommandList:
     """List of commands for subprocess to run"""
+
     command_list: List[Command]
     dry_run: bool = False
 
@@ -82,17 +87,10 @@ class CommandList:
         """Add command to list of commands to run"""
         self.command_list.append(command)
 
-    def run_commands(self) -> Union[None, List[CommandOutput]]:
+    def run_commands(self) -> List[CommandOutput]:
         """Run commands in shell. Prints output to stdout"""
         if self.dry_run:
-            print(
-                '\n'.join(
-                    command.get_command_str() for command in self.command_list
-                )
-            )
+            print("\n".join(command.get_command_str() for command in self.command_list))
+            return []
         else:
-            return[
-                command.run_command()
-                for command in self.command_list
-            ]
-
+            return [command.run_command() for command in self.command_list]

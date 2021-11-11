@@ -7,12 +7,12 @@ from emulation_system.command_creators.command import (
 
 @pytest.fixture
 def hello_world():
-    return "echo \"Hello Cruel World\""
+    return 'echo "Hello Cruel World"'
 
 
 @pytest.fixture
 def goodbye_world():
-    return "echo \"Goodbye Cruel World\""
+    return 'echo "Goodbye Cruel World"'
 
 
 def test_good_command(hello_world):
@@ -24,8 +24,10 @@ def test_good_command(hello_world):
 
 def test_comp():
     name = "My Name"
-    cmd = "echo \"Hello World\""
-    assert Command(command_name=name, command=cmd) == Command(command_name=name, command=cmd)
+    cmd = 'echo "Hello World"'
+    assert Command(command_name=name, command=cmd) == Command(
+        command_name=name, command=cmd
+    )
 
 
 def test_command_list(hello_world, goodbye_world):

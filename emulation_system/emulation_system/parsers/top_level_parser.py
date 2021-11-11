@@ -2,14 +2,16 @@ import argparse
 import os
 import sys
 
-from emulation_system.command_creators.abstract_command_creator import AbstractCommandCreator
+from emulation_system.command_creators.abstract_command_creator import (
+    AbstractCommandCreator,
+)
 from emulation_system.parser_utils import get_formatter
 from emulation_system.parsers.emulation_parser import EmulationParser
 from emulation_system.parsers.repo_parser import RepoParser
 from emulation_system.parsers.virtual_machine_parser import VirtualMachineParser
 from emulation_system.settings import (
     CONFIGURATION_FILE_LOCATION_VAR_NAME,
-    DEFAULT_CONFIGURATION_FILE_PATH
+    DEFAULT_CONFIGURATION_FILE_PATH,
 )
 from emulation_system.settings_models import ConfigurationSettings
 
@@ -20,11 +22,7 @@ class TopLevelParser:
 
     # Add subcommand parsers here
     # Parsers must inherit from emulation_system/src/parsers/abstract_parser.py
-    SUBPARSERS = [
-        EmulationParser,
-        RepoParser,
-        VirtualMachineParser
-    ]
+    SUBPARSERS = [EmulationParser, RepoParser, VirtualMachineParser]
 
     def __init__(self):
         self._settings = self._get_settings()
@@ -37,7 +35,7 @@ class TopLevelParser:
         self._parser.add_argument(
             "--dry-run",
             action="store_true",
-            help="Print out commands to be run by system"
+            help="Print out commands to be run by system",
         )
 
         subparsers = self._parser.add_subparsers(
@@ -45,7 +43,7 @@ class TopLevelParser:
         )
 
         for subparser in self.SUBPARSERS:
-            subparser.get_parser(subparsers, self._settings)
+            subparser.get_parser(subparsers, self._settings)  # type: ignore
 
     @staticmethod
     def _get_settings() -> ConfigurationSettings:

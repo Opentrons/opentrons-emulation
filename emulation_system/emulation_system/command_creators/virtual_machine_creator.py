@@ -9,12 +9,15 @@ from enum import Enum
 
 from emulation_system.command_creators.command import CommandList, Command
 from emulation_system.settings import ROOT_DIR
-from emulation_system.command_creators.abstract_command_creator import AbstractCommandCreator
+from emulation_system.command_creators.abstract_command_creator import (
+    AbstractCommandCreator,
+)
 from emulation_system.settings_models import ConfigurationSettings
 
 
 class VirtualMachineSubCommands(str, Enum):
     """Sub-command available to virtual-machine cli command"""
+
     CREATE = "create"
     SHELL = "shell"
     REMOVE = "remove"
@@ -23,17 +26,20 @@ class VirtualMachineSubCommands(str, Enum):
 class VirtualMachineSubCommandOptions(str, Enum):
     """Mode for virtual-machine subcommand
     Either prod or dev"""
+
     MODE = "mode"
 
 
 class InvalidCommandError(ValueError):
     """Error thrown if virtual-machine sub-command is not
     create, shell, or remove"""
+
     pass
 
 
 class VirtualMachineConfig(pydantic.BaseModel):
     """Model for json parameter file that needs to be specified to Vagrant"""
+
     VM_MEMORY: int
     VM_CPUS: int
     PRODUCTION_VM_NAME: str
@@ -48,13 +54,12 @@ class VirtualMachineConfig(pydantic.BaseModel):
 class VirtualMachineCreator(AbstractCommandCreator):
     """Class to build vagrant commands for creating a Virtual Machine
     Supports create, shell, remove"""
+
     VAGRANT_RESOURCES_LOCATION = os.path.join(
-        ROOT_DIR,
-        "emulation_system/resources/vagrant"
+        ROOT_DIR, "emulation_system/resources/vagrant"
     )
     SETTINGS_FILE_LOCATION = os.path.join(
-        ROOT_DIR,
-        "emulation_system/resources/vagrant/settings.json"
+        ROOT_DIR, "emulation_system/resources/vagrant/settings.json"
     )
     CREATE_COMMAND_NAME = "Create"
     SHELL_COMMAND_NAME = "Shell"
@@ -71,23 +76,19 @@ class VirtualMachineCreator(AbstractCommandCreator):
             VirtualMachineSubCommands.REMOVE.value: self.remove,
         }
         if self.command not in self.command_mapping.keys():
-            command_string = ', '.join(self.VALID_COMMANDS)
+            command_string = ", ".join(self.command_mapping.keys())
             raise InvalidCommandError(
-                f"\"command\" must be one of the following values: {command_string}"
+                f'"command" must be one of the following values: {command_string}'
             )
 
     @classmethod
     def from_cli_input(
-            cls, args: argparse.Namespace, settings: ConfigurationSettings
+        cls, args: argparse.Namespace, settings: ConfigurationSettings
     ) -> VirtualMachineCreator:
         """Construct VirtualMachineCreator from CLI input
         Also creates settings.json file to pass with vagrant commands"""
         cls._create_json_settings_file(settings)
-        return cls(
-            command=args.vm_command,
-            mode=args.mode,
-            dry_run=args.dry_run
-        )
+        return cls(command=args.vm_command, mode=args.mode, dry_run=args.dry_run)
 
     @classmethod
     def _create_json_settings_file(cls, settings_object: ConfigurationSettings) -> None:
@@ -104,18 +105,17 @@ class VirtualMachineCreator(AbstractCommandCreator):
             OPENTRONS_MODULES_PATH=default_folder_paths.modules,
             OT3_FIRMWARE_PATH=default_folder_paths.ot3_firmware,
             OPENTRONS_PATH=default_folder_paths.opentrons,
-            NUM_SOCKET_CAN_NETWORKS=vm_settings.num_socket_can_networks
+            NUM_SOCKET_CAN_NETWORKS=str(vm_settings.num_socket_can_networks),
         ).json(indent=4)
 
-        settings_file = open(cls.SETTINGS_FILE_LOCATION, 'w')
+        settings_file = open(cls.SETTINGS_FILE_LOCATION, "w")
         settings_file.write(json_output)
         settings_file.close()
 
     def get_commands(self) -> CommandList:
         """Returns list of commands to run with vagrant"""
         return CommandList(
-            command_list=[self.command_mapping[self.command]()],
-            dry_run=self.dry_run
+            command_list=[self.command_mapping[self.command]()], dry_run=self.dry_run
         )
 
     def create(self) -> Command:
@@ -123,7 +123,7 @@ class VirtualMachineCreator(AbstractCommandCreator):
         return Command(
             command_name=self.CREATE_COMMAND_NAME,
             command=f"vagrant up {self.mode}",
-            cwd=self.VAGRANT_RESOURCES_LOCATION
+            cwd=self.VAGRANT_RESOURCES_LOCATION,
         )
 
     def shell(self) -> Command:
@@ -131,7 +131,7 @@ class VirtualMachineCreator(AbstractCommandCreator):
         return Command(
             command_name=self.SHELL_COMMAND_NAME,
             command=f"vagrant ssh {self.mode}",
-            cwd=self.VAGRANT_RESOURCES_LOCATION
+            cwd=self.VAGRANT_RESOURCES_LOCATION,
         )
 
     def remove(self) -> Command:
@@ -139,6 +139,5 @@ class VirtualMachineCreator(AbstractCommandCreator):
         return Command(
             command_name=self.REMOVE_COMMAND_NAME,
             command=f"vagrant destroy --force {self.mode}",
-            cwd=self.VAGRANT_RESOURCES_LOCATION
+            cwd=self.VAGRANT_RESOURCES_LOCATION,
         )
-

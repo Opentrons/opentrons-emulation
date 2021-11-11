@@ -12,7 +12,7 @@ class AbstractCommandCreator(abc.ABC):
     @classmethod
     @abc.abstractmethod
     def from_cli_input(
-            cls, args: argparse.Namespace, settings: ConfigurationSettings
+        cls, args: argparse.Namespace, settings: ConfigurationSettings
     ) -> AbstractCommandCreator:
         """Parse cli input args into Command Creator class"""
         ...
@@ -21,4 +21,3 @@ class AbstractCommandCreator(abc.ABC):
     def get_commands(self) -> CommandList:
         """Get list of commands to be run"""
         ...
-
