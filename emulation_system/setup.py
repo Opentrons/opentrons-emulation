@@ -21,7 +21,7 @@ DISTNAME = "emulation_system"
 LICENSE = "Apache 2.0"
 AUTHOR = "Opentrons"
 EMAIL = "engineering@opentrons.com"
-URL = "https://github.com/Opentrons/opentrons"
+URL = "https://github.com/Opentrons/opentrons-emulation"
 DOWNLOAD_URL = ""
 CLASSIFIERS = [
     "Development Status :: 5 - Production/Stable",
@@ -35,7 +35,7 @@ CLASSIFIERS = [
 ]
 KEYWORDS = ["robots", "protocols", "synbio", "pcr", "automation", "lab"]
 DESCRIPTION = "Opentrons Emulation Engine"
-PACKAGES = find_packages(where="src", exclude=["tests.*", "tests"])
+PACKAGES = find_packages(where="emulation_system", exclude=["tests.*", "tests"])
 INSTALL_REQUIRES = []
 
 
@@ -62,7 +62,7 @@ setup(
     keywords=KEYWORDS,
     long_description=__doc__,
     packages=PACKAGES,
-    package_dir={"": "src"},
+    package_dir={"": "emulation_system"},
     zip_safe=False,
     classifiers=CLASSIFIERS,
     install_requires=INSTALL_REQUIRES,

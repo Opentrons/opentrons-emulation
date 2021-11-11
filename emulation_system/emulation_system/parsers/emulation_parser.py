@@ -14,10 +14,12 @@ from command_creators.emulation_creator import (
 
 
 class EmulationParser(AbstractParser):
+    """Parser for emulation sub-command"""
     @classmethod
     def get_parser(
             cls, parser: argparse.ArgumentParser, settings: ConfigurationSettings
     ) -> None:
+        """Build parser for emulation command"""
         em_parser = parser.add_parser(
             'emulator',
             aliases=['em'],
@@ -31,7 +33,6 @@ class EmulationParser(AbstractParser):
         )
 
         common_parser = argparse.ArgumentParser()
-
         common_parser.add_argument(
             f"{CommonEmulationOptions.DETACHED.value}",
             action="store_true",

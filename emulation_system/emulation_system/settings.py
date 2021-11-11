@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-from settings_models import ConfigurationSettings
 
 # Mode Names
 PRODUCTION_MODE_NAME = 'prod'

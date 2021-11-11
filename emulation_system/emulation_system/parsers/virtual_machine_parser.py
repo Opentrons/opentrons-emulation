@@ -7,11 +7,13 @@ from settings_models import ConfigurationSettings
 
 
 class VirtualMachineParser(AbstractParser):
+    """Parser for virtual-machine sub-command"""
 
     @classmethod
     def get_parser(
             cls, parser: argparse.ArgumentParser, settings: ConfigurationSettings
     ) -> None:
+        """Build parser for virtual-machine command"""
         subparser = parser.add_parser(
             'virtual-machine',
             aliases=['vm'],

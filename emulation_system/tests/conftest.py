@@ -7,7 +7,7 @@ import pytest
 from settings import CONFIGURATION_FILE_LOCATION_VAR_NAME
 from settings_models import ConfigurationSettings, DefaultFolderPaths
 
-from emulation_system.src.settings import ROOT_DIR
+from settings import ROOT_DIR
 
 
 def get_test_conf() -> Dict[str, str]:

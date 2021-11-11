@@ -21,14 +21,19 @@ class VirtualMachineSubCommands(str, Enum):
 
 
 class VirtualMachineSubCommandOptions(str, Enum):
+    """Mode for virtual-machine subcommand
+    Either prod or dev"""
     MODE = "mode"
 
 
 class InvalidCommandError(ValueError):
+    """Error thrown if virtual-machine sub-command is not
+    create, shell, or remove"""
     pass
 
 
 class VirtualMachineConfig(pydantic.BaseModel):
+    """Model for json parameter file that needs to be specified to Vagrant"""
     VM_MEMORY: int
     VM_CPUS: int
     PRODUCTION_VM_NAME: str
@@ -41,7 +46,8 @@ class VirtualMachineConfig(pydantic.BaseModel):
 
 @dataclass
 class VirtualMachineCreator(AbstractCommandCreator):
-
+    """Class to build vagrant commands for creating a Virtual Machine
+    Supports create, shell, remove"""
     VAGRANT_RESOURCES_LOCATION = os.path.join(
         ROOT_DIR,
         "emulation_system/resources/vagrant"
@@ -58,7 +64,7 @@ class VirtualMachineCreator(AbstractCommandCreator):
     mode: str
     dry_run: bool = False
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.command_mapping = {
             VirtualMachineSubCommands.CREATE.value: self.create,
             VirtualMachineSubCommands.SHELL.value: self.shell,
@@ -74,6 +80,8 @@ class VirtualMachineCreator(AbstractCommandCreator):
     def from_cli_input(
             cls, args: argparse.Namespace, settings: ConfigurationSettings
     ) -> VirtualMachineCreator:
+        """Construct VirtualMachineCreator from CLI input
+        Also creates settings.json file to pass with vagrant commands"""
         cls._create_json_settings_file(settings)
         return cls(
             command=args.vm_command,
@@ -83,6 +91,8 @@ class VirtualMachineCreator(AbstractCommandCreator):
 
     @classmethod
     def _create_json_settings_file(cls, settings_object: ConfigurationSettings) -> None:
+        """Build settings.json file which defines all parameters to be supplied
+        to vagrant commands"""
         vm_settings = settings_object.virtual_machine_settings
         default_folder_paths = settings_object.global_settings.default_folder_paths
 
@@ -102,12 +112,14 @@ class VirtualMachineCreator(AbstractCommandCreator):
         settings_file.close()
 
     def get_commands(self) -> CommandList:
+        """Returns list of commands to run with vagrant"""
         return CommandList(
             command_list=[self.command_mapping[self.command]()],
             dry_run=self.dry_run
         )
 
     def create(self) -> Command:
+        """Command to build and start a Virtual Machine"""
         return Command(
             command_name=self.CREATE_COMMAND_NAME,
             command=f"vagrant up {self.mode}",
@@ -115,6 +127,7 @@ class VirtualMachineCreator(AbstractCommandCreator):
         )
 
     def shell(self) -> Command:
+        """Command to open a shell to a VirtualMachine"""
         return Command(
             command_name=self.SHELL_COMMAND_NAME,
             command=f"vagrant ssh {self.mode}",
@@ -122,6 +135,7 @@ class VirtualMachineCreator(AbstractCommandCreator):
         )
 
     def remove(self) -> Command:
+        """Command to remove Virtual Machine"""
         return Command(
             command_name=self.REMOVE_COMMAND_NAME,
             command=f"vagrant destroy --force {self.mode}",

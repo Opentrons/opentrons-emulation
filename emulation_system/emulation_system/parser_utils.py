@@ -1,5 +1,4 @@
 import argparse
-import sys
 
 
 class CLIHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
@@ -30,4 +29,5 @@ class CLIHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
 
 def get_formatter():
+    """Return prefilled out formatter"""
     return lambda prog: CLIHelpFormatter(prog, max_help_position=100, width=200)

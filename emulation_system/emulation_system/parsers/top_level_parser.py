@@ -49,6 +49,7 @@ class TopLevelParser:
 
     @staticmethod
     def _get_settings() -> ConfigurationSettings:
+        """Load settings file"""
         if CONFIGURATION_FILE_LOCATION_VAR_NAME in os.environ:
             file_path = os.environ[CONFIGURATION_FILE_LOCATION_VAR_NAME]
         else:
@@ -57,6 +58,7 @@ class TopLevelParser:
         return ConfigurationSettings.from_file_path(file_path)
 
     def parse(self, passed_args=[]) -> AbstractCommandCreator:
+        """Parse args into CommandCreator"""
         if len(passed_args) == 0:
             parsed_args = self._parser.parse_args(sys.argv[1:])
         else:

@@ -1,6 +1,8 @@
 import pytest
 from typing import List
-from command_creators.virtual_machine_creator import VirtualMachineCreator
+from command_creators.virtual_machine_creator import (
+    VirtualMachineCreator
+)
 from command_creators.command import CommandList, Command
 from parsers.top_level_parser import TopLevelParser
 

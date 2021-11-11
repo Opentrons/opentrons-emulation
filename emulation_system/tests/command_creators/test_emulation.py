@@ -2,8 +2,8 @@ from typing import List
 
 import pytest
 
-from emulation_system.src.parsers.top_level_parser import TopLevelParser
-from emulation_system.tests.emulation_conftest import (
+from parsers.top_level_parser import TopLevelParser
+from tests.emulation_conftest import (
     BASIC_DEV_CMDS_TO_RUN,
     COMPLEX_DEV_COMMANDS_TO_RUN,
     BASIC_PROD_COMMANDS_TO_RUN,
@@ -41,6 +41,7 @@ def complex_prod_emulation_cmd() -> List[str]:
         f"--opentrons-modules-repo-sha={MADE_UP_MODULES_SHA} "
         f"--opentrons-repo-sha={MADE_UP_OPENTRONS_SHA}"
     ).split(" ")
+
 
 def test_basic_dev_em_commands(set_config_file_env_var, basic_emulation_dev_cmd):
     dev_em_creator = TopLevelParser().parse(basic_emulation_dev_cmd)
