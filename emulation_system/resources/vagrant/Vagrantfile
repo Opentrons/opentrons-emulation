@@ -14,39 +14,28 @@ Vagrant.configure("2") do |config|
     vb.cpus = settings['VM_CPUS']
   end
 
-  config.vm.provision "shell", env: {"NUM_SOCKET_CAN_NETWORKS" => settings['NUM_SOCKET_CAN_NETWORKS']},inline: <<-SHELL
-  # Install Docker
-    apt-get update
-    apt-get install -y \
-      apt-transport-https \
-      ca-certificates \
-      curl \
-      gnupg \
-      lsb-release
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-    echo \
-       "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-       $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-    apt-get update
-    apt-get install -y docker-ce docker-ce-cli containerd.io
-    groupadd docker
-    usermod -a -G docker vagrant
+  config.vm.provision "packages",
+  name: "packages",
+  type: "shell",
+  path: "provisioning_scripts/packages.sh"
 
-  # Install Docker-Compose
-     curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-     chmod +x /usr/local/bin/docker-compose
+  config.vm.provision "docker",
+  name: "docker",
+  type: "shell",
+  path: "provisioning_scripts/docker.sh"
 
-  # Install SocketCAN
-    apt-get install linux-modules-extra-$(uname -r)
-    modprobe vcan
+  config.vm.provision "socket_can",
+  name: "socket_can",
+  type: "shell",
+  env: {"NUM_SOCKET_CAN_NETWORKS" => settings['NUM_SOCKET_CAN_NETWORKS']},
+  path: "provisioning_scripts/socket_can.sh"
 
-  # Create SocketCAN network
-  	NUM_SOCKET_CAN_NETWORKS=$(expr $NUM_SOCKET_CAN_NETWORKS - 1)
-  	for i in $(seq 0 $NUM_SOCKET_CAN_NETWORKS); do
-		ip link add dev vcan${i} type vcan fd on
-		ip link set up vcan${i}
-	done
-  SHELL
+  config.vm.provision "pyenv",
+  name: "pyenv",
+  type: "shell",
+  path: "provisioning_scripts/pyenv.sh",
+  reset: "true"
+
 
   config.vm.define "prod" do |prod|
     prod.vm.provider "virtualbox" do |vb|
