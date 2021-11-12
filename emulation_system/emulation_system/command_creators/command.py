@@ -27,6 +27,7 @@ class Command:
     command: str
     cwd: str = ROOT_DIR
     env: Dict = field(default_factory=dict)
+    shell: bool = False
 
     @staticmethod
     def _capture_and_print_output(process: subprocess.Popen) -> str:
@@ -55,10 +56,17 @@ class Command:
         and executes command"""
         return f"(cd {self.cwd} && {self.command})"
 
-    def run_command(self) -> CommandOutput:
-        """Execute shell command using subprocess"""
+    def _get_shell(self) -> None:
+        subprocess.Popen(
+                shlex.split(self.command),
+                text=True,
+                cwd=self.cwd,
+                env=self._gen_env(self.env),
+            ).communicate()
+
+    def _get_command(self):
         try:
-            p = subprocess.Popen(
+            return subprocess.Popen(
                 shlex.split(self.command),
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
@@ -69,11 +77,27 @@ class Command:
         except subprocess.CalledProcessError as err:
             raise CommandExecutionError(err.stderr)
 
-        return CommandOutput(
-            command_name=self.command_name,
-            command=self.command,
-            command_output=self._capture_and_print_output(p),
-        )
+    def run_command(self) -> CommandOutput:
+        """Execute shell command using subprocess"""
+
+        if self.shell:
+            self._get_shell()
+            output = CommandOutput(
+                command_name=self.command_name,
+                command=self.command,
+                command_output="Shell finished"
+            )
+        else:
+            p = self._get_command()
+            output = CommandOutput(
+                command_name=self.command_name,
+                command=self.command,
+                command_output=self._capture_and_print_output(p),
+            )
+
+        return output
+
+
 
 
 @dataclass

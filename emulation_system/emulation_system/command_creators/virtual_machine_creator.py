@@ -132,6 +132,7 @@ class VirtualMachineCreator(AbstractCommandCreator):
             command_name=self.SHELL_COMMAND_NAME,
             command=f"vagrant ssh {self.mode}",
             cwd=self.VAGRANT_RESOURCES_LOCATION,
+            shell=True
         )
 
     def remove(self) -> Command:
