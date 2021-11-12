@@ -30,12 +30,6 @@ Vagrant.configure("2") do |config|
   env: {"NUM_SOCKET_CAN_NETWORKS" => settings['NUM_SOCKET_CAN_NETWORKS']},
   path: "provisioning_scripts/socket_can.sh"
 
-  config.vm.provision "pyenv",
-  name: "pyenv",
-  type: "shell",
-  path: "provisioning_scripts/pyenv.sh",
-  reset: "true"
-
 
   config.vm.define "prod" do |prod|
     prod.vm.provider "virtualbox" do |vb|

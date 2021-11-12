@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+add-apt-repository ppa:deadsnakes/ppa
 apt-get update
 apt-get install -y \
   pipenv \
@@ -22,4 +23,8 @@ apt-get install -y \
   curl \
   gnupg \
   lsb-release \
-  linux-modules-extra-$(uname -r)
+  linux-modules-extra-$(uname -r) \
+  python3.7
+
+(cd /usr/bin/ && ln -s /usr/bin/python3.7 python)
+(cd /opentrons-emulation/emulation_system && sudo -u vagrant make setup)
