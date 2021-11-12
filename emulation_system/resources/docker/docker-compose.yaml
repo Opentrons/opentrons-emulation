@@ -4,7 +4,7 @@ services:
     image: ot3-echo-prod:latest
     build:
       context: .
-      target: ot3-firmware-echo
+      target: ot3-firmware-echo-prod
     container_name: ot3-echo-prod
     network_mode: host
     tty: true
@@ -13,7 +13,7 @@ services:
     image: heater-shaker-prod:latest
     build:
       context: .
-      target: heater-shaker
+      target: heater-shaker-prod
     container_name: heater-shaker-prod
     network_mode: host
     command: ["--socket", "http://${HEATER_SHAKER_SOCKET_HOST}:${HEATER_SHAKER_SOCKET_PORT}"]

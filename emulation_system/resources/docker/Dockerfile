@@ -167,13 +167,13 @@ ENV OPENTRONS_HARDWARE "heater-shaker"
 # Make sure to include the OPENTRONS_HARDWARE env variable
 
 
-FROM ubuntu-base as ot3-firmware-echo
+FROM ubuntu-base as ot3-firmware-echo-prod
 ENV OPENTRONS_HARDWARE "ot3-firmware-echo"
 COPY entrypoint.sh /entrypoint.sh
 COPY --from=ot3-echo-builder /ot3-firmware/build-host/can/simulator/can-simulator /ot3-firmware/build-host/can/simulator/can-simulator
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ubuntu-base as heater-shaker
+FROM ubuntu-base as heater-shaker-prod
 ENV OPENTRONS_HARDWARE "heater-shaker"
 COPY entrypoint.sh /entrypoint.sh
 COPY --from=heater-shaker-builder /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator
