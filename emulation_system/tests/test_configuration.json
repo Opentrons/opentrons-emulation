@@ -1,0 +1,34 @@
+{
+    "global-settings": {
+        "default-folder-paths": {
+            "opentrons": "/home/Documents/repos/opentrons",
+            "ot3-firmware": "/home/Documents/repos/ot3-firmware",
+            "modules": "/home/Documents/repos/opentrons-modules"
+        }
+    },
+
+    "emulation-settings": {
+        "source-download-locations": {
+            "heads": {
+                "opentrons": "https://github.com/AnotherOrg/opentrons/archive/refs/heads/edge.zip",
+                "ot3-firmware": "https://github.com/AnotherOrg/ot3-firmware/archive/refs/heads/main.zip",
+                "modules": "https://github.com/AnotherOrg/opentrons-modules/archive/refs/heads/edge.zip"
+            },
+            "commits": {
+                "opentrons": "https://github.com/AnotherOrg/opentrons/archive/{{commit-sha}}.zip",
+                "ot3-firmware": "https://github.com/AnotherOrg/ot3-firmware/archive/{{commit-sha}}.zip",
+                "modules": "https://github.com/AnotherOrg/opentrons-modules/archive/{{commit-sha}}.zip"
+            }
+        }
+    },
+
+    "virtual-machine-settings": {
+        "dev-vm-name": "Development VM",
+        "prod-vm-name": "Production VM",
+        "vm-memory": 4096,
+        "vm-cpus": 2,
+        "num-socket-can-networks": 2
+    },
+
+    "aws-ecr-settings": {}
+}

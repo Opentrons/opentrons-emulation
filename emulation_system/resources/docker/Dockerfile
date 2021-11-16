@@ -96,6 +96,7 @@ RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.2
 # TODO: python-emulators-source
 #  * Will be based off of python-base
 #  * Will contain opentrons source and entrypoint.sh
+#  * Use OPENTRONS_SOURCE_DOWNLOAD_LOCATION for build arg
 
 #######################
 # ot3-firmware-source #
@@ -132,11 +133,11 @@ COPY entrypoint.sh /entrypoint.sh
 # The Exectuable Builder should build the executable file and the Production Target should copy over to itself
 # Building separately from the Production Target to reduce image size
 
-FROM ot3-firmware-builder as ot3-echo-builder
+FROM ot3-firmware-source as ot3-echo-builder
 ENV OPENTRONS_HARDWARE "ot3-firmware-echo"
 RUN /entrypoint.sh build
 
-FROM modules-builder as heater-shaker-builder
+FROM opentrons-modules-source as heater-shaker-builder
 ENV OPENTRONS_HARDWARE "heater-shaker"
 RUN /entrypoint.sh build
 
@@ -166,13 +167,13 @@ ENV OPENTRONS_HARDWARE "heater-shaker"
 # Make sure to include the OPENTRONS_HARDWARE env variable
 
 
-FROM ubuntu-base as ot3-firmware-echo
+FROM ubuntu-base as ot3-firmware-echo-prod
 ENV OPENTRONS_HARDWARE "ot3-firmware-echo"
 COPY entrypoint.sh /entrypoint.sh
 COPY --from=ot3-echo-builder /ot3-firmware/build-host/can/simulator/can-simulator /ot3-firmware/build-host/can/simulator/can-simulator
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ubuntu-base as heater-shaker
+FROM ubuntu-base as heater-shaker-prod
 ENV OPENTRONS_HARDWARE "heater-shaker"
 COPY entrypoint.sh /entrypoint.sh
 COPY --from=heater-shaker-builder /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator

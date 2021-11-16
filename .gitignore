@@ -1,5 +1,26 @@
+# JetBrains Config
 .idea/
-ot3-firmware/
+
+# .env file that is actually used by the system
 .env
-scripts/vagrant/.vagrant/
-scripts/vagrant/Vagrantfile
+
+# Vagrant state files
+.vagrant/
+
+# Build file
+pyproject.toml
+
+*.egg-info
+
+# Runtime python files
+__pycache__/
+
+# Configuration File
+configuration.json
+
+# Generated Vagrant Settings File
+emulation_system/resources/vagrant/settings.json
+
+# Test Coverage Files
+.coverage
+coverage.xml

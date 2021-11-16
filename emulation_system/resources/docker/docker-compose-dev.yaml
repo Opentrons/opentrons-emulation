@@ -1,10 +1,11 @@
 version: '3.8'
 services:
-  echo-dev:
+  ot3-echo-dev:
+    image: ot3-echo-dev:latest
     build:
       context: .
       target: ot3-firmware-echo-dev
-    container_name: echo-dev
+    container_name: ot3-echo-dev
     network_mode: host
     tty: true
     volumes:
@@ -12,6 +13,7 @@ services:
       - ./entrypoint.sh:/entrypoint.sh
 
   heater-shaker-dev:
+    image: heater-shaker-dev:latest
     build:
       context: .
       target: heater-shaker-dev

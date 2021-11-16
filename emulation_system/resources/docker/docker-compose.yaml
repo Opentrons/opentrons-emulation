@@ -1,17 +1,19 @@
 version: '3.8'
 services:
-  echo-prod:
+  ot3-echo-prod:
+    image: ot3-echo-prod:latest
     build:
       context: .
-      target: ot3-firmware-echo
-    container_name: echo-prod
+      target: ot3-firmware-echo-prod
+    container_name: ot3-echo-prod
     network_mode: host
     tty: true
 
   heater-shaker-prod:
+    image: heater-shaker-prod:latest
     build:
       context: .
-      target: heater-shaker
+      target: heater-shaker-prod
     container_name: heater-shaker-prod
     network_mode: host
     command: ["--socket", "http://${HEATER_SHAKER_SOCKET_HOST}:${HEATER_SHAKER_SOCKET_PORT}"]

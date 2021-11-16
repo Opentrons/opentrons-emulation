@@ -1,0 +1,49 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+require 'json'
+settings = JSON.parse(File.read(File.join(File.dirname(__FILE__), 'settings.json')))
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/ubuntu2004"
+
+  config.vm.synced_folder "../../../../opentrons-emulation", "/opentrons-emulation"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = false
+    vb.memory = settings['VM_MEMORY']
+    vb.cpus = settings['VM_CPUS']
+  end
+
+  config.vm.provision "packages",
+  name: "packages",
+  type: "shell",
+  path: "provisioning_scripts/packages.sh"
+
+  config.vm.provision "docker",
+  name: "docker",
+  type: "shell",
+  path: "provisioning_scripts/docker.sh"
+
+  config.vm.provision "socket_can",
+  name: "socket_can",
+  type: "shell",
+  env: {"NUM_SOCKET_CAN_NETWORKS" => settings['NUM_SOCKET_CAN_NETWORKS']},
+  path: "provisioning_scripts/socket_can.sh"
+
+
+  config.vm.define "prod" do |prod|
+    prod.vm.provider "virtualbox" do |vb|
+        vb.name = settings['PRODUCTION_VM_NAME']
+    end
+  end
+
+  config.vm.define "dev" do |dev|
+      dev.vm.provider "virtualbox" do |vb|
+          vb.name = settings['DEVELOPMENT_VM_NAME']
+      end
+    dev.vm.synced_folder settings['OPENTRONS_MODULES_PATH'], "/opentrons-modules"
+    dev.vm.synced_folder settings['OT3_FIRMWARE_PATH'], "/ot3-firmware"
+    dev.vm.synced_folder settings['OPENTRONS_PATH'], "/opentrons"
+  end
+
+end
