@@ -1,8 +1,8 @@
 from __future__ import annotations
 import json
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field, parse_obj_as
+from pydantic import BaseModel, Field, parse_obj_as, validator
 
 
 class ConfigurationFileNotFoundError(FileNotFoundError):
@@ -42,12 +42,20 @@ class EmulationSettings(BaseModel):
     )
 
 
+class SharedFolder(BaseModel):
+    host_path: str = Field(..., alias="host-path")
+    vm_path: str = Field(..., alias="vm-path")
+
+
 class VirtualMachineSettings(BaseModel):
     dev_vm_name: str = Field(..., alias="dev-vm-name")
     prod_vm_name: str = Field(..., alias="prod-vm-name")
     vm_memory: int = Field(..., alias="vm-memory")
     vm_cpus: int = Field(..., alias="vm-cpus")
     num_socket_can_networks: int = Field(..., alias="num-socket-can-networks")
+    shared_folders: List[SharedFolder] = Field(
+        alias="shared-folders", default=[]
+    )
 
 
 class ConfigurationSettings(BaseModel):

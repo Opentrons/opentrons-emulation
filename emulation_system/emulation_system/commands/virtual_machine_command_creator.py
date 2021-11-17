@@ -2,17 +2,18 @@ from __future__ import annotations
 
 import argparse
 import os
+from typing import List, Dict
 
 import pydantic
 from dataclasses import dataclass
 from enum import Enum
 
-from emulation_system.command_creators.command import CommandList, Command
+from emulation_system.commands.command import CommandList, Command
 from emulation_system.settings import ROOT_DIR
-from emulation_system.command_creators.abstract_command_creator import (
+from emulation_system.commands.abstract_command_creator import (
     AbstractCommandCreator,
 )
-from emulation_system.settings_models import ConfigurationSettings
+from emulation_system.settings_models import ConfigurationSettings, SharedFolder
 
 
 class VirtualMachineSubCommands(str, Enum):
@@ -48,10 +49,11 @@ class VirtualMachineConfig(pydantic.BaseModel):
     OT3_FIRMWARE_PATH: str
     OPENTRONS_PATH: str
     NUM_SOCKET_CAN_NETWORKS: str
+    SHARED_FOLDERS: List[SharedFolder]
 
 
 @dataclass
-class VirtualMachineCreator(AbstractCommandCreator):
+class VirtualMachineCommandCreator(AbstractCommandCreator):
     """Class to build vagrant commands for creating a Virtual Machine
     Supports create, shell, remove"""
 
@@ -84,8 +86,8 @@ class VirtualMachineCreator(AbstractCommandCreator):
     @classmethod
     def from_cli_input(
         cls, args: argparse.Namespace, settings: ConfigurationSettings
-    ) -> VirtualMachineCreator:
-        """Construct VirtualMachineCreator from CLI input
+    ) -> VirtualMachineCommandCreator:
+        """Construct VirtualMachineCommandCreator from CLI input
         Also creates settings.json file to pass with vagrant commands"""
         cls._create_json_settings_file(settings)
         return cls(command=args.vm_command, mode=args.mode, dry_run=args.dry_run)
@@ -106,6 +108,7 @@ class VirtualMachineCreator(AbstractCommandCreator):
             OT3_FIRMWARE_PATH=default_folder_paths.ot3_firmware,
             OPENTRONS_PATH=default_folder_paths.opentrons,
             NUM_SOCKET_CAN_NETWORKS=str(vm_settings.num_socket_can_networks),
+            SHARED_FOLDERS=vm_settings.shared_folders
         ).json(indent=4)
 
         settings_file = open(cls.SETTINGS_FILE_LOCATION, "w")

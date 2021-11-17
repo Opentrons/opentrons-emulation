@@ -8,6 +8,10 @@ Vagrant.configure("2") do |config|
 
   config.vm.synced_folder "../../../../opentrons-emulation", "/opentrons-emulation"
 
+  settings['SHARED_FOLDERS'].each do |conf|
+  	config.vm.synced_folder conf['host_path'], conf['vm_path']
+  end
+
   config.vm.provider "virtualbox" do |vb|
     vb.gui = false
     vb.memory = settings['VM_MEMORY']
@@ -29,7 +33,6 @@ Vagrant.configure("2") do |config|
   type: "shell",
   env: {"NUM_SOCKET_CAN_NETWORKS" => settings['NUM_SOCKET_CAN_NETWORKS']},
   path: "provisioning_scripts/socket_can.sh"
-
 
   config.vm.define "prod" do |prod|
     prod.vm.provider "virtualbox" do |vb|
