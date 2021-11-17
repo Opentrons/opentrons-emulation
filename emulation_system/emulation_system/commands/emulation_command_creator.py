@@ -13,8 +13,8 @@ from emulation_system.settings import (
     LATEST_KEYWORD,
     ROOT_DIR,
 )
-from emulation_system.command_creators.command import CommandList, Command
-from emulation_system.command_creators.abstract_command_creator import (
+from emulation_system.commands.command import CommandList, Command
+from emulation_system.commands.abstract_command_creator import (
     AbstractCommandCreator,
 )
 from emulation_system.settings_models import (
@@ -59,7 +59,7 @@ class InvalidModeError(ValueError):
     pass
 
 
-class AbstractEmulationCreator(AbstractCommandCreator):
+class AbstractEmulationCommandCreator(AbstractCommandCreator):
     """Things common to both EmulationCreator classes"""
 
     BUILD_COMMAND_NAME = "Build Emulation"
@@ -120,7 +120,7 @@ class AbstractEmulationCreator(AbstractCommandCreator):
 
 
 @dataclass
-class ProdEmulationCreator(AbstractEmulationCreator):
+class ProdEmulationCommandCreator(AbstractEmulationCommandCreator):
     """Class to build docker commands for creating a Production Emulator
     Supports `build`, `clean`, and `run` commands"""
 
@@ -143,7 +143,7 @@ class ProdEmulationCreator(AbstractEmulationCreator):
     @classmethod
     def from_cli_input(
         cls, args: argparse.Namespace, settings: ConfigurationSettings
-    ) -> ProdEmulationCreator:
+    ) -> ProdEmulationCommandCreator:
         """Factory method to convert CLI input into a ProdEmulatorCreator object"""
         download_locations = settings.emulation_settings.source_download_locations
         return cls(
@@ -212,7 +212,7 @@ class ProdEmulationCreator(AbstractEmulationCreator):
 
 
 @dataclass
-class DevEmulationCreator(AbstractEmulationCreator):
+class DevEmulationCommandCreator(AbstractEmulationCommandCreator):
     """Command creator for `dev` sub-command of `emulation` command.
     Supports `build`, `clean`, and `run` commands"""
 
@@ -246,7 +246,7 @@ class DevEmulationCreator(AbstractEmulationCreator):
     @classmethod
     def from_cli_input(
         cls, args: argparse.Namespace, settings: ConfigurationSettings
-    ) -> DevEmulationCreator:
+    ) -> DevEmulationCommandCreator:
         """Factory method to convert CLI input into a DevEmulatorCreator object"""
         return cls(
             detached=args.detached,

@@ -1,5 +1,5 @@
 import pytest
-from emulation_system.command_creators.command import (
+from emulation_system.commands.command import (
     Command,
     CommandList,
 )

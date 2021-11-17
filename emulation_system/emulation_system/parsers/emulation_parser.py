@@ -3,13 +3,13 @@ from emulation_system.parser_utils import get_formatter
 from emulation_system.parsers.abstract_parser import AbstractParser
 from emulation_system.settings import LATEST_KEYWORD
 from emulation_system.settings_models import ConfigurationSettings
-from emulation_system.command_creators.emulation_creator import (
+from emulation_system.commands.emulation_command_creator import (
     CommonEmulationOptions,
     ProductionEmulationOptions,
     DevelopmentEmulationOptions,
     EmulationSubCommands,
-    ProdEmulationCreator,
-    DevEmulationCreator,
+    ProdEmulationCommandCreator,
+    DevEmulationCommandCreator,
 )
 
 
@@ -46,7 +46,7 @@ class EmulationParser(AbstractParser):
             conflict_handler="resolve",
             formatter_class=get_formatter(),
         )
-        prod_parser.set_defaults(func=ProdEmulationCreator.from_cli_input)
+        prod_parser.set_defaults(func=ProdEmulationCommandCreator.from_cli_input)
         prod_parser.add_argument(
             f"{ProductionEmulationOptions.OT3_FIRMWARE_SHA.value}",
             action="store",
@@ -76,7 +76,7 @@ class EmulationParser(AbstractParser):
             conflict_handler="resolve",
             formatter_class=get_formatter(),
         )
-        dev_parser.set_defaults(func=DevEmulationCreator.from_cli_input)
+        dev_parser.set_defaults(func=DevEmulationCommandCreator.from_cli_input)
         dev_parser.add_argument(
             DevelopmentEmulationOptions.MODULES_PATH.value,
             help="Path to opentrons-modules repo source code",

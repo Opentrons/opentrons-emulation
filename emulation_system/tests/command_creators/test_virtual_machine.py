@@ -1,62 +1,62 @@
 import pytest
 from typing import List
-from emulation_system.command_creators.virtual_machine_creator import (
-    VirtualMachineCreator,
+from emulation_system.commands.virtual_machine_command_creator import (
+    VirtualMachineCommandCreator,
 )
-from emulation_system.command_creators.command import CommandList, Command
+from emulation_system.commands.command import CommandList, Command
 from emulation_system.parsers.top_level_parser import TopLevelParser
 
 EXPECTED_DEV_CREATE = CommandList(
     [
         Command(
-            command_name=VirtualMachineCreator.CREATE_COMMAND_NAME,
+            command_name=VirtualMachineCommandCreator.CREATE_COMMAND_NAME,
             command="vagrant up dev",
-            cwd=VirtualMachineCreator.VAGRANT_RESOURCES_LOCATION,
+            cwd=VirtualMachineCommandCreator.VAGRANT_RESOURCES_LOCATION,
         )
     ]
 )
 EXPECTED_DEV_REMOVE = CommandList(
     [
         Command(
-            command_name=VirtualMachineCreator.REMOVE_COMMAND_NAME,
+            command_name=VirtualMachineCommandCreator.REMOVE_COMMAND_NAME,
             command="vagrant destroy --force dev",
-            cwd=VirtualMachineCreator.VAGRANT_RESOURCES_LOCATION,
+            cwd=VirtualMachineCommandCreator.VAGRANT_RESOURCES_LOCATION,
         )
     ]
 )
 EXPECTED_DEV_SHELL = CommandList(
     [
         Command(
-            command_name=VirtualMachineCreator.SHELL_COMMAND_NAME,
+            command_name=VirtualMachineCommandCreator.SHELL_COMMAND_NAME,
             command="vagrant ssh dev",
-            cwd=VirtualMachineCreator.VAGRANT_RESOURCES_LOCATION,
+            cwd=VirtualMachineCommandCreator.VAGRANT_RESOURCES_LOCATION,
         )
     ]
 )
 EXPECTED_PROD_CREATE = CommandList(
     [
         Command(
-            command_name=VirtualMachineCreator.CREATE_COMMAND_NAME,
+            command_name=VirtualMachineCommandCreator.CREATE_COMMAND_NAME,
             command="vagrant up prod",
-            cwd=VirtualMachineCreator.VAGRANT_RESOURCES_LOCATION,
+            cwd=VirtualMachineCommandCreator.VAGRANT_RESOURCES_LOCATION,
         )
     ]
 )
 EXPECTED_PROD_REMOVE = CommandList(
     [
         Command(
-            command_name=VirtualMachineCreator.REMOVE_COMMAND_NAME,
+            command_name=VirtualMachineCommandCreator.REMOVE_COMMAND_NAME,
             command="vagrant destroy --force prod",
-            cwd=VirtualMachineCreator.VAGRANT_RESOURCES_LOCATION,
+            cwd=VirtualMachineCommandCreator.VAGRANT_RESOURCES_LOCATION,
         )
     ]
 )
 EXPECTED_PROD_SHELL = CommandList(
     [
         Command(
-            command_name=VirtualMachineCreator.SHELL_COMMAND_NAME,
+            command_name=VirtualMachineCommandCreator.SHELL_COMMAND_NAME,
             command="vagrant ssh prod",
-            cwd=VirtualMachineCreator.VAGRANT_RESOURCES_LOCATION,
+            cwd=VirtualMachineCommandCreator.VAGRANT_RESOURCES_LOCATION,
         )
     ]
 )

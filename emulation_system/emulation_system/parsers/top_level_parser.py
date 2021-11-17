@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 
-from emulation_system.command_creators.abstract_command_creator import (
+from emulation_system.commands.abstract_command_creator import (
     AbstractCommandCreator,
 )
 from emulation_system.parser_utils import get_formatter
