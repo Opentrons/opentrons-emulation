@@ -141,6 +141,10 @@ FROM opentrons-modules-source as heater-shaker-builder
 ENV OPENTRONS_HARDWARE "heater-shaker"
 RUN /entrypoint.sh build
 
+FROM opentrons-modules-source as thermocycler-builder
+ENV OPENTRONS_HARDWARE "thermocycler"
+RUN /entrypoint.sh build
+
 #############################################################
 #                    DEVELOPMENT TARGETS                    #
 #############################################################
@@ -155,6 +159,9 @@ ENV OPENTRONS_HARDWARE "ot3-firmware-echo"
 
 FROM cpp-base as heater-shaker-dev
 ENV OPENTRONS_HARDWARE "heater-shaker"
+
+FROM cpp-base as thermocycler-dev
+ENV OPENTRONS_HARDWARE "thermocycler"
 
 ##############################################################
 #                     PRODUCTION TARGETS                     #
@@ -177,5 +184,12 @@ FROM ubuntu-base as heater-shaker-prod
 ENV OPENTRONS_HARDWARE "heater-shaker"
 COPY entrypoint.sh /entrypoint.sh
 COPY --from=heater-shaker-builder /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+
+FROM ubuntu-base as thermocycler-prod
+ENV OPENTRONS_HARDWARE "thermocycler"
+COPY entrypoint.sh /entrypoint.sh
+COPY --from=thermocycler-builder /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
