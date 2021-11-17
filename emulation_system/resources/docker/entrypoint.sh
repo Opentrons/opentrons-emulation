@@ -31,6 +31,16 @@ case $FULL_COMMAND in
   run-heater-shaker)
     bash -c "/opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator $OTHER_ARGS"
     ;;
+  build-thermocycler)
+    (
+      cd /opentrons-modules && \
+      cmake --preset=stm32-host-gcc10 . && \
+      cmake --build ./build-stm32-host --target thermocycler-refresh-simulator
+    )
+    ;;
+  run-thermocycler)
+    bash -c "/opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator $OTHER_ARGS"
+    ;;
   build-ot3-firmware-echo)
     (
       cd /ot3-firmware && \
