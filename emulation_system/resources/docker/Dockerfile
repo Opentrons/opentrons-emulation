@@ -161,7 +161,7 @@ FROM cpp-base as heater-shaker-dev
 ENV OPENTRONS_HARDWARE "heater-shaker"
 
 FROM cpp-base as thermocycler-dev
-ENV OPENTRONS_HARDWARE "heater-shaker"
+ENV OPENTRONS_HARDWARE "thermocycler"
 
 ##############################################################
 #                     PRODUCTION TARGETS                     #
