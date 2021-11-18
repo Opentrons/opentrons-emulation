@@ -68,27 +68,8 @@ class VirtualMachineCommandCreator(AbstractCommandCreator):
     SHELL_COMMAND_NAME = "Shell"
     REMOVE_COMMAND_NAME = "Remove"
 
-    LOCAL_EMULATION_FOLDER_LOCATION = os.path.normpath(
-        os.path.join(
-            '..',
-            ROOT_DIR,
-        )
-    )
-
+    LOCAL_EMULATION_FOLDER_LOCATION = os.path.normpath(os.path.join('..', ROOT_DIR))
     VAGRANT_HOME_LOCATION = '/home/vagrant'
-
-    OPENTRONS_EMULATION_FOLDER_LOCATION = os.path.join(
-        VAGRANT_HOME_LOCATION, 'opentrons-emulation'
-    )
-    OPENTRONS_MODULES_FOLDER_LOCATION = os.path.join(
-        VAGRANT_HOME_LOCATION, 'opentrons-modules'
-    )
-    OPENTRONS_MONOREPO_FOLDER_LOCATION = os.path.join(
-        VAGRANT_HOME_LOCATION, 'opentrons'
-    )
-    OT3_FIRMWARE_FOLDER_LOCATION = os.path.join(
-        VAGRANT_HOME_LOCATION, 'ot3-firmware'
-    )
 
     command: str
     mode: str
@@ -116,46 +97,28 @@ class VirtualMachineCommandCreator(AbstractCommandCreator):
         return cls(command=args.vm_command, mode=args.mode, dry_run=args.dry_run)
 
     @classmethod
-    def _setup_default_folders(
-            cls, default_folder_paths: DefaultFolderPaths
-    ) -> List[SharedFolder]:
+    def _add_source_code_folder(
+            cls, host_path: str, folders: List[SharedFolder]
+    ) -> None:
+        """If host path was defined for source code, add it to list of
+         shared folders to create on VM"""
+        if host_path is not None:
+            vm_path = os.path.join(
+                cls.VAGRANT_HOME_LOCATION, os.path.basename(host_path)
+            )
+            folders.append(
+                parse_obj_as(SharedFolder, {'host-path': host_path, 'vm-path': vm_path})
+            )
+
+    @classmethod
+    def _setup_folders(cls, folder_paths: List[str]) -> List[SharedFolder]:
         """Sets up default folders: opentrons-emulation, opentrons, opentrons-modules,
         and ot3-firmware"""
 
-        def add_source_code_folder(
-                host_path: str, vm_path: str, folders: List[SharedFolder]
-        ) -> None:
-            """If host path was defined for source code, add it to list of
-             shared folders to create on VM"""
-            if host_path is not None:
-                folders.append(
-                    parse_obj_as(
-                        SharedFolder,
-                        {'host-path': host_path, 'vm-path': vm_path}
-                    )
-                )
-
         folders = []
-        add_source_code_folder(
-            default_folder_paths.modules,
-            cls.OPENTRONS_MODULES_FOLDER_LOCATION,
-            folders
-        )
-        add_source_code_folder(
-            default_folder_paths.opentrons,
-            cls.OPENTRONS_MONOREPO_FOLDER_LOCATION,
-            folders
-        )
-        add_source_code_folder(
-            default_folder_paths.ot3_firmware,
-            cls.OT3_FIRMWARE_FOLDER_LOCATION,
-            folders
-        )
-        add_source_code_folder(
-            cls.LOCAL_EMULATION_FOLDER_LOCATION,
-            cls.OPENTRONS_EMULATION_FOLDER_LOCATION,
-            folders
-        )
+        for folder in folder_paths:
+            cls._add_source_code_folder(folder, folders)
+
         return folders
 
     @classmethod
@@ -164,8 +127,14 @@ class VirtualMachineCommandCreator(AbstractCommandCreator):
         to vagrant commands"""
         vm_settings = settings_object.virtual_machine_settings
         default_folder_paths = settings_object.global_settings.default_folder_paths
-        folders = cls._setup_default_folders(default_folder_paths)
+        folders = [
+            default_folder_paths.opentrons,
+            default_folder_paths.ot3_firmware,
+            default_folder_paths.modules,
+            cls.LOCAL_EMULATION_FOLDER_LOCATION
+        ]
         folders.extend(vm_settings.shared_folders)
+        folders = cls._setup_folders(folders)
 
         json_output = VirtualMachineConfig(
             VM_MEMORY=vm_settings.vm_memory,
