@@ -6,8 +6,6 @@ settings = JSON.parse(File.read(File.join(File.dirname(__FILE__), 'settings.json
 Vagrant.configure("2") do |config|
   config.vm.box = "generic/ubuntu2004"
 
-  config.vm.synced_folder "../../../../opentrons-emulation", "/opentrons-emulation"
-
   settings['SHARED_FOLDERS'].each do |conf|
   	config.vm.synced_folder conf['host_path'], conf['vm_path']
   end
