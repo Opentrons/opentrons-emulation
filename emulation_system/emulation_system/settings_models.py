@@ -2,8 +2,7 @@ from __future__ import annotations
 import json
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field, parse_obj_as, validator
-
+from pydantic import BaseModel, Field, parse_obj_as
 
 class ConfigurationFileNotFoundError(FileNotFoundError):
     pass
@@ -53,7 +52,7 @@ class VirtualMachineSettings(BaseModel):
     vm_memory: int = Field(..., alias="vm-memory")
     vm_cpus: int = Field(..., alias="vm-cpus")
     num_socket_can_networks: int = Field(..., alias="num-socket-can-networks")
-    shared_folders: List[SharedFolder] = Field(
+    shared_folders: List[str] = Field(
         alias="shared-folders", default=[]
     )
 
