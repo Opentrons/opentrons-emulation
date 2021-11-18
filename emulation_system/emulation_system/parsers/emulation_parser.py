@@ -11,6 +11,7 @@ from emulation_system.commands.emulation_command_creator import (
     ProdEmulationCommandCreator,
     DevEmulationCommandCreator,
 )
+from emulation_system.os_state import OSState
 
 
 class EmulationParser(AbstractParser):
@@ -80,18 +81,18 @@ class EmulationParser(AbstractParser):
         dev_parser.add_argument(
             DevelopmentEmulationOptions.MODULES_PATH.value,
             help="Path to opentrons-modules repo source code",
-            default=settings.global_settings.default_folder_paths.modules,
+            default=OSState().parse_path(settings.global_settings.default_folder_paths.modules),
             metavar="<absolute_path>",
         )
         dev_parser.add_argument(
             DevelopmentEmulationOptions.OT3_FIRMWARE_PATH.value,
             help="Path to ot3-firmware repo source code",
-            default=settings.global_settings.default_folder_paths.ot3_firmware,
+            default=OSState().parse_path(settings.global_settings.default_folder_paths.ot3_firmware),
             metavar="<absolute_path>",
         )
         dev_parser.add_argument(
             DevelopmentEmulationOptions.OPENTRONS_REPO.value,
             help="Path to opentrons repo source code",
-            default=settings.global_settings.default_folder_paths.opentrons,
+            default=OSState().parse_path(settings.global_settings.default_folder_paths.opentrons),
             metavar="<absolute_path>",
         )
