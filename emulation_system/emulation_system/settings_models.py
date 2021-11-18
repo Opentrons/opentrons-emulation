@@ -10,9 +10,9 @@ class ConfigurationFileNotFoundError(FileNotFoundError):
 
 
 class DefaultFolderPaths(BaseModel):
-    opentrons: str
-    ot3_firmware: str = Field(..., alias="ot3-firmware")
-    modules: str
+    opentrons: str = None
+    ot3_firmware: str = Field(alias="ot3-firmware", default=None)
+    modules: str = None
 
 
 class GlobalSettings(BaseModel):

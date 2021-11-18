@@ -44,9 +44,6 @@ Vagrant.configure("2") do |config|
       dev.vm.provider "virtualbox" do |vb|
           vb.name = settings['DEVELOPMENT_VM_NAME']
       end
-    dev.vm.synced_folder settings['OPENTRONS_MODULES_PATH'], "/opentrons-modules"
-    dev.vm.synced_folder settings['OT3_FIRMWARE_PATH'], "/ot3-firmware"
-    dev.vm.synced_folder settings['OPENTRONS_PATH'], "/opentrons"
   end
 
 end
