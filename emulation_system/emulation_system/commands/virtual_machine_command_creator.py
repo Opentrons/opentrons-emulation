@@ -97,29 +97,13 @@ class VirtualMachineCommandCreator(AbstractCommandCreator):
         return cls(command=args.vm_command, mode=args.mode, dry_run=args.dry_run)
 
     @classmethod
-    def _add_source_code_folder(
-            cls, host_path: str, folders: List[SharedFolder]
-    ) -> None:
+    def _add_source_code_folder(cls, host_path: str) -> SharedFolder:
         """If host path was defined for source code, add it to list of
          shared folders to create on VM"""
-        if host_path is not None:
-            vm_path = os.path.join(
-                cls.VAGRANT_HOME_LOCATION, os.path.basename(host_path)
-            )
-            folders.append(
-                parse_obj_as(SharedFolder, {'host-path': host_path, 'vm-path': vm_path})
-            )
-
-    @classmethod
-    def _setup_folders(cls, folder_paths: List[str]) -> List[SharedFolder]:
-        """Sets up default folders: opentrons-emulation, opentrons, opentrons-modules,
-        and ot3-firmware"""
-
-        folders = []
-        for folder in folder_paths:
-            cls._add_source_code_folder(folder, folders)
-
-        return folders
+        vm_path = os.path.join(
+            cls.VAGRANT_HOME_LOCATION, os.path.basename(host_path)
+        )
+        return parse_obj_as(SharedFolder, {'host-path': host_path, 'vm-path': vm_path})
 
     @classmethod
     def _create_json_settings_file(cls, settings_object: ConfigurationSettings) -> None:
@@ -132,9 +116,7 @@ class VirtualMachineCommandCreator(AbstractCommandCreator):
             default_folder_paths.ot3_firmware,
             default_folder_paths.modules,
             cls.LOCAL_EMULATION_FOLDER_LOCATION
-        ]
-        folders.extend(vm_settings.shared_folders)
-        folders = cls._setup_folders(folders)
+        ] + vm_settings.shared_folders
 
         json_output = VirtualMachineConfig(
             VM_MEMORY=vm_settings.vm_memory,
@@ -142,7 +124,11 @@ class VirtualMachineCommandCreator(AbstractCommandCreator):
             PRODUCTION_VM_NAME=vm_settings.prod_vm_name,
             DEVELOPMENT_VM_NAME=vm_settings.dev_vm_name,
             NUM_SOCKET_CAN_NETWORKS=str(vm_settings.num_socket_can_networks),
-            SHARED_FOLDERS=folders
+            SHARED_FOLDERS=[
+                cls._add_source_code_folder(folder_path)
+                for folder_path in folders
+                if folder_path is not None
+            ]
         ).json(indent=4)
 
         settings_file = open(cls.SETTINGS_FILE_LOCATION, "w")
