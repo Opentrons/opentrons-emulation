@@ -1,20 +1,62 @@
 version: '3.8'
 services:
-  ot3-echo-prod:
-    image: ot3-echo-prod:latest
+  emulator-proxy:
+    image: emulator-proxy:latest
     build:
       context: .
-      target: ot3-firmware-echo-prod
-    container_name: ot3-echo-prod
-    network_mode: host
+      target: emulator-proxy
+    container_name: emulator-proxy-prod
+    ports:
+      - '10000-10005:10000-10005'
+      - '11000-11005:11000-11005'
+    environment:
+      OT_EMULATOR_magdeck_proxy: '{"emulator_port": 10000, "driver_port": 11000}'
+      OT_EMULATOR_temperature_proxy: '{"emulator_port": 10001, "driver_port": 11001}'
+      OT_EMULATOR_thermocycler_proxy: '{"emulator_port": 10002, "driver_port": 11002}'
+
     tty: true
 
-  heater-shaker-prod:
-    image: heater-shaker-prod:latest
+  magdeck-driver-prod:
+    image: magdeck-driver-prod:latest
     build:
       context: .
-      target: heater-shaker-prod
-    container_name: heater-shaker-prod
-    network_mode: host
-    command: ["--socket", "http://${HEATER_SHAKER_SOCKET_HOST}:${HEATER_SHAKER_SOCKET_PORT}"]
+      target: magdeck-driver-prod
+    container_name: magdeck-driver-prod
+    environment:
+      OT_EMULATOR_magdeck_proxy: '{"emulator_port": 10000, "driver_port": 11000}'
+    command: ["emulator-proxy-prod"]
+    links:
+      - 'emulator-proxy'
+    depends_on:
+      - 'emulator-proxy'
+    tty: true
+
+  tempdeck-driver-prod:
+    image: tempdeck-driver-prod:latest
+    build:
+      context: .
+      target: tempdeck-driver-prod
+    container_name: tempdeck-driver-prod
+    environment:
+      OT_EMULATOR_temperature_proxy: '{"emulator_port": 10001, "driver_port": 11001}'
+    command: ["emulator-proxy-prod"]
+    links:
+      - 'emulator-proxy'
+    depends_on:
+      - 'emulator-proxy'
+    tty: true
+
+  thermocycler-driver-prod:
+    image: thermocycler-driver-prod:latest
+    build:
+      context: .
+      target: thermocycler-driver-prod
+    container_name: thermocycler-driver-prod
+    environment:
+      OT_EMULATOR_thermocycler_proxy: '{"emulator_port": 10002, "driver_port": 11002}'
+    command: ["emulator-proxy-prod"]
+    links:
+      - 'emulator-proxy'
+    depends_on:
+      - 'emulator-proxy'
     tty: true
