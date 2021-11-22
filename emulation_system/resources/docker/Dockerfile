@@ -157,6 +157,20 @@ RUN (cd / &&  \
     mv opentrons-modules* opentrons-modules)
 COPY entrypoint.sh /entrypoint.sh
 
+####################
+# opentrons-source #
+####################
+
+FROM python-base as opentrons-source
+ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION
+ADD $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons.zip
+RUN (cd / &&  \
+    unzip -q opentrons.zip && \
+    rm -f opentrons.zip && \
+    mv opentrons* opentrons)
+COPY entrypoint.sh /entrypoint.sh
+
+
 #############################################################
 #                    EXECUTABLE BUILDERS                    #
 #############################################################
@@ -178,6 +192,26 @@ FROM opentrons-modules-source as thermocycler-builder
 ENV OPENTRONS_HARDWARE "thermocycler"
 RUN /entrypoint.sh build
 
+FROM opentrons-source as driver-builder
+RUN \
+	(cd /opentrons/shared-data/python && python3 setup.py bdist_wheel -d /dist/) && \
+    (cd /opentrons/api && python3 setup.py bdist_wheel -d /dist/) && \
+    (cd /opentrons/notify-server && python3 setup.py bdist_wheel -d /dist/) && \
+    (cd /opentrons/robot-server && python3 setup.py bdist_wheel -d /dist/)
+
+
+#################
+# Driver Common #
+#################
+
+# Added this driver-common image because all driver level emulator images are based off of
+# the same source code build, it's just a different command that is ran for each.
+
+FROM python-base as driver-common
+RUN mkdir /dist
+COPY --from=driver-builder /dist/* /dist/
+RUN pip install /dist/*
+
 #############################################################
 #                    DEVELOPMENT TARGETS                    #
 #############################################################
@@ -196,33 +230,75 @@ ENV OPENTRONS_HARDWARE "heater-shaker"
 FROM cpp-base as thermocycler-dev
 ENV OPENTRONS_HARDWARE "thermocycler"
 
+FROM python-base as tempdeck-driver-dev
+ENV OPENTRONS_HARDWARE "tempdeck-driver"
+
+FROM python-base as magdeck-driver-dev
+ENV OPENTRONS_HARDWARE "magdeck-driver"
+
+FROM python-base as thermocycler-driver-dev
+ENV OPENTRONS_HARDWARE "thermocycler-driver"
+
+FROM python-base as emulator-proxy-dev
+ENV OPENTRONS_HARDWARE "emulator-proxy"
+
 ##############################################################
 #                     PRODUCTION TARGETS                     #
 ##############################################################
 
 # Targets for all production builds of emulators
-# Each Production Target should have a corresponding Executable Builder target
-# Each Production Target should copy the executable from the Executable Builder target
-# Each Production Target should copy in entrypoint.sh
 # Make sure to include the OPENTRONS_HARDWARE env variable
+# Each Production Target should copy in entrypoint.sh
 
+#################################
+# Firmware Production Emulators #
+#################################
+
+# Each Firmware Production Target should copy the executable from the Executable Builder target
+# Each Firmware Production Target should have a corresponding Executable Builder target
 
 FROM ubuntu-base as ot3-firmware-echo-prod
 ENV OPENTRONS_HARDWARE "ot3-firmware-echo"
-COPY entrypoint.sh /entrypoint.sh
 COPY --from=ot3-echo-builder /ot3-firmware/build-host/can/simulator/can-simulator /ot3-firmware/build-host/can/simulator/can-simulator
+COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
 FROM ubuntu-base as heater-shaker-prod
 ENV OPENTRONS_HARDWARE "heater-shaker"
-COPY entrypoint.sh /entrypoint.sh
 COPY --from=heater-shaker-builder /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator
+COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
-
 
 FROM ubuntu-base as thermocycler-prod
 ENV OPENTRONS_HARDWARE "thermocycler"
-COPY entrypoint.sh /entrypoint.sh
 COPY --from=thermocycler-builder /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+
+###############################
+# Driver Production Emulators #
+###############################
+
+# All driver level emulators should be based off of driver-common
+
+FROM driver-common as emulator-proxy
+ENV OPENTRONS_HARDWARE "emulator-proxy"
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM driver-common as thermocycler-driver-prod
+ENV OPENTRONS_HARDWARE "thermocycler-driver"
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM driver-common as magdeck-driver-prod
+ENV OPENTRONS_HARDWARE "magdeck-driver"
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM driver-common as tempdeck-driver-prod
+ENV OPENTRONS_HARDWARE "tempdeck-driver"
+COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
