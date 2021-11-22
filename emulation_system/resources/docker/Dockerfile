@@ -242,6 +242,9 @@ ENV OPENTRONS_HARDWARE "thermocycler-driver"
 FROM python-base as emulator-proxy-dev
 ENV OPENTRONS_HARDWARE "emulator-proxy"
 
+FROM python-base as robot-server-dev
+ENV OPENTRONS_HARDWARE "robot-server"
+
 ##############################################################
 #                     PRODUCTION TARGETS                     #
 ##############################################################
@@ -299,6 +302,11 @@ ENTRYPOINT ["/entrypoint.sh", "run"]
 
 FROM driver-common as tempdeck-driver-prod
 ENV OPENTRONS_HARDWARE "tempdeck-driver"
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM driver-common as robot-server-prod
+ENV OPENTRONS_HARDWARE "robot-server"
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 

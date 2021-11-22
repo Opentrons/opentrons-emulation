@@ -41,12 +41,6 @@ case $FULL_COMMAND in
   run-thermocycler)
     bash -c "/opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator $OTHER_ARGS"
     ;;
-  build-driver)
-    (cd /opentrons/shared-data/python && python3 setup.py bdist_wheel -d /dist/)
-    (cd /opentrons/api && python3 setup.py bdist_wheel -d /dist/)
-    (cd /opentrons/notify-server && python3 setup.py bdist_wheel -d /dist/)
-    (cd /opentrons/robot-server && python3 setup.py bdist_wheel -d /dist/)
-    ;;
   run-emulator-proxy)
     python3 -m opentrons.hardware_control.emulation.app
     ;;
@@ -58,6 +52,9 @@ case $FULL_COMMAND in
     ;;
   run-magdeck-driver)
     bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_module_emulator magdeck $OTHER_ARGS"
+    ;;
+  run-robot-server)
+    bash -c "uvicorn "robot_server:app" --host 0.0.0.0 --port 31950 --ws wsproto --reload"
     ;;
   build-ot3-firmware-echo)
     (
