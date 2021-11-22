@@ -50,32 +50,65 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN rm -rf /var/lib/apt/lists/*
 RUN echo "Updating apt" && apt-get update > /dev/null
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y wget unzip
+    && apt-get install \
+       --no-install-recommends \
+       -y \
+      wget \
+      unzip \
+      software-properties-common \
+      build-essential \
+      curl \
+      git \
+      libssl-dev \
+      && rm -rf /var/lib/apt/lists/*
 
-#############
+############
 # cpp-base #
-#############
+############
 
 FROM ubuntu-base as cpp-base
 
-RUN apt-get install \
+RUN apt-get update && \
+    apt-get install \
     --no-install-recommends \
     -y \
     libgtest-dev \
     libboost-test-dev \
-    build-essential \
     gcc-10 \
     g++-10 \
-    libssl-dev \
-    git \
-    lsb-release \
-    software-properties-common > /dev/null
+    lsb-release  > /dev/null
 
 RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2-linux-x86_64.tar.gz && \
     tar -zxf cmake-3.21.2-linux-x86_64.tar.gz && \
     rm cmake-3.21.2-linux-x86_64.tar.gz && \
     mv cmake-3.21.2-linux-x86_64 cmake && \
     (cd /usr/bin/ && ln -s /cmake/bin/cmake cmake)
+
+###############
+# python-base #
+###############
+
+FROM ubuntu-base as python-base
+
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt-get update && \
+    apt-get install -y \
+    pipenv \
+    python3.7 \
+    libudev-dev \
+    libsystemd-dev \
+    python3-dev \
+    pkgconf \
+    libpython3.7-dev \
+    pip
+
+RUN (cd /usr/bin/ && ln -s /usr/bin/python3.7 python)
+
+ENV NODE_VERSION 14
+ENV OT_PYTHON "/usr/bin/python3.7"
+
+RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -
+RUN apt-get install -y nodejs && npm install --global yarn
 
 #############################################################
 #                        REPO SOURCE                        #
