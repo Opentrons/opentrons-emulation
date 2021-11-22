@@ -2,7 +2,7 @@ from __future__ import annotations
 import abc
 import argparse
 
-from emulation_system.command_creators.command import CommandList
+from emulation_system.commands.command import CommandList
 from emulation_system.settings_models import ConfigurationSettings
 
 

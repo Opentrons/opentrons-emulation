@@ -1,7 +1,7 @@
 import argparse
 from emulation_system.parser_utils import get_formatter
-from emulation_system.command_creators.virtual_machine_creator import (
-    VirtualMachineCreator,
+from emulation_system.commands.virtual_machine_command_creator import (
+    VirtualMachineCommandCreator,
     VirtualMachineSubCommandOptions,
     VirtualMachineSubCommands,
 )
@@ -30,7 +30,7 @@ class VirtualMachineParser(AbstractParser):
         sub_subparser.metavar = ""
 
         common_parser = argparse.ArgumentParser()
-        common_parser.set_defaults(func=VirtualMachineCreator.from_cli_input)
+        common_parser.set_defaults(func=VirtualMachineCommandCreator.from_cli_input)
         common_parser.add_argument(
             VirtualMachineSubCommandOptions.MODE.value,
             action="store",

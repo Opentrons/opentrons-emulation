@@ -27,4 +27,4 @@ apt-get install -y \
   python3.7
 
 (cd /usr/bin/ && ln -s /usr/bin/python3.7 python)
-(cd /opentrons-emulation/emulation_system && sudo -u vagrant make setup)
+(cd /home/vagrant/opentrons-emulation/emulation_system && sudo -u vagrant make setup)

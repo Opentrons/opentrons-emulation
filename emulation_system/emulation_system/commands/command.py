@@ -54,7 +54,11 @@ class Command:
     def get_command_str(self) -> str:
         """Get command string that subshells to the current working directory
         and executes command"""
-        return f"(cd {self.cwd} && {self.command})"
+        env_string = ''
+        if len(self.env) != 0:
+            env_string = ' '.join(f"{key}={value}" for key, value in self.env.items())
+
+        return f"(cd {self.cwd} && {env_string} {self.command})"
 
     def _get_shell(self) -> None:
         subprocess.Popen(
