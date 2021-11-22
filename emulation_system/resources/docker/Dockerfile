@@ -282,7 +282,7 @@ ENTRYPOINT ["/entrypoint.sh", "run"]
 
 # All driver level emulators should be based off of driver-common
 
-FROM driver-common as emulator-proxy
+FROM driver-common as emulator-proxy-prod
 ENV OPENTRONS_HARDWARE "emulator-proxy"
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]

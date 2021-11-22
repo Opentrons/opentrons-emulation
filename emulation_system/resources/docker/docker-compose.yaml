@@ -1,10 +1,10 @@
 version: '3.8'
 services:
   emulator-proxy:
-    image: emulator-proxy:latest
+    image: emulator-proxy-prod:latest
     build:
       context: .
-      target: emulator-proxy
+      target: emulator-proxy-prod
     container_name: emulator-proxy-prod
     ports:
       - '10000-10005:10000-10005'
