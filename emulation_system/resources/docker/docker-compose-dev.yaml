@@ -1,25 +1,71 @@
 version: '3.8'
 services:
-  ot3-echo-dev:
-    image: ot3-echo-dev:latest
+  emulator-proxy-dev:
+    image: emulator-proxy-dev:latest
     build:
       context: .
-      target: ot3-firmware-echo-dev
-    container_name: ot3-echo-dev
-    network_mode: host
-    tty: true
+      target: emulator-proxy-dev
+    container_name: emulator-proxy-dev
+    ports:
+      - '8000-8005:8000-8005'
+      - '9000-9005:9000-9005'
+    environment:
+      OT_EMULATOR_magdeck_proxy: '{"emulator_port": 8000, "driver_port": 9000}'
+      OT_EMULATOR_temperature_proxy: '{"emulator_port": 8001, "driver_port": 9001}'
+      OT_EMULATOR_thermocycler_proxy: '{"emulator_port": 8002, "driver_port": 9002}'
     volumes:
-      - ${OT3_FIRMWARE_DIRECTORY}:/ot3-firmware
-      - ./entrypoint.sh:/entrypoint.sh
+      - "./entrypoint.sh:/entrypoint.sh"
+      - ${OPENTRONS_DIRECTORY}:/opentrons
 
-  heater-shaker-dev:
-    image: heater-shaker-dev:latest
+    tty: true
+
+  magdeck-driver-dev:
+    image: magdeck-driver-dev:latest
     build:
       context: .
-      target: heater-shaker-dev
-    container_name: heater-shaker-dev
-    network_mode: host
-    tty: true
+      target: magdeck-driver-dev
+    container_name: magdeck-driver-dev
+    environment:
+      OT_EMULATOR_magdeck_proxy: '{"emulator_port": 8000, "driver_port": 9000}'
+    links:
+      - 'emulator-proxy-dev'
+    depends_on:
+      - 'emulator-proxy-dev'
     volumes:
-      - ${OPENTRONS_MODULES_DIRECTORY}:/opentrons-modules
-      - ./entrypoint.sh:/entrypoint.sh
+      - "./entrypoint.sh:/entrypoint.sh"
+      - ${OPENTRONS_DIRECTORY}:/opentrons
+    tty: true
+
+  tempdeck-driver-dev:
+    image: tempdeck-driver-dev:latest
+    build:
+      context: .
+      target: tempdeck-driver-dev
+    container_name: tempdeck-driver-dev
+    environment:
+      OT_EMULATOR_temperature_proxy: '{"emulator_port": 8001, "driver_port": 9001}'
+    links:
+      - 'emulator-proxy-dev'
+    depends_on:
+      - 'emulator-proxy-dev'
+    volumes:
+      - "./entrypoint.sh:/entrypoint.sh"
+      - ${OPENTRONS_DIRECTORY}:/opentrons
+    tty: true
+
+  thermocycler-driver-dev:
+    image: thermocycler-driver-dev:latest
+    build:
+      context: .
+      target: thermocycler-driver-dev
+    container_name: thermocycler-driver-dev
+    environment:
+      OT_EMULATOR_thermocycler_proxy: '{"emulator_port": 8002, "driver_port": 9002}'
+    links:
+      - 'emulator-proxy-dev'
+    depends_on:
+      - 'emulator-proxy-dev'
+    volumes:
+      - "./entrypoint.sh:/entrypoint.sh"
+      - ${OPENTRONS_DIRECTORY}:/opentrons
+    tty: true

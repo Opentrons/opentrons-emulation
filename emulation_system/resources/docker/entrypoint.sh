@@ -41,6 +41,21 @@ case $FULL_COMMAND in
   run-thermocycler)
     bash -c "/opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator $OTHER_ARGS"
     ;;
+  run-emulator-proxy)
+    python3 -m opentrons.hardware_control.emulation.app
+    ;;
+  run-thermocycler-driver)
+    bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_module_emulator thermocycler $OTHER_ARGS"
+    ;;
+  run-tempdeck-driver)
+    bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_module_emulator tempdeck $OTHER_ARGS"
+    ;;
+  run-magdeck-driver)
+    bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_module_emulator magdeck $OTHER_ARGS"
+    ;;
+  run-robot-server)
+    bash -c "uvicorn "robot_server:app" --host 0.0.0.0 --port 31950 --ws wsproto --reload"
+    ;;
   build-ot3-firmware-echo)
     (
       cd /ot3-firmware && \

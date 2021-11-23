@@ -50,32 +50,65 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN rm -rf /var/lib/apt/lists/*
 RUN echo "Updating apt" && apt-get update > /dev/null
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y wget unzip
+    && apt-get install \
+       --no-install-recommends \
+       -y \
+      wget \
+      unzip \
+      software-properties-common \
+      build-essential \
+      curl \
+      git \
+      libssl-dev \
+      && rm -rf /var/lib/apt/lists/*
 
-#############
+############
 # cpp-base #
-#############
+############
 
 FROM ubuntu-base as cpp-base
 
-RUN apt-get install \
+RUN apt-get update && \
+    apt-get install \
     --no-install-recommends \
     -y \
     libgtest-dev \
     libboost-test-dev \
-    build-essential \
     gcc-10 \
     g++-10 \
-    libssl-dev \
-    git \
-    lsb-release \
-    software-properties-common > /dev/null
+    lsb-release  > /dev/null
 
 RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2-linux-x86_64.tar.gz && \
     tar -zxf cmake-3.21.2-linux-x86_64.tar.gz && \
     rm cmake-3.21.2-linux-x86_64.tar.gz && \
     mv cmake-3.21.2-linux-x86_64 cmake && \
     (cd /usr/bin/ && ln -s /cmake/bin/cmake cmake)
+
+###############
+# python-base #
+###############
+
+FROM ubuntu-base as python-base
+
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt-get update && \
+    apt-get install -y \
+    pipenv \
+    python3.7 \
+    libudev-dev \
+    libsystemd-dev \
+    python3-dev \
+    pkgconf \
+    libpython3.7-dev \
+    pip
+
+RUN (cd /usr/bin/ && ln -s /usr/bin/python3.7 python)
+
+ENV NODE_VERSION 14
+ENV OT_PYTHON "/usr/bin/python3.7"
+
+RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -
+RUN apt-get install -y nodejs && npm install --global yarn
 
 #############################################################
 #                        REPO SOURCE                        #
@@ -124,6 +157,20 @@ RUN (cd / &&  \
     mv opentrons-modules* opentrons-modules)
 COPY entrypoint.sh /entrypoint.sh
 
+####################
+# opentrons-source #
+####################
+
+FROM python-base as opentrons-source
+ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION
+ADD $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons.zip
+RUN (cd / &&  \
+    unzip -q opentrons.zip && \
+    rm -f opentrons.zip && \
+    mv opentrons* opentrons)
+COPY entrypoint.sh /entrypoint.sh
+
+
 #############################################################
 #                    EXECUTABLE BUILDERS                    #
 #############################################################
@@ -145,6 +192,26 @@ FROM opentrons-modules-source as thermocycler-builder
 ENV OPENTRONS_HARDWARE "thermocycler"
 RUN /entrypoint.sh build
 
+FROM opentrons-source as driver-builder
+RUN \
+	(cd /opentrons/shared-data/python && python3 setup.py bdist_wheel -d /dist/) && \
+    (cd /opentrons/api && python3 setup.py bdist_wheel -d /dist/) && \
+    (cd /opentrons/notify-server && python3 setup.py bdist_wheel -d /dist/) && \
+    (cd /opentrons/robot-server && python3 setup.py bdist_wheel -d /dist/)
+
+
+#################
+# Driver Common #
+#################
+
+# Added this driver-common image because all driver level emulator images are based off of
+# the same source code build, it's just a different command that is ran for each.
+
+FROM python-base as driver-common
+RUN mkdir /dist
+COPY --from=driver-builder /dist/* /dist/
+RUN pip install /dist/*
+
 #############################################################
 #                    DEVELOPMENT TARGETS                    #
 #############################################################
@@ -163,33 +230,83 @@ ENV OPENTRONS_HARDWARE "heater-shaker"
 FROM cpp-base as thermocycler-dev
 ENV OPENTRONS_HARDWARE "thermocycler"
 
+FROM python-base as tempdeck-driver-dev
+ENV OPENTRONS_HARDWARE "tempdeck-driver"
+
+FROM python-base as magdeck-driver-dev
+ENV OPENTRONS_HARDWARE "magdeck-driver"
+
+FROM python-base as thermocycler-driver-dev
+ENV OPENTRONS_HARDWARE "thermocycler-driver"
+
+FROM python-base as emulator-proxy-dev
+ENV OPENTRONS_HARDWARE "emulator-proxy"
+
+FROM python-base as robot-server-dev
+ENV OPENTRONS_HARDWARE "robot-server"
+
 ##############################################################
 #                     PRODUCTION TARGETS                     #
 ##############################################################
 
 # Targets for all production builds of emulators
-# Each Production Target should have a corresponding Executable Builder target
-# Each Production Target should copy the executable from the Executable Builder target
-# Each Production Target should copy in entrypoint.sh
 # Make sure to include the OPENTRONS_HARDWARE env variable
+# Each Production Target should copy in entrypoint.sh
 
+#################################
+# Firmware Production Emulators #
+#################################
+
+# Each Firmware Production Target should copy the executable from the Executable Builder target
+# Each Firmware Production Target should have a corresponding Executable Builder target
 
 FROM ubuntu-base as ot3-firmware-echo-prod
 ENV OPENTRONS_HARDWARE "ot3-firmware-echo"
-COPY entrypoint.sh /entrypoint.sh
 COPY --from=ot3-echo-builder /ot3-firmware/build-host/can/simulator/can-simulator /ot3-firmware/build-host/can/simulator/can-simulator
+COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
 FROM ubuntu-base as heater-shaker-prod
 ENV OPENTRONS_HARDWARE "heater-shaker"
-COPY entrypoint.sh /entrypoint.sh
 COPY --from=heater-shaker-builder /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator
+COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
-
 
 FROM ubuntu-base as thermocycler-prod
 ENV OPENTRONS_HARDWARE "thermocycler"
-COPY entrypoint.sh /entrypoint.sh
 COPY --from=thermocycler-builder /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+
+###############################
+# Driver Production Emulators #
+###############################
+
+# All driver level emulators should be based off of driver-common
+
+FROM driver-common as emulator-proxy-prod
+ENV OPENTRONS_HARDWARE "emulator-proxy"
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM driver-common as thermocycler-driver-prod
+ENV OPENTRONS_HARDWARE "thermocycler-driver"
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM driver-common as magdeck-driver-prod
+ENV OPENTRONS_HARDWARE "magdeck-driver"
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM driver-common as tempdeck-driver-prod
+ENV OPENTRONS_HARDWARE "tempdeck-driver"
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM driver-common as robot-server-prod
+ENV OPENTRONS_HARDWARE "robot-server"
+COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
