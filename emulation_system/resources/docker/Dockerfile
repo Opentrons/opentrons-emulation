@@ -67,7 +67,7 @@ RUN apt-get update \
 ############
 
 FROM ubuntu-base as cpp-base
-
+RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get update && \
     apt-get install \
     --no-install-recommends \
@@ -76,8 +76,10 @@ RUN apt-get update && \
     libboost-test-dev \
     gcc-10 \
     g++-10 \
-    lsb-release  > /dev/null
-
+    lsb-release \
+    python3.7 \
+    > /dev/null
+RUN (cd /usr/bin/ && ln -s /usr/bin/python3.7 python)
 RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2-linux-x86_64.tar.gz && \
     tar -zxf cmake-3.21.2-linux-x86_64.tar.gz && \
     rm cmake-3.21.2-linux-x86_64.tar.gz && \
