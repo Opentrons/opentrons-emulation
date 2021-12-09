@@ -3,7 +3,7 @@ import shlex
 import subprocess
 from dataclasses import dataclass, field
 from typing import List, Dict
-from emulation_system.settings import ROOT_DIR
+from emulation_system.consts import ROOT_DIR
 
 
 class CommandExecutionError(ValueError):

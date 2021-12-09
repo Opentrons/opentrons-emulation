@@ -3,10 +3,10 @@ import os
 from typing import Generator
 
 import pytest
-from emulation_system.settings import CONFIGURATION_FILE_LOCATION_VAR_NAME
+from emulation_system.consts import CONFIGURATION_FILE_LOCATION_VAR_NAME
 from emulation_system.settings_models import ConfigurationSettings, DefaultFolderPaths
 
-from emulation_system.settings import ROOT_DIR
+from emulation_system.consts import ROOT_DIR
 
 
 def get_test_conf() -> ConfigurationSettings:
