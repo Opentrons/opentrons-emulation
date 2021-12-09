@@ -1,11 +1,8 @@
-from pydantic import Field
-from typing_extensions import Literal
-from compose_file_creator.input.models.container_types.base_attributes import (
-    BaseAttributes
+from emulation_system.compose_file_creator.input.settings import (
+    TemperatureModelSettings
 )
-from compose_file_creator.input.settings import Hardware, TemperatureModelSettings
+from emulation_system.compose_file_creator.input.models.container_types.base_type import HardwareSpecificAttributes
 
 
-class TemperatureModuleAttributes(BaseAttributes):
-    hardware: Literal[Hardware.TEMPERATURE_MODULE.value]
+class TemperatureModuleAttributes(HardwareSpecificAttributes):
     temperature: TemperatureModelSettings = TemperatureModelSettings()
