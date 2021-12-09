@@ -1,9 +1,11 @@
 from __future__ import annotations
 from typing import Optional, Union, Dict
-from pydantic import BaseModel, parse_obj_as, ValidationError
-from compose_file_creator.input.models.container_types.heater_shaker_module import HeaterShakerModuleAttributes
+import json
+import os.path
 from compose_file_creator.input.models.container_types.thermocycler_module import ThermocyclerModuleAttributes
 from compose_file_creator.input.models.container_types.temperature_module import TemperatureModuleAttributes
+from emulation_system.consts import ROOT_DIR
+CONFIG_FILE_LOCATION = os.path.join(ROOT_DIR, "emulation_system/resources/config.json")
 
 
 class ContainerModel(BaseModel):
@@ -23,43 +25,12 @@ class ContainerModel(BaseModel):
     def from_dict(cls, config_dict: Dict[str: str]) -> ContainerModel:
         return parse_obj_as(ContainerModel, config_dict)
 
+
 if __name__ == "__main__":
-    configs = [
-        {
-            "name": "Heater Shaker Test",
-
-            "attributes": {
-                "hardware": "Heater Shaker Module",
-                "emulation-level": "firmware",
-                "source-type": "remote",
-                "source-location": "latest",
-            }
-        },
-        {
-            "name": "Thermocycler Test",
-
-            "attributes": {
-                "hardware": "Thermocycler Module",
-                "emulation-level": "driver",
-                "source-type": "remote",
-                "source-location": "latest",
-                "lid-temperature": {
-                    "degrees-per-tick": 3.0
-                }
-            }
-        },        {
-            "name": "Temperature Module Test",
-
-            "attributes": {
-                "hardware": "Temperature Module",
-                "emulation-level": "driver",
-                "source-type": "remote",
-                "source-location": "latest",
-            }
-        },
-    ]
-    for config in configs:
-        try:
-            print(parse_obj_as(ContainerModel, config))
-        except ValidationError as e:
-            print(e)
+    try:
+        content = json.load(open(CONFIG_FILE_LOCATION, 'r'))
+        hardware_list = parse_obj_as(List[ContainerModel], content['hardware'])
+        for item in hardware_list:
+            print(item)
+    except ValidationError as e:
+        print(e)
