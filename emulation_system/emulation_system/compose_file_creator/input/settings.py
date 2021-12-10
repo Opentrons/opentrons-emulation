@@ -34,3 +34,7 @@ class TemperatureModelSettings(BaseModel):
     )
     starting: float = float(ROOM_TEMPERATURE)
 
+
+class PipetteSettings(BaseModel):
+    model: str = "p20_single_v2.0"
+    id: str = "P20SV202020070101"
