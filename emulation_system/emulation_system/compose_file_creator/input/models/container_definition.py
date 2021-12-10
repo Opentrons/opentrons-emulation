@@ -8,12 +8,13 @@ from pydantic import BaseModel, parse_obj_as, ValidationError, Field, validator
 from emulation_system.consts import ROOT_DIR
 from emulation_system.compose_file_creator.input.models.hardware_specific_attributes \
     import (
-        HeaterShakerModuleAttributes,
-        ThermocyclerModuleAttributes,
-        TemperatureModuleAttributes,
-        OT2Attributes
+    HeaterShakerModuleAttributes,
+    ThermocyclerModuleAttributes,
+    TemperatureModuleAttributes,
+    OT2Attributes
 )
-from emulation_system.compose_file_creator.input.models.hardware_specific_attributes.base_type import HardwareSpecificAttributes
+from emulation_system.compose_file_creator.input.models.hardware_specific_attributes.base_type import \
+    HardwareSpecificAttributes
 from emulation_system.compose_file_creator.input.settings import (
     EmulationLevel,
     SourceType,
@@ -28,7 +29,7 @@ HARDWARE_TO_ATTRIBUTES_MAP = {
 }
 
 
-class ContainerModel(BaseModel):
+class ContainerDefinitionModel(BaseModel):
     _ID_REGEX_FORMAT = re.compile(r"^[a-zA-Z0-9-_]+$")
 
     id: str
@@ -65,19 +66,19 @@ class ContainerModel(BaseModel):
         extra = "forbid"
 
     @classmethod
-    def from_dict(cls, config_dict: Dict[str: str]) -> ContainerModel:
-        return parse_obj_as(ContainerModel, config_dict)
+    def from_dict(cls, config_dict: Dict[str: str]) -> ContainerDefinitionModel:
+        return parse_obj_as(ContainerDefinitionModel, config_dict)
 
     @classmethod
-    def from_config_file(cls, file_location: str) -> List[ContainerModel]:
+    def from_config_file(cls, file_location: str) -> List[ContainerDefinitionModel]:
         content = json.load(open(file_location, 'r'))
-        return parse_obj_as(List[ContainerModel], content['hardware'])
+        return parse_obj_as(List[ContainerDefinitionModel], content['hardware'])
 
 
 if __name__ == "__main__":
     try:
         location = os.path.join(ROOT_DIR, "emulation_system/resources/config.json")
-        hardware_list = ContainerModel.from_config_file(location)
+        hardware_list = ContainerDefinitionModel.from_config_file(location)
         for item in hardware_list:
             print(item)
     except ValidationError as e:
