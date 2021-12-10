@@ -5,9 +5,14 @@ import os.path
 import re
 from typing import Dict, List
 from pydantic import BaseModel, parse_obj_as, ValidationError, Field, validator
-from emulation_system.compose_file_creator.input.models.hardware_specific_attributes.heater_shaker_module import HeaterShakerModuleAttributes
-from emulation_system.compose_file_creator.input.models.hardware_specific_attributes.thermocycler_module import ThermocyclerModuleAttributes
-from emulation_system.compose_file_creator.input.models.hardware_specific_attributes.temperature_module import TemperatureModuleAttributes
+from emulation_system.consts import ROOT_DIR
+from emulation_system.compose_file_creator.input.models.hardware_specific_attributes \
+    import (
+        HeaterShakerModuleAttributes,
+        ThermocyclerModuleAttributes,
+        TemperatureModuleAttributes,
+        OT2Attributes
+)
 from emulation_system.compose_file_creator.input.models.hardware_specific_attributes.base_type import HardwareSpecificAttributes
 from emulation_system.compose_file_creator.input.settings import (
     EmulationLevel,
@@ -22,6 +27,7 @@ HARDWARE_TO_ATTRIBUTES_MAP = {
     Hardware.THERMOCYCLER_MODULE.value: ThermocyclerModuleAttributes,
     Hardware.HEATER_SHAKER_MODULE.value: HeaterShakerModuleAttributes,
     Hardware.TEMPERATURE_MODULE.value: TemperatureModuleAttributes,
+    Hardware.OT2.value: OT2Attributes
 }
 
 
