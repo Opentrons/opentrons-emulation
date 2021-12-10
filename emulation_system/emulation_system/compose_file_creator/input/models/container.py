@@ -19,9 +19,6 @@ from emulation_system.compose_file_creator.input.settings import (
     SourceType,
     Hardware
 )
-from emulation_system.consts import ROOT_DIR
-
-CONFIG_FILE_LOCATION = os.path.join(ROOT_DIR, "emulation_system/resources/config.json")
 
 HARDWARE_TO_ATTRIBUTES_MAP = {
     Hardware.THERMOCYCLER_MODULE.value: ThermocyclerModuleAttributes,
@@ -71,11 +68,16 @@ class ContainerModel(BaseModel):
     def from_dict(cls, config_dict: Dict[str: str]) -> ContainerModel:
         return parse_obj_as(ContainerModel, config_dict)
 
+    @classmethod
+    def from_config_file(cls, file_location: str) -> List[ContainerModel]:
+        content = json.load(open(file_location, 'r'))
+        return parse_obj_as(List[ContainerModel], content['hardware'])
+
 
 if __name__ == "__main__":
     try:
-        content = json.load(open(CONFIG_FILE_LOCATION, 'r'))
-        hardware_list = parse_obj_as(List[ContainerModel], content['hardware'])
+        location = os.path.join(ROOT_DIR, "emulation_system/resources/config.json")
+        hardware_list = ContainerModel.from_config_file(location)
         for item in hardware_list:
             print(item)
     except ValidationError as e:
