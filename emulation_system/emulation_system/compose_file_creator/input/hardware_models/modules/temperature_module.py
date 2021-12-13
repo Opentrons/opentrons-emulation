@@ -11,10 +11,12 @@ from emulation_system.compose_file_creator.input.hardware_models\
 
 
 class TemperatureModuleAttributes(HardwareSpecificAttributes):
+    """Attributes specific to Temperature Module"""
     temperature: TemperatureModelSettings = TemperatureModelSettings()
 
 
 class TemperatureModuleModel(ModuleModel):
+    """Model for Temperature Module"""
     hardware: Literal[Hardware.TEMPERATURE.value]
     hardware_specific_attributes: TemperatureModuleAttributes = Field(
         alias="hardware-specific-attributes",

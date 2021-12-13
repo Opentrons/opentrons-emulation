@@ -10,6 +10,8 @@ from emulation_system.compose_file_creator.input.settings import (
 
 
 class HardwareModel(BaseModel):
+    """Parent class of all hardware. Provides access to attributes common to all
+    hardware"""
     _ID_REGEX_FORMAT = re.compile(r"^[a-zA-Z0-9-_]+$")
 
     emulation_level: EmulationLevel = Field(alias="emulation-level")

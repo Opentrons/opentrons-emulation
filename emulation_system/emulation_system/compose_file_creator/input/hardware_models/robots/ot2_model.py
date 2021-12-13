@@ -12,6 +12,7 @@ from emulation_system.compose_file_creator.input.settings import (
 
 
 class OT2Attributes(HardwareSpecificAttributes):
+    """Attributes specific to OT2"""
     left_pipette: PipetteSettings = Field(
         alias="left-pipette", default=PipetteSettings()
     )
@@ -21,6 +22,7 @@ class OT2Attributes(HardwareSpecificAttributes):
 
 
 class OT2Model(RobotModel):
+    """Model for OT2"""
     hardware: Literal[Hardware.OT2.value]
     hardware_specific_attributes: OT2Attributes = Field(
         alias="hardware-specific-attributes",

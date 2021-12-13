@@ -9,10 +9,12 @@ from emulation_system.compose_file_creator.input.hardware_models\
 
 
 class MagneticModuleAttributes(HardwareSpecificAttributes):
+    """Attributes specific to Magnetic Module"""
     pass
 
 
 class MagneticModuleModel(ModuleModel):
+    """Model for Magnetic Module"""
     hardware: Literal[Hardware.MAGNETEIC.value]
     hardware_specific_attributes: MagneticModuleAttributes = Field(
         alias="hardware-specific-attributes",

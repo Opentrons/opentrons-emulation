@@ -13,10 +13,12 @@ from emulation_system.compose_file_creator.input.settings import (
 
 
 class HeaterShakerModuleAttributes(HardwareSpecificAttributes):
+    """Attributes specific to Heater Shaker Module"""
     mode: HeaterShakerModes = HeaterShakerModes.SOCKET
 
 
 class HeaterShakerModuleModel(ModuleModel):
+    """Model for Heater Shaker Module"""
     hardware: Literal[Hardware.HEATER_SHAKER.value]
     hardware_specific_attributes: HeaterShakerModuleAttributes = Field(
         alias="hardware-specific-attributes",
