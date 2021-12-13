@@ -7,11 +7,13 @@ from emulation_system.compose_file_creator.input.hardware_models\
 from emulation_system.compose_file_creator.input.hardware_models\
     .modules.thermocycler_module import ThermocyclerModuleModel
 from emulation_system.compose_file_creator.input.hardware_models\
-    .hardware_specific_attributes import HardwareSpecificAttributes
+    .modules.magnetic_module import MagneticModuleModel
+
 
 __all__ = [
     "OT2Model",
     "HeaterShakerModuleModel",
     "TemperatureModuleModel",
-    "ThermocyclerModuleModel"
+    "ThermocyclerModuleModel",
+    "MagneticModuleModel"
 ]

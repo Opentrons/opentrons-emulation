@@ -2,7 +2,7 @@ from typing_extensions import Literal
 
 from pydantic import Field
 from emulation_system.compose_file_creator.input.settings import (
-    TemperatureModelSettings
+    TemperatureModelSettings, Hardware
 )
 
 from emulation_system.compose_file_creator.input.hardware_models\
@@ -21,7 +21,7 @@ class ThermocyclerModuleAttributes(HardwareSpecificAttributes):
 
 
 class ThermocyclerModuleModel(ModuleModel):
-    hardware: Literal["thermocycler"]
+    hardware: Literal[Hardware.THERMOCYCLER.value]
     hardware_specific_attributes: ThermocyclerModuleAttributes = Field(
         alias="hardware-specific-attributes",
         default=ThermocyclerModuleAttributes()

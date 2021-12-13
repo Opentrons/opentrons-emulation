@@ -1,5 +1,8 @@
+from pydantic import Field
+from typing_extensions import Literal
+
 from emulation_system.compose_file_creator.input.settings import (
-    TemperatureModelSettings
+    TemperatureModelSettings, Hardware
 )
 from emulation_system.compose_file_creator.input.hardware_models\
     .hardware_specific_attributes import HardwareSpecificAttributes
@@ -12,4 +15,8 @@ class TemperatureModuleAttributes(HardwareSpecificAttributes):
 
 
 class TemperatureModuleModel(ModuleModel):
-    pass
+    hardware: Literal[Hardware.TEMPERATURE.value]
+    hardware_specific_attributes: TemperatureModuleAttributes = Field(
+        alias="hardware-specific-attributes",
+        default=TemperatureModuleAttributes()
+    )
