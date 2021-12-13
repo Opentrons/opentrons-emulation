@@ -28,12 +28,6 @@ class RobotParser(BaseModel):
         OT2Model
     ]
 
-    @staticmethod
-    def parse_to_robot(model: RobotParser) -> RobotModel:
-        """Parses passed model to one of the classes defined in the above __root__
-        attribute"""
-        return parse_obj_as(RobotParser, model).__root__
-
 
 class ModuleParser(BaseModel):
     """Class to parse out modules Makes use of pydantic's ability to parse literals
@@ -44,12 +38,6 @@ class ModuleParser(BaseModel):
         TemperatureModuleModel,
         MagneticModuleModel
     ]
-
-    @staticmethod
-    def parse_to_module(model: ModuleParser) -> ModuleModel:
-        """Parses passed model to one of the classes defined in the above __root__
-        attribute"""
-        return parse_obj_as(ModuleParser, model).__root__
 
 
 class SystemConfigurationModel(BaseModel):
