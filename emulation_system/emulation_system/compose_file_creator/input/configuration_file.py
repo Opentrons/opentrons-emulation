@@ -5,11 +5,13 @@ import os
 from typing import List, Union, Optional
 
 from pydantic import BaseModel, ValidationError, parse_obj_as
-
+from emulation_system.compose_file_creator.input.hardware_models\
+    .hardware_model import HardwareModel
+from emulation_system.compose_file_creator.input.hardware_models\
+    .modules.module_model import ModuleModel
+from emulation_system.compose_file_creator.input.hardware_models\
+    .robots.robot_model import RobotModel
 from emulation_system.compose_file_creator.input.hardware_models import (
-    HardwareModel,
-    ModuleModel,
-    RobotModel,
     HeaterShakerModuleModel,
     ThermocyclerModuleModel,
     TemperatureModuleModel,
@@ -20,24 +22,38 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 from emulation_system.consts import ROOT_DIR
 
 
-class ContainerDefinitionModel(BaseModel):
+class RobotParser(BaseModel):
     __root__: Union[
-        HeaterShakerModuleModel,
-        ThermocyclerModuleModel,
-        TemperatureModuleModel,
         OT2Model
     ]
 
     @staticmethod
-    def convert_to_hardware_container(
-            model: ContainerDefinitionModel
-    ) -> HardwareModel:
+    def parse_to_robot(
+            model: RobotParser
+    ) -> RobotModel:
         """Converts ContainerDefintionModel object to a HardwareModel object"""
-        return parse_obj_as(ContainerDefinitionModel, model).__root__
+        return parse_obj_as(RobotParser, model).__root__
+
+
+class ModuleParser(BaseModel):
+    __root__: Union[
+        HeaterShakerModuleModel,
+        ThermocyclerModuleModel,
+        TemperatureModuleModel,
+    ]
+
+    @staticmethod
+    def parse_to_module(
+            model: ModuleParser
+    ) -> ModuleModel:
+        """Converts ContainerDefintionModel object to a HardwareModel object"""
+        return parse_obj_as(ModuleParser, model).__root__
 
 
 class SystemConfiguration(BaseModel):
-    robot: Optional[HardwareModel]
+    _ROBOT_IDENTIFIER = "robot"
+    _MODULES_IDENTIFIER = "modules"
+    robot: Optional[RobotModel]
     modules: Optional[List[ModuleModel]]
     _container_name_list = []
 
@@ -46,7 +62,7 @@ class SystemConfiguration(BaseModel):
         robot_id = list(robot.keys())[0]
         robot_content = robot[robot_id]
         robot_content['id'] = robot_id
-        return ContainerDefinitionModel.convert_to_hardware_container(robot_content)
+        return RobotParser.parse_to_robot(robot_content)
 
     @classmethod
     def parse_modules(cls, modules):
@@ -54,7 +70,7 @@ class SystemConfiguration(BaseModel):
         for key, module in modules.items():
             module['id'] = key
             module_list.append(
-                ContainerDefinitionModel.convert_to_hardware_container(module)
+                ModuleParser.parse_to_module(module)
             )
         return module_list
 
@@ -65,11 +81,11 @@ class SystemConfiguration(BaseModel):
         robot = None
         module_list = []
 
-        if 'modules' in content:
-            module_list = cls.parse_modules(content['modules'])
+        if cls._MODULES_IDENTIFIER in content:
+            module_list = cls.parse_modules(content[cls._MODULES_IDENTIFIER])
 
-        if 'robot' in content:
-            robot = cls.parse_robot(content['robot'])
+        if cls._ROBOT_IDENTIFIER in content:
+            robot = cls.parse_robot(content[cls._ROBOT_IDENTIFIER])
 
         return SystemConfiguration(
             robot=robot,
