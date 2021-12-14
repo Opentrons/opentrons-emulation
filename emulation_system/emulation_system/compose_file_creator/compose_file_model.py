@@ -30,9 +30,9 @@ class CredentialSpec(BaseModel):
 
 
 class Condition(Enum):
-    service_started = 'service_started'
-    service_healthy = 'service_healthy'
-    service_completed_successfully = 'service_completed_successfully'
+    service_started = "service_started"
+    service_healthy = "service_healthy"
+    service_completed_successfully = "service_completed_successfully"
 
 
 class DependsOn(BaseModel):
@@ -55,7 +55,7 @@ class Logging(BaseModel):
         extra = Extra.forbid
 
     driver: Optional[str]
-    options: Optional[Dict[constr(regex=r'^.+$'), Optional[Union[str, float]]]]
+    options: Optional[Dict[constr(regex=r"^.+$"), Optional[Union[str, float]]]]
 
 
 class Port(BaseModel):
@@ -70,11 +70,11 @@ class Port(BaseModel):
 
 
 class PullPolicy(Enum):
-    always = 'always'
-    never = 'never'
-    if_not_present = 'if_not_present'
-    build = 'build'
-    missing = 'missing'
+    always = "always"
+    never = "never"
+    if_not_present = "if_not_present"
+    build = "build"
+    missing = "missing"
 
 
 class Secret1(BaseModel):
@@ -149,8 +149,8 @@ class Healthcheck(BaseModel):
 
 
 class Order(Enum):
-    start_first = 'start-first'
-    stop_first = 'stop-first'
+    start_first = "start-first"
+    stop_first = "stop-first"
 
 
 class RollbackConfig(BaseModel):
@@ -166,8 +166,8 @@ class RollbackConfig(BaseModel):
 
 
 class Order1(Enum):
-    start_first = 'start-first'
-    stop_first = 'stop-first'
+    start_first = "start-first"
+    stop_first = "stop-first"
 
 
 class UpdateConfig(BaseModel):
@@ -243,7 +243,7 @@ class ConfigItem(BaseModel):
     subnet: Optional[str]
     ip_range: Optional[str]
     gateway: Optional[str]
-    aux_addresses: Optional[Dict[constr(regex=r'^.+$'), str]]
+    aux_addresses: Optional[Dict[constr(regex=r"^.+$"), str]]
 
 
 class Ipam(BaseModel):
@@ -252,7 +252,7 @@ class Ipam(BaseModel):
 
     driver: Optional[str]
     config: Optional[List[ConfigItem]]
-    options: Optional[Dict[constr(regex=r'^.+$'), str]]
+    options: Optional[Dict[constr(regex=r"^.+$"), str]]
 
 
 class External(BaseModel):
@@ -283,7 +283,7 @@ class ListOfStrings(BaseModel):
 
 class ListOrDict(BaseModel):
     __root__: Union[
-        Dict[constr(regex=r'.+'), Optional[Union[str, float, bool]]], List[str]
+        Dict[constr(regex=r".+"), Optional[Union[str, float, bool]]], List[str]
     ]
 
 
@@ -367,7 +367,7 @@ class Network(BaseModel):
 
     name: Optional[str]
     driver: Optional[str]
-    driver_opts: Optional[Dict[constr(regex=r'^.+$'), Union[str, float]]]
+    driver_opts: Optional[Dict[constr(regex=r"^.+$"), Union[str, float]]]
     ipam: Optional[Ipam]
     external: Optional[External]
     internal: Optional[bool]
@@ -382,7 +382,7 @@ class Volume(BaseModel):
 
     name: Optional[str]
     driver: Optional[str]
-    driver_opts: Optional[Dict[constr(regex=r'^.+$'), Union[str, float]]]
+    driver_opts: Optional[Dict[constr(regex=r"^.+$"), Union[str, float]]]
     external: Optional[External1]
     labels: Optional[ListOrDict]
 
@@ -396,7 +396,7 @@ class Secret(BaseModel):
     external: Optional[External2]
     labels: Optional[ListOrDict]
     driver: Optional[str]
-    driver_opts: Optional[Dict[constr(regex=r'^.+$'), Union[str, float]]]
+    driver_opts: Optional[Dict[constr(regex=r"^.+$"), Union[str, float]]]
     template_driver: Optional[str]
 
 
@@ -472,7 +472,7 @@ class Service(BaseModel):
     cpuset: Optional[str]
     credential_spec: Optional[CredentialSpec]
     depends_on: Optional[
-        Union[ListOfStrings, Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), DependsOn]]
+        Union[ListOfStrings, Dict[constr(regex=r"^[a-zA-Z0-9._-]+$"), DependsOn]]
     ]
     device_cgroup_rules: Optional[ListOfStrings]
     devices: Optional[List[str]]
@@ -505,7 +505,7 @@ class Service(BaseModel):
     network_mode: Optional[str]
     networks: Optional[
         Union[
-            ListOfStrings, Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), Optional[Network1]]
+            ListOfStrings, Dict[constr(regex=r"^[a-zA-Z0-9._-]+$"), Optional[Network1]]
         ]
     ]
     oom_kill_disable: Optional[bool]
@@ -531,7 +531,7 @@ class Service(BaseModel):
     storage_opt: Optional[Dict[str, Any]]
     tmpfs: Optional[StringOrList]
     tty: Optional[bool]
-    ulimits: Optional[Dict[constr(regex=r'^[a-z]+$'), Union[int, Ulimit]]]
+    ulimits: Optional[Dict[constr(regex=r"^[a-z]+$"), Union[int, Ulimit]]]
     user: Optional[str]
     userns_mode: Optional[str]
     volumes: Optional[List[Union[str, Volume1]]]
@@ -545,10 +545,10 @@ class ComposeSpecification(BaseModel):
 
     version: Optional[str] = Field(
         None,
-        description='Version of the Compose specification used. Tools not implementing required version MUST reject the configuration file.',
+        description="Version of the Compose specification used. Tools not implementing required version MUST reject the configuration file.",
     )
-    services: Optional[Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), Service]]
-    networks: Optional[Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), Network]]
-    volumes: Optional[Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), Volume]]
-    secrets: Optional[Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), Secret]]
-    configs: Optional[Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), Config]]
+    services: Optional[Dict[constr(regex=r"^[a-zA-Z0-9._-]+$"), Service]]
+    networks: Optional[Dict[constr(regex=r"^[a-zA-Z0-9._-]+$"), Network]]
+    volumes: Optional[Dict[constr(regex=r"^[a-zA-Z0-9._-]+$"), Volume]]
+    secrets: Optional[Dict[constr(regex=r"^[a-zA-Z0-9._-]+$"), Secret]]
+    configs: Optional[Dict[constr(regex=r"^[a-zA-Z0-9._-]+$"), Config]]
