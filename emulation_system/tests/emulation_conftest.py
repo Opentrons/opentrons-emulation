@@ -1,5 +1,8 @@
+"""Constants for comparison in tests."""
 from emulation_system.commands.command import CommandList, Command
-from emulation_system.commands.emulation_command_creator import AbstractEmulationCommandCreator
+from emulation_system.commands.emulation_command_creator import (
+    AbstractEmulationCommandCreator,
+)
 from tests.conftest import (
     TEST_CONF_MODULES_EXPECTED_COMMIT,
     TEST_CONF_OPENTRONS_EXPECTED_COMMIT,

@@ -1,3 +1,4 @@
+"""Top-level parser for emulation cli."""
 import argparse
 import os
 import sys
@@ -18,13 +19,20 @@ from emulation_system.settings_models import ConfigurationSettings
 
 class TopLevelParser:
     """Top-level parser for emulation cli.
-    All commands should be a subcommand of this parser"""
+
+    All commands should be a subcommand of this parser.
+    """
 
     # Add subcommand parsers here
     # Parsers must inherit from emulation_system/src/parsers/abstract_parser.py
     SUBPARSERS = [EmulationParser, RepoParser, VirtualMachineParser]
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Construct TopLevelParser object.
+
+        Pull settings from settings file
+        Build parser
+        """
         self._settings = self._get_settings()
         self._parser = argparse.ArgumentParser(
             description="Utility for managing Opentrons Emulation systems",
@@ -47,7 +55,7 @@ class TopLevelParser:
 
     @staticmethod
     def _get_settings() -> ConfigurationSettings:
-        """Load settings file"""
+        """Load settings file."""
         if CONFIGURATION_FILE_LOCATION_VAR_NAME in os.environ:
             file_path = os.environ[CONFIGURATION_FILE_LOCATION_VAR_NAME]
         else:
@@ -55,8 +63,8 @@ class TopLevelParser:
 
         return ConfigurationSettings.from_file_path(file_path)
 
-    def parse(self, passed_args=[]) -> AbstractCommandCreator:
-        """Parse args into CommandCreator"""
+    def parse(self, passed_args=[]) -> AbstractCommandCreator:  # noqa: ANN001
+        """Parse args into CommandCreator."""
         if len(passed_args) == 0:
             parsed_args = self._parser.parse_args(sys.argv[1:])
         else:

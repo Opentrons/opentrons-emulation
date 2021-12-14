@@ -1,3 +1,4 @@
+"""Parser for emulation sub-command."""
 import argparse
 from emulation_system.parser_utils import get_formatter
 from emulation_system.parsers.abstract_parser import AbstractParser
@@ -15,14 +16,13 @@ from emulation_system.os_state import OSState
 
 
 class EmulationParser(AbstractParser):
-    """Parser for emulation sub-command"""
+    """Parser for emulation sub-command."""
 
     @classmethod
     def get_parser(
         cls, parser: argparse.ArgumentParser, settings: ConfigurationSettings
     ) -> None:
-        """Build parser for emulation command"""
-
+        """Build parser for emulation command."""
         em_parser = parser.add_parser(  # type: ignore
             "emulator",
             aliases=["em"],
@@ -78,21 +78,44 @@ class EmulationParser(AbstractParser):
             formatter_class=get_formatter(),
         )
         dev_parser.set_defaults(func=DevEmulationCommandCreator.from_cli_input)
+
+        os_state = OSState()
+
+        modules_path = (
+            os_state.parse_path(settings.global_settings.default_folder_paths.modules)
+            if settings.global_settings.default_folder_paths.modules is not None
+            else None
+        )
+
+        ot3_firmware_path = (
+            os_state.parse_path(
+                settings.global_settings.default_folder_paths.ot3_firmware
+            )
+            if settings.global_settings.default_folder_paths.ot3_firmware is not None
+            else None
+        )
+
+        opentrons_path = (
+            os_state.parse_path(settings.global_settings.default_folder_paths.opentrons)
+            if settings.global_settings.default_folder_paths.opentrons is not None
+            else None
+        )
+
         dev_parser.add_argument(
             DevelopmentEmulationOptions.MODULES_PATH.value,
             help="Path to opentrons-modules repo source code",
-            default=OSState().parse_path(settings.global_settings.default_folder_paths.modules),
+            default=modules_path,
             metavar="<absolute_path>",
         )
         dev_parser.add_argument(
             DevelopmentEmulationOptions.OT3_FIRMWARE_PATH.value,
             help="Path to ot3-firmware repo source code",
-            default=OSState().parse_path(settings.global_settings.default_folder_paths.ot3_firmware),
+            default=ot3_firmware_path,
             metavar="<absolute_path>",
         )
         dev_parser.add_argument(
             DevelopmentEmulationOptions.OPENTRONS_REPO.value,
             help="Path to opentrons repo source code",
-            default=OSState().parse_path(settings.global_settings.default_folder_paths.opentrons),
+            default=opentrons_path,
             metavar="<absolute_path>",
         )
