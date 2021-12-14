@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict
 
-from emulation_system.settings import (
+from emulation_system.consts import (
     PRODUCTION_MODE_NAME,
     DEVELOPMENT_MODE_NAME,
     LATEST_KEYWORD,

@@ -9,7 +9,7 @@ from emulation_system.parser_utils import get_formatter
 from emulation_system.parsers.emulation_parser import EmulationParser
 from emulation_system.parsers.repo_parser import RepoParser
 from emulation_system.parsers.virtual_machine_parser import VirtualMachineParser
-from emulation_system.settings import (
+from emulation_system.consts import (
     CONFIGURATION_FILE_LOCATION_VAR_NAME,
     DEFAULT_CONFIGURATION_FILE_PATH,
 )

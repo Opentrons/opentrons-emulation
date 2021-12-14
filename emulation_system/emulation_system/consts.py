@@ -9,7 +9,6 @@ DEVELOPMENT_MODE_NAME = "dev"
 # Latest Git Commit
 LATEST_KEYWORD = "latest"
 
-
 # Root of repo
 ROOT_DIR = os.path.normpath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")

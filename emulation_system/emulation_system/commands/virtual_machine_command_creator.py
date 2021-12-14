@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from emulation_system.commands.command import CommandList, Command
-from emulation_system.settings import ROOT_DIR
+from emulation_system.consts import ROOT_DIR
 from emulation_system.commands.abstract_command_creator import (
     AbstractCommandCreator,
 )

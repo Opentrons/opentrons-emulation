@@ -30,6 +30,7 @@ EXPECTED_DEV_SHELL = CommandList(
             command_name=VirtualMachineCommandCreator.SHELL_COMMAND_NAME,
             command="vagrant ssh dev",
             cwd=VirtualMachineCommandCreator.VAGRANT_RESOURCES_LOCATION,
+            shell=True
         )
     ]
 )
@@ -57,6 +58,7 @@ EXPECTED_PROD_SHELL = CommandList(
             command_name=VirtualMachineCommandCreator.SHELL_COMMAND_NAME,
             command="vagrant ssh prod",
             cwd=VirtualMachineCommandCreator.VAGRANT_RESOURCES_LOCATION,
+            shell=True
         )
     ]
 )
