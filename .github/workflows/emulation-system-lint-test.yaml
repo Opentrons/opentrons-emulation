@@ -1,0 +1,59 @@
+# This workflow runs test and lint on branch pushes that touch the
+# notify-server project or its dependencies
+
+name: 'emulation-system Lint & Test'
+
+on:
+  # Most of the time, we run on pull requests, which lets us handle external PRs
+  push:
+    paths:
+      - 'emulation_system/**'
+      - 'opentrons-emulation'
+    tags-ignore:
+      - '*'
+  pull_request:
+    paths:
+      - 'emulation_system/**'
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  lint-test:
+    name: 'emulation-system linting and tests'
+    runs-on: 'ubuntu-18.04'
+    steps:
+      - name: "Checkout Repo"
+        uses: 'actions/checkout@v2'
+        with:
+          node-version: '12'
+      - name: "Setup Python"
+        uses: 'actions/setup-python@v2'
+        with:
+          python-version: '3.7'
+
+      - name: "Setup Env"
+        run: |
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends libsystemd-dev
+            pip install pipenv==2021.5.29
+
+      - name: "Setup Project"
+        working-directory: emulation_system
+        run: make setup
+
+      - name: "Lint"
+        working-directory: emulation_system
+        run: make lint
+
+      - name: "Test"
+        working-directory: emulation_system
+        run: make test
+
+      - name: 'Upload Coverage Report'
+        uses: 'codecov/codecov-action@v2'
+        with:
+          files: ./g-code-testing/coverage.xml
+          flags: g-code-testing
