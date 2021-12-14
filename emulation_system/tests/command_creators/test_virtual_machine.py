@@ -1,6 +1,6 @@
 """Tests for virtual-machine sub-command."""
 import pytest
-from typing import List
+from typing import List, Generator
 from emulation_system.commands.virtual_machine_command_creator import (
     VirtualMachineCommandCreator,
 )
@@ -101,37 +101,49 @@ def prod_shell_virtual_machine_cmd() -> List[str]:
     return "vm shell prod".split(" ")
 
 
-def test_dev_create(dev_create_virtual_machine_cmd: List[str]) -> None:
+def test_dev_create(
+        set_config_file_env_var: Generator, dev_create_virtual_machine_cmd: List[str]
+) -> None:
     """Confirm that dev virtual-machine is created correctly."""
     cmds = TopLevelParser().parse(dev_create_virtual_machine_cmd).get_commands()
     assert cmds == EXPECTED_DEV_CREATE
 
 
-def test_dev_shell(dev_shell_virtual_machine_cmd: List[str]) -> None:
+def test_dev_shell(
+        set_config_file_env_var: Generator, dev_shell_virtual_machine_cmd: List[str]
+) -> None:
     """Confirm that shell to dev virtual-machine is opened correctly."""
     cmds = TopLevelParser().parse(dev_shell_virtual_machine_cmd).get_commands()
     assert cmds == EXPECTED_DEV_SHELL
 
 
-def test_dev_remove(dev_remove_virtual_machine_cmd: List[str]) -> None:
+def test_dev_remove(
+        set_config_file_env_var: Generator, dev_remove_virtual_machine_cmd: List[str]
+) -> None:
     """Confirm that dev virtual-machine is removed correctly."""
     cmds = TopLevelParser().parse(dev_remove_virtual_machine_cmd).get_commands()
     assert cmds == EXPECTED_DEV_REMOVE
 
 
-def test_prod_create(prod_create_virtual_machine_cmd: List[str]) -> None:
+def test_prod_create(
+        set_config_file_env_var: Generator, prod_create_virtual_machine_cmd: List[str]
+) -> None:
     """Confirm that prod virtual-machine is created correctly."""
     cmds = TopLevelParser().parse(prod_create_virtual_machine_cmd).get_commands()
     assert cmds == EXPECTED_PROD_CREATE
 
 
-def test_prod_shell(prod_shell_virtual_machine_cmd: List[str]) -> None:
+def test_prod_shell(
+        set_config_file_env_var: Generator, prod_shell_virtual_machine_cmd: List[str]
+) -> None:
     """Confirm that shell to prod virtual-machine is opened correctly."""
     cmds = TopLevelParser().parse(prod_shell_virtual_machine_cmd).get_commands()
     assert cmds == EXPECTED_PROD_SHELL
 
 
-def test_prod_remove(prod_remove_virtual_machine_cmd: List[str]) -> None:
+def test_prod_remove(
+        set_config_file_env_var: Generator, prod_remove_virtual_machine_cmd: List[str]
+) -> None:
     """Confirm that prod virtual-machine is removed correctly."""
     cmds = TopLevelParser().parse(prod_remove_virtual_machine_cmd).get_commands()
     assert cmds == EXPECTED_PROD_REMOVE
