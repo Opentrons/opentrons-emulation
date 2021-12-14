@@ -102,7 +102,7 @@ def prod_shell_virtual_machine_cmd() -> List[str]:
 
 
 def test_dev_create(
-        set_config_file_env_var: Generator, dev_create_virtual_machine_cmd: List[str]
+    set_config_file_env_var: Generator, dev_create_virtual_machine_cmd: List[str]
 ) -> None:
     """Confirm that dev virtual-machine is created correctly."""
     cmds = TopLevelParser().parse(dev_create_virtual_machine_cmd).get_commands()
@@ -110,7 +110,7 @@ def test_dev_create(
 
 
 def test_dev_shell(
-        set_config_file_env_var: Generator, dev_shell_virtual_machine_cmd: List[str]
+    set_config_file_env_var: Generator, dev_shell_virtual_machine_cmd: List[str]
 ) -> None:
     """Confirm that shell to dev virtual-machine is opened correctly."""
     cmds = TopLevelParser().parse(dev_shell_virtual_machine_cmd).get_commands()
@@ -118,7 +118,7 @@ def test_dev_shell(
 
 
 def test_dev_remove(
-        set_config_file_env_var: Generator, dev_remove_virtual_machine_cmd: List[str]
+    set_config_file_env_var: Generator, dev_remove_virtual_machine_cmd: List[str]
 ) -> None:
     """Confirm that dev virtual-machine is removed correctly."""
     cmds = TopLevelParser().parse(dev_remove_virtual_machine_cmd).get_commands()
@@ -126,7 +126,7 @@ def test_dev_remove(
 
 
 def test_prod_create(
-        set_config_file_env_var: Generator, prod_create_virtual_machine_cmd: List[str]
+    set_config_file_env_var: Generator, prod_create_virtual_machine_cmd: List[str]
 ) -> None:
     """Confirm that prod virtual-machine is created correctly."""
     cmds = TopLevelParser().parse(prod_create_virtual_machine_cmd).get_commands()
@@ -134,7 +134,7 @@ def test_prod_create(
 
 
 def test_prod_shell(
-        set_config_file_env_var: Generator, prod_shell_virtual_machine_cmd: List[str]
+    set_config_file_env_var: Generator, prod_shell_virtual_machine_cmd: List[str]
 ) -> None:
     """Confirm that shell to prod virtual-machine is opened correctly."""
     cmds = TopLevelParser().parse(prod_shell_virtual_machine_cmd).get_commands()
@@ -142,7 +142,7 @@ def test_prod_shell(
 
 
 def test_prod_remove(
-        set_config_file_env_var: Generator, prod_remove_virtual_machine_cmd: List[str]
+    set_config_file_env_var: Generator, prod_remove_virtual_machine_cmd: List[str]
 ) -> None:
     """Confirm that prod virtual-machine is removed correctly."""
     cmds = TopLevelParser().parse(prod_remove_virtual_machine_cmd).get_commands()
