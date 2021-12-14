@@ -63,6 +63,7 @@ setup(
     long_description=__doc__,
     packages=PACKAGES,
     package_dir={"": "emulation_system"},
+    package_data={"emulation_system": ["py.typed"]},
     zip_safe=False,
     classifiers=CLASSIFIERS,
     install_requires=INSTALL_REQUIRES,

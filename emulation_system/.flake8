@@ -20,7 +20,5 @@ docstring-convention = google
 
 noqa-require-code = true
 
-per-file-ignores =
-    setup.py:ANN,D
-    emulation_system/**:ANN,D
-    tests/**:ANN,D
+exclude =
+	setup.py

@@ -1,3 +1,5 @@
+"""Builds command for emulator."""
+
 from __future__ import annotations
 
 import abc
@@ -24,20 +26,20 @@ from emulation_system.settings_models import (
 
 
 class CommonEmulationOptions(str, Enum):
-    """Options shared by all sub-commands"""
+    """Options shared by all sub-commands."""
 
     DETACHED = "--detached"
 
 
 class EmulationSubCommands(str, Enum):
-    """Sub-Commands available to the `emulation` command"""
+    """Sub-Commands available to the `emulation` command."""
 
     PROD_MODE = PRODUCTION_MODE_NAME
     DEV_MODE = DEVELOPMENT_MODE_NAME
 
 
 class ProductionEmulationOptions(str, Enum):
-    """Options specific to `prod` sub-command"""
+    """Options specific to `prod` sub-command."""
 
     OT3_FIRMWARE_SHA = "--ot3-firmware-repo-sha"
     MODULES_SHA = "--opentrons-modules-repo-sha"
@@ -45,7 +47,7 @@ class ProductionEmulationOptions(str, Enum):
 
 
 class DevelopmentEmulationOptions(str, Enum):
-    """Options specfic to `dev` sub-command"""
+    """Options specfic to `dev` sub-command."""
 
     MODULES_PATH = "--opentrons-modules-repo-path"
     OT3_FIRMWARE_PATH = "--ot3-firmware-repo-path"
@@ -53,14 +55,13 @@ class DevelopmentEmulationOptions(str, Enum):
 
 
 class InvalidModeError(ValueError):
-    """Thrown when an invalid emulation mode is provided.
-    (Not `prod` or `dev`)"""
+    """Thrown when an invalid emulation mode is provided. (Not `prod` or `dev`)."""
 
     pass
 
 
 class AbstractEmulationCommandCreator(AbstractCommandCreator):
-    """Things common to both EmulationCreator classes"""
+    """Things common to both EmulationCreator classes."""
 
     BUILD_COMMAND_NAME = "Build Emulation"
     KILL_COMMAND_NAME = "Kill Emulation"
@@ -75,24 +76,28 @@ class AbstractEmulationCommandCreator(AbstractCommandCreator):
 
     @property
     @abc.abstractmethod
-    def compose_file_name(self):
+    def compose_file_name(self) -> str:
+        """Name of the compose file to use."""
         ...
 
     @abc.abstractmethod
-    def build(self):
+    def build(self) -> Command:
+        """Creates build command."""
         ...
 
     @abc.abstractmethod
-    def run(self):
+    def run(self) -> Command:
+        """Creates run command."""
         ...
 
     @property
     @abc.abstractmethod
-    def dry_run(self):
+    def dry_run(self) -> bool:
+        """Whether running as a dry run."""
         ...
 
     def kill(self) -> Command:
-        """Kill and remove any existing dev containers"""
+        """Kill and remove any existing dev containers."""
         return Command(
             command_name=self.KILL_COMMAND_NAME,
             command=f"docker-compose -f {self.compose_file_name} kill",
@@ -100,7 +105,7 @@ class AbstractEmulationCommandCreator(AbstractCommandCreator):
         )
 
     def remove(self) -> Command:
-        """Kill and remove any existing dev containers"""
+        """Kill and remove any existing dev containers."""
         return Command(
             command_name=self.REMOVE_COMMAND_NAME,
             command=f"docker-compose -f {self.compose_file_name} rm -f",
@@ -108,6 +113,7 @@ class AbstractEmulationCommandCreator(AbstractCommandCreator):
         )
 
     def _get_commands(self) -> CommandList:
+        """Returns list of commands that will be run with an emulation command."""
         return CommandList(
             command_list=[
                 self.kill(),
@@ -121,8 +127,10 @@ class AbstractEmulationCommandCreator(AbstractCommandCreator):
 
 @dataclass
 class ProdEmulationCommandCreator(AbstractEmulationCommandCreator):
-    """Class to build docker commands for creating a Production Emulator
-    Supports `build`, `clean`, and `run` commands"""
+    """Class to build docker commands for creating a Production Emulator.
+
+    Supports `build`, `clean`, and `run` commands.
+    """
 
     detached: bool = False
     ot3_firmware_download_location: str = ""
@@ -137,14 +145,14 @@ class ProdEmulationCommandCreator(AbstractEmulationCommandCreator):
 
     @property
     def compose_file_name(self) -> str:
-        """Compose file name to use"""
+        """Compose file name to use."""
         return "docker-compose.yaml"
 
     @classmethod
     def from_cli_input(
         cls, args: argparse.Namespace, settings: ConfigurationSettings
     ) -> ProdEmulationCommandCreator:
-        """Factory method to convert CLI input into a ProdEmulatorCreator object"""
+        """Factory method to convert CLI input into a ProdEmulatorCreator object."""
         download_locations = settings.emulation_settings.source_download_locations
         return cls(
             detached=args.detached,
@@ -164,8 +172,7 @@ class ProdEmulationCommandCreator(AbstractEmulationCommandCreator):
     def _parse_download_location(
         key: str, location: str, download_locations: SourceDownloadLocations
     ) -> str:
-        """Parse download location from passed `location` parameter into a
-        downloadable source code zip file"""
+        """Parse download location into a downloadable url."""
         if location == LATEST_KEYWORD:
             download_location = download_locations.heads.__getattribute__(key)
         else:
@@ -175,7 +182,7 @@ class ProdEmulationCommandCreator(AbstractEmulationCommandCreator):
         return download_location
 
     def build(self) -> Command:
-        """Construct a docker-compose build command"""
+        """Construct a docker-compose build command."""
         cmd = (
             f"docker-compose -f {self.compose_file_name} build "
             f"--build-arg {self.OT3_FIRMWARE_DOCKER_BUILD_ARG_NAME}="
@@ -194,7 +201,7 @@ class ProdEmulationCommandCreator(AbstractEmulationCommandCreator):
         )
 
     def run(self) -> Command:
-        """Construct a docker-compose up command"""
+        """Construct a docker-compose up command."""
         cmd = f"docker-compose -f {self.compose_file_name} up"
 
         if self.detached:
@@ -207,14 +214,16 @@ class ProdEmulationCommandCreator(AbstractEmulationCommandCreator):
         )
 
     def get_commands(self) -> CommandList:
-        """Get a list of commands to create emulation"""
+        """Get a list of commands to create emulation."""
         return self._get_commands()
 
 
 @dataclass
 class DevEmulationCommandCreator(AbstractEmulationCommandCreator):
     """Command creator for `dev` sub-command of `emulation` command.
-    Supports `build`, `clean`, and `run` commands"""
+
+    Supports `build`, `clean`, and `run` commands.
+    """
 
     OT3_FIRMWARE_DOCKER_ENV_VAR_NAME = "OT3_FIRMWARE_DIRECTORY"
     MODULES_DOCKER_ENV_VAR_NAME = "OPENTRONS_MODULES_DIRECTORY"
@@ -227,27 +236,29 @@ class DevEmulationCommandCreator(AbstractEmulationCommandCreator):
     dry_run: bool = False
 
     def _get_run_env_vars(self) -> Dict[str, str]:
+        """Returns env vars necessary for run command."""
         return {
             self.OT3_FIRMWARE_DOCKER_ENV_VAR_NAME: self.ot3_firmware_path,
             self.MODULES_DOCKER_ENV_VAR_NAME: self.modules_path,
             self.OPENTRONS_DOCKER_ENV_VAR_NAME: self.opentrons_path,
         }
 
-    def _get_build_env_vars(self):
+    def _get_build_env_vars(self) -> Dict[str, str]:
+        """Returns env vars necessary for build command."""
         default_vars_copy = self.DOCKER_BUILD_ENV_VARS.copy()
         default_vars_copy.update(self._get_run_env_vars())
         return default_vars_copy
 
     @property
     def compose_file_name(self) -> str:
-        """Compose file name to use"""
+        """Compose file name to use."""
         return "docker-compose-dev.yaml"
 
     @classmethod
     def from_cli_input(
         cls, args: argparse.Namespace, settings: ConfigurationSettings
     ) -> DevEmulationCommandCreator:
-        """Factory method to convert CLI input into a DevEmulatorCreator object"""
+        """Factory method to convert CLI input into a DevEmulatorCreator object."""
         return cls(
             detached=args.detached,
             ot3_firmware_path=args.ot3_firmware_repo_path,
@@ -257,7 +268,7 @@ class DevEmulationCommandCreator(AbstractEmulationCommandCreator):
         )
 
     def build(self) -> Command:
-        """Construct a docker-compose build command"""
+        """Construct a docker-compose build command."""
         # Need to specify env vars to satisfy docker-compose file even though nothing
         # is done with the env vars
 
@@ -269,7 +280,7 @@ class DevEmulationCommandCreator(AbstractEmulationCommandCreator):
         )
 
     def run(self) -> Command:
-        """Construct a docker-compose up command"""
+        """Construct a docker-compose up command."""
         cmd = f"docker-compose -f {self.compose_file_name} up"
 
         if self.detached:
@@ -283,5 +294,5 @@ class DevEmulationCommandCreator(AbstractEmulationCommandCreator):
         )
 
     def get_commands(self) -> CommandList:
-        """Get a list of commands to create emulation"""
+        """Get a list of commands to create emulation."""
         return self._get_commands()

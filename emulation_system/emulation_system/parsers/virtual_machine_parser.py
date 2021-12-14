@@ -1,3 +1,4 @@
+"""Parser for virtual-machine sub-command."""
 import argparse
 from emulation_system.parser_utils import get_formatter
 from emulation_system.commands.virtual_machine_command_creator import (
@@ -10,13 +11,13 @@ from emulation_system.settings_models import ConfigurationSettings
 
 
 class VirtualMachineParser(AbstractParser):
-    """Parser for virtual-machine sub-command"""
+    """Parser for virtual-machine sub-command."""
 
     @classmethod
     def get_parser(
         cls, parser: argparse.ArgumentParser, settings: ConfigurationSettings
     ) -> None:
-        """Build parser for virtual-machine command"""
+        """Build parser for virtual-machine command."""
         subparser = parser.add_parser(  # type: ignore
             "virtual-machine",
             aliases=["vm"],

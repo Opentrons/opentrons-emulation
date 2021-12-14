@@ -41,7 +41,9 @@ test:
 lint:
 	$(python) -m mypy emulation_system $(tests_to_typecheck)
 	$(python) -m black --check emulation_system tests setup.py
-	$(python) -m flake8 emulation_system tests setup.py
+	$(python) -m flake8 \
+		--per-file-ignores="emulation_system/compose_file_creator/input/hardware_models/__init__.py:E501"  \
+		emulation_system tests setup.py
 
 .PHONY: format
 format:

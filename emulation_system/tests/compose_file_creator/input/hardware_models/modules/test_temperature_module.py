@@ -1,8 +1,16 @@
+"""Tests for Temperature Module."""
+from typing import Dict, Any
+
+import py
 import pytest
 from pydantic import parse_obj_as
-from compose_file_creator.input.hardware_models import TemperatureModuleModel
-from compose_file_creator.settings import (
-    Hardware, EmulationLevel, SourceType
+from emulation_system.compose_file_creator.input.hardware_models import (
+    TemperatureModuleModel,
+)
+from emulation_system.compose_file_creator.config_file_settings import (
+    Hardware,
+    EmulationLevel,
+    SourceType,
 )
 
 ID = "my-temperature"
@@ -10,28 +18,34 @@ HARDWARE = Hardware.TEMPERATURE.value
 EMULATION_LEVEL = EmulationLevel.FIRMWARE.value
 SOURCE_TYPE = SourceType.LOCAL.value
 
+
 @pytest.fixture
-def temperature_module_default(tmpdir):
+def temperature_module_default(tmpdir: py.path.local) -> Dict[str, Any]:
+    """Temperature Module with default temperature settings specified."""
     return {
         "id": ID,
         "hardware": HARDWARE,
         "emulation-level": EMULATION_LEVEL,
         "source-type": SOURCE_TYPE,
         "source-location": str(tmpdir),
-        "hardware-specific-attributes": {}
+        "hardware-specific-attributes": {},
     }
 
 
 @pytest.fixture
-def temperature_module_set_temp(temperature_module_default):
-    temperature_module_default['hardware-specific-attributes']['temperature'] = {
+def temperature_module_set_temp(
+    temperature_module_default: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Temperature module with user-specified temperature settings."""
+    temperature_module_default["hardware-specific-attributes"]["temperature"] = {
         "degrees-per-tick": 5.0,
-        "starting": 20.0
+        "starting": 20.0,
     }
     return temperature_module_default
 
 
-def test_default_temperature_module(temperature_module_default):
+def test_default_temperature_module(temperature_module_default: Dict[str, Any]) -> None:
+    """Confirm Temperature Module is parsed correctly and defaults are applied."""
     therm = parse_obj_as(TemperatureModuleModel, temperature_module_default)
     assert therm.hardware == HARDWARE
     assert therm.id == ID
@@ -41,7 +55,13 @@ def test_default_temperature_module(temperature_module_default):
     assert therm.hardware_specific_attributes.temperature.starting == 23.0
 
 
-def test_temperature_module_with_temp(temperature_module_set_temp):
+def test_temperature_module_with_temp(
+    temperature_module_set_temp: Dict[str, Any]
+) -> None:
+    """Confirm Temperature Module is parsed correctly.
+
+    Confirm user-defined settings are applied.
+    """
     therm = parse_obj_as(TemperatureModuleModel, temperature_module_set_temp)
     assert therm.hardware == HARDWARE
     assert therm.id == ID

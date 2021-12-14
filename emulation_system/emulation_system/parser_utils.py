@@ -1,12 +1,12 @@
+"""Utility functions for helping with parsing."""
 import argparse
 
 
 class CLIHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
-    """
-    Corrected _max_action_length for the indenting of subactions
-    """
+    """Corrected _max_action_length for the indenting of subactions."""
 
-    def add_argument(self, action):
+    def add_argument(self, action) -> None:  # noqa: ANN001
+        """Overrides add_argument function and fixes the _max_action_length."""
         if action.help is not argparse.SUPPRESS:
 
             # find all invocations
@@ -28,6 +28,6 @@ class CLIHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
             self._add_item(self._format_action, [action])
 
 
-def get_formatter():
-    """Return prefilled out formatter"""
+def get_formatter():  # noqa: ANN201
+    """Return prefilled out formatter."""
     return lambda prog: CLIHelpFormatter(prog, max_help_position=100, width=200)
