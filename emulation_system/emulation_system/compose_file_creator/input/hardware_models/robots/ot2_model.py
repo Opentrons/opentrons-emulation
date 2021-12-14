@@ -6,7 +6,7 @@ from emulation_system.compose_file_creator.input.hardware_models\
 from emulation_system.compose_file_creator.input.hardware_models\
     .robots.robot_model import RobotModel
 
-from emulation_system.compose_file_creator.input.settings import (
+from compose_file_creator.settings import (
     PipetteSettings, Hardware
 )
 

@@ -3,7 +3,7 @@ import re
 
 from pydantic import validator, BaseModel, Field
 
-from emulation_system.compose_file_creator.input.settings import (
+from compose_file_creator.settings import (
     SourceType,
     EmulationLevel
 )

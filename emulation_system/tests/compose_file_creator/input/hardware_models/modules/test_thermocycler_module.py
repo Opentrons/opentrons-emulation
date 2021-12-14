@@ -1,13 +1,13 @@
 import pytest
 from pydantic import parse_obj_as
 from compose_file_creator.input.hardware_models import ThermocyclerModuleModel
-from compose_file_creator.input.settings import (
+from compose_file_creator.settings import (
     Hardware, EmulationLevel, SourceType
 )
 
 ID = "my-thermocycler"
 HARDWARE = Hardware.THERMOCYCLER.value
-EMULATION_LEVEL = EmulationLevel.FIRMWARE.value
+EMULATION_LEVEL = EmulationLevel.HARDWARE.value
 SOURCE_TYPE = SourceType.LOCAL.value
 
 @pytest.fixture

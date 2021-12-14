@@ -1,13 +1,13 @@
 import pytest
 from pydantic import parse_obj_as
 from compose_file_creator.input.hardware_models import TemperatureModuleModel
-from compose_file_creator.input.settings import (
+from compose_file_creator.settings import (
     Hardware, EmulationLevel, SourceType
 )
 
 ID = "my-temperature"
 HARDWARE = Hardware.TEMPERATURE.value
-EMULATION_LEVEL = EmulationLevel.DRIVER.value
+EMULATION_LEVEL = EmulationLevel.FIRMWARE.value
 SOURCE_TYPE = SourceType.LOCAL.value
 
 @pytest.fixture

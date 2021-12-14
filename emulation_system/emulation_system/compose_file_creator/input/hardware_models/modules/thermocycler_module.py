@@ -1,7 +1,7 @@
 from typing_extensions import Literal
 
 from pydantic import Field
-from emulation_system.compose_file_creator.input.settings import (
+from compose_file_creator.settings import (
     TemperatureModelSettings, Hardware
 )
 

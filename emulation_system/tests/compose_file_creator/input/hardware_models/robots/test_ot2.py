@@ -1,13 +1,13 @@
 import pytest
 from pydantic import parse_obj_as
 from compose_file_creator.input.hardware_models import OT2Model
-from compose_file_creator.input.settings import (
+from compose_file_creator.settings import (
     Hardware, EmulationLevel, SourceType
 )
 
 ID = "my-ot2"
 HARDWARE = Hardware.OT2.value
-EMULATION_LEVEL = EmulationLevel.DRIVER.value
+EMULATION_LEVEL = EmulationLevel.FIRMWARE.value
 SOURCE_TYPE = SourceType.LOCAL.value
 
 @pytest.fixture

@@ -1,7 +1,7 @@
 from enum import Enum
 from pydantic import BaseModel, Field
 
-ROOM_TEMPERATURE = 23.0
+ROOM_TEMPERATURE: float = 23.0
 
 
 class Hardware(str, Enum):
@@ -16,8 +16,8 @@ class Hardware(str, Enum):
 
 class EmulationLevel(str, Enum):
     """The emulation level of the emulator"""
+    HARDWARE = "hardware"
     FIRMWARE = "firmware"
-    DRIVER = "driver"
 
 
 class SourceType(str, Enum):

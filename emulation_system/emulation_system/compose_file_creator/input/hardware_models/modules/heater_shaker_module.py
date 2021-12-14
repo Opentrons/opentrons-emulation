@@ -7,7 +7,7 @@ from emulation_system.compose_file_creator.input.hardware_models\
 from emulation_system.compose_file_creator.input.hardware_models\
     .modules.module_model import ModuleModel
 
-from emulation_system.compose_file_creator.input.settings import (
+from compose_file_creator.settings import (
     HeaterShakerModes, Hardware
 )
 
@@ -24,3 +24,4 @@ class HeaterShakerModuleModel(ModuleModel):
         alias="hardware-specific-attributes",
         default=HeaterShakerModuleAttributes()
     )
+

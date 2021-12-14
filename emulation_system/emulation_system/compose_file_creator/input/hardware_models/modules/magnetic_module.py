@@ -1,7 +1,7 @@
 from pydantic import Field
 from typing_extensions import Literal
 
-from emulation_system.compose_file_creator.input.settings import Hardware
+from compose_file_creator.settings import Hardware
 from emulation_system.compose_file_creator.input.hardware_models\
     .hardware_specific_attributes import HardwareSpecificAttributes
 from emulation_system.compose_file_creator.input.hardware_models\
