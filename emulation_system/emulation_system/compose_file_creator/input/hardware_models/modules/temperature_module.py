@@ -4,7 +4,7 @@ from typing_extensions import Literal
 
 from emulation_system.compose_file_creator.config_file_settings import (
     TemperatureModelSettings,
-    Hardware,
+    HardwareDefinition,
 )
 from emulation_system.compose_file_creator.input.hardware_models.hardware_specific_attributes import (  # noqa: E501
     HardwareSpecificAttributes,
@@ -23,7 +23,7 @@ class TemperatureModuleAttributes(HardwareSpecificAttributes):
 class TemperatureModuleModel(ModuleModel):
     """Model for Temperature Module."""
 
-    hardware: Literal[Hardware.TEMPERATURE]
+    hardware: Literal[HardwareDefinition.TEMPERATURE.id]
     hardware_specific_attributes: TemperatureModuleAttributes = Field(
         alias="hardware-specific-attributes", default=TemperatureModuleAttributes()
     )

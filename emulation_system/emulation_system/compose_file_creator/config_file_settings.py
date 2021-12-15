@@ -1,20 +1,10 @@
 """Defines all settings and constants for config file."""
-
 from enum import Enum
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
 ROOM_TEMPERATURE: float = 23.0
-
-
-class Hardware(str, Enum):
-    """Hardware supported by emulation."""
-
-    HEATER_SHAKER = "heater-shaker-module"
-    THERMOCYCLER = "thermocycler-module"
-    TEMPERATURE = "temperature-module"
-    MAGNETEIC = "magnetic-module"
-    OT2 = "ot2"
-    OT3 = "ot3"
 
 
 class EmulationLevel(str, Enum):
@@ -50,3 +40,68 @@ class PipetteSettings(BaseModel):
 
     model: str = "p20_single_v2.0"
     id: str = "P20SV202020070101"
+
+
+class SourceLocation(str, Enum):
+    """Possible repos to download from."""
+    OPENTRONS = "opentrons"
+    OT3_FIRMWARE = 'ot3-firmware'
+    OPENTRONS_MODULES = 'opentrons-modules'
+
+
+class HardwareDefinition(Enum):
+    """Hardware supported by emulation."""
+
+    HEATER_SHAKER = ("heater-shaker-module", None, SourceLocation.OPENTRONS_MODULES)
+    THERMOCYCLER = (
+        "thermocycler-module",
+        SourceLocation.OPENTRONS,
+        SourceLocation.OPENTRONS_MODULES
+    )
+    TEMPERATURE = (
+        "temperature-module",
+        SourceLocation.OPENTRONS,
+        SourceLocation.OPENTRONS_MODULES
+    )
+    MAGNETIC = (
+        "magnetic-module",
+        SourceLocation.OPENTRONS,
+        SourceLocation.OPENTRONS_MODULES
+    )
+    OT2 = ('ot2', SourceLocation.OPENTRONS, None)
+    OT3 = ('ot3', None, None)
+
+    def __init__(
+        self,
+        id: str,
+        firmware_source: Optional[SourceLocation],
+        hardware_source: Optional[SourceLocation]
+    ) -> None:
+        self._id = id
+        self._firmware_source = firmware_source
+        self._hardware_source = hardware_source
+
+    @property
+    def id(self) -> str:
+        """Get id of hardware."""
+        return self._id
+
+    def get_source_repo(self, level: EmulationLevel) -> Optional[str]:
+        """Get source repo from hardware type and level."""
+        if level == EmulationLevel.FIRMWARE.value:
+            source = self._firmware_source
+        elif level == EmulationLevel.HARDWARE.value:
+            source = self._hardware_source
+        else:
+            raise ValueError(
+                f"\"{level}\" is not a valid level. "
+                f"Valid levels are"
+            )
+        if source is not None:
+            source = source.value
+
+        return source
+
+
+if __name__ == "__main__":
+    print(HardwareDefinition.HEATER_SHAKER.get_source_repo('hardware'))

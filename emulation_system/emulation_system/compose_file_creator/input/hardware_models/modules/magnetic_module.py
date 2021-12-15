@@ -2,7 +2,7 @@
 from pydantic import Field
 from typing_extensions import Literal
 
-from emulation_system.compose_file_creator.config_file_settings import Hardware
+from emulation_system.compose_file_creator.config_file_settings import HardwareDefinition
 from emulation_system.compose_file_creator.input.hardware_models.hardware_specific_attributes import (  # noqa: E501
     HardwareSpecificAttributes,
 )
@@ -20,7 +20,7 @@ class MagneticModuleAttributes(HardwareSpecificAttributes):
 class MagneticModuleModel(ModuleModel):
     """Model for Magnetic Module."""
 
-    hardware: Literal[Hardware.MAGNETEIC]
+    hardware: Literal[HardwareDefinition.MAGNETIC.id]
     hardware_specific_attributes: MagneticModuleAttributes = Field(
         alias="hardware-specific-attributes", default=MagneticModuleAttributes()
     )
