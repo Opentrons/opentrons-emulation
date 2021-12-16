@@ -13,7 +13,7 @@
 #   * Contains common packages that all ot3-firmware and module firmware require
 #   * All firmware Development targets should be based off of this to ensure all packages required for building exist
 
-# TODO: python-base
+# python-base:
 #   * Will be built on top of ubuntu-base
 #   * All python level emulators will be based off of python-base
 #   * Will contain all packages needed for building python emulators
@@ -114,6 +114,67 @@ RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -
 RUN apt-get install -y nodejs && npm install --global yarn
 
 #############################################################
+#                       LOCAL TARGETS                       #
+#############################################################
+
+# Targets for all development builds of emulators
+# All source code should be bind-mounted in, so do not copy it in.
+# entrypoint.sh should also be bind-mounted in so do not copy it in either
+# Make sure to include the OPENTRONS_HARDWARE env variable
+
+############################
+# Hardware Local Emulators #
+############################
+
+FROM cpp-base as ot3-echo-hardware-local
+ENV OPENTRONS_HARDWARE "ot3-echo-hardware"
+
+FROM cpp-base as heater-shaker-hardware-local
+ENV OPENTRONS_HARDWARE "heater-shaker-hardware"
+
+FROM cpp-base as thermocycler-hardware-local
+ENV OPENTRONS_HARDWARE "thermocycler-hardware"
+
+############################
+# Firmware Local Emulators #
+############################
+
+FROM python-base as thermocycler-firmware-local
+ENV OPENTRONS_HARDWARE "thermocycler-firmware"
+
+FROM python-base as magdeck-firmware-local
+ENV OPENTRONS_HARDWARE "magdeck-firmware"
+
+FROM python-base as tempdeck-firmware-local
+ENV OPENTRONS_HARDWARE "tempdeck-firmware"
+
+FROM python-base as emulator-proxy-local
+ENV OPENTRONS_HARDWARE "emulator-proxy"
+
+FROM python-base as robot-server-local
+ENV OPENTRONS_HARDWARE "robot-server"
+
+
+
+
+
+############################################### vvv PLEASE READ ME vvv #################################################
+############################################### vvv PLEASE READ ME vvv #################################################
+############################################### vvv PLEASE READ ME vvv #################################################
+
+#                                                       Note:
+# Configuration for local targets ends here. All following targets should either be remote targets or used to build
+# remote targets. I am trying super hard to keep this file organized.
+
+############################################### ^^^ PLEASE READ ME ^^^ #################################################
+############################################### ^^^ PLEASE READ ME ^^^ #################################################
+############################################### ^^^ PLEASE READ ME ^^^ #################################################
+
+
+
+
+
+#############################################################
 #                        REPO SOURCE                        #
 #############################################################
 
@@ -125,14 +186,13 @@ RUN apt-get install -y nodejs && npm install --global yarn
 #   * Based off of cpp-base
 #   * Contains ot3-firmware source and entrypoint.sh
 
-# modules-source:
+# opentrons-modules-source:
 #   * Based off of cpp-base
 #   * Contains modules source and entrypoint.sh
 
-# TODO: python-emulators-source
-#  * Will be based off of python-base
-#  * Will contain opentrons source and entrypoint.sh
-#  * Use OPENTRONS_SOURCE_DOWNLOAD_LOCATION for build arg
+# opentrons-source:
+#  * Based off of python-base
+#  * Contains opentrons source and entrypoint.sh
 
 #######################
 # ot3-firmware-source #
@@ -180,7 +240,8 @@ COPY entrypoint.sh /entrypoint.sh
 
 # The following targets should build executables.
 # There should be a 1 to 1 mapping of Executable Builder to Production Target
-# The Exectuable Builder should build the executable file and the Production Target should copy over to itself
+# The Exectuable Builder should build the executable file and the Production Target should copy over the executable file
+# from the executable builder target
 # Building separately from the Production Target to reduce image size
 
 FROM ot3-firmware-source as ot3-echo-builder
@@ -195,121 +256,87 @@ FROM opentrons-modules-source as thermocycler-builder
 ENV OPENTRONS_HARDWARE "thermocycler"
 RUN /entrypoint.sh build
 
-FROM opentrons-source as driver-builder
+FROM opentrons-source as firmware-builder
 RUN \
 	(cd /opentrons/shared-data/python && python3 setup.py bdist_wheel -d /dist/) && \
     (cd /opentrons/api && python3 setup.py bdist_wheel -d /dist/) && \
     (cd /opentrons/notify-server && python3 setup.py bdist_wheel -d /dist/) && \
     (cd /opentrons/robot-server && python3 setup.py bdist_wheel -d /dist/)
 
+##################
+# Firmware Common #
+##################
 
-#################
-# Driver Common #
-#################
+# Added this firmware-common image because all firmware level emulator images are based off of
+# the opentrons monorepo, it's just a different command that is ran for each.
 
-# Added this driver-common image because all driver level emulator images are based off of
-# the same source code build, it's just a different command that is ran for each.
-
-FROM python-base as driver-common
+FROM python-base as firmware-common
 RUN mkdir /dist
-COPY --from=driver-builder /dist/* /dist/
+COPY --from=firmware-builder /dist/* /dist/
 RUN pip install /dist/*
 
-#############################################################
-#                    DEVELOPMENT TARGETS                    #
-#############################################################
-
-# Targets for all development builds of emulators
-# All source code should be bind-mounted in so do not copy it in
-# entrypoint.sh should also be bind-mounted in so do not copy it in either
-# Make sure to include the OPENTRONS_HARDWARE env variable
-
-FROM cpp-base as ot3-firmware-echo-dev
-ENV OPENTRONS_HARDWARE "ot3-firmware-echo"
-
-FROM cpp-base as heater-shaker-dev
-ENV OPENTRONS_HARDWARE "heater-shaker"
-
-FROM cpp-base as thermocycler-dev
-ENV OPENTRONS_HARDWARE "thermocycler"
-
-FROM python-base as tempdeck-driver-dev
-ENV OPENTRONS_HARDWARE "tempdeck-driver"
-
-FROM python-base as magdeck-driver-dev
-ENV OPENTRONS_HARDWARE "magdeck-driver"
-
-FROM python-base as thermocycler-driver-dev
-ENV OPENTRONS_HARDWARE "thermocycler-driver"
-
-FROM python-base as emulator-proxy-dev
-ENV OPENTRONS_HARDWARE "emulator-proxy"
-
-FROM python-base as robot-server-dev
-ENV OPENTRONS_HARDWARE "robot-server"
-
 ##############################################################
-#                     PRODUCTION TARGETS                     #
+#                       REMOTE TARGETS                       #
 ##############################################################
 
-# Targets for all production builds of emulators
+# Targets for all remote builds of emulators
 # Make sure to include the OPENTRONS_HARDWARE env variable
-# Each Production Target should copy in entrypoint.sh
+# Each Remote Target should copy in entrypoint.sh
 
-#################################
-# Firmware Production Emulators #
-#################################
+#############################
+# Hardware Remote Emulators #
+#############################
 
-# Each Firmware Production Target should copy the executable from the Executable Builder target
-# Each Firmware Production Target should have a corresponding Executable Builder target
+# These emulators run C++ firmware code and emulate the hardware
+# Each Hardware Production Target should copy the executable from the Executable Builder target
+# Each Hardware Production Target should have a corresponding Executable Builder target
 
-FROM ubuntu-base as ot3-firmware-echo-prod
-ENV OPENTRONS_HARDWARE "ot3-firmware-echo"
+FROM ubuntu-base as ot3-echo-hardware-remote
+ENV OPENTRONS_HARDWARE "ot3-echo"
 COPY --from=ot3-echo-builder /ot3-firmware/build-host/can/simulator/can-simulator /ot3-firmware/build-host/can/simulator/can-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ubuntu-base as heater-shaker-prod
+FROM ubuntu-base as heater-shaker-hardware-remote
 ENV OPENTRONS_HARDWARE "heater-shaker"
 COPY --from=heater-shaker-builder /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ubuntu-base as thermocycler-prod
+FROM ubuntu-base as thermocycler-hardware-remote
 ENV OPENTRONS_HARDWARE "thermocycler"
 COPY --from=thermocycler-builder /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
+#################################
+# Firmware Production Emulators #
+#################################
 
-###############################
-# Driver Production Emulators #
-###############################
+# There emulators run python driver code and emulator the firmware
+# All Firmware level emulators should be based off of firmware-common
 
-# All driver level emulators should be based off of driver-common
+FROM firmware-common as thermocycler-firmware-remote
+ENV OPENTRONS_HARDWARE "thermocycler-firmware"
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM driver-common as emulator-proxy-prod
+FROM firmware-common as magdeck-firmware-remote
+ENV OPENTRONS_HARDWARE "magdeck-firmware"
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM firmware-common as tempdeck-firmware-remote
+ENV OPENTRONS_HARDWARE "tempdeck-firmware"
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM firmware-common as emulator-proxy-remote
 ENV OPENTRONS_HARDWARE "emulator-proxy"
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM driver-common as thermocycler-driver-prod
-ENV OPENTRONS_HARDWARE "thermocycler-driver"
-COPY entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh", "run"]
-
-FROM driver-common as magdeck-driver-prod
-ENV OPENTRONS_HARDWARE "magdeck-driver"
-COPY entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh", "run"]
-
-FROM driver-common as tempdeck-driver-prod
-ENV OPENTRONS_HARDWARE "tempdeck-driver"
-COPY entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh", "run"]
-
-FROM driver-common as robot-server-prod
+FROM firmware-common as robot-server-remote
 ENV OPENTRONS_HARDWARE "robot-server"
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
-
