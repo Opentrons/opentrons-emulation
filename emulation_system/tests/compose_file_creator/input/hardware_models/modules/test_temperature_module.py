@@ -1,16 +1,20 @@
 """Tests for Temperature Module."""
-from typing import Dict, Any
+from typing import (
+    Any,
+    Dict,
+)
 
 import py
 import pytest
 from pydantic import parse_obj_as
-from emulation_system.compose_file_creator.input.hardware_models import (
-    TemperatureModuleModel,
-)
+
 from emulation_system.compose_file_creator.config_file_settings import (
-    Hardware,
     EmulationLevel,
+    Hardware,
     SourceType,
+)
+from emulation_system.compose_file_creator.input.hardware_models import (
+    TemperatureModuleInputModel,
 )
 
 ID = "my-temperature"
@@ -23,11 +27,11 @@ SOURCE_TYPE = SourceType.LOCAL.value
 def temperature_module_default(tmpdir: py.path.local) -> Dict[str, Any]:
     """Temperature Module with default temperature settings specified."""
     return {
-        "id": ID,
-        "hardware": HARDWARE,
-        "emulation-level": EMULATION_LEVEL,
-        "source-type": SOURCE_TYPE,
-        "source-location": str(tmpdir),
+        "id":                           ID,
+        "hardware":                     HARDWARE,
+        "emulation-level":              EMULATION_LEVEL,
+        "source-type":                  SOURCE_TYPE,
+        "source-location":              str(tmpdir),
         "hardware-specific-attributes": {},
     }
 
@@ -39,14 +43,14 @@ def temperature_module_set_temp(
     """Temperature module with user-specified temperature settings."""
     temperature_module_default["hardware-specific-attributes"]["temperature"] = {
         "degrees-per-tick": 5.0,
-        "starting": 20.0,
+        "starting":         20.0,
     }
     return temperature_module_default
 
 
 def test_default_temperature_module(temperature_module_default: Dict[str, Any]) -> None:
     """Confirm Temperature Module is parsed correctly and defaults are applied."""
-    therm = parse_obj_as(TemperatureModuleModel, temperature_module_default)
+    therm = parse_obj_as(TemperatureModuleInputModel, temperature_module_default)
     assert therm.hardware == HARDWARE
     assert therm.id == ID
     assert therm.emulation_level == EMULATION_LEVEL
@@ -62,7 +66,7 @@ def test_temperature_module_with_temp(
 
     Confirm user-defined settings are applied.
     """
-    therm = parse_obj_as(TemperatureModuleModel, temperature_module_set_temp)
+    therm = parse_obj_as(TemperatureModuleInputModel, temperature_module_set_temp)
     assert therm.hardware == HARDWARE
     assert therm.id == ID
     assert therm.emulation_level == EMULATION_LEVEL

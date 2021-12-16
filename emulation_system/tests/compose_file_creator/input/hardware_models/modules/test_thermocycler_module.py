@@ -1,16 +1,20 @@
 """Tests for Thermocycler module."""
-from typing import Dict, Any
+from typing import (
+    Any,
+    Dict,
+)
 
 import py
 import pytest
 from pydantic import parse_obj_as
-from emulation_system.compose_file_creator.input.hardware_models import (
-    ThermocyclerModuleModel,
-)
+
 from emulation_system.compose_file_creator.config_file_settings import (
-    Hardware,
     EmulationLevel,
+    Hardware,
     SourceType,
+)
+from emulation_system.compose_file_creator.input.hardware_models import (
+    ThermocyclerModuleInputModel,
 )
 
 ID = "my-thermocycler"
@@ -23,11 +27,11 @@ SOURCE_TYPE = SourceType.LOCAL.value
 def thermocycler_default(tmpdir: py.path.local) -> Dict[str, Any]:
     """Thermocycler Module with default lid and plate temperature."""
     return {
-        "id": ID,
-        "hardware": HARDWARE,
-        "emulation-level": EMULATION_LEVEL,
-        "source-type": SOURCE_TYPE,
-        "source-location": str(tmpdir),
+        "id":                           ID,
+        "hardware":                     HARDWARE,
+        "emulation-level":              EMULATION_LEVEL,
+        "source-type":                  SOURCE_TYPE,
+        "source-location":              str(tmpdir),
         "hardware-specific-attributes": {},
     }
 
@@ -37,7 +41,7 @@ def thermocycler_set_lid_temp(thermocycler_default: Dict[str, Any]) -> Dict[str,
     """Thermocycler Module with user-specified lid temperature."""
     thermocycler_default["hardware-specific-attributes"]["lid-temperature"] = {
         "degrees-per-tick": 5.0,
-        "starting": 20.0,
+        "starting":         20.0,
     }
     return thermocycler_default
 
@@ -49,14 +53,14 @@ def thermocycler_set_plate_temp(
     """Thermocycler Module with default lid and plate temperature."""
     thermocycler_set_lid_temp["hardware-specific-attributes"]["plate-temperature"] = {
         "degrees-per-tick": 4.5,
-        "starting": 25.6,
+        "starting":         25.6,
     }
     return thermocycler_set_lid_temp
 
 
 def test_default_thermocycler(thermocycler_default: Dict[str, Any]) -> None:
     """Confirm Thermocycler is parsed correctly and default lid and plate temps."""
-    therm = parse_obj_as(ThermocyclerModuleModel, thermocycler_default)
+    therm = parse_obj_as(ThermocyclerModuleInputModel, thermocycler_default)
     assert therm.hardware == HARDWARE
     assert therm.id == ID
     assert therm.emulation_level == EMULATION_LEVEL
@@ -69,7 +73,7 @@ def test_default_thermocycler(thermocycler_default: Dict[str, Any]) -> None:
 
 def test_thermocycler_with_lid_temp(thermocycler_set_lid_temp: Dict[str, Any]) -> None:
     """Confirm Thermocycler is parsed correctly and user lid and default plate temps."""
-    therm = parse_obj_as(ThermocyclerModuleModel, thermocycler_set_lid_temp)
+    therm = parse_obj_as(ThermocyclerModuleInputModel, thermocycler_set_lid_temp)
     assert therm.hardware == HARDWARE
     assert therm.id == ID
     assert therm.emulation_level == EMULATION_LEVEL
@@ -84,7 +88,7 @@ def test_thermocycler_with_plate_temp(
     thermocycler_set_plate_temp: Dict[str, Any]
 ) -> None:
     """Confirm Thermocycler is parsed correctly and user lid and plate temps."""
-    therm = parse_obj_as(ThermocyclerModuleModel, thermocycler_set_plate_temp)
+    therm = parse_obj_as(ThermocyclerModuleInputModel, thermocycler_set_plate_temp)
     assert therm.hardware == HARDWARE
     assert therm.id == ID
     assert therm.emulation_level == EMULATION_LEVEL

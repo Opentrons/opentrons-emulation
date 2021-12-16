@@ -5,7 +5,7 @@ import py
 import pytest
 from pydantic import parse_obj_as
 from emulation_system.compose_file_creator.input.hardware_models import (
-    MagneticModuleModel,
+    MagneticModuleInputModel,
 )
 from emulation_system.compose_file_creator.config_file_settings import (
     Hardware,
@@ -34,7 +34,7 @@ def magnetic_module_default(tmpdir: py.path.local) -> Dict[str, Any]:
 
 def test_default_magnetic_module(magnetic_module_default: Dict[str, Any]) -> None:
     """Confirm Magnetic Module is parsed correctly."""
-    mag = parse_obj_as(MagneticModuleModel, magnetic_module_default)
+    mag = parse_obj_as(MagneticModuleInputModel, magnetic_module_default)
     assert mag.hardware == HARDWARE
     assert mag.id == ID
     assert mag.emulation_level == EMULATION_LEVEL
