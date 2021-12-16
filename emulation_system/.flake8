@@ -22,3 +22,4 @@ noqa-require-code = true
 
 exclude =
 	setup.py
+	emulation_system/compose_file_creator/compose_file_model.py
