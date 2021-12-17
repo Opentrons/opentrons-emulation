@@ -7,7 +7,7 @@ from emulation_system.compose_file_creator.input.hardware_models.hardware_model 
 )
 
 
-class ModuleModel(HardwareModel):
+class ModuleInputModel(HardwareModel):
     """Parent class of all Modules, Subclass of HardwareModel.
 
     Used to group all modules together and distinguish them from robots.

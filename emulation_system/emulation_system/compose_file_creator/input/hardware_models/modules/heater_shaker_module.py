@@ -1,17 +1,20 @@
 """Model and attributes for heater-shaker Module."""
 
 from pydantic import Field
+from pydantic.typing import NoneType
 from typing_extensions import Literal
 
 from emulation_system.compose_file_creator.config_file_settings import (
-    HardwareDefinition,
     HeaterShakerModes,
+    Images,
+    OpentronsRepository,
+    SourceRepositories,
 )
 from emulation_system.compose_file_creator.input.hardware_models.hardware_specific_attributes import (  # noqa: E501
     HardwareSpecificAttributes,
 )
 from emulation_system.compose_file_creator.input.hardware_models.modules.module_model import (  # noqa: E501
-    ModuleModel,
+    ModuleInputModel,
 )
 
 
@@ -21,10 +24,29 @@ class HeaterShakerModuleAttributes(HardwareSpecificAttributes):
     mode: HeaterShakerModes = HeaterShakerModes.SOCKET
 
 
-class HeaterShakerModuleModel(ModuleModel):
-    """Model for Heater Shaker Module."""
+class HeaterShakerModuleImages(Images):
+    """Image names for Heater-Shaker."""
+    local_firmware_image_name: NoneType = None
+    local_hardware_image_name: str = "heater-shaker-hardware-local"
+    remote_firmware_image_name: NoneType = None
+    remote_hardware_image_name: str = "heater-shaker-hardware-remote"
 
-    hardware: Literal[HardwareDefinition.HEATER_SHAKER.id]
+
+class HeaterShakerModuleSourceRepositories(SourceRepositories):
+    """Source repositories for Heater-Shaker."""
+    firmware_repo_name:  NoneType = None
+    hardware_repo_name: OpentronsRepository = OpentronsRepository.OPENTRONS_MODULES
+
+
+class HeaterShakerModuleInputModel(ModuleInputModel):
+    """Model for Heater Shaker Module."""
+    hardware: Literal["heater-shaker-module"]
+    images: HeaterShakerModuleImages = Field(
+        default=HeaterShakerModuleImages(), const=True
+    )
+    source_repos: HeaterShakerModuleSourceRepositories = Field(
+        default=HeaterShakerModuleSourceRepositories(), const=True
+    )
     hardware_specific_attributes: HeaterShakerModuleAttributes = Field(
         alias="hardware-specific-attributes", default=HeaterShakerModuleAttributes()
     )
