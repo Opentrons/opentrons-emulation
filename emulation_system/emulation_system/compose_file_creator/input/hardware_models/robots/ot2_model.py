@@ -11,6 +11,7 @@ from emulation_system.compose_file_creator.input.hardware_models.robots.robot_mo
 )
 
 from emulation_system.compose_file_creator.config_file_settings import (
+    EmulationLevels,
     Images,
     OpentronsRepository,
     PipetteSettings,
@@ -54,3 +55,4 @@ class OT2Model(RobotModel):
     hardware_specific_attributes: OT2Attributes = Field(
         alias="hardware-specific-attributes", default=OT2Attributes()
     )
+    emulation_level: Literal[EmulationLevels.FIRMWARE] = Field(alias="emulation-level")

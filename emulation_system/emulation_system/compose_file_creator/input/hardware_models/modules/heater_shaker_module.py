@@ -5,6 +5,7 @@ from pydantic.typing import NoneType
 from typing_extensions import Literal
 
 from emulation_system.compose_file_creator.config_file_settings import (
+    EmulationLevels,
     HeaterShakerModes,
     Images,
     OpentronsRepository,
@@ -34,7 +35,7 @@ class HeaterShakerModuleImages(Images):
 
 class HeaterShakerModuleSourceRepositories(SourceRepositories):
     """Source repositories for Heater-Shaker."""
-    firmware_repo_name:  NoneType = None
+    firmware_repo_name: NoneType = None
     hardware_repo_name: OpentronsRepository = OpentronsRepository.OPENTRONS_MODULES
 
 
@@ -50,3 +51,4 @@ class HeaterShakerModuleInputModel(ModuleInputModel):
     hardware_specific_attributes: HeaterShakerModuleAttributes = Field(
         alias="hardware-specific-attributes", default=HeaterShakerModuleAttributes()
     )
+    emulation_level: Literal[EmulationLevels.HARDWARE] = Field(alias="emulation-level")

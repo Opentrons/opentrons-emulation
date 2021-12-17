@@ -9,7 +9,7 @@ import pytest
 from pydantic import parse_obj_as
 
 from emulation_system.compose_file_creator.config_file_settings import (
-    EmulationLevel,
+    EmulationLevels,
     Hardware,
     SourceType,
 )
@@ -19,7 +19,7 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 
 ID = "my-temperature"
 HARDWARE = Hardware.TEMPERATURE.value
-EMULATION_LEVEL = EmulationLevel.FIRMWARE.value
+EMULATION_LEVEL = EmulationLevels.FIRMWARE.value
 SOURCE_TYPE = SourceType.LOCAL.value
 
 

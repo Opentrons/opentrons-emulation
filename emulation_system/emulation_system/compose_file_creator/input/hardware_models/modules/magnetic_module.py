@@ -4,6 +4,7 @@ from pydantic.typing import NoneType
 from typing_extensions import Literal
 
 from emulation_system.compose_file_creator.config_file_settings import (
+    EmulationLevels,
     Images,
     OpentronsRepository,
     SourceRepositories,
@@ -47,3 +48,4 @@ class MagneticModuleInputModel(ModuleInputModel):
     hardware_specific_attributes: MagneticModuleAttributes = Field(
         alias="hardware-specific-attributes", default=MagneticModuleAttributes()
     )
+    emulation_level: Literal[EmulationLevels.FIRMWARE] = Field(alias="emulation-level")

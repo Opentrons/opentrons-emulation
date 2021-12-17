@@ -3,6 +3,7 @@ from pydantic import Field
 from typing_extensions import Literal
 
 from emulation_system.compose_file_creator.config_file_settings import (
+    EmulationLevels,
     Images,
     OpentronsRepository,
     SourceRepositories,
@@ -54,3 +55,6 @@ class ThermocyclerModuleInputModel(ModuleInputModel):
     hardware_specific_attributes: ThermocyclerModuleAttributes = Field(
         alias="hardware-specific-attributes", default=ThermocyclerModuleAttributes()
     )
+    emulation_level: Literal[
+        EmulationLevels.FIRMWARE
+    ] = Field(alias="emulation-level")

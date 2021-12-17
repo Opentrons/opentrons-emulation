@@ -12,7 +12,7 @@ from pydantic import (
 ROOM_TEMPERATURE: float = 23.0
 
 
-class EmulationLevel(str, Enum):
+class EmulationLevels(str, Enum):
     """The emulation level of the emulator."""
 
     HARDWARE = "hardware"

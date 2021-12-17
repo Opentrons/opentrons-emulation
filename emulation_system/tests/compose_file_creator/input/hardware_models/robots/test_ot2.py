@@ -7,13 +7,13 @@ from pydantic import parse_obj_as
 from emulation_system.compose_file_creator.input.hardware_models import OT2Model
 from emulation_system.compose_file_creator.config_file_settings import (
     Hardware,
-    EmulationLevel,
+    EmulationLevels,
     SourceType,
 )
 
 ID = "my-ot2"
 HARDWARE = Hardware.OT2.value
-EMULATION_LEVEL = EmulationLevel.FIRMWARE.value
+EMULATION_LEVEL = EmulationLevels.FIRMWARE.value
 SOURCE_TYPE = SourceType.LOCAL.value
 
 

@@ -10,13 +10,13 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 from emulation_system.compose_file_creator.config_file_settings import (
     HeaterShakerModes,
     Hardware,
-    EmulationLevel,
+    EmulationLevels,
     SourceType,
 )
 
 ID = "my-heater-shaker"
 HARDWARE = Hardware.HEATER_SHAKER.value
-EMULATION_LEVEL = EmulationLevel.HARDWARE.value
+EMULATION_LEVEL = EmulationLevels.HARDWARE.value
 SOURCE_TYPE = SourceType.LOCAL.value
 
 

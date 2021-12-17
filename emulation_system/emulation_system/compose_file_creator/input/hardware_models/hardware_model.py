@@ -1,10 +1,9 @@
 """Parent class for all hardware."""
+from __future__ import annotations
 import os
-import re
 from typing import (
     Any,
     Dict,
-    Pattern,
 )
 
 from pydantic import (
@@ -15,7 +14,7 @@ from pydantic import (
 )
 
 from emulation_system.compose_file_creator.config_file_settings import (
-    EmulationLevel,
+    EmulationLevels,
     Images,
     SourceRepositories,
     SourceType,
@@ -27,13 +26,14 @@ class HardwareModel(BaseModel):
 
     # F722 does not play nice with pydantic
     id: constr(regex=r"^[a-zA-Z0-9-_]+$")  # noqa: F722
+    hardware: str
     source_type: SourceType = Field(alias="source-type")
     source_location: str = Field(alias="source-location")
-    hardware: str
-    id: str
-    images: Images
-    source_repos: SourceRepositories
-    emulation_level: EmulationLevel = Field(alias="emulation-level")
+
+    # Should be overriden in child classes
+    images: Images = NotImplemented
+    source_repos: SourceRepositories = NotImplemented
+    emulation_level: EmulationLevels = NotImplemented
 
     class Config:
         """Config class used by pydantic."""
@@ -50,37 +50,21 @@ class HardwareModel(BaseModel):
             assert os.path.isdir(v), f'"{v}" is not a valid directory path'
         return v
 
-    # @validator('emulation_level')
-    # def confirm_valid_configuration(cls, v):  # noqa: ANN001, ANN201
-    #     """Confirm that an emulator is defined for the passed hardware model."""
-    #     source_repo = cls._hardware_definition.get_source_repo(v)
-    #     hardware_type = cls._hardware_definition.id
-    #     valid_configs = " and ".join(
-    #         f"\"{config}\""
-    #         for config
-    #         in cls._hardware_definition.get_valid_configurations()
-    #     )
-    #     assert source_repo is not None, f"\"{hardware_type}\" does not have a " \
-    #                                     f"\"{v}\" emulator defined. Valid " \
-    #                                     f"configurations are {valid_configs}"
-    #
-    #     return v
-
     def get_image_name(self) -> str:
         """Get image name to run based off of class structure."""
-        if (self.emulation_level == EmulationLevel.HARDWARE
+        if (self.emulation_level == EmulationLevels.HARDWARE
                 and self.source_type == SourceType.REMOTE):
             image_name = self.images.remote_hardware_image_name
 
-        elif (self.emulation_level == EmulationLevel.HARDWARE
+        elif (self.emulation_level == EmulationLevels.HARDWARE
               and self.source_type == SourceType.LOCAL):
             image_name = self.images.local_hardware_image_name
 
-        elif (self.emulation_level == EmulationLevel.FIRMWARE
-                and self.source_type == SourceType.REMOTE):
+        elif (self.emulation_level == EmulationLevels.FIRMWARE
+              and self.source_type == SourceType.REMOTE):
             image_name = self.images.remote_firmware_image_name
 
-        elif (self.emulation_level == EmulationLevel.FIRMWARE
+        elif (self.emulation_level == EmulationLevels.FIRMWARE
               and self.source_type == SourceType.LOCAL):
             image_name = self.images.local_firmware_image_name
 
