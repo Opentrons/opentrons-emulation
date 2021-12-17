@@ -10,6 +10,7 @@ from typing import (
 from pydantic import (
     BaseModel,
     Field,
+    constr,
     validator,
 )
 
@@ -24,8 +25,8 @@ from emulation_system.compose_file_creator.config_file_settings import (
 class HardwareModel(BaseModel):
     """Parent class of all hardware. Define attributes common to all hardware."""
 
-    _ID_REGEX_FORMAT: Pattern = re.compile(r"^[a-zA-Z0-9-_]+$")
-
+    # F722 does not play nice with pydantic
+    id: constr(regex=r"^[a-zA-Z0-9-_]+$")  # noqa: F722
     source_type: SourceType = Field(alias="source-type")
     source_location: str = Field(alias="source-location")
     hardware: str
@@ -41,15 +42,6 @@ class HardwareModel(BaseModel):
         validate_assignment = True
         use_enum_values = True
         extra = "forbid"
-
-    @validator("id")
-    def check_id_format(cls, v: str) -> str:
-        """Verifies that id matches expected format."""
-        assert cls._ID_REGEX_FORMAT.match(v), (
-            f'"{v}" does not match required format of only alphanumeric characters, '
-            f"dashes and underscores"
-        )
-        return v
 
     @validator("source_location")
     def check_source_location(cls, v: str, values: Dict[str, Any]) -> str:
