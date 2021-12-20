@@ -52,16 +52,22 @@ class HardwareModel(BaseModel):
 
     def get_image_name(self) -> Optional[str]:
         """Get image name to run based off of class structure."""
-        if (self.emulation_level == EmulationLevels.HARDWARE
-                and self.source_type == SourceType.REMOTE):
+        if (
+            self.emulation_level == EmulationLevels.HARDWARE
+            and self.source_type == SourceType.REMOTE
+        ):
             image_name = self.images.remote_hardware_image_name
 
-        elif (self.emulation_level == EmulationLevels.HARDWARE
-              and self.source_type == SourceType.LOCAL):
+        elif (
+            self.emulation_level == EmulationLevels.HARDWARE
+            and self.source_type == SourceType.LOCAL
+        ):
             image_name = self.images.local_hardware_image_name
 
-        elif (self.emulation_level == EmulationLevels.FIRMWARE
-              and self.source_type == SourceType.REMOTE):
+        elif (
+            self.emulation_level == EmulationLevels.FIRMWARE
+            and self.source_type == SourceType.REMOTE
+        ):
             image_name = self.images.remote_firmware_image_name
 
         else:

@@ -27,11 +27,11 @@ SOURCE_TYPE = SourceType.LOCAL.value
 def temperature_module_default(tmpdir: py.path.local) -> Dict[str, Any]:
     """Temperature Module with default temperature settings specified."""
     return {
-        "id":                           ID,
-        "hardware":                     HARDWARE,
-        "emulation-level":              EMULATION_LEVEL,
-        "source-type":                  SOURCE_TYPE,
-        "source-location":              str(tmpdir),
+        "id": ID,
+        "hardware": HARDWARE,
+        "emulation-level": EMULATION_LEVEL,
+        "source-type": SOURCE_TYPE,
+        "source-location": str(tmpdir),
         "hardware-specific-attributes": {},
     }
 
@@ -43,7 +43,7 @@ def temperature_module_set_temp(
     """Temperature module with user-specified temperature settings."""
     temperature_module_default["hardware-specific-attributes"]["temperature"] = {
         "degrees-per-tick": 5.0,
-        "starting":         20.0,
+        "starting": 20.0,
     }
     return temperature_module_default
 

@@ -11,13 +11,16 @@ from pydantic import (
 
 ROOM_TEMPERATURE: float = 23.0
 
+
 class Hardware(str, Enum):
-    HEATER_SHAKER_MODULE = 'heater-shaker-module'
-    MAGNETIC_MODULE = 'magnetic-module'
-    THERMOCYCLER_MODULE = 'thermocycler-module'
-    TEMPERATURE_MODULE = 'temperature-module'
-    OT2 = 'ot2'
-    OT3 = 'ot3'
+    """Names of supported hardware."""
+
+    HEATER_SHAKER_MODULE = "heater-shaker-module"
+    MAGNETIC_MODULE = "magnetic-module"
+    THERMOCYCLER_MODULE = "thermocycler-module"
+    TEMPERATURE_MODULE = "temperature-module"
+    OT2 = "ot2"
+    OT3 = "ot3"
 
 
 class EmulationLevels(str, Enum):
@@ -57,13 +60,15 @@ class PipetteSettings(BaseModel):
 
 class OpentronsRepository(str, Enum):
     """Possible repos to download from."""
+
     OPENTRONS = "opentrons"
-    OT3_FIRMWARE = 'ot3-firmware'
-    OPENTRONS_MODULES = 'opentrons-modules'
+    OT3_FIRMWARE = "ot3-firmware"
+    OPENTRONS_MODULES = "opentrons-modules"
 
 
 class Images(BaseModel):
     """Stores names of images for each piece of hardware."""
+
     local_firmware_image_name: Optional[str]
     local_hardware_image_name: Optional[str]
     remote_firmware_image_name: Optional[str]
@@ -72,5 +77,6 @@ class Images(BaseModel):
 
 class SourceRepositories(BaseModel):
     """Stores names of source code repos for each piece of hardware."""
+
     firmware_repo_name: Optional[OpentronsRepository]
     hardware_repo_name: Optional[OpentronsRepository]

@@ -31,6 +31,7 @@ class OT2Attributes(HardwareSpecificAttributes):
 
 class OT2Images(Images):
     """Image names for Magnetic Module."""
+
     local_firmware_image_name: str = "robot-server-local"
     local_hardware_image_name: Literal[None] = None
     remote_firmware_image_name: str = "robot-server-remote"
@@ -39,6 +40,7 @@ class OT2Images(Images):
 
 class OT2SourceRepositories(SourceRepositories):
     """Source repositories for OT2."""
+
     firmware_repo_name: OpentronsRepository = OpentronsRepository.OPENTRONS
     hardware_repo_name: Literal[None] = None
 

@@ -20,6 +20,7 @@ from emulation_system.compose_file_creator.input.hardware_models.modules.module_
 
 class ThermocyclerModuleImages(Images):
     """Image names for Magnetic Module."""
+
     local_firmware_image_name: str = "thermocycler-firmware-local"
     local_hardware_image_name: str = "thermocycler-hardware-local"
     remote_firmware_image_name: str = "thermocycler-firmware-remote"
@@ -39,6 +40,7 @@ class ThermocyclerModuleAttributes(HardwareSpecificAttributes):
 
 class ThermocyclerModuleSourceRepositories(SourceRepositories):
     """Source repositories for Heater-Shaker."""
+
     firmware_repo_name: OpentronsRepository = OpentronsRepository.OPENTRONS
     hardware_repo_name: OpentronsRepository = OpentronsRepository.OPENTRONS_MODULES
 
@@ -57,6 +59,5 @@ class ThermocyclerModuleInputModel(ModuleInputModel):
         alias="hardware-specific-attributes", default=ThermocyclerModuleAttributes()
     )
     emulation_level: Literal[
-        EmulationLevels.FIRMWARE,
-        EmulationLevels.HARDWARE
+        EmulationLevels.FIRMWARE, EmulationLevels.HARDWARE
     ] = Field(alias="emulation-level")

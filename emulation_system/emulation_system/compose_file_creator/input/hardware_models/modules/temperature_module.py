@@ -20,6 +20,7 @@ from emulation_system.compose_file_creator.input.hardware_models.modules.module_
 
 class TemperatureModuleImages(Images):
     """Image names for Temperature Module."""
+
     local_firmware_image_name: str = "tempdeck-firmware-local"
     local_hardware_image_name: Literal[None] = None
     remote_firmware_image_name: str = "tempdeck-firmware-remote"
@@ -34,6 +35,7 @@ class TemperatureModuleAttributes(HardwareSpecificAttributes):
 
 class TemperatureModuleSourceRepositories(SourceRepositories):
     """Source repositories for Heater-Shaker."""
+
     firmware_repo_name: OpentronsRepository = OpentronsRepository.OPENTRONS
     hardware_repo_name: Literal[None] = None
 

@@ -25,6 +25,7 @@ class MagneticModuleAttributes(HardwareSpecificAttributes):
 
 class MagneticModuleImages(Images):
     """Image names for Magnetic Module."""
+
     local_firmware_image_name: str = "magdeck-firmware-local"
     local_hardware_image_name: Literal[None] = None
     remote_firmware_image_name: str = "magdeck-firmware-remote"
@@ -33,6 +34,7 @@ class MagneticModuleImages(Images):
 
 class MagneticModuleSourceRepositories(SourceRepositories):
     """Source repositories for Heater-Shaker."""
+
     firmware_repo_name: OpentronsRepository = OpentronsRepository.OPENTRONS
     hardware_repo_name: Literal[None] = None
 
