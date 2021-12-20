@@ -39,7 +39,7 @@ test:
 
 .PHONY: lint
 lint:
-	$(python) -m mypy emulation_system $(tests_to_typecheck)
+	$(python) -m mypy --config-file ./mypy.ini emulation_system $(tests_to_typecheck)
 	$(python) -m black --check emulation_system tests setup.py
 	$(python) -m flake8 emulation_system tests setup.py
 
