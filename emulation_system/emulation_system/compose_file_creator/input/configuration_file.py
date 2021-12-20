@@ -2,15 +2,13 @@
 from __future__ import annotations
 
 import os
-from copy import deepcopy
 from typing import (
     Dict,
-    NewType,
+    Mapping,
     Optional,
     Union,
 )
 
-from emulation_system.consts import ROOT_DIR
 from pydantic import (
     BaseModel,
     ValidationError,
@@ -27,21 +25,18 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 from emulation_system.compose_file_creator.input.hardware_models import (
     MagneticModuleInputModel,
 )
+from emulation_system.consts import ROOT_DIR
 
-Modules = NewType(
-    'Modules',
-    Union[
-        HeaterShakerModuleInputModel,
-        ThermocyclerModuleInputModel,
-        TemperatureModuleInputModel,
-        MagneticModuleInputModel,
-    ]
-)
+Modules = Union[
+    HeaterShakerModuleInputModel,
+    ThermocyclerModuleInputModel,
+    TemperatureModuleInputModel,
+    MagneticModuleInputModel,
+]
 
-Robots = NewType(
-    'Robots',
-    Union[OT2Model]
-)
+Robots = Union[OT2Model]
+
+Containers = Union[Robots, Modules]
 
 
 class SystemConfigurationModel(BaseModel):
@@ -57,6 +52,7 @@ class SystemConfigurationModel(BaseModel):
 
     class Config:
         """Config class used by pydantic."""
+
         extra = "forbid"
 
     @validator("robot", pre=True)
@@ -74,25 +70,28 @@ class SystemConfigurationModel(BaseModel):
         return value
 
     @property
-    def containers(self) -> Dict[str, Union[Modules, Robots]]:
+    def containers(self) -> Mapping[str, Containers]:
         """Return all robots and modules in a single dictionary."""
-        robot = deepcopy(self.robot) if self.robot is not None else {}
-        # Don't need to deep copy modules because we are going to add to robot var
+        new_dict: Dict[str, Containers] = {}
+        robot = self.robot if self.robot is not None else {}
         modules = self.modules if self.modules is not None else {}
-        robot.update(modules)
-        return robot
+        new_dict.update(robot)
+        new_dict.update(modules)
+        return new_dict
 
 
 if __name__ == "__main__":
     try:
         location = os.path.join(ROOT_DIR, "emulation_system/resources/new_config.json")
         system_configuration = parse_file_as(SystemConfigurationModel, location)
-        for module in system_configuration.containers.values():
-            print(
-                f"{module.hardware}, "
-                f"{module.source_type}, "
-                f"{module.emulation_level}: "
-                f"{module.get_image_name()}"
-            )
+        modules = system_configuration.modules
+        if modules is not None:
+            for module in modules.values():
+                print(
+                    f"{module.hardware}, "
+                    f"{module.source_type}, "
+                    f"{module.emulation_level}: "
+                    f"{module.get_image_name()}"
+                )
     except ValidationError as e:
         print(e)
