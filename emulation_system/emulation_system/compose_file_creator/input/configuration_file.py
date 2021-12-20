@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+from copy import deepcopy
 from typing import (
     Dict,
     NewType,
@@ -9,6 +10,7 @@ from typing import (
     Union,
 )
 
+from consts import ROOT_DIR
 from pydantic import (
     BaseModel,
     ValidationError,
@@ -16,7 +18,6 @@ from pydantic import (
     validator,
 )
 
-from consts import ROOT_DIR
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
     OT2Model,
@@ -73,11 +74,26 @@ class SystemConfigurationModel(BaseModel):
             module["id"] = key
         return value
 
+    @property
+    def containers(self) -> Dict[str, Union[Modules, Robots]]:
+        """Return all robots and modules in a single dictionary."""
+        robot = deepcopy(self.robot) if self.robot is not None else {}
+        # Don't need to deep copy modules because we are going to add to robot var
+        modules = self.modules if self.modules is not None else {}
+        robot.update(modules)
+        return robot
+
 
 if __name__ == "__main__":
     try:
         location = os.path.join(ROOT_DIR, "emulation_system/resources/new_config.json")
         system_configuration = parse_file_as(SystemConfigurationModel, location)
-        print(system_configuration)
+        for module in system_configuration.containers.values():
+            print(
+                f"{module.hardware}, "
+                f"{module.source_type}, "
+                f"{module.emulation_level}: "
+                f"{module.get_image_name()}"
+            )
     except ValidationError as e:
         print(e)
