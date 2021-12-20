@@ -10,7 +10,7 @@ from typing import (
     Union,
 )
 
-from consts import ROOT_DIR
+from emulation_system.consts import ROOT_DIR
 from pydantic import (
     BaseModel,
     ValidationError,
@@ -57,7 +57,6 @@ class SystemConfigurationModel(BaseModel):
 
     class Config:
         """Config class used by pydantic."""
-
         extra = "forbid"
 
     @validator("robot", pre=True)
