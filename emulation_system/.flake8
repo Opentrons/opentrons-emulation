@@ -24,7 +24,7 @@ noqa-require-code = true
 
 exclude =
 	setup.py
-	emulation_system/compose_file_creator/compose_file_model.py
+	emulation_system/compose_file_creator/output/compose_file_model.py
 
 per-file-ignores =
 	# Import paths are so long. Don't fight with flake8 to make them work

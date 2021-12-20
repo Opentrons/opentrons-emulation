@@ -43,13 +43,15 @@ class SystemConfigurationModel(BaseModel):
     @root_validator
     def validate_names(cls, values) -> Dict[str, Dict[str, Containers]]:  # noqa: ANN001
         """Checks all names in the config file and confirms there are no duplicates."""
-        robot_names = set(values['robot'].keys())
-        module_names = set(values['modules'].keys())
+        robot_names = set(values["robot"].keys())
+        module_names = set(values["modules"].keys())
 
         name_intersections = robot_names.intersection(module_names)
-        assert len(name_intersections) == 0, "The following container names are " \
-                                             "duplicated in the configuration file: " \
-                                             f"{', '.join(name_intersections)}"
+        assert len(name_intersections) == 0, (
+            "The following container names are "
+            "duplicated in the configuration file: "
+            f"{', '.join(name_intersections)}"
+        )
 
         return values
 
