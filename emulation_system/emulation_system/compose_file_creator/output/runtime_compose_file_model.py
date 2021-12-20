@@ -4,7 +4,10 @@ from typing import Any
 
 from yaml import dump as yaml_dump
 
-from emulation_system.compose_file_creator.output.compose_file_model import (
+# Have to ignore attr-defined errors from mypy because we are calling type: ignore at
+# the top of compose_file_model. This causes mypy to think that ComposeSpecification
+# and Service do not exist when they actually do.
+from emulation_system.compose_file_creator.output.compose_file_model import (  # type: ignore[attr-defined] # noqa: E501
     ComposeSpecification,
     Service,
 )

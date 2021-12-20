@@ -14,9 +14,12 @@ pip install datamodel-code-generator
 datamodel-codegen \
   --url https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json \
   --input-file-type jsonschema \
-  --output ../emulation_system/emulation_system/compose_file_creator/compose_file_model.py \
+  --output ../emulation_system/emulation_system/compose_file_creator/output/compose_file_model.py \
   --snake-case-field \
   --field-constraints \
   --disable-timestamp \
   --strip-default-none \
   --enum-field-as-literal one
+
+# Add type: ignore to top of file so mypy ignores it
+sed -i '1s/^/#  type: ignore\n\n/' ../emulation_system/emulation_system/compose_file_creator/output/compose_file_model.py
