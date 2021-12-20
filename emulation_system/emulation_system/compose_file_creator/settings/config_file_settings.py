@@ -66,15 +66,6 @@ class OpentronsRepository(str, Enum):
     OPENTRONS_MODULES = "opentrons-modules"
 
 
-class Images(BaseModel):
-    """Stores names of images for each piece of hardware."""
-
-    local_firmware_image_name: Optional[str]
-    local_hardware_image_name: Optional[str]
-    remote_firmware_image_name: Optional[str]
-    remote_hardware_image_name: Optional[str]
-
-
 class SourceRepositories(BaseModel):
     """Stores names of source code repos for each piece of hardware."""
 

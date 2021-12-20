@@ -7,7 +7,6 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     EmulationLevels,
     Hardware,
     HeaterShakerModes,
-    Images,
     OpentronsRepository,
     SourceRepositories,
 )
@@ -25,15 +24,6 @@ class HeaterShakerModuleAttributes(HardwareSpecificAttributes):
     mode: HeaterShakerModes = HeaterShakerModes.SOCKET
 
 
-class HeaterShakerModuleImages(Images):
-    """Image names for Heater-Shaker."""
-
-    local_firmware_image_name: Literal[None] = None
-    local_hardware_image_name: str = "heater-shaker-hardware-local"
-    remote_firmware_image_name: Literal[None] = None
-    remote_hardware_image_name: str = "heater-shaker-hardware-remote"
-
-
 class HeaterShakerModuleSourceRepositories(SourceRepositories):
     """Source repositories for Heater-Shaker."""
 
@@ -45,9 +35,6 @@ class HeaterShakerModuleInputModel(ModuleInputModel):
     """Model for Heater Shaker Module."""
 
     hardware: Literal[Hardware.HEATER_SHAKER_MODULE]
-    images: HeaterShakerModuleImages = Field(
-        default=HeaterShakerModuleImages(), const=True
-    )
     source_repos: HeaterShakerModuleSourceRepositories = Field(
         default=HeaterShakerModuleSourceRepositories(), const=True
     )

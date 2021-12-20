@@ -5,7 +5,6 @@ import os
 from typing import (
     Any,
     Dict,
-    Optional,
 )
 
 from pydantic import (
@@ -16,7 +15,6 @@ from pydantic import (
 
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     EmulationLevels,
-    Images,
     SourceRepositories,
     SourceType,
 )
@@ -30,8 +28,6 @@ class HardwareModel(BaseModel):
     source_type: SourceType = Field(alias="source-type")
     source_location: str = Field(alias="source-location")
 
-    # Should be overriden in child classes
-    images: Images = NotImplemented
     source_repos: SourceRepositories = NotImplemented
     emulation_level: EmulationLevels = NotImplemented
 
@@ -49,31 +45,6 @@ class HardwareModel(BaseModel):
         if values["source_type"] == SourceType.LOCAL:
             assert os.path.isdir(v), f'"{v}" is not a valid directory path'
         return v
-
-    def get_image_name(self) -> Optional[str]:
-        """Get image name to run based off of class structure."""
-        if (
-            self.emulation_level == EmulationLevels.HARDWARE
-            and self.source_type == SourceType.REMOTE
-        ):
-            image_name = self.images.remote_hardware_image_name
-
-        elif (
-            self.emulation_level == EmulationLevels.HARDWARE
-            and self.source_type == SourceType.LOCAL
-        ):
-            image_name = self.images.local_hardware_image_name
-
-        elif (
-            self.emulation_level == EmulationLevels.FIRMWARE
-            and self.source_type == SourceType.REMOTE
-        ):
-            image_name = self.images.remote_firmware_image_name
-
-        else:
-            image_name = self.images.local_firmware_image_name
-
-        return image_name
 
     def get_source_repo(self) -> str:
         """Get name of Docker image to use."""
