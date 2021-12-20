@@ -11,6 +11,7 @@ from typing import (
 
 from pydantic import (
     BaseModel,
+    Field,
     ValidationError,
     parse_file_as,
     validator,
@@ -47,8 +48,8 @@ class SystemConfigurationModel(BaseModel):
 
     _ROBOT_IDENTIFIER: str = "robot"
     _MODULES_IDENTIFIER: str = "modules"
-    robot: Optional[Dict[str, Robots]]
-    modules: Optional[Dict[str, Modules]]
+    robot: Dict[str, Robots] = Field(default={})
+    modules: Dict[str, Modules] = Field(default={})
 
     class Config:
         """Config class used by pydantic."""
@@ -73,10 +74,8 @@ class SystemConfigurationModel(BaseModel):
     def containers(self) -> Mapping[str, Containers]:
         """Return all robots and modules in a single dictionary."""
         new_dict: Dict[str, Containers] = {}
-        robot = self.robot if self.robot is not None else {}
-        modules = self.modules if self.modules is not None else {}
-        new_dict.update(robot)
-        new_dict.update(modules)
+        new_dict.update(self.robot)
+        new_dict.update(self.modules)
         return new_dict
 
 
@@ -84,14 +83,12 @@ if __name__ == "__main__":
     try:
         location = os.path.join(ROOT_DIR, "emulation_system/resources/new_config.json")
         system_configuration = parse_file_as(SystemConfigurationModel, location)
-        modules = system_configuration.modules
-        if modules is not None:
-            for module in modules.values():
-                print(
-                    f"{module.hardware}, "
-                    f"{module.source_type}, "
-                    f"{module.emulation_level}: "
-                    f"{module.get_image_name()}"
-                )
+        for module in system_configuration.containers.values():
+            print(
+                f"{module.hardware}, "
+                f"{module.source_type}, "
+                f"{module.emulation_level}: "
+                f"{module.get_image_name()}"
+            )
     except ValidationError as e:
         print(e)
