@@ -4,7 +4,7 @@ import abc
 import argparse
 
 from emulation_system.commands.command import CommandList
-from emulation_system.settings_models import ConfigurationSettings
+from emulation_system.opentrons_emulation_configuration import OpentronsEmulationConfiguration
 
 
 class AbstractCommandCreator(abc.ABC):
@@ -13,7 +13,7 @@ class AbstractCommandCreator(abc.ABC):
     @classmethod
     @abc.abstractmethod
     def from_cli_input(
-        cls, args: argparse.Namespace, settings: ConfigurationSettings
+        cls, args: argparse.Namespace, settings: OpentronsEmulationConfiguration
     ) -> AbstractCommandCreator:
         """Parse cli input args into Command Creator class."""
         ...

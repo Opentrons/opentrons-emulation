@@ -4,8 +4,8 @@ from typing import Generator
 
 import pytest
 from emulation_system.consts import CONFIGURATION_FILE_LOCATION_VAR_NAME
-from emulation_system.settings_models import (
-    ConfigurationSettings,
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
     DefaultFolderPaths,
     SourceDownloadLocations,
 )
@@ -24,9 +24,9 @@ def test_json_path() -> str:
     return get_test_configuration_file_path()
 
 
-def get_test_conf() -> ConfigurationSettings:
+def get_test_conf() -> OpentronsEmulationConfiguration:
     """Returns configuration settings from test config file."""
-    return ConfigurationSettings.from_file_path(get_test_configuration_file_path())
+    return OpentronsEmulationConfiguration.from_file_path(get_test_configuration_file_path())
 
 
 def get_default_folder_path(name: str) -> str:
