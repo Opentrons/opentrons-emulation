@@ -1,10 +1,10 @@
 """Model and attributes for Magnetic Module."""
 from pydantic import Field
-from pydantic.typing import NoneType
 from typing_extensions import Literal
 
 from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
+    Hardware,
     Images,
     OpentronsRepository,
     SourceRepositories,
@@ -26,21 +26,21 @@ class MagneticModuleAttributes(HardwareSpecificAttributes):
 class MagneticModuleImages(Images):
     """Image names for Magnetic Module."""
     local_firmware_image_name: str = "magdeck-firmware-local"
-    local_hardware_image_name: NoneType = None
+    local_hardware_image_name: Literal[None] = None
     remote_firmware_image_name: str = "magdeck-firmware-remote"
-    remote_hardware_image_name: NoneType = None
+    remote_hardware_image_name: Literal[None] = None
 
 
 class MagneticModuleSourceRepositories(SourceRepositories):
     """Source repositories for Heater-Shaker."""
     firmware_repo_name: OpentronsRepository = OpentronsRepository.OPENTRONS
-    hardware_repo_name: NoneType = None
+    hardware_repo_name: Literal[None] = None
 
 
 class MagneticModuleInputModel(ModuleInputModel):
     """Model for Magnetic Module."""
 
-    hardware: Literal["magnetic-module"]
+    hardware: Literal[Hardware.MAGNETIC_MODULE]
     images: MagneticModuleImages = Field(default=MagneticModuleImages(), const=True)
     source_repos: MagneticModuleSourceRepositories = Field(
         default=MagneticModuleSourceRepositories(), const=True

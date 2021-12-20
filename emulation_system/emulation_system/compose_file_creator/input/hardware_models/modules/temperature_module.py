@@ -1,10 +1,10 @@
 """Model and attributes for Temperature Module."""
 from pydantic import Field
-from pydantic.typing import NoneType
 from typing_extensions import Literal
 
 from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
+    Hardware,
     Images,
     OpentronsRepository,
     SourceRepositories,
@@ -21,9 +21,9 @@ from emulation_system.compose_file_creator.input.hardware_models.modules.module_
 class TemperatureModuleImages(Images):
     """Image names for Temperature Module."""
     local_firmware_image_name: str = "tempdeck-firmware-local"
-    local_hardware_image_name: NoneType = None
+    local_hardware_image_name: Literal[None] = None
     remote_firmware_image_name: str = "tempdeck-firmware-remote"
-    remote_hardware_image_name: NoneType = None
+    remote_hardware_image_name: Literal[None] = None
 
 
 class TemperatureModuleAttributes(HardwareSpecificAttributes):
@@ -35,13 +35,13 @@ class TemperatureModuleAttributes(HardwareSpecificAttributes):
 class TemperatureModuleSourceRepositories(SourceRepositories):
     """Source repositories for Heater-Shaker."""
     firmware_repo_name: OpentronsRepository = OpentronsRepository.OPENTRONS
-    hardware_repo_name: NoneType = None
+    hardware_repo_name: Literal[None] = None
 
 
 class TemperatureModuleInputModel(ModuleInputModel):
     """Model for Temperature Module."""
 
-    hardware: Literal["temperature-module"]
+    hardware: Literal[Hardware.TEMPERATURE_MODULE]
     images: TemperatureModuleImages = Field(
         default=TemperatureModuleImages(), const=True
     )

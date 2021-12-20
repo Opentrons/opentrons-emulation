@@ -11,6 +11,14 @@ from pydantic import (
 
 ROOM_TEMPERATURE: float = 23.0
 
+class Hardware(str, Enum):
+    HEATER_SHAKER_MODULE = 'heater-shaker-module'
+    MAGNETIC_MODULE = 'magnetic-module'
+    THERMOCYCLER_MODULE = 'thermocycler-module'
+    TEMPERATURE_MODULE = 'temperature-module'
+    OT2 = 'ot2'
+    OT3 = 'ot3'
+
 
 class EmulationLevels(str, Enum):
     """The emulation level of the emulator."""

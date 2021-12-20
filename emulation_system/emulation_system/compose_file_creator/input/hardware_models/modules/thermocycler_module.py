@@ -4,6 +4,7 @@ from typing_extensions import Literal
 
 from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
+    Hardware,
     Images,
     OpentronsRepository,
     SourceRepositories,
@@ -45,7 +46,7 @@ class ThermocyclerModuleSourceRepositories(SourceRepositories):
 class ThermocyclerModuleInputModel(ModuleInputModel):
     """Model for Thermocycler Module."""
 
-    hardware: Literal["thermocycler-module"]
+    hardware: Literal[Hardware.THERMOCYCLER_MODULE]
     images: ThermocyclerModuleImages = Field(
         default=ThermocyclerModuleImages(), const=True
     )
