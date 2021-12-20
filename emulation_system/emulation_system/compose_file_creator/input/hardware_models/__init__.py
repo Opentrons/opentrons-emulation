@@ -12,11 +12,11 @@ from emulation_system.compose_file_creator.input.hardware_models.modules.thermoc
     ThermocyclerModuleInputModel,
 )
 from emulation_system.compose_file_creator.input.hardware_models.robots.ot2_model import (
-    OT2Model,
+    OT2InputModel,
 )
 
 __all__ = [
-    "OT2Model",
+    "OT2InputModel",
     "HeaterShakerModuleInputModel",
     "TemperatureModuleInputModel",
     "ThermocyclerModuleInputModel",

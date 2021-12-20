@@ -36,7 +36,7 @@ class OT2SourceRepositories(SourceRepositories):
     hardware_repo_name: Literal[None] = None
 
 
-class OT2Model(RobotModel):
+class OT2InputModel(RobotModel):
     """Model for OT2."""
 
     hardware: Literal[Hardware.OT2]
