@@ -24,3 +24,7 @@ emulation_system/resources/vagrant/settings.json
 # Test Coverage Files
 .coverage
 coverage.xml
+
+# Cache files
+.pytest_cache/
+.mypy_cache/
