@@ -45,7 +45,3 @@ class HardwareModel(BaseModel):
         if values["source_type"] == SourceType.LOCAL:
             assert os.path.isdir(v), f'"{v}" is not a valid directory path'
         return v
-
-    def get_source_repo(self) -> str:
-        """Get name of Docker image to use."""
-        return "Hello World"
