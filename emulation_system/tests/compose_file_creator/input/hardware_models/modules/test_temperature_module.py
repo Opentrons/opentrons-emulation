@@ -18,7 +18,7 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 )
 
 ID = "my-temperature"
-HARDWARE = Hardware.TEMPERATURE.value
+HARDWARE = Hardware.TEMPERATURE_MODULE.value
 EMULATION_LEVEL = EmulationLevels.FIRMWARE.value
 SOURCE_TYPE = SourceType.LOCAL.value
 

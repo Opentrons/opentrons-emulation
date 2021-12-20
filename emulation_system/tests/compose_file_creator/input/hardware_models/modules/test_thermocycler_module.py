@@ -18,7 +18,7 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 )
 
 ID = "my-thermocycler"
-HARDWARE = Hardware.THERMOCYCLER.value
+HARDWARE = Hardware.THERMOCYCLER_MODULE.value
 EMULATION_LEVEL = EmulationLevels.HARDWARE.value
 SOURCE_TYPE = SourceType.LOCAL.value
 

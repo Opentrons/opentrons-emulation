@@ -14,7 +14,7 @@ from emulation_system.compose_file_creator.config_file_settings import (
 )
 
 ID = "my-magnetic"
-HARDWARE = Hardware.MAGNETEIC.value
+HARDWARE = Hardware.MAGNETIC_MODULE.value
 EMULATION_LEVEL = EmulationLevels.FIRMWARE.value
 SOURCE_TYPE = SourceType.LOCAL.value
 
