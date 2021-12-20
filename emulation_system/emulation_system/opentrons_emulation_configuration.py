@@ -76,7 +76,7 @@ class VirtualMachineSettings(BaseModel):
     shared_folders: List[str] = Field(alias="shared-folders", default=[])
 
 
-class ConfigurationSettings(BaseModel):
+class OpentronsEmulationConfiguration(BaseModel):
     """Model representing entire configuration file."""
 
     global_settings: GlobalSettings = Field(..., alias="global-settings")
@@ -87,8 +87,8 @@ class ConfigurationSettings(BaseModel):
     aws_ecr_settings: Dict[str, Any] = Field(..., alias="aws-ecr-settings")
 
     @classmethod
-    def from_file_path(cls, json_file_path: str) -> ConfigurationSettings:
-        """Parse file in ConfigurationSettings object."""
+    def from_file_path(cls, json_file_path: str) -> OpentronsEmulationConfiguration:
+        """Parse file in OpentronsEmulationConfiguration object."""
         try:
             file = open(json_file_path, "r")
         except FileNotFoundError:

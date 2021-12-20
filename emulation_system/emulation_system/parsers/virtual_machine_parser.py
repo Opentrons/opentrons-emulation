@@ -7,7 +7,7 @@ from emulation_system.commands.virtual_machine_command_creator import (
     VirtualMachineSubCommands,
 )
 from emulation_system.parsers.abstract_parser import AbstractParser
-from emulation_system.settings_models import ConfigurationSettings
+from emulation_system.opentrons_emulation_configuration import OpentronsEmulationConfiguration
 
 
 class VirtualMachineParser(AbstractParser):
@@ -15,7 +15,7 @@ class VirtualMachineParser(AbstractParser):
 
     @classmethod
     def get_parser(
-        cls, parser: argparse.ArgumentParser, settings: ConfigurationSettings
+        cls, parser: argparse.ArgumentParser, settings: OpentronsEmulationConfiguration
     ) -> None:
         """Build parser for virtual-machine command."""
         subparser = parser.add_parser(  # type: ignore

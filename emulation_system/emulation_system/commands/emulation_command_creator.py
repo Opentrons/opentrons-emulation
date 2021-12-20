@@ -19,8 +19,8 @@ from emulation_system.commands.command import CommandList, Command
 from emulation_system.commands.abstract_command_creator import (
     AbstractCommandCreator,
 )
-from emulation_system.settings_models import (
-    ConfigurationSettings,
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
     SourceDownloadLocations,
 )
 
@@ -150,7 +150,7 @@ class ProdEmulationCommandCreator(AbstractEmulationCommandCreator):
 
     @classmethod
     def from_cli_input(
-        cls, args: argparse.Namespace, settings: ConfigurationSettings
+        cls, args: argparse.Namespace, settings: OpentronsEmulationConfiguration
     ) -> ProdEmulationCommandCreator:
         """Factory method to convert CLI input into a ProdEmulatorCreator object."""
         download_locations = settings.emulation_settings.source_download_locations
@@ -256,7 +256,7 @@ class DevEmulationCommandCreator(AbstractEmulationCommandCreator):
 
     @classmethod
     def from_cli_input(
-        cls, args: argparse.Namespace, settings: ConfigurationSettings
+        cls, args: argparse.Namespace, settings: OpentronsEmulationConfiguration
     ) -> DevEmulationCommandCreator:
         """Factory method to convert CLI input into a DevEmulatorCreator object."""
         return cls(
