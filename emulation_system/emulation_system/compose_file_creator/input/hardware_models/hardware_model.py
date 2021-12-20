@@ -1,15 +1,16 @@
 """Parent class for all hardware."""
 from __future__ import annotations
+
 import os
 from typing import (
     Any,
     Dict,
+    Optional,
 )
 
 from pydantic import (
     BaseModel,
     Field,
-    constr,
     validator,
 )
 
@@ -24,8 +25,7 @@ from emulation_system.compose_file_creator.config_file_settings import (
 class HardwareModel(BaseModel):
     """Parent class of all hardware. Define attributes common to all hardware."""
 
-    # F722 does not play nice with pydantic
-    id: constr(regex=r"^[a-zA-Z0-9-_]+$")  # noqa: F722
+    id: str = Field(..., regex=r"^[a-zA-Z0-9-_]+$")
     hardware: str
     source_type: SourceType = Field(alias="source-type")
     source_location: str = Field(alias="source-location")
@@ -50,7 +50,7 @@ class HardwareModel(BaseModel):
             assert os.path.isdir(v), f'"{v}" is not a valid directory path'
         return v
 
-    def get_image_name(self) -> str:
+    def get_image_name(self) -> Optional[str]:
         """Get image name to run based off of class structure."""
         if (self.emulation_level == EmulationLevels.HARDWARE
                 and self.source_type == SourceType.REMOTE):
@@ -64,8 +64,7 @@ class HardwareModel(BaseModel):
               and self.source_type == SourceType.REMOTE):
             image_name = self.images.remote_firmware_image_name
 
-        elif (self.emulation_level == EmulationLevels.FIRMWARE
-              and self.source_type == SourceType.LOCAL):
+        else:
             image_name = self.images.local_firmware_image_name
 
         return image_name
