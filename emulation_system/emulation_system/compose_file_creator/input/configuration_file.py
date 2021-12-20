@@ -87,7 +87,6 @@ if __name__ == "__main__":
                 f"{module.hardware}, "
                 f"{module.source_type}, "
                 f"{module.emulation_level}: "
-                f"{module.get_image_name()}"
             )
     except ValidationError as e:
         print(e)
