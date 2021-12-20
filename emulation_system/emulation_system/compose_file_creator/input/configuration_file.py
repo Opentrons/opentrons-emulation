@@ -5,7 +5,6 @@ import os
 from typing import (
     Dict,
     Mapping,
-    Optional,
     Union,
 )
 
