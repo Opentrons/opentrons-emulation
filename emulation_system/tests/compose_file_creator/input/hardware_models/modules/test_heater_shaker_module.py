@@ -7,7 +7,7 @@ from pydantic import parse_obj_as
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
 )
-from emulation_system.compose_file_creator.config_file_settings import (
+from emulation_system.compose_file_creator.settings.config_file_settings import (
     HeaterShakerModes,
     Hardware,
     EmulationLevels,

@@ -5,7 +5,6 @@ import os
 from typing import (
     Dict,
     Mapping,
-    Union,
 )
 
 from pydantic import (
@@ -15,28 +14,12 @@ from pydantic import (
     parse_file_as,
     validator,
 )
-
-from emulation_system.compose_file_creator.input.hardware_models import (
-    HeaterShakerModuleInputModel,
-    OT2Model,
-    TemperatureModuleInputModel,
-    ThermocyclerModuleInputModel,
-)
-from emulation_system.compose_file_creator.input.hardware_models import (
-    MagneticModuleInputModel,
-)
 from emulation_system.consts import ROOT_DIR
-
-Modules = Union[
-    HeaterShakerModuleInputModel,
-    ThermocyclerModuleInputModel,
-    TemperatureModuleInputModel,
-    MagneticModuleInputModel,
-]
-
-Robots = Union[OT2Model]
-
-Containers = Union[Robots, Modules]
+from emulation_system.compose_file_creator.settings.custom_types import (
+    Robots,
+    Modules,
+    Containers,
+)
 
 
 class SystemConfigurationModel(BaseModel):
@@ -56,7 +39,7 @@ class SystemConfigurationModel(BaseModel):
         extra = "forbid"
 
     @validator("robot", pre=True)
-    def add_robot_ids(cls, value) -> Dict[str, Union[OT2Model]]:  # noqa: ANN001
+    def add_robot_ids(cls, value) -> Dict[str, Robots]:  # noqa: ANN001
         """Parses robot object in JSON file to a RobotModel object."""
         robot_id = list(value.keys())[0]
         value[robot_id]["id"] = robot_id

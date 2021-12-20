@@ -5,7 +5,7 @@ import py
 import pytest
 from pydantic import parse_obj_as
 from emulation_system.compose_file_creator.input.hardware_models import OT2Model
-from emulation_system.compose_file_creator.config_file_settings import (
+from emulation_system.compose_file_creator.settings.config_file_settings import (
     Hardware,
     EmulationLevels,
     SourceType,
