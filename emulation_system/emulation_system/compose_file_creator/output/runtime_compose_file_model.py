@@ -2,7 +2,7 @@
 import os
 from typing import Any
 
-from yaml import dump
+from yaml import dump as yaml_dump
 
 from emulation_system.compose_file_creator.output.compose_file_model import (
     ComposeSpecification,
@@ -19,7 +19,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
 
     def to_yaml(self) -> str:
         """Convert pydantic model to yaml."""
-        return dump(self.dict(exclude_none=True), default_flow_style=False)
+        return yaml_dump(self.dict(exclude_none=True), default_flow_style=False)
 
     def to_compose_file(self, file_path: str) -> None:
         """Convert pydantic model to compose file at passed file_path."""
