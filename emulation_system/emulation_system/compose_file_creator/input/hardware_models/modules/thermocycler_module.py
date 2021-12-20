@@ -57,5 +57,6 @@ class ThermocyclerModuleInputModel(ModuleInputModel):
         alias="hardware-specific-attributes", default=ThermocyclerModuleAttributes()
     )
     emulation_level: Literal[
-        EmulationLevels.FIRMWARE
+        EmulationLevels.FIRMWARE,
+        EmulationLevels.HARDWARE
     ] = Field(alias="emulation-level")
