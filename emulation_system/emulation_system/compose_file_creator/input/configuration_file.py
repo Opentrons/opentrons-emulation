@@ -12,14 +12,16 @@ from pydantic import (
     Field,
     ValidationError,
     parse_file_as,
+    root_validator,
     validator,
 )
-from emulation_system.consts import ROOT_DIR
+
 from emulation_system.compose_file_creator.settings.custom_types import (
-    Robots,
-    Modules,
     Containers,
+    Modules,
+    Robots,
 )
+from emulation_system.consts import ROOT_DIR
 
 
 class SystemConfigurationModel(BaseModel):
@@ -37,6 +39,19 @@ class SystemConfigurationModel(BaseModel):
         """Config class used by pydantic."""
 
         extra = "forbid"
+
+    @root_validator
+    def validate_names(cls, values) -> Dict[str, Dict[str, Containers]]:  # noqa: ANN001
+        """Checks all names in the config file and confirms there are no duplicates."""
+        robot_names = set(values['robot'].keys())
+        module_names = set(values['modules'].keys())
+
+        name_intersections = robot_names.intersection(module_names)
+        assert len(name_intersections) == 0, "The following container names are " \
+                                             "duplicated in the configuration file: " \
+                                             f"{', '.join(name_intersections)}"
+
+        return values
 
     @validator("robot", pre=True)
     def add_robot_ids(cls, value) -> Dict[str, Robots]:  # noqa: ANN001
