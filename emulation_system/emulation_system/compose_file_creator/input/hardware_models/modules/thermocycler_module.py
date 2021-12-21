@@ -1,17 +1,20 @@
 """Model and attributes for Thermocycler Module."""
+from pydantic import Field
 from typing_extensions import Literal
 
-from pydantic import Field
-from emulation_system.compose_file_creator.config_file_settings import (
-    TemperatureModelSettings,
+from emulation_system.compose_file_creator.settings.config_file_settings import (
+    EmulationLevels,
     Hardware,
+    OpentronsRepository,
+    SourceRepositories,
+    TemperatureModelSettings,
 )
 
 from emulation_system.compose_file_creator.input.hardware_models.hardware_specific_attributes import (  # noqa: E501
     HardwareSpecificAttributes,
 )
 from emulation_system.compose_file_creator.input.hardware_models.modules.module_model import (  # noqa: E501
-    ModuleModel,
+    ModuleInputModel,
 )
 
 
@@ -26,10 +29,23 @@ class ThermocyclerModuleAttributes(HardwareSpecificAttributes):
     )
 
 
-class ThermocyclerModuleModel(ModuleModel):
+class ThermocyclerModuleSourceRepositories(SourceRepositories):
+    """Source repositories for Heater-Shaker."""
+
+    firmware_repo_name: OpentronsRepository = OpentronsRepository.OPENTRONS
+    hardware_repo_name: OpentronsRepository = OpentronsRepository.OPENTRONS_MODULES
+
+
+class ThermocyclerModuleInputModel(ModuleInputModel):
     """Model for Thermocycler Module."""
 
-    hardware: Literal[Hardware.THERMOCYCLER]
+    hardware: Literal[Hardware.THERMOCYCLER_MODULE]
+    source_repos: ThermocyclerModuleSourceRepositories = Field(
+        default=ThermocyclerModuleSourceRepositories(), const=True
+    )
     hardware_specific_attributes: ThermocyclerModuleAttributes = Field(
         alias="hardware-specific-attributes", default=ThermocyclerModuleAttributes()
     )
+    emulation_level: Literal[
+        EmulationLevels.FIRMWARE, EmulationLevels.HARDWARE
+    ] = Field(alias="emulation-level")

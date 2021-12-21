@@ -1,21 +1,25 @@
 """Tests for Thermocycler module."""
-from typing import Dict, Any
+from typing import (
+    Any,
+    Dict,
+)
 
 import py
 import pytest
 from pydantic import parse_obj_as
-from emulation_system.compose_file_creator.input.hardware_models import (
-    ThermocyclerModuleModel,
-)
-from emulation_system.compose_file_creator.config_file_settings import (
+
+from emulation_system.compose_file_creator.settings.config_file_settings import (
+    EmulationLevels,
     Hardware,
-    EmulationLevel,
     SourceType,
+)
+from emulation_system.compose_file_creator.input.hardware_models import (
+    ThermocyclerModuleInputModel,
 )
 
 ID = "my-thermocycler"
-HARDWARE = Hardware.THERMOCYCLER.value
-EMULATION_LEVEL = EmulationLevel.HARDWARE.value
+HARDWARE = Hardware.THERMOCYCLER_MODULE.value
+EMULATION_LEVEL = EmulationLevels.HARDWARE.value
 SOURCE_TYPE = SourceType.LOCAL.value
 
 
@@ -56,7 +60,7 @@ def thermocycler_set_plate_temp(
 
 def test_default_thermocycler(thermocycler_default: Dict[str, Any]) -> None:
     """Confirm Thermocycler is parsed correctly and default lid and plate temps."""
-    therm = parse_obj_as(ThermocyclerModuleModel, thermocycler_default)
+    therm = parse_obj_as(ThermocyclerModuleInputModel, thermocycler_default)
     assert therm.hardware == HARDWARE
     assert therm.id == ID
     assert therm.emulation_level == EMULATION_LEVEL
@@ -69,7 +73,7 @@ def test_default_thermocycler(thermocycler_default: Dict[str, Any]) -> None:
 
 def test_thermocycler_with_lid_temp(thermocycler_set_lid_temp: Dict[str, Any]) -> None:
     """Confirm Thermocycler is parsed correctly and user lid and default plate temps."""
-    therm = parse_obj_as(ThermocyclerModuleModel, thermocycler_set_lid_temp)
+    therm = parse_obj_as(ThermocyclerModuleInputModel, thermocycler_set_lid_temp)
     assert therm.hardware == HARDWARE
     assert therm.id == ID
     assert therm.emulation_level == EMULATION_LEVEL
@@ -84,7 +88,7 @@ def test_thermocycler_with_plate_temp(
     thermocycler_set_plate_temp: Dict[str, Any]
 ) -> None:
     """Confirm Thermocycler is parsed correctly and user lid and plate temps."""
-    therm = parse_obj_as(ThermocyclerModuleModel, thermocycler_set_plate_temp)
+    therm = parse_obj_as(ThermocyclerModuleInputModel, thermocycler_set_plate_temp)
     assert therm.hardware == HARDWARE
     assert therm.id == ID
     assert therm.emulation_level == EMULATION_LEVEL

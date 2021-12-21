@@ -12,7 +12,9 @@ extend-ignore =
     E203,
     # do not require type annotations for self nor cls
     ANN101,
-    ANN102
+    ANN102,
+    # who wants an __init__ method docstring? You are creating the object
+    D107,
 
 # configure flake8-docstrings
 # https://pypi.org/project/flake8-docstrings/
@@ -22,4 +24,8 @@ noqa-require-code = true
 
 exclude =
 	setup.py
-	emulation_system/compose_file_creator/compose_file_model.py
+	emulation_system/compose_file_creator/output/compose_file_model.py
+
+per-file-ignores =
+	# Import paths are so long. Don't fight with flake8 to make them work
+	emulation_system/compose_file_creator/input/hardware_models/__init__.py:E501

@@ -4,16 +4,16 @@ from typing import Dict, Any
 import py
 import pytest
 from pydantic import parse_obj_as
-from emulation_system.compose_file_creator.input.hardware_models import OT2Model
-from emulation_system.compose_file_creator.config_file_settings import (
+from emulation_system.compose_file_creator.input.hardware_models import OT2InputModel
+from emulation_system.compose_file_creator.settings.config_file_settings import (
     Hardware,
-    EmulationLevel,
+    EmulationLevels,
     SourceType,
 )
 
 ID = "my-ot2"
 HARDWARE = Hardware.OT2.value
-EMULATION_LEVEL = EmulationLevel.FIRMWARE.value
+EMULATION_LEVEL = EmulationLevels.FIRMWARE.value
 SOURCE_TYPE = SourceType.LOCAL.value
 
 
@@ -45,7 +45,7 @@ def ot2_with_pipettes(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
 
 def test_default_ot2(ot2_default: Dict[str, Any]) -> None:
     """Confirm OT-2 is parsed correctly and default pipettes are applied."""
-    ot2 = parse_obj_as(OT2Model, ot2_default)
+    ot2 = parse_obj_as(OT2InputModel, ot2_default)
     assert ot2.hardware == HARDWARE
     assert ot2.id == ID
     assert ot2.emulation_level == EMULATION_LEVEL
@@ -58,7 +58,7 @@ def test_default_ot2(ot2_default: Dict[str, Any]) -> None:
 
 def test_ot2_with_custom_pipettes(ot2_with_pipettes: Dict[str, Any]) -> None:
     """Confirm OT-2 is parsed correctly and user-defined pipettes are applied."""
-    ot2 = parse_obj_as(OT2Model, ot2_with_pipettes)
+    ot2 = parse_obj_as(OT2InputModel, ot2_with_pipettes)
     assert ot2.hardware == HARDWARE
     assert ot2.id == ID
     assert ot2.emulation_level == EMULATION_LEVEL

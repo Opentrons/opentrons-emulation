@@ -1,24 +1,35 @@
 """Parent class for all hardware."""
+from __future__ import annotations
+
 import os
-import re
-from typing import Dict, Any, Pattern
+from typing import (
+    Any,
+    Dict,
+)
 
-from pydantic import validator, BaseModel, Field
+from pydantic import (
+    BaseModel,
+    Field,
+    validator,
+)
 
-from emulation_system.compose_file_creator.config_file_settings import (
+from emulation_system.compose_file_creator.settings.config_file_settings import (
+    EmulationLevels,
+    SourceRepositories,
     SourceType,
-    EmulationLevel,
 )
 
 
 class HardwareModel(BaseModel):
     """Parent class of all hardware. Define attributes common to all hardware."""
 
-    _ID_REGEX_FORMAT: Pattern = re.compile(r"^[a-zA-Z0-9-_]+$")
-    emulation_level: EmulationLevel = Field(alias="emulation-level")
+    id: str = Field(..., regex=r"^[a-zA-Z0-9-_]+$")
+    hardware: str
     source_type: SourceType = Field(alias="source-type")
     source_location: str = Field(alias="source-location")
-    id: str
+
+    source_repos: SourceRepositories = NotImplemented
+    emulation_level: EmulationLevels = NotImplemented
 
     class Config:
         """Config class used by pydantic."""
@@ -27,15 +38,6 @@ class HardwareModel(BaseModel):
         validate_assignment = True
         use_enum_values = True
         extra = "forbid"
-
-    @validator("id")
-    def check_id_format(cls, v: str) -> str:
-        """Verifies that id matches expected format."""
-        assert cls._ID_REGEX_FORMAT.match(v), (
-            f'"{v}" does not match required format of only alphanumeric characters, '
-            f"dashes and underscores"
-        )
-        return v
 
     @validator("source_location")
     def check_source_location(cls, v: str, values: Dict[str, Any]) -> str:

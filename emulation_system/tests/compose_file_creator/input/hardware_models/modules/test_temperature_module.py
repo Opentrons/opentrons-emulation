@@ -1,21 +1,25 @@
 """Tests for Temperature Module."""
-from typing import Dict, Any
+from typing import (
+    Any,
+    Dict,
+)
 
 import py
 import pytest
 from pydantic import parse_obj_as
-from emulation_system.compose_file_creator.input.hardware_models import (
-    TemperatureModuleModel,
-)
-from emulation_system.compose_file_creator.config_file_settings import (
+
+from emulation_system.compose_file_creator.settings.config_file_settings import (
+    EmulationLevels,
     Hardware,
-    EmulationLevel,
     SourceType,
+)
+from emulation_system.compose_file_creator.input.hardware_models import (
+    TemperatureModuleInputModel,
 )
 
 ID = "my-temperature"
-HARDWARE = Hardware.TEMPERATURE.value
-EMULATION_LEVEL = EmulationLevel.FIRMWARE.value
+HARDWARE = Hardware.TEMPERATURE_MODULE.value
+EMULATION_LEVEL = EmulationLevels.FIRMWARE.value
 SOURCE_TYPE = SourceType.LOCAL.value
 
 
@@ -46,7 +50,7 @@ def temperature_module_set_temp(
 
 def test_default_temperature_module(temperature_module_default: Dict[str, Any]) -> None:
     """Confirm Temperature Module is parsed correctly and defaults are applied."""
-    therm = parse_obj_as(TemperatureModuleModel, temperature_module_default)
+    therm = parse_obj_as(TemperatureModuleInputModel, temperature_module_default)
     assert therm.hardware == HARDWARE
     assert therm.id == ID
     assert therm.emulation_level == EMULATION_LEVEL
@@ -62,7 +66,7 @@ def test_temperature_module_with_temp(
 
     Confirm user-defined settings are applied.
     """
-    therm = parse_obj_as(TemperatureModuleModel, temperature_module_set_temp)
+    therm = parse_obj_as(TemperatureModuleInputModel, temperature_module_set_temp)
     assert therm.hardware == HARDWARE
     assert therm.id == ID
     assert therm.emulation_level == EMULATION_LEVEL

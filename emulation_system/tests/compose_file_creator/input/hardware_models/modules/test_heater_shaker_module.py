@@ -5,18 +5,18 @@ import py.path
 import pytest
 from pydantic import parse_obj_as
 from emulation_system.compose_file_creator.input.hardware_models import (
-    HeaterShakerModuleModel,
+    HeaterShakerModuleInputModel,
 )
-from emulation_system.compose_file_creator.config_file_settings import (
+from emulation_system.compose_file_creator.settings.config_file_settings import (
     HeaterShakerModes,
     Hardware,
-    EmulationLevel,
+    EmulationLevels,
     SourceType,
 )
 
 ID = "my-heater-shaker"
-HARDWARE = Hardware.HEATER_SHAKER.value
-EMULATION_LEVEL = EmulationLevel.HARDWARE.value
+HARDWARE = Hardware.HEATER_SHAKER_MODULE.value
+EMULATION_LEVEL = EmulationLevels.HARDWARE.value
 SOURCE_TYPE = SourceType.LOCAL.value
 
 
@@ -44,7 +44,7 @@ def heater_shaker_use_stdin(heater_shaker_default: Dict[str, Any]) -> Dict[str, 
 
 def test_default_heater_shaker(heater_shaker_default: Dict[str, Any]) -> None:
     """Confirm Heater-Shaker is parsed right and default mode of socket is set."""
-    hs = parse_obj_as(HeaterShakerModuleModel, heater_shaker_default)
+    hs = parse_obj_as(HeaterShakerModuleInputModel, heater_shaker_default)
     assert hs.hardware == HARDWARE
     assert hs.id == ID
     assert hs.emulation_level == EMULATION_LEVEL
@@ -54,7 +54,7 @@ def test_default_heater_shaker(heater_shaker_default: Dict[str, Any]) -> None:
 
 def test_heater_shaker_with_stdin(heater_shaker_use_stdin: Dict[str, Any]) -> None:
     """Confirm Heater-Shaker is parsed right and stdin mode is picked up."""
-    hs = parse_obj_as(HeaterShakerModuleModel, heater_shaker_use_stdin)
+    hs = parse_obj_as(HeaterShakerModuleInputModel, heater_shaker_use_stdin)
     assert hs.hardware == HARDWARE
     assert hs.id == ID
     assert hs.emulation_level == EMULATION_LEVEL
