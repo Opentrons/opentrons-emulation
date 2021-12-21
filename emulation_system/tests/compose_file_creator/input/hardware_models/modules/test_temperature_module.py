@@ -51,6 +51,12 @@ def temperature_module_set_temp(
     }
     return temperature_module_default
 
+@pytest.fixture
+def bad_emulation_level(temperature_module_default: Dict[str, Any]) -> Dict[str, Any]:
+    """Return temperature module configuration with an invalid emulation level."""
+    temperature_module_default["emulation-level"] = EmulationLevels.HARDWARE.value
+    return temperature_module_default
+
 
 @pytest.fixture
 def bad_emulation_level(temperature_module_default: Dict[str, Any]) -> Dict[str, Any]:
