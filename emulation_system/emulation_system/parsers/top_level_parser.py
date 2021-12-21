@@ -14,7 +14,9 @@ from emulation_system.consts import (
     CONFIGURATION_FILE_LOCATION_VAR_NAME,
     DEFAULT_CONFIGURATION_FILE_PATH,
 )
-from emulation_system.opentrons_emulation_configuration import OpentronsEmulationConfiguration
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
+)
 
 
 class TopLevelParser:

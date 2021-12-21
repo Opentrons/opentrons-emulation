@@ -15,7 +15,10 @@ from emulation_system.consts import ROOT_DIR
 from emulation_system.commands.abstract_command_creator import (
     AbstractCommandCreator,
 )
-from emulation_system.opentrons_emulation_configuration import OpentronsEmulationConfiguration, SharedFolder
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
+    SharedFolder,
+)
 
 
 class VirtualMachineSubCommands(str, Enum):
@@ -104,7 +107,9 @@ class VirtualMachineCommandCreator(AbstractCommandCreator):
         return parse_obj_as(SharedFolder, {"host-path": host_path, "vm-path": vm_path})
 
     @classmethod
-    def _create_json_settings_file(cls, settings_object: OpentronsEmulationConfiguration) -> None:
+    def _create_json_settings_file(
+        cls, settings_object: OpentronsEmulationConfiguration
+    ) -> None:
         """Build settings file for vagrant commands."""
         vm_settings = settings_object.virtual_machine_settings
         default_folder_paths = settings_object.global_settings.default_folder_paths

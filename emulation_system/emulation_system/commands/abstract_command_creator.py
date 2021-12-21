@@ -4,7 +4,9 @@ import abc
 import argparse
 
 from emulation_system.commands.command import CommandList
-from emulation_system.opentrons_emulation_configuration import OpentronsEmulationConfiguration
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
+)
 
 
 class AbstractCommandCreator(abc.ABC):
