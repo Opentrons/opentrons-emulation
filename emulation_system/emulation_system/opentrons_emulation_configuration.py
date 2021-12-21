@@ -25,6 +25,9 @@ class GlobalSettings(BaseModel):
     """Settings that affect all sections in config file."""
 
     default_folder_paths: DefaultFolderPaths = Field(..., alias="default-folder-paths")
+    emulation_configuration_file_locations: List[str] = Field(
+        ..., alias="emulation-configuration-file-locations"
+    )
 
 
 class Heads(BaseModel):
