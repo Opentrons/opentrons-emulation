@@ -26,7 +26,9 @@ def test_json_path() -> str:
 
 def get_test_conf() -> OpentronsEmulationConfiguration:
     """Returns configuration settings from test config file."""
-    return OpentronsEmulationConfiguration.from_file_path(get_test_configuration_file_path())
+    return OpentronsEmulationConfiguration.from_file_path(
+        get_test_configuration_file_path()
+    )
 
 
 def get_default_folder_path(name: str) -> str:

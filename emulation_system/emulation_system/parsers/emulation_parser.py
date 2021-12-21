@@ -3,7 +3,9 @@ import argparse
 from emulation_system.parser_utils import get_formatter
 from emulation_system.parsers.abstract_parser import AbstractParser
 from emulation_system.consts import LATEST_KEYWORD
-from emulation_system.opentrons_emulation_configuration import OpentronsEmulationConfiguration
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
+)
 from emulation_system.commands.emulation_command_creator import (
     CommonEmulationOptions,
     ProductionEmulationOptions,

@@ -7,7 +7,9 @@ from emulation_system.commands.virtual_machine_command_creator import (
     VirtualMachineSubCommands,
 )
 from emulation_system.parsers.abstract_parser import AbstractParser
-from emulation_system.opentrons_emulation_configuration import OpentronsEmulationConfiguration
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
+)
 
 
 class VirtualMachineParser(AbstractParser):
