@@ -114,28 +114,3 @@ class SystemConfigurationModel(BaseModel):
     def from_dict(cls, obj: Dict) -> SystemConfigurationModel:
         """Parse from dict."""
         return parse_obj_as(cls, obj)
-
-
-if __name__ == "__main__":
-    try:
-        location = os.path.join(ROOT_DIR, "emulation_system/resources/new_config.json")
-        system_configuration = SystemConfigurationModel.from_file(location)
-
-        if system_configuration.modules_exist:
-            for module in system_configuration.modules.values():
-                print(
-                    f"{module.id}, "
-                    f"{module.hardware}, "
-                    f"{module.source_type}, "
-                    f"{module.emulation_level}: "
-                )
-        if system_configuration.robot_exists:
-            for robot in system_configuration.robot.values():
-                print(
-                    f"{robot.id}, "
-                    f"{robot.hardware}, "
-                    f"{robot.source_type}, "
-                    f"{robot.emulation_level}: "
-                )
-    except ValidationError as e:
-        print(e)
