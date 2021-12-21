@@ -7,7 +7,6 @@ import json
 import pathlib
 from typing import Dict
 
-import py.path
 import pytest
 from pydantic import ValidationError
 from pytest_lazyfixture import lazy_fixture  # type: ignore
@@ -157,10 +156,10 @@ def config_from_json(
 ) -> SystemConfigurationModel:
     """Create SystemConfigurationModel from a JSON file."""
     p = tmp_path / "temp.json"
-    file = open(p, 'w')
+    file = open(p, "w")
     json.dump(robot_and_modules, file, indent=4)
     file.close()
-    return SystemConfigurationModel.from_file(p)
+    return SystemConfigurationModel.from_file(str(p))
 
 
 def create_system_configuration(obj: Dict) -> SystemConfigurationModel:
@@ -233,7 +232,9 @@ def test_containers_property(robot_and_modules: Dict) -> None:
     """Test the containers property is constructed correctly."""
     containers = create_system_configuration(robot_and_modules).containers
     assert set(containers.keys()) == {
-        "my-robot", "my-heater-shaker", "my-heater-shaker-2"
+        "my-robot",
+        "my-heater-shaker",
+        "my-heater-shaker-2",
     }
     assert isinstance(containers["my-robot"], OT2InputModel)
     assert isinstance(containers["my-heater-shaker"], HeaterShakerModuleInputModel)

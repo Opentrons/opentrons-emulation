@@ -1,7 +1,6 @@
 """Models necessary for parsing configuration file."""
 from __future__ import annotations
 
-import os
 from typing import (
     Dict,
     Mapping,
@@ -10,7 +9,6 @@ from typing import (
 from pydantic import (
     BaseModel,
     Field,
-    ValidationError,
     parse_file_as,
     parse_obj_as,
     root_validator,
@@ -22,7 +20,6 @@ from emulation_system.compose_file_creator.settings.custom_types import (
     Modules,
     Robots,
 )
-from emulation_system.consts import ROOT_DIR
 
 
 class SystemConfigurationModel(BaseModel):
