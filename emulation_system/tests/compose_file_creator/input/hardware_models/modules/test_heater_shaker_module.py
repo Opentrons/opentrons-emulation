@@ -3,7 +3,10 @@ from typing import Dict, Any
 
 import py.path
 import pytest
-from pydantic import parse_obj_as
+from pydantic import (
+    ValidationError,
+    parse_obj_as,
+)
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
 )
@@ -11,6 +14,7 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     HeaterShakerModes,
     Hardware,
     EmulationLevels,
+    OpentronsRepository,
     SourceType,
 )
 
@@ -30,6 +34,13 @@ def heater_shaker_default(tmpdir: py.path.local) -> Dict[str, Any]:
         "source-type": SOURCE_TYPE,
         "source-location": str(tmpdir),
     }
+
+
+@pytest.fixture
+def bad_emulation_level(heater_shaker_default: Dict[str, Any]) -> Dict[str, Any]:
+    """Return heater-shaker configuration with an invalid emulation level."""
+    heater_shaker_default["emulation-level"] = EmulationLevels.FIRMWARE.value
+    return heater_shaker_default
 
 
 @pytest.fixture
@@ -60,3 +71,18 @@ def test_heater_shaker_with_stdin(heater_shaker_use_stdin: Dict[str, Any]) -> No
     assert hs.emulation_level == EMULATION_LEVEL
     assert hs.source_type == SOURCE_TYPE
     assert hs.hardware_specific_attributes.mode == HeaterShakerModes.STDIN
+
+
+def test_heater_shaker_with_bad_emulation_level(
+    bad_emulation_level: Dict[str, Any]
+) -> None:
+    """Confirm that there is a validation error when a bad emulation level is passed."""
+    with pytest.raises(ValidationError):
+        parse_obj_as(HeaterShakerModuleInputModel, bad_emulation_level)
+
+
+def test_heater_shaker_source_repos(heater_shaker_default: Dict[str, Any]) -> None:
+    """Confirm that defined source repos are correct."""
+    hs = parse_obj_as(HeaterShakerModuleInputModel, heater_shaker_default)
+    assert hs.source_repos.firmware_repo_name is None
+    assert hs.source_repos.hardware_repo_name == OpentronsRepository.OPENTRONS_MODULES
