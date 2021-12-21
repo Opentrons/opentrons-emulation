@@ -73,8 +73,6 @@ class SystemConfigurationModel(BaseModel):
         value[robot_id]["id"] = robot_id
         return value
 
-
-
     @validator("modules", pre=True)
     def add_module_ids(cls, value) -> Dict[str, Modules]:  # noqa: ANN001
         """Parses all modules in JSON file to a list of ModuleModels."""
