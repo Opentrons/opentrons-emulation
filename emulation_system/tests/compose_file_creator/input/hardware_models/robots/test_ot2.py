@@ -80,17 +80,13 @@ def test_ot2_with_custom_pipettes(ot2_with_pipettes: Dict[str, Any]) -> None:
     assert ot2.hardware_specific_attributes.right_pipette.id == "test_2_id"
 
 
-def test_ot2_with_bad_emulation_level(
-    bad_emulation_level: Dict[str, Any]
-) -> None:
+def test_ot2_with_bad_emulation_level(bad_emulation_level: Dict[str, Any]) -> None:
     """Confirm that there is a validation error when a bad emulation level is passed."""
     with pytest.raises(ValidationError):
         parse_obj_as(OT2InputModel, bad_emulation_level)
 
 
-def test_ot2_source_repos(
-    ot2_default: Dict[str, Any]
-) -> None:
+def test_ot2_source_repos(ot2_default: Dict[str, Any]) -> None:
     """Confirm that defined source repos are correct."""
     temp = parse_obj_as(OT2InputModel, ot2_default)
     assert temp.source_repos.firmware_repo_name == OpentronsRepository.OPENTRONS
