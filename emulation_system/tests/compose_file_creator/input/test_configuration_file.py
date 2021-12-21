@@ -8,6 +8,7 @@ import pathlib
 from typing import Dict
 
 import pytest
+from pytest_lazyfixture import lazy_fixture  # type: ignore
 from pydantic import ValidationError
 from pytest_lazyfixture import lazy_fixture  # type: ignore
 
@@ -24,20 +25,20 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 def matching_robot_and_module_names() -> Dict:
     """Configuration file with matching robot and module name."""
     return {
-        "robot":   {
+        "robot": {
             "common-name": {
-                "hardware":        "ot2",
+                "hardware": "ot2",
                 "emulation-level": "firmware",
-                "source-type":     "remote",
+                "source-type": "remote",
                 "source-location": "latest",
             }
         },
         "modules": {
             "common-name": {
-                "hardware":                     "heater-shaker-module",
-                "emulation-level":              "hardware",
-                "source-type":                  "remote",
-                "source-location":              "latest",
+                "hardware": "heater-shaker-module",
+                "emulation-level": "hardware",
+                "source-type": "remote",
+                "source-location": "latest",
                 "hardware-specific-attributes": {"mode": "stdin"},
             }
         },
@@ -50,10 +51,10 @@ def invalid_name_format() -> Dict:
     return {
         "modules": {
             "invalid name with spaces": {
-                "hardware":                     "heater-shaker-module",
-                "emulation-level":              "hardware",
-                "source-type":                  "remote",
-                "source-location":              "latest",
+                "hardware": "heater-shaker-module",
+                "emulation-level": "hardware",
+                "source-type": "remote",
+                "source-location": "latest",
                 "hardware-specific-attributes": {"mode": "stdin"},
             }
         }
@@ -66,15 +67,15 @@ def multiple_robots() -> Dict:
     return {
         "robot": {
             "robot-1": {
-                "hardware":        "ot2",
+                "hardware": "ot2",
                 "emulation-level": "firmware",
-                "source-type":     "remote",
+                "source-type": "remote",
                 "source-location": "latest",
             },
             "robot-2": {
-                "hardware":        "ot2",
+                "hardware": "ot2",
                 "emulation-level": "firmware",
-                "source-type":     "remote",
+                "source-type": "remote",
                 "source-location": "latest",
             },
         }
