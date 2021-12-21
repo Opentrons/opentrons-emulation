@@ -28,11 +28,11 @@ SOURCE_TYPE = SourceType.LOCAL.value
 def thermocycler_default(tmpdir: py.path.local) -> Dict[str, Any]:
     """Thermocycler Module with default lid and plate temperature."""
     return {
-        "id":                           ID,
-        "hardware":                     HARDWARE,
-        "emulation-level":              EMULATION_LEVEL,
-        "source-type":                  SOURCE_TYPE,
-        "source-location":              str(tmpdir),
+        "id": ID,
+        "hardware": HARDWARE,
+        "emulation-level": EMULATION_LEVEL,
+        "source-type": SOURCE_TYPE,
+        "source-location": str(tmpdir),
         "hardware-specific-attributes": {},
     }
 
@@ -42,7 +42,7 @@ def thermocycler_set_lid_temp(thermocycler_default: Dict[str, Any]) -> Dict[str,
     """Thermocycler Module with user-specified lid temperature."""
     thermocycler_default["hardware-specific-attributes"]["lid-temperature"] = {
         "degrees-per-tick": 5.0,
-        "starting":         20.0,
+        "starting": 20.0,
     }
     return thermocycler_default
 
@@ -54,7 +54,7 @@ def thermocycler_set_plate_temp(
     """Thermocycler Module with default lid and plate temperature."""
     thermocycler_set_lid_temp["hardware-specific-attributes"]["plate-temperature"] = {
         "degrees-per-tick": 4.5,
-        "starting":         25.6,
+        "starting": 25.6,
     }
     return thermocycler_set_lid_temp
 
@@ -115,10 +115,10 @@ def test_thermocycler_hardware_emulation_level(
     assert therm.emulation_level == EmulationLevels.HARDWARE.value
 
 
-def test_thermocycler_module_source_repos(
-    thermocycler_default: Dict[str, Any]
-) -> None:
+def test_thermocycler_module_source_repos(thermocycler_default: Dict[str, Any]) -> None:
     """Confirm that defined source repos are correct."""
     therm = parse_obj_as(ThermocyclerModuleInputModel, thermocycler_default)
     assert therm.source_repos.firmware_repo_name == OpentronsRepository.OPENTRONS
-    assert therm.source_repos.hardware_repo_name == OpentronsRepository.OPENTRONS_MODULES  # noqa: E501
+    assert (
+        therm.source_repos.hardware_repo_name == OpentronsRepository.OPENTRONS_MODULES
+    )
