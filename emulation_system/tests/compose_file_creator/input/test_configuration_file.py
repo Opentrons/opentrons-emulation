@@ -17,25 +17,23 @@ from emulation_system.compose_file_creator.input.configuration_file import (
 def matching_robot_and_module_names() -> Dict:
     """Configuration file with matching robot and module name."""
     return {
-        "robot":   {
+        "robot": {
             "common-name": {
-                "hardware":        "ot2",
+                "hardware": "ot2",
                 "emulation-level": "firmware",
-                "source-type":     "remote",
+                "source-type": "remote",
                 "source-location": "latest",
             }
         },
         "modules": {
             "common-name": {
-                "hardware":                     "heater-shaker-module",
-                "emulation-level":              "hardware",
-                "source-type":                  "remote",
-                "source-location":              "latest",
-                "hardware-specific-attributes": {
-                    "mode": "stdin"
-                }
+                "hardware": "heater-shaker-module",
+                "emulation-level": "hardware",
+                "source-type": "remote",
+                "source-location": "latest",
+                "hardware-specific-attributes": {"mode": "stdin"},
             }
-        }
+        },
     }
 
 
@@ -45,13 +43,11 @@ def invalid_name_format() -> Dict:
     return {
         "modules": {
             "invalid name with spaces": {
-                "hardware":                     "heater-shaker-module",
-                "emulation-level":              "hardware",
-                "source-type":                  "remote",
-                "source-location":              "latest",
-                "hardware-specific-attributes": {
-                    "mode": "stdin"
-                }
+                "hardware": "heater-shaker-module",
+                "emulation-level": "hardware",
+                "source-type": "remote",
+                "source-location": "latest",
+                "hardware-specific-attributes": {"mode": "stdin"},
             }
         }
     }
@@ -63,17 +59,17 @@ def multiple_robots() -> Dict:
     return {
         "robot": {
             "robot-1": {
-                "hardware":        "ot2",
+                "hardware": "ot2",
                 "emulation-level": "firmware",
-                "source-type":     "remote",
+                "source-type": "remote",
                 "source-location": "latest",
             },
             "robot-2": {
-                "hardware":        "ot2",
+                "hardware": "ot2",
                 "emulation-level": "firmware",
-                "source-type":     "remote",
+                "source-type": "remote",
                 "source-location": "latest",
-            }
+            },
         }
     }
 
@@ -87,8 +83,10 @@ def test_invalid_name_format(matching_robot_and_module_names: Dict) -> None:
     """Confirm that ValidationError is thrown when a robot and module have the same name."""  # noqa: E501
     with pytest.raises(ValidationError) as err:
         create_system_configuration(matching_robot_and_module_names)
-    expected_error_text = "The following container names are duplicated in the " \
-                          "configuration file: common-name"
+    expected_error_text = (
+        "The following container names are duplicated in the "
+        "configuration file: common-name"
+    )
     assert err.match(expected_error_text)
 
 
