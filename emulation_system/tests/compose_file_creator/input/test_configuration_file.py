@@ -7,7 +7,6 @@ import json
 import pathlib
 from typing import Dict
 
-import py.path
 import pytest
 from pydantic import ValidationError
 from pytest_lazyfixture import lazy_fixture  # type: ignore
