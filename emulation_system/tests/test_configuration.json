@@ -4,9 +4,10 @@
             "opentrons": "/home/Documents/repos/opentrons",
             "ot3-firmware": "/home/Documents/repos/ot3-firmware",
             "modules": "/home/Documents/repos/opentrons-modules"
-        }
+        },
+        "emulation-configuration-file-locations": [
+        ]
     },
-
     "emulation-settings": {
         "source-download-locations": {
             "heads": {
@@ -21,7 +22,6 @@
             }
         }
     },
-
     "virtual-machine-settings": {
         "dev-vm-name": "Development VM",
         "prod-vm-name": "Production VM",
@@ -29,6 +29,5 @@
         "vm-cpus": 2,
         "num-socket-can-networks": 2
     },
-
     "aws-ecr-settings": {}
 }

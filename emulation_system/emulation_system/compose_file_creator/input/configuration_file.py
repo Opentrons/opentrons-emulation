@@ -30,8 +30,6 @@ class SystemConfigurationModel(BaseModel):
     Represents an entire system to be brought up.
     """
 
-    _ROBOT_IDENTIFIER: str = "robot"
-    _MODULES_IDENTIFIER: str = "modules"
     robot: Dict[str, Robots] = Field(default={})
     modules: Dict[str, Modules] = Field(default={})
 

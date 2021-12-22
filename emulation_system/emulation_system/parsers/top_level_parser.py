@@ -14,7 +14,9 @@ from emulation_system.consts import (
     CONFIGURATION_FILE_LOCATION_VAR_NAME,
     DEFAULT_CONFIGURATION_FILE_PATH,
 )
-from emulation_system.settings_models import ConfigurationSettings
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
+)
 
 
 class TopLevelParser:
@@ -54,14 +56,14 @@ class TopLevelParser:
             subparser.get_parser(subparsers, self._settings)  # type: ignore
 
     @staticmethod
-    def _get_settings() -> ConfigurationSettings:
+    def _get_settings() -> OpentronsEmulationConfiguration:
         """Load settings file."""
         if CONFIGURATION_FILE_LOCATION_VAR_NAME in os.environ:
             file_path = os.environ[CONFIGURATION_FILE_LOCATION_VAR_NAME]
         else:
             file_path = DEFAULT_CONFIGURATION_FILE_PATH
 
-        return ConfigurationSettings.from_file_path(file_path)
+        return OpentronsEmulationConfiguration.from_file_path(file_path)
 
     def parse(self, passed_args=[]) -> AbstractCommandCreator:  # noqa: ANN001
         """Parse args into CommandCreator."""
