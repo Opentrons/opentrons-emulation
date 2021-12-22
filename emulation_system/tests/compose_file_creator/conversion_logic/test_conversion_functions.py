@@ -1,17 +1,24 @@
 """Tests for confirming returned image names are correct."""
+import pathlib
 from typing import Union
 
 import pytest
+from pydantic import parse_obj_as
+from pytest_lazyfixture import lazy_fixture  # type: ignore
 
 from emulation_system.compose_file_creator.conversion_logic.conversion_functions import (  # noqa: E501
     get_image_name,
     get_image_name_from_hardware_model,
+    get_bind_mount_string,
 )
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
+    DirectoryExtraMount,
     EmulationLevels,
+    ExtraMount,
+    FileExtraMount,
     Hardware,
     SourceType,
 )
@@ -95,6 +102,38 @@ CONFIGURATIONS = [
 ]
 
 
+@pytest.fixture
+def file_mount(tmp_path: pathlib.Path) -> FileExtraMount:
+    """Returns FileExtraMount object."""
+    datadog_dir = tmp_path / "Datadog"
+    datadog_dir.mkdir()
+    datadog_file = datadog_dir / "log.txt"
+    datadog_file.write_text("test")
+
+    obj = {
+        "name": "DATADOG",
+        "source-path": str(datadog_file),
+        "mount-path": "/datadog/log.txt",
+        "type": "file",
+    }
+    return parse_obj_as(FileExtraMount, obj)
+
+
+@pytest.fixture
+def directory_mount(tmp_path: pathlib.Path) -> DirectoryExtraMount:
+    """Returns DirectoryExtraMount object."""
+    log_dir = tmp_path / "Log"
+    log_dir.mkdir()
+
+    obj = {
+        "name": "LOG_FILES",
+        "source-path": str(log_dir),
+        "mount-path": "/var/log/opentrons/",
+        "type": "directory",
+    }
+    return parse_obj_as(DirectoryExtraMount, obj)
+
+
 @pytest.mark.parametrize(
     "hardware_name,emulation_level,source_type,expected_name", CONFIGURATIONS
 )
@@ -118,3 +157,15 @@ def test_get_image_name_from_hardware_model() -> None:
         emulation_level=EmulationLevels.HARDWARE,
     )
     assert get_image_name_from_hardware_model(model) == "heater-shaker-hardware-remote"
+
+
+@pytest.mark.parametrize(
+    "mount,expected_value",
+    [
+        [lazy_fixture("file_mount"), "${DATADOG}:/datadog/log.txt"],
+        [lazy_fixture("directory_mount"), "${LOG_FILES}:/var/log/opentrons/"],
+    ],
+)
+def test_get_bind_mount_string(mount: ExtraMount, expected_value: str) -> None:
+    """Confirm file bind mount string is formatted correctly."""
+    assert get_bind_mount_string(mount) == expected_value

@@ -13,6 +13,7 @@ from emulation_system.compose_file_creator.input.hardware_models.hardware_model 
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     EmulationLevels,
+    ExtraMount,
     Hardware,
     SourceType,
 )
@@ -50,3 +51,8 @@ def get_image_name_from_hardware_model(hardware_model: HardwareModel) -> Optiona
         hardware_model.emulation_level,
         hardware_model.source_type,
     )
+
+
+def get_bind_mount_string(mount: ExtraMount) -> str:
+    """Return bind mount string to add compose file."""
+    return f"${{{mount.name}}}:{mount.mount_path}"
