@@ -90,6 +90,10 @@ class SystemConfigurationModel(BaseModel):
         """Returns True if a robot was defined in config file, False if not."""
         return len(self.robot) > 0
 
+    def get_robot(self) -> Robots:
+        """Returns robot without having to lookup the id."""
+        return self.robot[list(self.robot.keys())[0]]
+
     @property
     def containers(self) -> Mapping[str, Containers]:
         """Return all robots and modules in a single dictionary."""

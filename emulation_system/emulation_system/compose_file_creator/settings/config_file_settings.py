@@ -6,8 +6,11 @@ from typing import (
 
 from pydantic import (
     BaseModel,
+    DirectoryPath,
     Field,
+    FilePath,
 )
+from typing_extensions import Literal
 
 ROOM_TEMPERATURE: float = 23.0
 
@@ -71,3 +74,32 @@ class SourceRepositories(BaseModel):
 
     firmware_repo_name: Optional[OpentronsRepository]
     hardware_repo_name: Optional[OpentronsRepository]
+
+
+class MountTypes(str, Enum):
+    """Possible mount types."""
+
+    FILE = "file"
+    DIRECTORY = "directory"
+
+
+class ExtraMount(BaseModel):
+    """Contains infomation about a single extra bind mount."""
+
+    type: str
+    name: str = Field(..., regex=r"^[A-Z0-9_]+$")
+    mount_path: str = Field(..., alias="mount-path")
+
+
+class DirectoryExtraMount(ExtraMount):
+    """Directory type ExtraMount."""
+
+    type: Literal[MountTypes.DIRECTORY]
+    source_path: DirectoryPath = Field(..., alias="source-path")
+
+
+class FileExtraMount(ExtraMount):
+    """File type ExtraMount."""
+
+    type: Literal[MountTypes.FILE]
+    source_path: FilePath = Field(..., alias="source-path")
