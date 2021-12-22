@@ -36,7 +36,7 @@ class SystemConfigurationModel(BaseModel):
 
         extra = "forbid"
 
-    @root_validator
+    @root_validator(pre=True)
     def validate_names(cls, values) -> Dict[str, Dict[str, Containers]]:  # noqa: ANN001
         """Checks all names in the config file and confirms there are no duplicates."""
         # Only need to check when there is both a robot and modules defined.
