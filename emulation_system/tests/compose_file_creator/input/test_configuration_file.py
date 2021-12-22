@@ -186,6 +186,14 @@ def extra_mounts(tmp_path: pathlib.Path, robot_only: Dict) -> Dict:
 
 
 @pytest.fixture
+def invalid_mount_name(extra_mounts: Dict) -> Dict:
+    """Configuration with an invalid mount name."""
+    extra_mounts['robot']['my-robot']['extra-mounts']['data-dog'] = extra_mounts['robot']['my-robot']['extra-mounts']['DATADOG']  # noqa: E501
+    del extra_mounts['robot']['my-robot']['extra-mounts']['DATADOG']
+    return extra_mounts
+
+
+@pytest.fixture
 def config_from_json(
     tmp_path: pathlib.Path, robot_and_modules: Dict
 ) -> SystemConfigurationModel:
@@ -320,3 +328,9 @@ def test_loading_mount_when_none_exist(robot_only: Dict) -> None:
         robot.get_mount_by_name("ugh")
     expected_error_text = "You have no mounts defined."
     assert err.match(expected_error_text)
+
+
+def test_invalid_mount_name(invalid_mount_name: Dict) -> None:
+    """Test that ValidationError is thrown when you have an invalid mount name."""
+    with pytest.raises(ValidationError):
+        create_system_configuration(invalid_mount_name)
