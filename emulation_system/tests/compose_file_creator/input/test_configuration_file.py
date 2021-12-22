@@ -188,8 +188,12 @@ def extra_mounts(tmp_path: pathlib.Path, robot_only: Dict) -> Dict:
 @pytest.fixture
 def invalid_mount_name(extra_mounts: Dict) -> Dict:
     """Configuration with an invalid mount name."""
-    extra_mounts['robot']['my-robot']['extra-mounts']['data-dog'] = extra_mounts['robot']['my-robot']['extra-mounts']['DATADOG']  # noqa: E501
-    del extra_mounts['robot']['my-robot']['extra-mounts']['DATADOG']
+    extra_mounts["robot"]["my-robot"]["extra-mounts"]["data-dog"] = extra_mounts[
+        "robot"
+    ]["my-robot"]["extra-mounts"][
+        "DATADOG"
+    ]  # black formatted this, not me
+    del extra_mounts["robot"]["my-robot"]["extra-mounts"]["DATADOG"]
     return extra_mounts
 
 
