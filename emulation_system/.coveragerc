@@ -1,0 +1,7 @@
+[run]
+omit =
+	emulation_system/compose_file_creator/output/compose_file_model.py
+
+[report]
+omit =
+	emulation_system/compose_file_creator/output/compose_file_model.py

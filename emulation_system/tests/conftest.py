@@ -19,7 +19,7 @@ def get_test_configuration_file_path() -> str:
 
 
 @pytest.fixture
-def test_json_path() -> str:
+def json_for_testing_path() -> str:
     """Returns path to test file."""
     return get_test_configuration_file_path()
 
@@ -77,8 +77,8 @@ def default_folder_paths() -> DefaultFolderPaths:
 
 
 @pytest.fixture
-def set_config_file_env_var(test_json_path: str) -> Generator:
+def set_config_file_env_var(json_for_testing_path: str) -> Generator:
     """Sets configuration file location env var then removes it after test."""
-    os.environ[CONFIGURATION_FILE_LOCATION_VAR_NAME] = test_json_path
+    os.environ[CONFIGURATION_FILE_LOCATION_VAR_NAME] = json_for_testing_path
     yield
     del os.environ[CONFIGURATION_FILE_LOCATION_VAR_NAME]

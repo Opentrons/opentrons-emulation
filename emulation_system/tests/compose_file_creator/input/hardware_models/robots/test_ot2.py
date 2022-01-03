@@ -3,11 +3,15 @@ from typing import Dict, Any
 
 import py
 import pytest
-from pydantic import parse_obj_as
+from pydantic import (
+    ValidationError,
+    parse_obj_as,
+)
 from emulation_system.compose_file_creator.input.hardware_models import OT2InputModel
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     Hardware,
     EmulationLevels,
+    OpentronsRepository,
     SourceType,
 )
 
@@ -28,6 +32,13 @@ def ot2_default(tmpdir: py.path.local) -> Dict[str, Any]:
         "source-location": str(tmpdir),
         "hardware-specific-attributes": {},
     }
+
+
+@pytest.fixture
+def bad_emulation_level(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
+    """Return magnetic module configuration with an invalid emulation level."""
+    ot2_default["emulation-level"] = EmulationLevels.HARDWARE.value
+    return ot2_default
 
 
 @pytest.fixture
@@ -67,3 +78,16 @@ def test_ot2_with_custom_pipettes(ot2_with_pipettes: Dict[str, Any]) -> None:
     assert ot2.hardware_specific_attributes.left_pipette.id == "test_1_id"
     assert ot2.hardware_specific_attributes.right_pipette.model == "test_2"
     assert ot2.hardware_specific_attributes.right_pipette.id == "test_2_id"
+
+
+def test_ot2_with_bad_emulation_level(bad_emulation_level: Dict[str, Any]) -> None:
+    """Confirm that there is a validation error when a bad emulation level is passed."""
+    with pytest.raises(ValidationError):
+        parse_obj_as(OT2InputModel, bad_emulation_level)
+
+
+def test_ot2_source_repos(ot2_default: Dict[str, Any]) -> None:
+    """Confirm that defined source repos are correct."""
+    temp = parse_obj_as(OT2InputModel, ot2_default)
+    assert temp.source_repos.firmware_repo_name == OpentronsRepository.OPENTRONS
+    assert temp.source_repos.hardware_repo_name is None

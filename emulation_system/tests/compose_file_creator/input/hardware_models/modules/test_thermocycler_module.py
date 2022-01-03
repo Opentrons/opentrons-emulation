@@ -8,13 +8,14 @@ import py
 import pytest
 from pydantic import parse_obj_as
 
+from emulation_system.compose_file_creator.input.hardware_models import (
+    ThermocyclerModuleInputModel,
+)
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     EmulationLevels,
     Hardware,
+    OpentronsRepository,
     SourceType,
-)
-from emulation_system.compose_file_creator.input.hardware_models import (
-    ThermocyclerModuleInputModel,
 )
 
 ID = "my-thermocycler"
@@ -58,6 +59,13 @@ def thermocycler_set_plate_temp(
     return thermocycler_set_lid_temp
 
 
+@pytest.fixture
+def hardware_emulation_level(thermocycler_default: Dict[str, Any]) -> Dict[str, Any]:
+    """Return heater-shaker configuration with an invalid emulation level."""
+    thermocycler_default["emulation-level"] = EmulationLevels.HARDWARE.value
+    return thermocycler_default
+
+
 def test_default_thermocycler(thermocycler_default: Dict[str, Any]) -> None:
     """Confirm Thermocycler is parsed correctly and default lid and plate temps."""
     therm = parse_obj_as(ThermocyclerModuleInputModel, thermocycler_default)
@@ -97,3 +105,20 @@ def test_thermocycler_with_plate_temp(
     assert therm.hardware_specific_attributes.lid_temperature.starting == 20.0
     assert therm.hardware_specific_attributes.plate_temperature.degrees_per_tick == 4.5
     assert therm.hardware_specific_attributes.plate_temperature.starting == 25.6
+
+
+def test_thermocycler_hardware_emulation_level(
+    hardware_emulation_level: Dict[str, Any]
+) -> None:
+    """Confirm you can set Thermocycler to be emulated at the hardware level."""
+    therm = parse_obj_as(ThermocyclerModuleInputModel, hardware_emulation_level)
+    assert therm.emulation_level == EmulationLevels.HARDWARE.value
+
+
+def test_thermocycler_module_source_repos(thermocycler_default: Dict[str, Any]) -> None:
+    """Confirm that defined source repos are correct."""
+    therm = parse_obj_as(ThermocyclerModuleInputModel, thermocycler_default)
+    assert therm.source_repos.firmware_repo_name == OpentronsRepository.OPENTRONS
+    assert (
+        therm.source_repos.hardware_repo_name == OpentronsRepository.OPENTRONS_MODULES
+    )
