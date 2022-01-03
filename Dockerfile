@@ -28,7 +28,10 @@ RUN apt-get install -y \
     libssl-dev \
     git \
     lsb-release \
-    software-properties-common > /dev/null
+    software-properties-common \
+    curl \
+    python3.7 \
+    python3.7-venv > /dev/null
 
 RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2-linux-x86_64.tar.gz && \
     tar -zxf cmake-3.21.2-linux-x86_64.tar.gz && \
