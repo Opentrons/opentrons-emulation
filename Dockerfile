@@ -10,7 +10,17 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN rm -rf /var/lib/apt/lists/*
 RUN echo "Updating apt" && apt-get update > /dev/null
 RUN apt-get update \
-    && apt-get install -y wget unzip
+    && apt-get install \
+       --no-install-recommends \
+       -y \
+      wget \
+      unzip \
+      software-properties-common \
+      build-essential \
+      curl \
+      git \
+      libssl-dev \
+      && rm -rf /var/lib/apt/lists/*
 
 ####################
 # C++ MODULES BASE #
@@ -18,21 +28,20 @@ RUN apt-get update \
 # Contains common packages that all ot3-firmware and module firmware require
 
 FROM ubuntu-base as cpp-base
-
-RUN apt-get install -y \
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt-get update && \
+    apt-get install \
+    --no-install-recommends \
+    -y \
     libgtest-dev \
     libboost-test-dev \
-    build-essential \
     gcc-10 \
     g++-10 \
-    libssl-dev \
-    git \
     lsb-release \
-    software-properties-common \
-    curl \
     python3.7 \
-    python3.7-venv > /dev/null
-
+    python3.7-venv \
+    > /dev/null
+RUN (cd /usr/bin/ && ln -s /usr/bin/python3.7 python)
 RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2-linux-x86_64.tar.gz && \
     tar -zxf cmake-3.21.2-linux-x86_64.tar.gz && \
     rm cmake-3.21.2-linux-x86_64.tar.gz && \
