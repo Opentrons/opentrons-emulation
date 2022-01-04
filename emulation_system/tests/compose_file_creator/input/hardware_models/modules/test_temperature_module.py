@@ -59,13 +59,6 @@ def bad_emulation_level(temperature_module_default: Dict[str, Any]) -> Dict[str,
     return temperature_module_default
 
 
-@pytest.fixture
-def bad_emulation_level(temperature_module_default: Dict[str, Any]) -> Dict[str, Any]:
-    """Return temperature module configuration with an invalid emulation level."""
-    temperature_module_default["emulation-level"] = EmulationLevels.HARDWARE.value
-    return temperature_module_default
-
-
 def test_default_temperature_module(temperature_module_default: Dict[str, Any]) -> None:
     """Confirm Temperature Module is parsed correctly and defaults are applied."""
     therm = parse_obj_as(TemperatureModuleInputModel, temperature_module_default)

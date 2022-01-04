@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import pathlib
 from typing import (
     Any,
     Dict,
@@ -9,7 +10,12 @@ from typing import (
     Optional,
     Union,
 )
-from pydantic import BaseModel, Field, validator
+
+from pydantic import (
+    BaseModel,
+    Field,
+    validator,
+)
 
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
@@ -18,8 +24,9 @@ from emulation_system.compose_file_creator.output.compose_file_model import (
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DirectoryMount,
     EmulationLevels,
-    Mount,
     FileMount,
+    Mount,
+    MountTypes,
     OpentronsRepository,
     SourceRepositories,
     SourceType,
@@ -29,11 +36,19 @@ from emulation_system.compose_file_creator.settings.images import IMAGE_MAPPING
 
 class NoMountsDefinedException(Exception):
     """Exception thrown when you try to load a mount and none are defined."""
+
     pass
 
 
 class MountNotFoundException(Exception):
     """Exception thrown when mount of a certain name is not found."""
+
+    pass
+
+
+class EmulationLevelNotSupportedError(Exception):
+    """Exception thrown when emulation level is not supported."""
+
     pass
 
 
@@ -76,8 +91,8 @@ class HardwareModel(BaseModel):
             self.mounts.append(
                 DirectoryMount(
                     name="SOURCE_CODE",
-                    type="directory",
-                    source_path=self.source_location,
+                    type=MountTypes.DIRECTORY,
+                    source_path=pathlib.Path(self.source_location),
                     mount_path=f"/{self.get_source_repo()}",
                 )
             )
@@ -94,14 +109,10 @@ class HardwareModel(BaseModel):
         if len(self.mounts) == 0:
             raise NoMountsDefinedException("You have no mounts defined.")
         else:
-            found_mounts = [
-                mount
-                for mount in self.mounts
-                if mount.name == name
-            ]
+            found_mounts = [mount for mount in self.mounts if mount.name == name]
 
             if len(found_mounts) == 0:
-                raise MountNotFoundException(f"Mount named \"{name}\" not found.")
+                raise MountNotFoundException(f'Mount named "{name}" not found.')
             else:
                 return found_mounts[0]
 
@@ -110,7 +121,13 @@ class HardwareModel(BaseModel):
         if self.emulation_level == EmulationLevels.HARDWARE:
             repo = self.source_repos.hardware_repo_name
         else:
-            repo = self.source_repos.hardware_repo_name
+            repo = self.source_repos.firmware_repo_name
+
+        if repo is None:
+            raise EmulationLevelNotSupportedError(
+                f'Emulation level, "{self.emulation_level}" not supported for '
+                f"{self.hardware}"
+            )
 
         return repo
 
@@ -141,6 +158,6 @@ class HardwareModel(BaseModel):
         return Service(
             container_name=self.id,
             build=build,
-            volumes=self.get_mount_strings(),
+            volumes=self.get_mount_strings(),  # type: ignore[arg-type]
             tty=True,
         )

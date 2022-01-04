@@ -14,6 +14,7 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     FileMount,
     Hardware,
     Mount,
+    MountTypes,
     SourceType,
 )
 
@@ -171,18 +172,18 @@ def test_service_conversion(
         source_location=source_mount,
         emulation_level=EmulationLevels.HARDWARE,
         mounts=[
-            {
-                "name": "FILE_MOUNT",
-                "source-path": file_mount.source_path,
-                "mount-path": file_mount.mount_path,
-                "type": "file",
-            },
-            {
-                "name": "DIRECTORY_MOUNT",
-                "source-path": directory_mount.source_path,
-                "mount-path": directory_mount.mount_path,
-                "type": "directory",
-            },
+            FileMount(
+                name="FILE_MOUNT",
+                source_path=file_mount.source_path,
+                mount_path=file_mount.mount_path,
+                type=MountTypes.FILE,
+            ),
+            DirectoryMount(
+                name="DIRECTORY_MOUNT",
+                source_path=directory_mount.source_path,
+                mount_path=directory_mount.mount_path,
+                type=MountTypes.DIRECTORY,
+            ),
         ],
     )
     print(model.to_service())

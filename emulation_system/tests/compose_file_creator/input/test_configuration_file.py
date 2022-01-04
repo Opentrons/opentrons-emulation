@@ -10,7 +10,6 @@ from typing import Dict
 import pytest
 from pydantic import ValidationError
 from pytest_lazyfixture import lazy_fixture  # type: ignore
-from pytest_lazyfixture import lazy_fixture  # type: ignore
 
 from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
@@ -181,7 +180,7 @@ def extra_mounts(tmp_path: pathlib.Path, robot_only: Dict) -> Dict:
             "source-path": str(log_dir),
             "mount-path": "/var/log/opentrons/",
             "type": "directory",
-        }
+        },
     ]
     return robot_only
 

@@ -86,6 +86,7 @@ class MountTypes(str, Enum):
 
 class Mount(BaseModel):
     """Contains infomation about a single extra bind mount."""
+
     name: str = Field(..., regex=r"^[A-Z0-9_]+$")
     type: str
     mount_path: str = Field(..., alias="mount-path")
