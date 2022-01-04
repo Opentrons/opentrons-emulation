@@ -34,14 +34,8 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
 from emulation_system.compose_file_creator.settings.images import IMAGE_MAPPING
 
 
-class NoMountsDefinedException(Exception):
-    """Exception thrown when you try to load a mount and none are defined."""
-
-    pass
-
-
-class MountNotFoundException(Exception):
-    """Exception thrown when mount of a certain name is not found."""
+class MountException(Exception):
+    """Exception thrown when there is an error with setting mounts."""
 
     pass
 
@@ -107,12 +101,12 @@ class HardwareModel(BaseModel):
     def get_mount_by_name(self, name: str) -> Mount:
         """Lookup and return Mount by name."""
         if len(self.mounts) == 0:
-            raise NoMountsDefinedException("You have no mounts defined.")
+            raise MountException("You have no mounts defined.")
         else:
             found_mounts = [mount for mount in self.mounts if mount.name == name]
 
             if len(found_mounts) == 0:
-                raise MountNotFoundException(f'Mount named "{name}" not found.')
+                raise MountException(f'Mount named "{name}" not found.')
             else:
                 return found_mounts[0]
 
