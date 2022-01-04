@@ -28,6 +28,8 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     Mount,
     MountTypes,
     OpentronsRepository,
+    RESTRICTED_MOUNT_NAMES,
+    SOURCE_CODE_MOUNT_NAME,
     SourceRepositories,
     SourceType,
 )
@@ -96,7 +98,7 @@ class HardwareModel(BaseModel):
         if self.source_type == SourceType.LOCAL:
             self.mounts.append(
                 DirectoryMount(
-                    name="SOURCE_CODE",
+                    name=SOURCE_CODE_MOUNT_NAME,
                     type=MountTypes.DIRECTORY,
                     source_path=pathlib.Path(self.source_location),
                     mount_path=f"/{self.get_source_repo()}",
@@ -108,6 +110,27 @@ class HardwareModel(BaseModel):
         """If source type is local, confirms directory path specified exists."""
         if values["source_type"] == SourceType.LOCAL:
             assert os.path.isdir(v), f'"{v}" is not a valid directory path'
+        return v
+
+    @validator("mounts", pre=True, each_item=True)
+    def check_for_restricted_names(cls, v: Dict[str, str]) -> Dict[str, str]:
+        """Confirms that none of the mount names use restricted values."""
+        assert v["name"] not in RESTRICTED_MOUNT_NAMES, (
+            "Mount name cannot be any of the following values: "
+            f"{', '.join(RESTRICTED_MOUNT_NAMES)}"
+        )
+        return v
+
+    @validator("mounts")
+    def check_for_duplicate_mount_names(
+        cls, v: List[Mount], values: Dict[str, Any]
+    ) -> List[Mount]:
+        """Confirms that there are not mounts with duplicate names."""
+        names = [mount.name for mount in v]
+        print(names)
+        assert len(names) == len(
+            set(names)
+        ), f"\"{values['id']}\" has mounts with duplicate names"
         return v
 
     def get_mount_by_name(self, name: str) -> Mount:

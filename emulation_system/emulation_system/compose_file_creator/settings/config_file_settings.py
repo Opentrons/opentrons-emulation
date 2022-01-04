@@ -16,6 +16,10 @@ from typing_extensions import Literal
 ROOM_TEMPERATURE: float = 23.0
 
 
+SOURCE_CODE_MOUNT_NAME = "SOURCE_CODE"
+RESTRICTED_MOUNT_NAMES = [SOURCE_CODE_MOUNT_NAME]
+
+
 class Hardware(str, Enum):
     """Names of supported hardware."""
 
@@ -90,7 +94,7 @@ class Mount(BaseModel):
     name: str = Field(..., regex=r"^[A-Z0-9_]+$")
     type: str
     mount_path: str = Field(..., alias="mount-path")
-    source_path: Union[DirectoryPath, FilePath]
+    source_path: Union[DirectoryPath, FilePath] = Field(..., alias="source-path")
 
     class Config:
         """Config class used by pydantic."""

@@ -1,8 +1,12 @@
 """Tests for confirming returned image names are correct."""
 import pathlib
+from typing import Dict
 
 import pytest
-from pydantic import parse_obj_as
+from pydantic import (
+    ValidationError,
+    parse_obj_as,
+)
 from pytest_lazyfixture import lazy_fixture  # type: ignore
 
 from emulation_system.compose_file_creator.input.hardware_models import (
@@ -14,7 +18,7 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     FileMount,
     Hardware,
     Mount,
-    MountTypes,
+    SOURCE_CODE_MOUNT_NAME,
     SourceType,
 )
 
@@ -98,34 +102,32 @@ CONFIGURATIONS = [
 
 
 @pytest.fixture
-def file_mount(tmp_path: pathlib.Path) -> FileMount:
+def file_mount(tmp_path: pathlib.Path) -> Dict[str, str]:
     """Returns FileMount object."""
     datadog_dir = tmp_path / "Datadog"
     datadog_dir.mkdir()
     datadog_file = datadog_dir / "log.txt"
     datadog_file.write_text("test")
 
-    obj = {
+    return {
         "name": "DATADOG",
         "source-path": str(datadog_file),
         "mount-path": "/datadog/log.txt",
         "type": "file",
     }
-    return parse_obj_as(FileMount, obj)
 
 
 @pytest.fixture
-def directory_mount(tmp_path: pathlib.Path) -> DirectoryMount:
+def directory_mount(tmp_path: pathlib.Path) -> Dict[str, str]:
     """Returns DirectoryMount object."""
     log_dir = tmp_path / "Log"
     log_dir.mkdir()
-    obj = {
+    return {
         "name": "LOG_FILES",
         "source-path": str(log_dir),
         "mount-path": "/var/log/opentrons/",
         "type": "directory",
     }
-    return parse_obj_as(DirectoryMount, obj)
 
 
 @pytest.fixture
@@ -135,6 +137,13 @@ def source_mount(tmp_path: pathlib.Path) -> str:
     log_dir.mkdir()
 
     return str(log_dir)
+
+
+@pytest.fixture
+def restricted_name_mount(directory_mount: Dict[str, str]) -> Dict[str, str]:
+    """Create a Directory mount with a restricted name."""
+    directory_mount["name"] = SOURCE_CODE_MOUNT_NAME
+    return directory_mount
 
 
 def test_get_image_name_from_hardware_model() -> None:
@@ -158,32 +167,55 @@ def test_get_image_name_from_hardware_model() -> None:
 )
 def test_get_bind_mount_string(mount: Mount, expected_value: str) -> None:
     """Confirm file bind mount string is formatted correctly."""
-    assert mount.get_bind_mount_string().endswith(expected_value)
+    assert parse_obj_as(Mount, mount).get_bind_mount_string().endswith(expected_value)
 
 
 def test_service_conversion(
     file_mount: FileMount, directory_mount: DirectoryMount, source_mount: str
 ) -> None:
     """Confirm HardwareModel is converted to Service correctly."""
-    model = HeaterShakerModuleInputModel(
-        id="my-heater-shaker",
-        hardware=Hardware.HEATER_SHAKER_MODULE,
-        source_type=SourceType.LOCAL,
-        source_location=source_mount,
-        emulation_level=EmulationLevels.HARDWARE,
-        mounts=[
-            FileMount(
-                name="FILE_MOUNT",
-                source_path=file_mount.source_path,
-                mount_path=file_mount.mount_path,
-                type=MountTypes.FILE,
-            ),
-            DirectoryMount(
-                name="DIRECTORY_MOUNT",
-                source_path=directory_mount.source_path,
-                mount_path=directory_mount.mount_path,
-                type=MountTypes.DIRECTORY,
-            ),
-        ],
-    )
+    input = {
+        "id": "my-heater-shaker",
+        "hardware": Hardware.HEATER_SHAKER_MODULE,
+        "source-type": SourceType.LOCAL,
+        "source-location": source_mount,
+        "emulation-level": EmulationLevels.HARDWARE,
+        "mounts": [file_mount, directory_mount],
+    }
+    model = HeaterShakerModuleInputModel.parse_obj(input)
     print(model.to_service())
+
+
+def test_restricted_mount(
+    restricted_name_mount: DirectoryMount, source_mount: str
+) -> None:
+    """Confirm exception is thrown when trying to name mount with a restricted name."""
+    with pytest.raises(ValidationError) as err:
+        HeaterShakerModuleInputModel.parse_obj(
+            {
+                "id": "my-heater-shaker",
+                "hardware": Hardware.HEATER_SHAKER_MODULE,
+                "source-type": SourceType.LOCAL,
+                "source-location": source_mount,
+                "emulation-level": EmulationLevels.HARDWARE,
+                "mounts": [restricted_name_mount],
+            }
+        )
+    assert err.match("Mount name cannot be any of the following values:.*")
+
+
+def test_mounts_with_same_names(file_mount: Dict[str, str], source_mount: str) -> None:
+    """Confirm exception is thrown when you have mounts with duplicate names."""
+    with pytest.raises(ValidationError) as err:
+        HeaterShakerModuleInputModel.parse_obj(
+            {
+                "id": "my-heater-shaker",
+                "hardware": Hardware.HEATER_SHAKER_MODULE,
+                "source-type": SourceType.LOCAL,
+                "source-location": source_mount,
+                "emulation-level": EmulationLevels.HARDWARE,
+                "mounts": [file_mount, file_mount],
+            }
+        )
+
+    assert err.match('"my-heater-shaker" has mounts with duplicate names')
