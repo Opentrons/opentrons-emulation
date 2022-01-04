@@ -10,7 +10,6 @@ from typing import Dict
 import pytest
 from pydantic import ValidationError
 from pytest_lazyfixture import lazy_fixture  # type: ignore
-from pydantic import ValidationError
 from pytest_lazyfixture import lazy_fixture  # type: ignore
 
 from emulation_system.compose_file_creator.input.configuration_file import (
@@ -170,30 +169,27 @@ def extra_mounts(tmp_path: pathlib.Path, robot_only: Dict) -> Dict:
     log_dir = tmp_path / "Log"
     log_dir.mkdir()
 
-    robot_only["robot"]["my-robot"]["extra-mounts"] = {
-        "DATADOG": {
+    robot_only["robot"]["my-robot"]["extra-mounts"] = [
+        {
+            "name": "DATADOG",
             "source-path": str(datadog_file),
             "mount-path": "/datadog/log.txt",
             "type": "file",
         },
-        "LOG_FILES": {
+        {
+            "name": "LOG_FILES",
             "source-path": str(log_dir),
             "mount-path": "/var/log/opentrons/",
             "type": "directory",
-        },
-    }
+        }
+    ]
     return robot_only
 
 
 @pytest.fixture
 def invalid_mount_name(extra_mounts: Dict) -> Dict:
     """Configuration with an invalid mount name."""
-    extra_mounts["robot"]["my-robot"]["extra-mounts"]["data-dog"] = extra_mounts[
-        "robot"
-    ]["my-robot"]["extra-mounts"][
-        "DATADOG"
-    ]  # black formatted this, not me
-    del extra_mounts["robot"]["my-robot"]["extra-mounts"]["DATADOG"]
+    extra_mounts["robot"]["my-robot"]["extra-mounts"][0]["name"] = "data-dog"
     return extra_mounts
 
 

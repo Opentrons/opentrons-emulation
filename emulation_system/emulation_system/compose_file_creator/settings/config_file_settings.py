@@ -86,7 +86,7 @@ class MountTypes(str, Enum):
 
 class Mount(BaseModel):
     """Contains infomation about a single extra bind mount."""
-
+    name: str = Field(..., regex=r"^[A-Z0-9_]+$")
     type: str
     mount_path: str = Field(..., alias="mount-path")
     source_path: Union[DirectoryPath, FilePath]
@@ -98,7 +98,7 @@ class Mount(BaseModel):
 
     def get_bind_mount_string(self) -> str:
         """Return bind mount string to add compose file."""
-        return f"${{{self.source_path}}}:{self.mount_path}"
+        return f"{self.source_path}:{self.mount_path}"
 
 
 class DirectoryMount(Mount):

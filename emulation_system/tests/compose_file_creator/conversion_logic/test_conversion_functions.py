@@ -11,9 +11,9 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DirectoryMount,
     EmulationLevels,
-    Mount,
     FileMount,
     Hardware,
+    Mount,
     SourceType,
 )
 
@@ -118,7 +118,6 @@ def directory_mount(tmp_path: pathlib.Path) -> DirectoryMount:
     """Returns DirectoryMount object."""
     log_dir = tmp_path / "Log"
     log_dir.mkdir()
-
     obj = {
         "name": "LOG_FILES",
         "source-path": str(log_dir),
@@ -152,13 +151,13 @@ def test_get_image_name_from_hardware_model() -> None:
 @pytest.mark.parametrize(
     "mount,expected_value",
     [
-        [lazy_fixture("file_mount"), "${DATADOG}:/datadog/log.txt"],
-        [lazy_fixture("directory_mount"), "${LOG_FILES}:/var/log/opentrons/"],
+        [lazy_fixture("file_mount"), "/Datadog/log.txt:/datadog/log.txt"],
+        [lazy_fixture("directory_mount"), "/Log:/var/log/opentrons/"],
     ],
 )
 def test_get_bind_mount_string(mount: Mount, expected_value: str) -> None:
     """Confirm file bind mount string is formatted correctly."""
-    assert mount.get_bind_mount_string() == expected_value
+    assert mount.get_bind_mount_string().endswith(expected_value)
 
 
 def test_service_conversion(
@@ -173,11 +172,13 @@ def test_service_conversion(
         emulation_level=EmulationLevels.HARDWARE,
         mounts=[
             {
+                "name": "FILE_MOUNT",
                 "source-path": file_mount.source_path,
                 "mount-path": file_mount.mount_path,
                 "type": "file",
             },
             {
+                "name": "DIRECTORY_MOUNT",
                 "source-path": directory_mount.source_path,
                 "mount-path": directory_mount.mount_path,
                 "type": "directory",

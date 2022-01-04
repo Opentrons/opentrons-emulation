@@ -5,28 +5,35 @@ import os
 from typing import (
     Any,
     Dict,
+    List,
+    Optional,
     Union,
 )
+from pydantic import BaseModel, Field, validator
 
-from pydantic import (
-    BaseModel,
-    Field,
-    validator,
+from emulation_system.compose_file_creator.output.compose_file_model import (
+    BuildItem,
+    Service,
 )
-
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DirectoryMount,
     EmulationLevels,
     Mount,
     FileMount,
+    OpentronsRepository,
     SourceRepositories,
     SourceType,
 )
+from emulation_system.compose_file_creator.settings.images import IMAGE_MAPPING
 
 
 class NoMountsDefinedException(Exception):
     """Exception thrown when you try to load a mount and none are defined."""
+    pass
 
+
+class MountNotFoundException(Exception):
+    """Exception thrown when mount of a certain name is not found."""
     pass
 
 
@@ -41,7 +48,7 @@ class HardwareModel(BaseModel):
     # Just going to start by adding the extra-mounts to it and adding any
     # generated mounts during _post_init().
     mounts: List[Union[FileMount, DirectoryMount]] = Field(
-        alias="extra-mounts", default={}
+        alias="extra-mounts", default=[]
     )
 
     source_repos: SourceRepositories = NotImplemented
@@ -68,6 +75,7 @@ class HardwareModel(BaseModel):
         if self.source_type == SourceType.LOCAL:
             self.mounts.append(
                 DirectoryMount(
+                    name="SOURCE_CODE",
                     type="directory",
                     source_path=self.source_location,
                     mount_path=f"/{self.get_source_repo()}",
@@ -86,10 +94,53 @@ class HardwareModel(BaseModel):
         if len(self.mounts) == 0:
             raise NoMountsDefinedException("You have no mounts defined.")
         else:
-            return self.mounts[name]
+            found_mounts = [
+                mount
+                for mount in self.mounts
+                if mount.name == name
+            ]
 
+            if len(found_mounts) == 0:
+                raise MountNotFoundException(f"Mount named \"{name}\" not found.")
+            else:
+                return found_mounts[0]
+
+    def get_source_repo(self) -> OpentronsRepository:
+        """Get source repo for HardwareModel."""
+        if self.emulation_level == EmulationLevels.HARDWARE:
+            repo = self.source_repos.hardware_repo_name
+        else:
+            repo = self.source_repos.hardware_repo_name
+
+        return repo
+
+    def get_image_name(self) -> Optional[str]:
+        """Get image name to run based off of passed parameters."""
+        image = IMAGE_MAPPING[self.hardware]
+        comp_tuple = (self.source_type, self.emulation_level)
+
+        if comp_tuple == (SourceType.REMOTE, EmulationLevels.HARDWARE):
+            image_name = image.remote_hardware_image_name
+        elif comp_tuple == (SourceType.REMOTE, EmulationLevels.FIRMWARE):
+            image_name = image.remote_firmware_image_name
+        elif comp_tuple == (SourceType.LOCAL, EmulationLevels.HARDWARE):
+            image_name = image.local_hardware_image_name
+        else:  # (SourceType.LOCAL, EmulationLevels.FIRMWARE)
+            image_name = image.local_firmware_image_name
+
+        return image_name
 
     def get_mount_strings(self) -> List[str]:
         """Get list of all mount strings for hardware."""
         mounts = [mount.get_bind_mount_string() for mount in list(self.mounts)]
         return mounts
+
+    def to_service(self) -> Service:
+        """Converts HardwareModel object to Service object."""
+        build = BuildItem(context=".", target=f"{self.get_image_name()}:latest")
+        return Service(
+            container_name=self.id,
+            build=build,
+            volumes=self.get_mount_strings(),
+            tty=True,
+        )
