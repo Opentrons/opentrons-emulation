@@ -19,7 +19,7 @@ from emulation_system.compose_file_creator.input.hardware_models import (
     OT2InputModel,
 )
 from emulation_system.compose_file_creator.input.hardware_models.hardware_model import (
-    MountException,
+    NoMountsDefinedException,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DirectoryMount,
@@ -321,9 +321,9 @@ def test_extra_mounts(extra_mounts: Dict) -> None:
 
 
 def test_loading_mount_when_none_exist(robot_only: Dict) -> None:
-    """Test MountException is thrown when you load a nonexistent mount."""
+    """Test NoMountsDefinedException is thrown when you load a nonexistent mount."""
     robot = create_system_configuration(robot_only).get_robot()
-    with pytest.raises(MountException) as err:
+    with pytest.raises(NoMountsDefinedException) as err:
         robot.get_mount_by_name("ugh")
     expected_error_text = "You have no mounts defined."
     assert err.match(expected_error_text)
