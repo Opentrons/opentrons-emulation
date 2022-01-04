@@ -24,8 +24,8 @@ from emulation_system.compose_file_creator.input.hardware_models.hardware_model 
     NoMountsDefinedException,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
-    DirectoryExtraMount,
-    FileExtraMount,
+    DirectoryMount,
+    FileMount,
 )
 
 
@@ -315,12 +315,12 @@ def test_extra_mounts(extra_mounts: Dict) -> None:
     """Test that extra mounts are created correctly."""
     robot = create_system_configuration(extra_mounts).get_robot()
     datadog_mount = robot.get_mount_by_name("DATADOG")
-    assert isinstance(datadog_mount, FileExtraMount)
+    assert isinstance(datadog_mount, FileMount)
     assert datadog_mount.name == "DATADOG"
     assert datadog_mount.mount_path == "/datadog/log.txt"
 
     log_mount = robot.get_mount_by_name("LOG_FILES")
-    assert isinstance(log_mount, DirectoryExtraMount)
+    assert isinstance(log_mount, DirectoryMount)
     assert log_mount.name == "LOG_FILES"
     assert log_mount.mount_path == "/var/log/opentrons/"
 

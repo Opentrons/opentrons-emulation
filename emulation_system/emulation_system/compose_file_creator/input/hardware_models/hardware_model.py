@@ -15,12 +15,12 @@ from pydantic import (
 )
 
 from emulation_system.compose_file_creator.settings.config_file_settings import (
-    DirectoryExtraMount,
+    DirectoryMount,
     EmulationLevels,
-    FileExtraMount,
+    Mount,
+    FileMount,
     SourceRepositories,
     SourceType,
-    ExtraMount,
 )
 
 
@@ -37,7 +37,7 @@ class HardwareModel(BaseModel):
     hardware: str
     source_type: SourceType = Field(alias="source-type")
     source_location: str = Field(alias="source-location")
-    extra_mounts: Dict[str, Union[FileExtraMount, DirectoryExtraMount]] = Field(
+    mounts: List[Union[FileMount, DirectoryMount]] = Field(
         alias="extra-mounts", default={}
     )
 
@@ -52,12 +52,24 @@ class HardwareModel(BaseModel):
         use_enum_values = True
         extra = "forbid"
 
-    @validator("extra_mounts", pre=True)
-    def add_extra_mounts_names(cls, value) -> Dict[str, ExtraMount]:  # noqa: ANN001
-        """Adds names from dict to ExtraMount object."""
-        for key, mount in value.items():
-            mount["name"] = key
-        return value
+    def __init__(self, **data: Any) -> None:
+        super().__init__(**data)
+        self._post_init()
+
+    def _post_init(self) -> None:
+        """Methods to always run after initialization."""
+        self._add_source_bind_mount()
+
+    def _add_source_bind_mount(self) -> None:
+        """If running a local type image add the mount to the mounts attribute."""
+        if self.source_type == SourceType.LOCAL:
+            self.mounts.append(
+                DirectoryMount(
+                    type="directory",
+                    source_path=self.source_location,
+                    mount_path=f"/{self.get_source_repo()}",
+                )
+            )
 
     @validator("source_location")
     def check_source_location(cls, v: str, values: Dict[str, Any]) -> str:
@@ -66,9 +78,15 @@ class HardwareModel(BaseModel):
             assert os.path.isdir(v), f'"{v}" is not a valid directory path'
         return v
 
-    def get_mount_by_name(self, name: str) -> ExtraMount:
-        """Lookup and return ExtraMount by name."""
-        if len(self.extra_mounts) == 0:
+    def get_mount_by_name(self, name: str) -> Mount:
+        """Lookup and return Mount by name."""
+        if len(self.mounts) == 0:
             raise NoMountsDefinedException("You have no mounts defined.")
         else:
-            return self.extra_mounts[name]
+            return self.mounts[name]
+
+
+    def get_mount_strings(self) -> List[str]:
+        """Get list of all mount strings for hardware."""
+        mounts = [mount.get_bind_mount_string() for mount in list(self.mounts)]
+        return mounts

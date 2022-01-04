@@ -1,24 +1,18 @@
 """Tests for confirming returned image names are correct."""
 import pathlib
-from typing import Union
 
 import pytest
 from pydantic import parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore
 
-from emulation_system.compose_file_creator.conversion_logic.conversion_functions import (  # noqa: E501
-    get_image_name,
-    get_image_name_from_hardware_model,
-    get_bind_mount_string,
-)
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
-    DirectoryExtraMount,
+    DirectoryMount,
     EmulationLevels,
-    ExtraMount,
-    FileExtraMount,
+    Mount,
+    FileMount,
     Hardware,
     SourceType,
 )
@@ -103,8 +97,8 @@ CONFIGURATIONS = [
 
 
 @pytest.fixture
-def file_mount(tmp_path: pathlib.Path) -> FileExtraMount:
-    """Returns FileExtraMount object."""
+def file_mount(tmp_path: pathlib.Path) -> FileMount:
+    """Returns FileMount object."""
     datadog_dir = tmp_path / "Datadog"
     datadog_dir.mkdir()
     datadog_file = datadog_dir / "log.txt"
@@ -116,12 +110,12 @@ def file_mount(tmp_path: pathlib.Path) -> FileExtraMount:
         "mount-path": "/datadog/log.txt",
         "type": "file",
     }
-    return parse_obj_as(FileExtraMount, obj)
+    return parse_obj_as(FileMount, obj)
 
 
 @pytest.fixture
-def directory_mount(tmp_path: pathlib.Path) -> DirectoryExtraMount:
-    """Returns DirectoryExtraMount object."""
+def directory_mount(tmp_path: pathlib.Path) -> DirectoryMount:
+    """Returns DirectoryMount object."""
     log_dir = tmp_path / "Log"
     log_dir.mkdir()
 
@@ -131,20 +125,16 @@ def directory_mount(tmp_path: pathlib.Path) -> DirectoryExtraMount:
         "mount-path": "/var/log/opentrons/",
         "type": "directory",
     }
-    return parse_obj_as(DirectoryExtraMount, obj)
+    return parse_obj_as(DirectoryMount, obj)
 
 
-@pytest.mark.parametrize(
-    "hardware_name,emulation_level,source_type,expected_name", CONFIGURATIONS
-)
-def test_get_image_name(
-    hardware_name: Hardware,
-    emulation_level: EmulationLevels,
-    source_type: SourceType,
-    expected_name: Union[str, None],
-) -> None:
-    """Test that correct image name is returned by get_image_name."""
-    assert get_image_name(hardware_name, emulation_level, source_type) == expected_name
+@pytest.fixture
+def source_mount(tmp_path: pathlib.Path) -> str:
+    """Returns mount to source repo."""
+    log_dir = tmp_path / "opentrons-modules/"
+    log_dir.mkdir()
+
+    return str(log_dir)
 
 
 def test_get_image_name_from_hardware_model() -> None:
@@ -156,7 +146,7 @@ def test_get_image_name_from_hardware_model() -> None:
         source_location="latest",
         emulation_level=EmulationLevels.HARDWARE,
     )
-    assert get_image_name_from_hardware_model(model) == "heater-shaker-hardware-remote"
+    assert model.get_image_name() == "heater-shaker-hardware-remote"
 
 
 @pytest.mark.parametrize(
@@ -166,6 +156,32 @@ def test_get_image_name_from_hardware_model() -> None:
         [lazy_fixture("directory_mount"), "${LOG_FILES}:/var/log/opentrons/"],
     ],
 )
-def test_get_bind_mount_string(mount: ExtraMount, expected_value: str) -> None:
+def test_get_bind_mount_string(mount: Mount, expected_value: str) -> None:
     """Confirm file bind mount string is formatted correctly."""
-    assert get_bind_mount_string(mount) == expected_value
+    assert mount.get_bind_mount_string() == expected_value
+
+
+def test_service_conversion(
+    file_mount: FileMount, directory_mount: DirectoryMount, source_mount: str
+) -> None:
+    """Confirm HardwareModel is converted to Service correctly."""
+    model = HeaterShakerModuleInputModel(
+        id="my-heater-shaker",
+        hardware=Hardware.HEATER_SHAKER_MODULE,
+        source_type=SourceType.LOCAL,
+        source_location=source_mount,
+        emulation_level=EmulationLevels.HARDWARE,
+        mounts=[
+            {
+                "source-path": file_mount.source_path,
+                "mount-path": file_mount.mount_path,
+                "type": "file",
+            },
+            {
+                "source-path": directory_mount.source_path,
+                "mount-path": directory_mount.mount_path,
+                "type": "directory",
+            },
+        ],
+    )
+    print(model.to_service())
