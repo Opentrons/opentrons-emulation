@@ -149,7 +149,7 @@ class HardwareModel(BaseModel):
 
     def get_mount_strings(self) -> List[str]:
         """Get list of all mount strings for hardware."""
-        mounts = [mount.get_bind_mount_string() for mount in list(self.mounts)]
+        mounts = [mount.get_bind_mount_string() for mount in self.mounts]
         return mounts
 
     def to_service(self) -> Service:
