@@ -37,6 +37,9 @@ class HardwareModel(BaseModel):
     hardware: str
     source_type: SourceType = Field(alias="source-type")
     source_location: str = Field(alias="source-location")
+    # This is being called mounts because all mounts will be stored in it.
+    # Just going to start by adding the extra-mounts to it and adding any
+    # generated mounts during _post_init().
     mounts: List[Union[FileMount, DirectoryMount]] = Field(
         alias="extra-mounts", default={}
     )
