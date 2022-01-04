@@ -36,21 +36,25 @@ from emulation_system.compose_file_creator.settings.images import IMAGE_MAPPING
 
 class MountException(Exception):
     """Base mount exception."""
+
     ...
 
 
 class NoMountsDefinedException(MountException):
     """Exception thrown when you try to load a mount and none are defined."""
+
     ...
 
 
 class MountNotFoundException(MountException):
     """Exception thrown when mount of a certain name is not found."""
+
     ...
 
 
 class EmulationLevelNotSupportedError(Exception):
     """Exception thrown when emulation level is not supported."""
+
     ...
 
 
