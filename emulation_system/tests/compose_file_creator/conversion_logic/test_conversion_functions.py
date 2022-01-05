@@ -12,6 +12,11 @@ from pytest_lazyfixture import lazy_fixture  # type: ignore
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
 )
+from emulation_system.compose_file_creator.input.hardware_models.hardware_model import (
+    LocalSourceDoesNotExistError,
+    MountNotFoundError,
+    NoMountsDefinedError,
+)
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DirectoryMount,
     EmulationLevels,
@@ -219,3 +224,81 @@ def test_mounts_with_same_names(file_mount: Dict[str, str], source_mount: str) -
         )
 
     assert err.match('"my-heater-shaker" has mounts with duplicate names')
+
+
+def test_source_code_mount_created(
+    file_mount: Dict[str, str], source_mount: str
+) -> None:
+    """Confirm SOURCE_CODE mount is created when using local source-type."""
+    model = HeaterShakerModuleInputModel.parse_obj(
+        {
+            "id": "my-heater-shaker",
+            "hardware": Hardware.HEATER_SHAKER_MODULE,
+            "source-type": SourceType.LOCAL,
+            "source-location": source_mount,
+            "emulation-level": EmulationLevels.HARDWARE,
+            "mounts": [file_mount],
+        }
+    )
+
+    assert model.get_mount_by_name(SOURCE_CODE_MOUNT_NAME)
+    assert model.get_mount_by_name("DATADOG")
+
+
+def test_source_code_mount_not_created(
+    file_mount: Dict[str, str], source_mount: str
+) -> None:
+    """Confirm SOURCE_CODE mount is not created when using remote source-type."""
+    model = HeaterShakerModuleInputModel.parse_obj(
+        {
+            "id": "my-heater-shaker",
+            "hardware": Hardware.HEATER_SHAKER_MODULE,
+            "source-type": SourceType.REMOTE,
+            "source-location": "latest",
+            "emulation-level": EmulationLevels.HARDWARE,
+            "mounts": [file_mount],
+        }
+    )
+
+    assert model.get_mount_by_name("DATADOG")
+    with pytest.raises(MountNotFoundError) as err:
+        model.get_mount_by_name(SOURCE_CODE_MOUNT_NAME)
+
+    assert err.match(f'Mount named "{SOURCE_CODE_MOUNT_NAME}" not found.')
+
+
+def test_no_mounts_exist(source_mount: str) -> None:
+    """Confirm NoMountsDefinedError is thrown when no mounts exist."""
+    model = HeaterShakerModuleInputModel.parse_obj(
+        {
+            "id": "my-heater-shaker",
+            "hardware": Hardware.HEATER_SHAKER_MODULE,
+            "source-type": SourceType.REMOTE,
+            "source-location": "latest",
+            "emulation-level": EmulationLevels.HARDWARE,
+            "mounts": [],
+        }
+    )
+
+    with pytest.raises(NoMountsDefinedError) as err:
+        model.get_mount_by_name("Something")
+
+    assert err.match("You have no mounts defined.")
+
+
+def test_exception_thrown_when_local_source_code_does_not_exist() -> None:
+    """Confirm LocalSourceDoesNotExistError is thrown when local path does not exist."""
+    bad_path = "/this/surely/must/be/a/bad/path"
+    with pytest.raises(LocalSourceDoesNotExistError) as err:
+        HeaterShakerModuleInputModel.parse_obj(
+            {
+                "id": "my-heater-shaker",
+                "hardware": Hardware.HEATER_SHAKER_MODULE,
+                "source-type": SourceType.LOCAL,
+                "source-location": bad_path,
+                "emulation-level": EmulationLevels.HARDWARE,
+                "mounts": [],
+            }
+        )
+
+    assert err.match(f'"{bad_path}" is not a valid directory path')

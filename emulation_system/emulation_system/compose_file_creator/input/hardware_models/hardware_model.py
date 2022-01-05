@@ -36,19 +36,19 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
 from emulation_system.compose_file_creator.settings.images import IMAGE_MAPPING
 
 
-class MountException(Exception):
+class MountError(Exception):
     """Base mount exception."""
 
     ...
 
 
-class NoMountsDefinedException(MountException):
+class NoMountsDefinedError(MountError):
     """Exception thrown when you try to load a mount and none are defined."""
 
     ...
 
 
-class MountNotFoundException(MountException):
+class MountNotFoundError(MountError):
     """Exception thrown when mount of a certain name is not found."""
 
     ...
@@ -57,6 +57,11 @@ class MountNotFoundException(MountException):
 class EmulationLevelNotSupportedError(Exception):
     """Exception thrown when emulation level is not supported."""
 
+    ...
+
+
+class LocalSourceDoesNotExistError(Exception):
+    """Exception thrown when local source-location does not exist."""
     ...
 
 
@@ -109,7 +114,10 @@ class HardwareModel(BaseModel):
     def check_source_location(cls, v: str, values: Dict[str, Any]) -> str:
         """If source type is local, confirms directory path specified exists."""
         if values["source_type"] == SourceType.LOCAL:
-            assert os.path.isdir(v), f'"{v}" is not a valid directory path'
+            if not os.path.isdir(v):
+                raise LocalSourceDoesNotExistError(
+                    f'"{v}" is not a valid directory path'
+                )
         return v
 
     @validator("mounts", pre=True, each_item=True)
@@ -127,7 +135,6 @@ class HardwareModel(BaseModel):
     ) -> List[Mount]:
         """Confirms that there are not mounts with duplicate names."""
         names = [mount.name for mount in v]
-        print(names)
         assert len(names) == len(
             set(names)
         ), f"\"{values['id']}\" has mounts with duplicate names"
@@ -136,12 +143,12 @@ class HardwareModel(BaseModel):
     def get_mount_by_name(self, name: str) -> Mount:
         """Lookup and return Mount by name."""
         if len(self.mounts) == 0:
-            raise NoMountsDefinedException("You have no mounts defined.")
+            raise NoMountsDefinedError("You have no mounts defined.")
         else:
             found_mounts = [mount for mount in self.mounts if mount.name == name]
 
             if len(found_mounts) == 0:
-                raise MountNotFoundException(f'Mount named "{name}" not found.')
+                raise MountNotFoundError(f'Mount named "{name}" not found.')
             else:
                 return found_mounts[0]
 
