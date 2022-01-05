@@ -2,14 +2,22 @@
 from enum import Enum
 from typing import (
     Optional,
+    Union,
 )
 
 from pydantic import (
     BaseModel,
+    DirectoryPath,
     Field,
+    FilePath,
 )
+from typing_extensions import Literal
 
 ROOM_TEMPERATURE: float = 23.0
+
+
+SOURCE_CODE_MOUNT_NAME = "SOURCE_CODE"
+RESTRICTED_MOUNT_NAMES = [SOURCE_CODE_MOUNT_NAME]
 
 
 class Hardware(str, Enum):
@@ -71,3 +79,42 @@ class SourceRepositories(BaseModel):
 
     firmware_repo_name: Optional[OpentronsRepository]
     hardware_repo_name: Optional[OpentronsRepository]
+
+
+class MountTypes(str, Enum):
+    """Possible mount types."""
+
+    FILE = "file"
+    DIRECTORY = "directory"
+
+
+class Mount(BaseModel):
+    """Contains infomation about a single extra bind mount."""
+
+    name: str = Field(..., regex=r"^[A-Z0-9_]+$")
+    type: str
+    mount_path: str = Field(..., alias="mount-path")
+    source_path: Union[DirectoryPath, FilePath] = Field(..., alias="source-path")
+
+    class Config:
+        """Config class used by pydantic."""
+
+        allow_population_by_field_name = True
+
+    def get_bind_mount_string(self) -> str:
+        """Return bind mount string to add compose file."""
+        return f"{self.source_path}:{self.mount_path}"
+
+
+class DirectoryMount(Mount):
+    """Directory type Mount."""
+
+    type: Literal[MountTypes.DIRECTORY]
+    source_path: DirectoryPath = Field(..., alias="source-path")
+
+
+class FileMount(Mount):
+    """File type Mount."""
+
+    type: Literal[MountTypes.FILE]
+    source_path: FilePath = Field(..., alias="source-path")

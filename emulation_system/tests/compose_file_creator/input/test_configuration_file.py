@@ -10,8 +10,6 @@ from typing import Dict
 import pytest
 from pydantic import ValidationError
 from pytest_lazyfixture import lazy_fixture  # type: ignore
-from pydantic import ValidationError
-from pytest_lazyfixture import lazy_fixture  # type: ignore
 
 from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
@@ -19,6 +17,13 @@ from emulation_system.compose_file_creator.input.configuration_file import (
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
     OT2InputModel,
+)
+from emulation_system.compose_file_creator.input.hardware_models.hardware_model import (
+    NoMountsDefinedError,
+)
+from emulation_system.compose_file_creator.settings.config_file_settings import (
+    DirectoryMount,
+    FileMount,
 )
 
 
@@ -153,6 +158,41 @@ def robot_and_modules() -> Dict:
 
 
 @pytest.fixture
+def extra_mounts(tmp_path: pathlib.Path, robot_only: Dict) -> Dict:
+    """Configuration of a robot with extra bind mounts."""
+    datadog_dir = tmp_path / "Datadog"
+    datadog_dir.mkdir()
+    datadog_file = datadog_dir / "log.txt"
+    datadog_file.write_text("test")
+
+    log_dir = tmp_path / "Log"
+    log_dir.mkdir()
+
+    robot_only["robot"]["my-robot"]["extra-mounts"] = [
+        {
+            "name": "DATADOG",
+            "source-path": str(datadog_file),
+            "mount-path": "/datadog/log.txt",
+            "type": "file",
+        },
+        {
+            "name": "LOG_FILES",
+            "source-path": str(log_dir),
+            "mount-path": "/var/log/opentrons/",
+            "type": "directory",
+        },
+    ]
+    return robot_only
+
+
+@pytest.fixture
+def invalid_mount_name(extra_mounts: Dict) -> Dict:
+    """Configuration with an invalid mount name."""
+    extra_mounts["robot"]["my-robot"]["extra-mounts"][0]["name"] = "data-dog"
+    return extra_mounts
+
+
+@pytest.fixture
 def config_from_json(
     tmp_path: pathlib.Path, robot_and_modules: Dict
 ) -> SystemConfigurationModel:
@@ -264,3 +304,32 @@ def test_from_file(config_from_json: SystemConfigurationModel) -> None:
     assert isinstance(
         config_from_json.get_by_id("my-heater-shaker-2"), HeaterShakerModuleInputModel
     )
+
+
+def test_extra_mounts(extra_mounts: Dict) -> None:
+    """Test that extra mounts are created correctly."""
+    robot = create_system_configuration(extra_mounts).get_robot()
+    datadog_mount = robot.get_mount_by_name("DATADOG")
+    assert isinstance(datadog_mount, FileMount)
+    assert datadog_mount.name == "DATADOG"
+    assert datadog_mount.mount_path == "/datadog/log.txt"
+
+    log_mount = robot.get_mount_by_name("LOG_FILES")
+    assert isinstance(log_mount, DirectoryMount)
+    assert log_mount.name == "LOG_FILES"
+    assert log_mount.mount_path == "/var/log/opentrons/"
+
+
+def test_loading_mount_when_none_exist(robot_only: Dict) -> None:
+    """Test NoMountsDefinedError is thrown when you load a nonexistent mount."""
+    robot = create_system_configuration(robot_only).get_robot()
+    with pytest.raises(NoMountsDefinedError) as err:
+        robot.get_mount_by_name("ugh")
+    expected_error_text = "You have no mounts defined."
+    assert err.match(expected_error_text)
+
+
+def test_invalid_mount_name(invalid_mount_name: Dict) -> None:
+    """Test that ValidationError is thrown when you have an invalid mount name."""
+    with pytest.raises(ValidationError):
+        create_system_configuration(invalid_mount_name)

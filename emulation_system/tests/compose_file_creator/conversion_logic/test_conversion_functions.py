@@ -1,18 +1,29 @@
 """Tests for confirming returned image names are correct."""
-from typing import Union
+import pathlib
+from typing import Dict
 
 import pytest
-
-from emulation_system.compose_file_creator.conversion_logic.conversion_functions import (  # noqa: E501
-    get_image_name,
-    get_image_name_from_hardware_model,
+from pydantic import (
+    ValidationError,
+    parse_obj_as,
 )
+from pytest_lazyfixture import lazy_fixture  # type: ignore
+
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
 )
+from emulation_system.compose_file_creator.input.hardware_models.hardware_model import (
+    LocalSourceDoesNotExistError,
+    MountNotFoundError,
+    NoMountsDefinedError,
+)
 from emulation_system.compose_file_creator.settings.config_file_settings import (
+    DirectoryMount,
     EmulationLevels,
+    FileMount,
     Hardware,
+    Mount,
+    SOURCE_CODE_MOUNT_NAME,
     SourceType,
 )
 
@@ -95,17 +106,49 @@ CONFIGURATIONS = [
 ]
 
 
-@pytest.mark.parametrize(
-    "hardware_name,emulation_level,source_type,expected_name", CONFIGURATIONS
-)
-def test_get_image_name(
-    hardware_name: Hardware,
-    emulation_level: EmulationLevels,
-    source_type: SourceType,
-    expected_name: Union[str, None],
-) -> None:
-    """Test that correct image name is returned by get_image_name."""
-    assert get_image_name(hardware_name, emulation_level, source_type) == expected_name
+@pytest.fixture
+def file_mount(tmp_path: pathlib.Path) -> Dict[str, str]:
+    """Returns FileMount object."""
+    datadog_dir = tmp_path / "Datadog"
+    datadog_dir.mkdir()
+    datadog_file = datadog_dir / "log.txt"
+    datadog_file.write_text("test")
+
+    return {
+        "name": "DATADOG",
+        "source-path": str(datadog_file),
+        "mount-path": "/datadog/log.txt",
+        "type": "file",
+    }
+
+
+@pytest.fixture
+def directory_mount(tmp_path: pathlib.Path) -> Dict[str, str]:
+    """Returns DirectoryMount object."""
+    log_dir = tmp_path / "Log"
+    log_dir.mkdir()
+    return {
+        "name": "LOG_FILES",
+        "source-path": str(log_dir),
+        "mount-path": "/var/log/opentrons/",
+        "type": "directory",
+    }
+
+
+@pytest.fixture
+def source_mount(tmp_path: pathlib.Path) -> str:
+    """Returns mount to source repo."""
+    log_dir = tmp_path / "opentrons-modules/"
+    log_dir.mkdir()
+
+    return str(log_dir)
+
+
+@pytest.fixture
+def restricted_name_mount(directory_mount: Dict[str, str]) -> Dict[str, str]:
+    """Create a Directory mount with a restricted name."""
+    directory_mount["name"] = SOURCE_CODE_MOUNT_NAME
+    return directory_mount
 
 
 def test_get_image_name_from_hardware_model() -> None:
@@ -117,4 +160,145 @@ def test_get_image_name_from_hardware_model() -> None:
         source_location="latest",
         emulation_level=EmulationLevels.HARDWARE,
     )
-    assert get_image_name_from_hardware_model(model) == "heater-shaker-hardware-remote"
+    assert model.get_image_name() == "heater-shaker-hardware-remote"
+
+
+@pytest.mark.parametrize(
+    "mount,expected_value",
+    [
+        [lazy_fixture("file_mount"), "/Datadog/log.txt:/datadog/log.txt"],
+        [lazy_fixture("directory_mount"), "/Log:/var/log/opentrons/"],
+    ],
+)
+def test_get_bind_mount_string(mount: Mount, expected_value: str) -> None:
+    """Confirm file bind mount string is formatted correctly."""
+    assert parse_obj_as(Mount, mount).get_bind_mount_string().endswith(expected_value)
+
+
+def test_service_conversion(
+    file_mount: FileMount, directory_mount: DirectoryMount, source_mount: str
+) -> None:
+    """Confirm HardwareModel is converted to Service correctly."""
+    input = {
+        "id": "my-heater-shaker",
+        "hardware": Hardware.HEATER_SHAKER_MODULE,
+        "source-type": SourceType.LOCAL,
+        "source-location": source_mount,
+        "emulation-level": EmulationLevels.HARDWARE,
+        "mounts": [file_mount, directory_mount],
+    }
+    model = HeaterShakerModuleInputModel.parse_obj(input)
+    print(model.to_service())
+
+
+def test_restricted_mount(
+    restricted_name_mount: DirectoryMount, source_mount: str
+) -> None:
+    """Confirm exception is thrown when trying to name mount with a restricted name."""
+    with pytest.raises(ValidationError) as err:
+        HeaterShakerModuleInputModel.parse_obj(
+            {
+                "id": "my-heater-shaker",
+                "hardware": Hardware.HEATER_SHAKER_MODULE,
+                "source-type": SourceType.LOCAL,
+                "source-location": source_mount,
+                "emulation-level": EmulationLevels.HARDWARE,
+                "mounts": [restricted_name_mount],
+            }
+        )
+    assert err.match("Mount name cannot be any of the following values:.*")
+
+
+def test_mounts_with_same_names(file_mount: Dict[str, str], source_mount: str) -> None:
+    """Confirm exception is thrown when you have mounts with duplicate names."""
+    with pytest.raises(ValidationError) as err:
+        HeaterShakerModuleInputModel.parse_obj(
+            {
+                "id": "my-heater-shaker",
+                "hardware": Hardware.HEATER_SHAKER_MODULE,
+                "source-type": SourceType.LOCAL,
+                "source-location": source_mount,
+                "emulation-level": EmulationLevels.HARDWARE,
+                "mounts": [file_mount, file_mount],
+            }
+        )
+
+    assert err.match('"my-heater-shaker" has mounts with duplicate names')
+
+
+def test_source_code_mount_created(
+    file_mount: Dict[str, str], source_mount: str
+) -> None:
+    """Confirm SOURCE_CODE mount is created when using local source-type."""
+    model = HeaterShakerModuleInputModel.parse_obj(
+        {
+            "id": "my-heater-shaker",
+            "hardware": Hardware.HEATER_SHAKER_MODULE,
+            "source-type": SourceType.LOCAL,
+            "source-location": source_mount,
+            "emulation-level": EmulationLevels.HARDWARE,
+            "mounts": [file_mount],
+        }
+    )
+
+    assert model.get_mount_by_name(SOURCE_CODE_MOUNT_NAME)
+    assert model.get_mount_by_name("DATADOG")
+
+
+def test_source_code_mount_not_created(
+    file_mount: Dict[str, str], source_mount: str
+) -> None:
+    """Confirm SOURCE_CODE mount is not created when using remote source-type."""
+    model = HeaterShakerModuleInputModel.parse_obj(
+        {
+            "id": "my-heater-shaker",
+            "hardware": Hardware.HEATER_SHAKER_MODULE,
+            "source-type": SourceType.REMOTE,
+            "source-location": "latest",
+            "emulation-level": EmulationLevels.HARDWARE,
+            "mounts": [file_mount],
+        }
+    )
+
+    assert model.get_mount_by_name("DATADOG")
+    with pytest.raises(MountNotFoundError) as err:
+        model.get_mount_by_name(SOURCE_CODE_MOUNT_NAME)
+
+    assert err.match(f'Mount named "{SOURCE_CODE_MOUNT_NAME}" not found.')
+
+
+def test_no_mounts_exist(source_mount: str) -> None:
+    """Confirm NoMountsDefinedError is thrown when no mounts exist."""
+    model = HeaterShakerModuleInputModel.parse_obj(
+        {
+            "id": "my-heater-shaker",
+            "hardware": Hardware.HEATER_SHAKER_MODULE,
+            "source-type": SourceType.REMOTE,
+            "source-location": "latest",
+            "emulation-level": EmulationLevels.HARDWARE,
+            "mounts": [],
+        }
+    )
+
+    with pytest.raises(NoMountsDefinedError) as err:
+        model.get_mount_by_name("Something")
+
+    assert err.match("You have no mounts defined.")
+
+
+def test_exception_thrown_when_local_source_code_does_not_exist() -> None:
+    """Confirm LocalSourceDoesNotExistError is thrown when local path does not exist."""
+    bad_path = "/this/surely/must/be/a/bad/path"
+    with pytest.raises(LocalSourceDoesNotExistError) as err:
+        HeaterShakerModuleInputModel.parse_obj(
+            {
+                "id": "my-heater-shaker",
+                "hardware": Hardware.HEATER_SHAKER_MODULE,
+                "source-type": SourceType.LOCAL,
+                "source-location": bad_path,
+                "emulation-level": EmulationLevels.HARDWARE,
+                "mounts": [],
+            }
+        )
+
+    assert err.match(f'"{bad_path}" is not a valid directory path')
