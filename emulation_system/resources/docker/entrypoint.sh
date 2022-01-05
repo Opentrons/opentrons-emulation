@@ -64,27 +64,27 @@ case $FULL_COMMAND in
     bash -c "uvicorn "robot_server:app" --host 0.0.0.0 --port 31950 --ws wsproto --reload"
     ;;
   build-ot3-pipettes)
-      build_ot3_simulator "pipettes_simulator"
+      build_ot3_simulator "pipettes-simulator"
     ;;
   build-ot3-head)
-      build_ot3_simulator "head_simulator"
+      build_ot3_simulator "head-simulator"
     ;;
   build-ot3-gantry-x)
-      build_ot3_simulator "gantry_x_simulator"
+      build_ot3_simulator "gantry-x-simulator"
     ;;
   build-ot3-gantry-y)
-      build_ot3_simulator "gantry_y_simulator"
+      build_ot3_simulator "gantry-y-simulator"
     ;;
   run-ot3-pipettes)
-    /ot3-firmware/build-host/pipettes/simulator/pipettes_simulator
+    /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator
     ;;
   run-ot3-head)
-    /ot3-firmware/build-host/head/simulator/head_simulator
+    /ot3-firmware/build-host/head/simulator/head-simulator
     ;;
   run-ot3-gantry-x)
-    /ot3-firmware/build-host/gantry/simulator/gantry_x_simulator
+    /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator
     ;;
   run-ot3-gantry-y)
-    /ot3-firmware/build-host/gantry/simulator/gantry_y_simulator
+    /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator
     ;;
 esac
