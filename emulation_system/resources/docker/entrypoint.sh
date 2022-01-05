@@ -20,6 +20,13 @@ fi
 FULL_COMMAND="$COMMAND"-"$OPENTRONS_HARDWARE"
 OTHER_ARGS=`echo "${@:2}"`
 
+
+build_ot3_simulator() {
+      cd /ot3-firmware && \
+      cmake --preset host-gcc10 && \
+      cmake --build ./build-host --target $1
+}
+
 case $FULL_COMMAND in
   build-heater-shaker)
     (
@@ -56,14 +63,28 @@ case $FULL_COMMAND in
   run-robot-server)
     bash -c "uvicorn "robot_server:app" --host 0.0.0.0 --port 31950 --ws wsproto --reload"
     ;;
-  build-ot3-firmware-echo)
-    (
-      cd /ot3-firmware && \
-      cmake --preset host-gcc10 && \
-      cmake --build ./build-host --target can-simulator
-    )
+  build-ot3-pipettes)
+      build_ot3_simulator "pipettes_simulator"
     ;;
-  run-ot3-firmware-echo)
-    /ot3-firmware/build-host/can/simulator/can-simulator
+  build-ot3-head)
+      build_ot3_simulator "head_simulator"
+    ;;
+  build-ot3-gantry-x)
+      build_ot3_simulator "gantry_x_simulator"
+    ;;
+  build-ot3-gantry-y)
+      build_ot3_simulator "gantry_y_simulator"
+    ;;
+  run-ot3-pipettes)
+    /ot3-firmware/build-host/pipettes/simulator/pipettes_simulator
+    ;;
+  run-ot3-head)
+    /ot3-firmware/build-host/head/simulator/head_simulator
+    ;;
+  run-ot3-gantry-x)
+    /ot3-firmware/build-host/gantry/simulator/gantry_x_simulator
+    ;;
+  run-ot3-gantry-y)
+    /ot3-firmware/build-host/gantry/simulator/gantry_y_simulator
     ;;
 esac
