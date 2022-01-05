@@ -1,5 +1,6 @@
 # JetBrains Config
 .idea/
+.DS_Store
 
 # .env file that is actually used by the system
 .env
