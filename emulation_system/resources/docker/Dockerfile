@@ -245,23 +245,20 @@ COPY entrypoint.sh /entrypoint.sh
 # Building separately from the Production Target to reduce image size
 
 FROM ot3-firmware-source as ot3-echo-builder
-ENV OPENTRONS_HARDWARE "ot3-firmware-echo"
+ENV OPENTRONS_HARDWARE "ot3-echo-hardware"
 RUN /entrypoint.sh build
 
 FROM opentrons-modules-source as heater-shaker-builder
-ENV OPENTRONS_HARDWARE "heater-shaker"
+ENV OPENTRONS_HARDWARE "heater-shaker-hardware"
 RUN /entrypoint.sh build
 
 FROM opentrons-modules-source as thermocycler-builder
-ENV OPENTRONS_HARDWARE "thermocycler"
+ENV OPENTRONS_HARDWARE "thermocycler-hardware"
 RUN /entrypoint.sh build
 
 FROM opentrons-source as firmware-builder
-RUN \
-	(cd /opentrons/shared-data/python && python3 setup.py bdist_wheel -d /dist/) && \
-    (cd /opentrons/api && python3 setup.py bdist_wheel -d /dist/) && \
-    (cd /opentrons/notify-server && python3 setup.py bdist_wheel -d /dist/) && \
-    (cd /opentrons/robot-server && python3 setup.py bdist_wheel -d /dist/)
+ENV OPENTRONS_HARDWARE "common-firmware"
+RUN /entrypoint.sh build
 
 ##################
 # Firmware Common #
