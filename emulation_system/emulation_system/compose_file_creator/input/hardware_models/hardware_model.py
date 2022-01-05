@@ -62,6 +62,7 @@ class EmulationLevelNotSupportedError(Exception):
 
 class LocalSourceDoesNotExistError(Exception):
     """Exception thrown when local source-location does not exist."""
+
     ...
 
 
