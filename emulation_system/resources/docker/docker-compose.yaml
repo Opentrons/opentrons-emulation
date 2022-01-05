@@ -1,111 +1,97 @@
 version: '3.8'
 services:
-  emulator-proxy-prod:
-    image: emulator-proxy-prod:latest
+  emulator-proxy-remote:
+    image: emulator-proxy-remote:latest
     build:
       context: .
-      target: emulator-proxy-prod
-    container_name: emulator-proxy-prod
-    ports:
-      - '10000-10004:10000-10004'
-      - '11000-11004:11000-11004'
+      target: emulator-proxy-remote
+    container_name: emulator-proxy-remote
     environment:
       OT_EMULATOR_smoothie: '{"port": 11000}'
       OT_EMULATOR_magdeck_proxy: '{"emulator_port": 10001, "driver_port": 11001}'
       OT_EMULATOR_temperature_proxy: '{"emulator_port": 10002, "driver_port": 11002}'
       OT_EMULATOR_thermocycler_proxy: '{"emulator_port": 10003, "driver_port": 11003}'
       OT_EMULATOR_heatershaker_proxy_proxy: '{"emulator_port": 10004, "driver_port": 11004}'
+    networks:
+      - local
     tty: true
 
   robot-server:
-    image: robot-server-prod:lastest
+    image: robot-server-remote:lastest
     build:
       context: .
-      target: robot-server-prod
-    container_name: robot-server-prod
+      target: robot-server-remote
+    container_name: robot-server-remote
     ports:
       - '31950:31950'
     environment:
-      OT_SMOOTHIE_EMULATOR_URI: socket://emulator-proxy-prod:11000
-      OT_EMULATOR_module_server: '{"host": "emulator-proxy-prod"}'
-    links:
-      - 'emulator-proxy-prod'
+      OT_SMOOTHIE_EMULATOR_URI: socket://emulator-proxy-remote:11000
+      OT_EMULATOR_module_server: '{"host": "emulator-proxy-remote"}'
+    networks:
+      - local
     depends_on:
-      - 'emulator-proxy-prod'
+      - 'emulator-proxy-remote'
 
-  magdeck-driver-1:
-    image: magdeck-driver-prod:latest
+  magdeck-firmware-1:
+    image: magdeck-firmware-remote:latest
     build:
       context: .
-      target: magdeck-driver-prod
-    container_name: magdeck-driver-1
+      target: magdeck-firmware-remote
+    container_name: magdeck-firmware-1
     environment:
       OT_EMULATOR_magdeck_proxy: '{"emulator_port": 10001, "driver_port": 11001}'
       OT_EMULATOR_magdeck: '{"serial_number": "magdeck-1", "model":"mag_deck_v20", "version":"2.0.0"}'
-    command: ["emulator-proxy-prod"]
-    links:
-      - 'emulator-proxy-prod'
+    command: [ "emulator-proxy-remote" ]
+    networks:
+      - local
     depends_on:
-      - 'emulator-proxy-prod'
+      - 'emulator-proxy-remote'
     tty: true
 
-  magdeck-driver-2:
-    image: magdeck-driver-prod:latest
+  magdeck-firmware-2:
+    image: magdeck-firmware-remote:latest
     build:
       context: .
-      target: magdeck-driver-prod
-    container_name: magdeck-driver-2
+      target: magdeck-firmware-remote
+    container_name: magdeck-firmware-2
     environment:
       OT_EMULATOR_magdeck_proxy: '{"emulator_port": 10001, "driver_port": 11001}'
       OT_EMULATOR_magdeck: '{"serial_number": "magdeck-2", "model":"mag_deck_v20", "version":"2.0.0"}'
-    command: ["emulator-proxy-prod"]
-    links:
-      - 'emulator-proxy-prod'
+    command: [ "emulator-proxy-remote" ]
+    networks:
+      - local
     depends_on:
-      - 'emulator-proxy-prod'
+      - 'emulator-proxy-remote'
     tty: true
 
-  tempdeck-driver-prod:
-    image: tempdeck-driver-prod:latest
+  tempdeck-firmware-remote:
+    image: tempdeck-firmware-remote:latest
     build:
       context: .
-      target: tempdeck-driver-prod
-    container_name: tempdeck-driver-prod
+      target: tempdeck-firmware-remote
+    container_name: tempdeck-firmware-remote
     environment:
       OT_EMULATOR_temperature_proxy: '{"emulator_port": 10002, "driver_port": 11002}'
-    command: ["emulator-proxy-prod"]
-    links:
-      - 'emulator-proxy-prod'
+    command: [ "emulator-proxy-remote" ]
+    networks:
+      - local
     depends_on:
-      - 'emulator-proxy-prod'
+      - 'emulator-proxy-remote'
     tty: true
 
-  thermocycler-driver-prod:
-    image: thermocycler-driver-prod:latest
+  thermocycler-firmware-remote:
+    image: thermocycler-firmware-remote:latest
     build:
       context: .
-      target: thermocycler-driver-prod
-    container_name: thermocycler-driver-prod
+      target: thermocycler-firmware-remote
+    container_name: thermocycler-firmware-remote
     environment:
       OT_EMULATOR_thermocycler_proxy: '{"emulator_port": 10003, "driver_port": 11003}'
-    command: ["emulator-proxy-prod"]
-    links:
-      - 'emulator-proxy-prod'
+    command: [ "emulator-proxy-remote" ]
+    networks:
+      - local
     depends_on:
-      - 'emulator-proxy-prod'
+      - 'emulator-proxy-remote'
     tty: true
-#
-#  heatershaker-prod:
-#    image: heatershaker-prod:latest
-#    build:
-#      context: .
-#      target: heatershaker-prod
-#    container_name: heatershaker-prod
-#    environment:
-#      OT_EMULATOR_heatershaker_proxy: '{"emulator_port": 10004, "driver_port": 11004}'
-#    command: ["emulator-proxy-prod"]
-#    links:
-#      - 'emulator-proxy-prod'
-#    depends_on:
-#      - 'emulator-proxy-prod'
-#    tty: true
+networks:
+  local:

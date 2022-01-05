@@ -1,11 +1,11 @@
 version: '3.8'
 services:
-  emulator-proxy-dev:
-    image: emulator-proxy-dev:latest
+  emulator-proxy-local:
+    image: emulator-proxy-local:latest
     build:
       context: .
-      target: emulator-proxy-dev
-    container_name: emulator-proxy-dev
+      target: emulator-proxy-local
+    container_name: emulator-proxy-local
     ports:
       - '8000-8005:8000-8005'
       - '9000-9005:9000-9005'
@@ -16,56 +16,61 @@ services:
     volumes:
       - "./entrypoint.sh:/entrypoint.sh"
       - ${OPENTRONS_DIRECTORY}:/opentrons
+    networks:
+      - local
 
     tty: true
 
-  magdeck-driver-dev:
-    image: magdeck-driver-dev:latest
+  magdeck-firmware-local:
+    image: magdeck-firmware-local:latest
     build:
       context: .
-      target: magdeck-driver-dev
-    container_name: magdeck-driver-dev
+      target: magdeck-firmware-local
+    container_name: magdeck-firmware-local
     environment:
       OT_EMULATOR_magdeck_proxy: '{"emulator_port": 8000, "driver_port": 9000}'
-    links:
-      - 'emulator-proxy-dev'
     depends_on:
-      - 'emulator-proxy-dev'
+      - 'emulator-proxy-local'
     volumes:
       - "./entrypoint.sh:/entrypoint.sh"
       - ${OPENTRONS_DIRECTORY}:/opentrons
+    networks:
+      - local
     tty: true
 
-  tempdeck-driver-dev:
-    image: tempdeck-driver-dev:latest
+  tempdeck-firmware-local:
+    image: tempdeck-firmware-local:latest
     build:
       context: .
-      target: tempdeck-driver-dev
-    container_name: tempdeck-driver-dev
+      target: tempdeck-firmware-local
+    container_name: tempdeck-firmware-local
     environment:
       OT_EMULATOR_temperature_proxy: '{"emulator_port": 8001, "driver_port": 9001}'
-    links:
-      - 'emulator-proxy-dev'
     depends_on:
-      - 'emulator-proxy-dev'
+      - 'emulator-proxy-local'
     volumes:
       - "./entrypoint.sh:/entrypoint.sh"
       - ${OPENTRONS_DIRECTORY}:/opentrons
+    networks:
+      - local
     tty: true
 
-  thermocycler-driver-dev:
-    image: thermocycler-driver-dev:latest
+  thermocycler-firmware-local:
+    image: thermocycler-firmware-local:latest
     build:
       context: .
-      target: thermocycler-driver-dev
-    container_name: thermocycler-driver-dev
+      target: thermocycler-firmware-local
+    container_name: thermocycler-firmware-local
     environment:
       OT_EMULATOR_thermocycler_proxy: '{"emulator_port": 8002, "driver_port": 9002}'
-    links:
-      - 'emulator-proxy-dev'
     depends_on:
-      - 'emulator-proxy-dev'
+      - 'emulator-proxy-local'
     volumes:
       - "./entrypoint.sh:/entrypoint.sh"
       - ${OPENTRONS_DIRECTORY}:/opentrons
+    networks:
+      - local
     tty: true
+
+networks:
+  local:

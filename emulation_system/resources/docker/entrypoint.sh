@@ -28,36 +28,50 @@ build_ot3_simulator() {
 }
 
 case $FULL_COMMAND in
-  build-heater-shaker)
+  build-heater-shaker-hardware)
     (
       cd /opentrons-modules && \
       cmake --preset=stm32-host-gcc10 . && \
       cmake --build ./build-stm32-host --target heater-shaker-simulator
     )
     ;;
-  run-heater-shaker)
-    bash -c "/opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator $OTHER_ARGS"
+  build-ot3-echo-hardware)
+    (
+      cd /ot3-firmware && \
+      cmake --preset host-gcc10 && \
+      cmake --build ./build-host --target can-simulator
+    )
     ;;
-  build-thermocycler)
+  build-thermocycler-hardware)
     (
       cd /opentrons-modules && \
       cmake --preset=stm32-host-gcc10 . && \
       cmake --build ./build-stm32-host --target thermocycler-refresh-simulator
     )
     ;;
-  run-thermocycler)
+  build-thermocycler-firmware|build-magdeck-firmware|build-tempdeck-firmware|build-emulator-proxy|build-robot-server|build-common-firmware)
+    (cd /opentrons/shared-data/python && python3 setup.py bdist_wheel -d /dist/)
+    (cd /opentrons/api && python3 setup.py bdist_wheel -d /dist/)
+    (cd /opentrons/notify-server && python3 setup.py bdist_wheel -d /dist/)
+    (cd /opentrons/robot-server && python3 setup.py bdist_wheel -d /dist/)
+    pip install /dist/*
+    ;;
+  run-heater-shaker-hardware)
+    bash -c "/opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator $OTHER_ARGS"
+    ;;
+  run-thermocycler-hardware)
     bash -c "/opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator $OTHER_ARGS"
     ;;
-  run-emulator-proxy)
-    python3 -m opentrons.hardware_control.emulation.app
+  run-ot3-echo-hardware)
+    /ot3-firmware/build-host/can/simulator/can-simulator
     ;;
-  run-thermocycler-driver)
+  run-thermocycler-firmware)
     bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_module_emulator thermocycler $OTHER_ARGS"
     ;;
-  run-tempdeck-driver)
+  run-tempdeck-firmware)
     bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_module_emulator tempdeck $OTHER_ARGS"
     ;;
-  run-magdeck-driver)
+  run-magdeck-firmware)
     bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_module_emulator magdeck $OTHER_ARGS"
     ;;
   run-robot-server)
