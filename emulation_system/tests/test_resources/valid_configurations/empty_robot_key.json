@@ -1,0 +1,25 @@
+{
+    "robot": null,
+    "modules": [
+        {
+            "id": "my-heater-shaker",
+            "hardware": "heater-shaker-module",
+            "emulation-level": "hardware",
+            "source-type": "remote",
+            "source-location": "latest",
+            "hardware-specific-attributes": {
+                "mode": "stdin"
+            }
+        },
+        {
+            "id": "my-heater-shaker-2",
+            "hardware": "heater-shaker-module",
+            "emulation-level": "hardware",
+            "source-type": "remote",
+            "source-location": "latest",
+            "hardware-specific-attributes": {
+                "mode": "stdin"
+            }
+        }
+    ]
+}
