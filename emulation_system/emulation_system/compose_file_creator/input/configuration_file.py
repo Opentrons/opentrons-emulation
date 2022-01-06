@@ -1,6 +1,6 @@
 """Models necessary for parsing configuration file."""
 from __future__ import annotations
-
+from collections import Counter
 from typing import (
     Dict,
     List,
@@ -44,21 +44,42 @@ class SystemConfigurationModel(BaseModel):
     @root_validator(pre=True)
     def validate_names(cls, values) -> Dict[str, Dict[str, Containers]]:  # noqa: ANN001
         """Checks all names in the config file and confirms there are no duplicates."""
-        # Only need to check when there is both a robot and modules defined.
-        # This is because if there are duplicates in modules then it will fail by
-        # definition of how a dict works (no duplicate keys)
         robot_key_exists = "robot" in values and values["robot"] is not None
         modules_key_exists = "modules" in values and values["modules"] is not None
-        if robot_key_exists and modules_key_exists:
-            robot_name = values["robot"]["id"]
-            module_names = [module["id"] for module in values["modules"]]
 
-            if robot_name in module_names:
-                raise DuplicateHardwareNameError(
-                    "The following container names are "
-                    "duplicated in the configuration file: "
-                    f"{robot_name}"
-                )
+        name_list = []
+
+        if (
+                # Shouldn't really hit this one, as you would be specifying a
+                # system with no modules or robots and that is kinda pointless.
+                # But it is still an edge case.
+                not robot_key_exists and not modules_key_exists
+        ) or (
+                # Only going to have a single piece of hardware so of course there
+                # will not be any duplicates.
+                robot_key_exists and not modules_key_exists
+        ):
+            return values
+
+        if modules_key_exists:
+            # Don't want to use a set comprehension here because I want to maintain
+            # duplicates.
+            name_list.extend([module["id"] for module in values["modules"]])
+
+        if robot_key_exists:
+            name_list.append(values["robot"]["id"])
+
+        duplicates = {
+            name
+            for name, num_of_instances in Counter(name_list).items()
+            if num_of_instances > 1
+        }
+        if len(duplicates) > 0:
+            raise DuplicateHardwareNameError(
+                "The following container names are "
+                "duplicated in the configuration file: "
+                f"{', '.join(duplicates)}"
+            )
 
         return values
 

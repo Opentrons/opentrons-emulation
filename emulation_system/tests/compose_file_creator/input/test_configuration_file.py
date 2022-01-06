@@ -27,6 +27,9 @@ VALID_CONFIG_DIR_PATH = os.path.join(get_test_resources_dir(), "valid_configurat
 MATCHING_ROBOT_AND_MODULE_NAMES_PATH = os.path.join(
     INVALID_CONFIG_DIR_PATH, "matching_robot_and_module_names.json"
 )
+MATCHING_MODULE_NAMES_PATH = os.path.join(
+    INVALID_CONFIG_DIR_PATH, "matching_module_names.json"
+)
 INVALID_NAME_FORMAT_PATH = os.path.join(
     INVALID_CONFIG_DIR_PATH, "invalid_name_format.json"
 )
@@ -82,10 +85,13 @@ def create_system_configuration_from_file(path: str) -> SystemConfigurationModel
     return SystemConfigurationModel.from_file(path)
 
 
-def test_duplicate_names() -> None:
+@pytest.mark.parametrize(
+    'path', [MATCHING_MODULE_NAMES_PATH, MATCHING_ROBOT_AND_MODULE_NAMES_PATH]
+)
+def test_duplicate_names(path: str) -> None:
     """Confirm that ValidationError is thrown when a robot and module have the same name."""  # noqa: E501
     with pytest.raises(DuplicateHardwareNameError) as err:
-        create_system_configuration_from_file(MATCHING_ROBOT_AND_MODULE_NAMES_PATH)
+        create_system_configuration_from_file(path)
     expected_error_text = (
         "The following container names are duplicated in the "
         "configuration file: common-name"
