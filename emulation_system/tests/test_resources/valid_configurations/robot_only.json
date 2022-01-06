@@ -1,0 +1,9 @@
+{
+    "robot": {
+        "id": "my-robot",
+        "hardware": "ot2",
+        "emulation-level": "firmware",
+        "source-type": "remote",
+        "source-location": "latest"
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "robot": {
+        "id": "common-name",
+        "hardware": "ot2",
+        "emulation-level": "firmware",
+        "source-type": "remote",
+        "source-location": "latest"
+    },
+    "modules": [
+        {
+            "id": "common-name",
+            "hardware": "heater-shaker-module",
+            "emulation-level": "hardware",
+            "source-type": "remote",
+            "source-location": "latest",
+            "hardware-specific-attributes": {
+                "mode": "stdin"
+            }
+        }
+    ]
+}

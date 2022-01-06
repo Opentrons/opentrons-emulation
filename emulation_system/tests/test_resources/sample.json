@@ -1,0 +1,55 @@
+{
+    "robot": {
+        "id": "ot-2",
+        "hardware": "ot2",
+        "emulation-level": "firmware",
+        "source-type": "local",
+        "source-location": "/home/derek-maggio/Documents/repos/opentrons",
+        "hardware-specific-attributes": {},
+        "extra-mounts": []
+    },
+    "modules": [
+        {
+            "id": "heater-shaker-1",
+            "hardware": "heater-shaker-module",
+            "emulation-level": "hardware",
+            "source-type": "remote",
+            "source-location": "latest",
+            "hardware-specific-attributes": {
+                "mode": "stdin"
+            }
+        },
+        {
+            "id": "thermocycler-1",
+            "hardware": "thermocycler-module",
+            "emulation-level": "hardware",
+            "source-type": "remote",
+            "source-location": "latest",
+            "hardware-specific-attributes": {
+                "lid-temperature": {
+                    "degrees-per-tick": 3.0
+                }
+            }
+        },
+        {
+            "id": "temp-1",
+            "hardware": "temperature-module",
+            "emulation-level": "firmware",
+            "source-type": "local",
+            "source-location": "/home/derek-maggio/Documents/repos/opentrons",
+            "hardware-specific-attributes": {
+                "temperature": {
+                    "degrees-per-tick": 5.0
+                }
+            }
+        },
+        {
+            "id": "mag-1",
+            "hardware": "magnetic-module",
+            "emulation-level": "firmware",
+            "source-type": "local",
+            "source-location": "/home/derek-maggio/Documents/repos/opentrons",
+            "hardware-specific-attributes": {}
+        }
+    ]
+}

@@ -151,6 +151,13 @@ def restricted_name_mount(directory_mount: Dict[str, str]) -> Dict[str, str]:
     return directory_mount
 
 
+@pytest.fixture
+def bad_mount_name(directory_mount: Dict[str, str]) -> Dict[str, str]:
+    """Create a Directory mount with an invalid name."""
+    directory_mount["name"] = "A bad mount name"
+    return directory_mount
+
+
 def test_get_image_name_from_hardware_model() -> None:
     """Test that get_image_name_from_hardware_model returns correct value."""
     model = HeaterShakerModuleInputModel(
@@ -173,22 +180,6 @@ def test_get_image_name_from_hardware_model() -> None:
 def test_get_bind_mount_string(mount: Mount, expected_value: str) -> None:
     """Confirm file bind mount string is formatted correctly."""
     assert parse_obj_as(Mount, mount).get_bind_mount_string().endswith(expected_value)
-
-
-def test_service_conversion(
-    file_mount: FileMount, directory_mount: DirectoryMount, source_mount: str
-) -> None:
-    """Confirm HardwareModel is converted to Service correctly."""
-    input = {
-        "id": "my-heater-shaker",
-        "hardware": Hardware.HEATER_SHAKER_MODULE,
-        "source-type": SourceType.LOCAL,
-        "source-location": source_mount,
-        "emulation-level": EmulationLevels.HARDWARE,
-        "mounts": [file_mount, directory_mount],
-    }
-    model = HeaterShakerModuleInputModel.parse_obj(input)
-    print(model.to_service())
 
 
 def test_restricted_mount(
@@ -302,3 +293,42 @@ def test_exception_thrown_when_local_source_code_does_not_exist() -> None:
         )
 
     assert err.match(f'"{bad_path}" is not a valid directory path')
+
+
+def test_extra_mounts(file_mount: Dict, directory_mount: Dict) -> None:
+    """Test that extra mounts are created correctly."""
+    model = HeaterShakerModuleInputModel.parse_obj(
+        {
+            "id": "my-heater-shaker",
+            "hardware": Hardware.HEATER_SHAKER_MODULE,
+            "source-type": SourceType.REMOTE,
+            "source-location": "latest",
+            "emulation-level": EmulationLevels.HARDWARE,
+            "mounts": [file_mount, directory_mount],
+        }
+    )
+    datadog_mount = model.get_mount_by_name("DATADOG")
+    assert isinstance(datadog_mount, FileMount)
+    assert datadog_mount.name == "DATADOG"
+    assert datadog_mount.mount_path == "/datadog/log.txt"
+
+    log_mount = model.get_mount_by_name("LOG_FILES")
+    assert isinstance(log_mount, DirectoryMount)
+    assert log_mount.name == "LOG_FILES"
+    assert log_mount.mount_path == "/var/log/opentrons/"
+
+
+def test_invalid_mount_name(bad_mount_name: Dict) -> None:
+    """Test that ValidationError is thrown when you have an invalid mount name."""
+    with pytest.raises(ValidationError) as err:
+        HeaterShakerModuleInputModel.parse_obj(
+            {
+                "id": "my-heater-shaker",
+                "hardware": Hardware.HEATER_SHAKER_MODULE,
+                "source-type": SourceType.REMOTE,
+                "source-location": "latest",
+                "emulation-level": EmulationLevels.HARDWARE,
+                "mounts": [bad_mount_name],
+            }
+        )
+    assert err.match(".*string does not match regex.*")
