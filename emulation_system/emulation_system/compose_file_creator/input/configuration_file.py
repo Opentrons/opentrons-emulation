@@ -50,14 +50,16 @@ class SystemConfigurationModel(BaseModel):
         name_list = []
 
         if (
-                # Shouldn't really hit this one, as you would be specifying a
-                # system with no modules or robots and that is kinda pointless.
-                # But it is still an edge case.
-                not robot_key_exists and not modules_key_exists
+            # Shouldn't really hit this one, as you would be specifying a
+            # system with no modules or robots and that is kinda pointless.
+            # But it is still an edge case.
+            not robot_key_exists
+            and not modules_key_exists
         ) or (
-                # Only going to have a single piece of hardware so of course there
-                # will not be any duplicates.
-                robot_key_exists and not modules_key_exists
+            # Only going to have a single piece of hardware so of course there
+            # will not be any duplicates.
+            robot_key_exists
+            and not modules_key_exists
         ):
             return values
 

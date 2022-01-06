@@ -86,7 +86,7 @@ def create_system_configuration_from_file(path: str) -> SystemConfigurationModel
 
 
 @pytest.mark.parametrize(
-    'path', [MATCHING_MODULE_NAMES_PATH, MATCHING_ROBOT_AND_MODULE_NAMES_PATH]
+    "path", [MATCHING_MODULE_NAMES_PATH, MATCHING_ROBOT_AND_MODULE_NAMES_PATH]
 )
 def test_duplicate_names(path: str) -> None:
     """Confirm that ValidationError is thrown when a robot and module have the same name."""  # noqa: E501
