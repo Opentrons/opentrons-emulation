@@ -47,7 +47,7 @@ class SystemConfigurationModel(BaseModel):
         robot_key_exists = "robot" in values and values["robot"] is not None
         modules_key_exists = "modules" in values and values["modules"] is not None
 
-        name_list = []
+        name_list: List[str] = []
 
         if (
             # Shouldn't really hit this one, as you would be specifying a
@@ -66,7 +66,7 @@ class SystemConfigurationModel(BaseModel):
         if modules_key_exists:
             # Don't want to use a set comprehension here because I want to maintain
             # duplicates.
-            name_list.extend([module["id"] for module in values["modules"]])
+            name_list.extend(module["id"] for module in values["modules"])
 
         if robot_key_exists:
             name_list.append(values["robot"]["id"])
