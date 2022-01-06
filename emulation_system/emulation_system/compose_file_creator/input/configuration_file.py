@@ -75,11 +75,14 @@ class SystemConfigurationModel(BaseModel):
     @property
     def containers(self) -> Mapping[str, Containers]:
         """Return all robots and modules in a single dictionary."""
+        # mypy type ignores are added in this method because mypy is not detecting that
+        # robot_exists and modules_exists is checking if self.robot or self.modules
+        # can be None. So it is throwing linting errors about them being None.
         new_dict: Dict[str, Containers] = {}
         if self.robot_exists:
-            new_dict[self.robot.id] = self.robot
+            new_dict[self.robot.id] = self.robot  # type: ignore[union-attr, assignment]
         if self.modules_exist:
-            for module in self.modules:
+            for module in self.modules:  # type: ignore[union-attr]
                 new_dict[module.id] = module
         return new_dict
 
