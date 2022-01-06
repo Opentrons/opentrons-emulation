@@ -20,9 +20,7 @@ def get_test_configuration_file_path() -> str:
 
 def get_test_resources_dir() -> str:
     """Get path to test_resources directory."""
-    return os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "test_resources"
-    )
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_resources")
 
 
 @pytest.fixture
