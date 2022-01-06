@@ -82,12 +82,6 @@ def create_system_configuration_from_file(path: str) -> SystemConfigurationModel
     return SystemConfigurationModel.from_file(path)
 
 
-def test_new_config_format() -> None:
-    """Test converting new format."""
-    path = os.path.join(get_test_resources_dir(), "sample.json")
-    print(SystemConfigurationModel.from_file(path))
-
-
 def test_duplicate_names() -> None:
     """Confirm that ValidationError is thrown when a robot and module have the same name."""  # noqa: E501
     with pytest.raises(DuplicateHardwareNameError) as err:
