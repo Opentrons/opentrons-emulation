@@ -33,6 +33,9 @@ class SystemConfigurationModel(BaseModel):
     Represents an entire system to be brought up.
     """
 
+    compose_file_version: Optional[str] = Field(
+        defaut="3.8", alias="compose-file-version"
+    )
     robot: Optional[Robots]
     modules: Optional[List[Modules]] = Field(default=[])
 
