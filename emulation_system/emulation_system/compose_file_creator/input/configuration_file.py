@@ -14,6 +14,7 @@ from pydantic import (
     parse_file_as,
     parse_obj_as,
     root_validator,
+    validator,
 )
 
 from emulation_system.compose_file_creator.settings.custom_types import (
@@ -87,6 +88,11 @@ class SystemConfigurationModel(BaseModel):
             )
 
         return values
+
+    @validator("compose_file_version", pre=True, always=True)
+    def set_default_version(cls, v: str) -> str:
+        """Sets default version if nothing is specified."""
+        return v or "3.8"
 
     @property
     def modules_exist(self) -> bool:
