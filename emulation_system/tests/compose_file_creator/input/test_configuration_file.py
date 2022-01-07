@@ -38,6 +38,8 @@ ROBOT_ONLY_PATH = os.path.join(VALID_CONFIG_DIR_PATH, "robot_only.json")
 ROBOT_AND_MODULES_PATH = os.path.join(VALID_CONFIG_DIR_PATH, "robot_and_modules.json")
 EMPTY_ROBOT_KEY_PATH = os.path.join(VALID_CONFIG_DIR_PATH, "empty_robot_key.json")
 EMPTY_MODULES_KEY_PATH = os.path.join(VALID_CONFIG_DIR_PATH, "empty_modules_key.json")
+VERSION_DEF_PATH = os.path.join(VALID_CONFIG_DIR_PATH, "version_def.json")
+NULL_VERSION_PATH = os.path.join(VALID_CONFIG_DIR_PATH, "null_version.json")
 
 
 @pytest.fixture
@@ -160,3 +162,16 @@ def test_get_by_id() -> None:
     assert isinstance(
         system_config.get_by_id("my-heater-shaker-2"), HeaterShakerModuleInputModel
     )
+
+
+@pytest.mark.parametrize("path", [ROBOT_AND_MODULES_PATH, NULL_VERSION_PATH])
+def test_default_version(path: str) -> None:
+    """Test that version is set to default when not specified."""
+    system_config = create_system_configuration_from_file(path)
+    assert system_config.compose_file_version == "3.8"
+
+
+def test_overriding_version() -> None:
+    """Test that version is overridden correctly."""
+    system_config = create_system_configuration_from_file(VERSION_DEF_PATH)
+    assert system_config.compose_file_version == "3.7"
