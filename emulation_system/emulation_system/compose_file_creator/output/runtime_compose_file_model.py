@@ -24,12 +24,6 @@ class RuntimeComposeFileModel(ComposeSpecification):
         """Convert pydantic model to yaml."""
         return yaml_dump(self.dict(exclude_none=True), default_flow_style=False)
 
-    def to_compose_file(self, file_path: str) -> None:
-        """Convert pydantic model to compose file at passed file_path."""
-        yaml_content = self.to_yaml()
-        file = open(file_path, "w")
-        file.write(yaml_content)
-
 
 if __name__ == "__main__":
     model = RuntimeComposeFileModel()
