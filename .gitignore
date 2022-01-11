@@ -7,9 +7,6 @@
 # Vagrant state files
 .vagrant/
 
-# Build file
-pyproject.toml
-
 *.egg-info
 
 # Runtime python files

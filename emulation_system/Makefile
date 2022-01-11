@@ -40,9 +40,9 @@ test:
 .PHONY: lint
 lint:
 	$(python) -m mypy emulation_system $(tests_to_typecheck)
-	$(python) -m black --check emulation_system tests setup.py
+	$(python) -m black --check --line-length 88 --force-exclude compose_file_model.py emulation_system tests setup.py
 	$(python) -m flake8 emulation_system tests setup.py
 
 .PHONY: format
 format:
-	$(python) -m black emulation_system tests setup.py
+	$(python) -m black --line-length 88 --force-exclude compose_file_model.py emulation_system tests setup.py

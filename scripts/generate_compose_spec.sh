@@ -1,6 +1,4 @@
-#!/usr/bin/env bash
-
-pip install datamodel-code-generator
+pip install datamodel-code-generator[http]
 
 # --url: Official Docker Compose spec at https://github.com/compose-spec/compose-spec
 # --input: File from compose-spec is a JSON schema
@@ -10,6 +8,8 @@ pip install datamodel-code-generator
 # --disable-timestamp: Don't add timestamp at top of generated file
 # --strip-default-none: If something is labeled Optional remove the `=None`
 # --enum-fields-as-literal one: If there is an enum with a single field just turn that into a literal, otherwise use enums
+rm -f ../emulation_system/emulation_system/compose_file_creator/output/compose_file_model.py
+touch ../emulation_system/emulation_system/compose_file_creator/output/compose_file_model.py
 
 datamodel-codegen \
   --url https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json \
@@ -17,9 +17,7 @@ datamodel-codegen \
   --output ../emulation_system/emulation_system/compose_file_creator/output/compose_file_model.py \
   --snake-case-field \
   --field-constraints \
-  --disable-timestamp \
   --strip-default-none \
   --enum-field-as-literal one
 
-# Add type: ignore to top of file so mypy ignores it
-sed -i '1s/^/#  type: ignore\n\n/' ../emulation_system/emulation_system/compose_file_creator/output/compose_file_model.py
+sed -i '/constr(/ s/$/  # type: ignore [valid-type]/' ../emulation_system/emulation_system/compose_file_creator/output/compose_file_model.py
