@@ -1,0 +1,6 @@
+[tool.black]
+# LEAVE THE LINE LENGTH AT 240!!!
+# make format uses a command line option to override this to 88
+# It has to be at 240 for the datamodel-code-generator in generate_compose_spec.sh to not wrap long lines
+# datamodel-code-generator uses black under the hood and it will look at this file to figure out what to set line-length at
+line-length = 240
