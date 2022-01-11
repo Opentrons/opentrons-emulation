@@ -2,6 +2,5 @@
     "compose-file-version": null,
     "robot": null,
     "modules": null,
-    "system-network-name": null,
-    "use-local-source-for-emulator-proxy": null
+    "system-network-name": null
 }
