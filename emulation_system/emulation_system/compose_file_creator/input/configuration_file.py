@@ -20,6 +20,7 @@ from pydantic import (
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DEFAULT_DOCKER_COMPOSE_VERSION,
     DEFAULT_NETWORK_NAME,
+    Hardware,
 )
 from emulation_system.compose_file_creator.settings.custom_types import (
     Containers,
@@ -113,6 +114,16 @@ class SystemConfigurationModel(BaseModel):
     def robot_exists(self) -> bool:
         """Returns True if a robot was defined in config file, False if not."""
         return self.robot is not None and isinstance(self.robot, Robots)
+
+    @property
+    def requires_can_network(self) -> bool:
+        """Whether or not the system requires a CAN network."""
+        return self.robot.hardware == Hardware.OT3
+
+    @property
+    def can_network_name(self) -> str:
+        """Returns name of CAN network."""
+        return f"{self.system_network_name}-CAN"
 
     @property
     def containers(self) -> Mapping[str, Containers]:
