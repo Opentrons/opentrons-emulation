@@ -1,8 +1,15 @@
 """Adds functions to generated compose_file_model."""
 import os
+import yaml
 from typing import Any
 
-from yaml import dump as yaml_dump
+
+def represent_none(self, _):
+    return self.represent_scalar("tag:yaml.org,2002:null", "")
+
+
+yaml.add_representer(type(None), represent_none)
+
 
 # Have to ignore attr-defined errors from mypy because we are calling type: ignore at
 # the top of compose_file_model. This causes mypy to think that ComposeSpecification
@@ -22,7 +29,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
 
     def to_yaml(self) -> str:
         """Convert pydantic model to yaml."""
-        return yaml_dump(self.dict(exclude_none=True), default_flow_style=False)
+        return yaml.dump(self.dict(exclude_none=True), default_flow_style=False)
 
 
 if __name__ == "__main__":
