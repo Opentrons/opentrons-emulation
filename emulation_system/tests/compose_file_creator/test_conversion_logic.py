@@ -7,18 +7,14 @@ from typing import (
 
 import py
 import pytest
-from pydantic import parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system.compose_file_creator.input.configuration_file import (
-    SystemConfigurationModel,
-)
+from emulation_system.compose_file_creator.conversion_functions import ToComposeFile
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
     Network,
     Service,
 )
-from emulation_system.compose_file_creator.conversion_functions import ToComposeFile
 from emulation_system.compose_file_creator.output.runtime_compose_file_model import (
     RuntimeComposeFileModel,
 )
@@ -100,55 +96,54 @@ def extra_mounts_dir(tmpdir: py.path.local) -> str:
 @pytest.fixture
 def robot_and_modules(opentrons_dir: str, extra_mounts_dir: str) -> Dict[str, Any]:
     """Create config with robots and modules."""
-    config_dict = {}
-    config_dict["system-network-name"] = SYSTEM_NETWORK_NAME
-    config_dict["robot"] = {
-        "id": ROBOT_NAME,
-        "hardware": Hardware.OT2,
-        "source-type": SourceType.REMOTE,
-        "source-location": "latest",
-        "emulation-level": EmulationLevels.FIRMWARE,
-        "extra-mounts": [
+    return {
+        "system-network-name": SYSTEM_NETWORK_NAME,
+        "robot": {
+            "id": ROBOT_NAME,
+            "hardware": Hardware.OT2,
+            "source-type": SourceType.REMOTE,
+            "source-location": "latest",
+            "emulation-level": EmulationLevels.FIRMWARE,
+            "extra-mounts": [
+                {
+                    "name": "LOG_FILES",
+                    "type": MountTypes.DIRECTORY,
+                    "mount-path": EXTRA_MOUNT_PATH,
+                    "source-path": extra_mounts_dir,
+                }
+            ],
+        },
+        "modules": [
             {
-                "name": "LOG_FILES",
-                "type": MountTypes.DIRECTORY,
-                "mount-path": EXTRA_MOUNT_PATH,
-                "source-path": extra_mounts_dir,
-            }
+                "id": THERMOCYCLER_NAME,
+                "hardware": Hardware.THERMOCYCLER_MODULE,
+                "source-type": SourceType.LOCAL,
+                "source-location": opentrons_dir,
+                "emulation-level": EmulationLevels.FIRMWARE,
+            },
+            {
+                "id": HEATER_SHAKER_NAME,
+                "hardware": Hardware.HEATER_SHAKER_MODULE,
+                "source-type": SourceType.REMOTE,
+                "source-location": "latest",
+                "emulation-level": EmulationLevels.HARDWARE,
+            },
+            {
+                "id": TEMPERATURE_MODULE_NAME,
+                "hardware": Hardware.TEMPERATURE_MODULE,
+                "source-type": SourceType.REMOTE,
+                "source-location": "latest",
+                "emulation-level": EmulationLevels.FIRMWARE,
+            },
+            {
+                "id": MAGNETIC_MODULE_NAME,
+                "hardware": Hardware.MAGNETIC_MODULE,
+                "source-type": SourceType.REMOTE,
+                "source-location": "latest",
+                "emulation-level": EmulationLevels.FIRMWARE,
+            },
         ],
     }
-    config_dict["modules"] = [
-        {
-            "id": THERMOCYCLER_NAME,
-            "hardware": Hardware.THERMOCYCLER_MODULE,
-            "source-type": SourceType.LOCAL,
-            "source-location": opentrons_dir,
-            "emulation-level": EmulationLevels.FIRMWARE,
-        },
-        {
-            "id": HEATER_SHAKER_NAME,
-            "hardware": Hardware.HEATER_SHAKER_MODULE,
-            "source-type": SourceType.REMOTE,
-            "source-location": "latest",
-            "emulation-level": EmulationLevels.HARDWARE,
-        },
-        {
-            "id": TEMPERATURE_MODULE_NAME,
-            "hardware": Hardware.TEMPERATURE_MODULE,
-            "source-type": SourceType.REMOTE,
-            "source-location": "latest",
-            "emulation-level": EmulationLevels.FIRMWARE,
-        },
-        {
-            "id": MAGNETIC_MODULE_NAME,
-            "hardware": Hardware.MAGNETIC_MODULE,
-            "source-type": SourceType.REMOTE,
-            "source-location": "latest",
-            "emulation-level": EmulationLevels.FIRMWARE,
-        },
-    ]
-
-    return config_dict
 
 
 @pytest.fixture
