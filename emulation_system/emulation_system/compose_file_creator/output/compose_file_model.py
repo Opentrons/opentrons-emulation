@@ -56,7 +56,7 @@ class Logging(BaseModel):
         extra = Extra.forbid
 
     driver: Optional[str]
-    options: Optional[Dict[constr(regex=r'^.+$'), Optional[Union[str, float]]]]  # type: ignore [valid-type]
+    options: Optional[Dict[constr(regex=r"^.+$"), Optional[Union[str, float]]]]  # type: ignore [valid-type]
 
 
 class Port(BaseModel):
@@ -289,7 +289,7 @@ class ListOfStrings(BaseModel):
 
 
 class ListOrDict(BaseModel):
-    __root__: Union[Dict[constr(regex=r'.+'), Optional[Union[str, float, bool]]], List[str]]  # type: ignore [valid-type]
+    __root__: Union[Dict[constr(regex=r".+"), Optional[Union[str, float, bool]]], List[str]]  # type: ignore [valid-type]
 
 
 class BlkioLimit(BaseModel):
@@ -372,7 +372,7 @@ class Network(BaseModel):
 
     name: Optional[str]
     driver: Optional[str]
-    driver_opts: Optional[Dict[constr(regex=r'^.+$'), Union[str, float]]]  # type: ignore [valid-type]
+    driver_opts: Optional[Dict[constr(regex=r"^.+$"), Union[str, float]]]  # type: ignore [valid-type]
     ipam: Optional[Ipam]
     external: Optional[External]
     internal: Optional[bool]
@@ -387,7 +387,7 @@ class Volume(BaseModel):
 
     name: Optional[str]
     driver: Optional[str]
-    driver_opts: Optional[Dict[constr(regex=r'^.+$'), Union[str, float]]]  # type: ignore [valid-type]
+    driver_opts: Optional[Dict[constr(regex=r"^.+$"), Union[str, float]]]  # type: ignore [valid-type]
     external: Optional[External1]
     labels: Optional[ListOrDict]
 
@@ -401,7 +401,7 @@ class Secret(BaseModel):
     external: Optional[External2]
     labels: Optional[ListOrDict]
     driver: Optional[str]
-    driver_opts: Optional[Dict[constr(regex=r'^.+$'), Union[str, float]]]  # type: ignore [valid-type]
+    driver_opts: Optional[Dict[constr(regex=r"^.+$"), Union[str, float]]]  # type: ignore [valid-type]
     template_driver: Optional[str]
 
 
@@ -476,7 +476,7 @@ class Service(BaseModel):
     cpus: Optional[Union[float, str]]
     cpuset: Optional[str]
     credential_spec: Optional[CredentialSpec]
-    depends_on: Optional[Union[ListOfStrings, Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), DependsOn]]]  # type: ignore [valid-type]
+    depends_on: Optional[Union[ListOfStrings, Dict[constr(regex=r"^[a-zA-Z0-9._-]+$"), DependsOn]]]  # type: ignore [valid-type]
     device_cgroup_rules: Optional[ListOfStrings]
     devices: Optional[List[str]]
     dns: Optional[StringOrList]
@@ -506,7 +506,7 @@ class Service(BaseModel):
     mem_swappiness: Optional[int]
     memswap_limit: Optional[Union[float, str]]
     network_mode: Optional[str]
-    networks: Optional[Union[ListOfStrings, Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), Optional[Network1]]]]  # type: ignore [valid-type]
+    networks: Optional[Union[ListOfStrings, Dict[constr(regex=r"^[a-zA-Z0-9._-]+$"), Optional[Network1]]]]  # type: ignore [valid-type]
     oom_kill_disable: Optional[bool]
     oom_score_adj: Optional[int] = Field(None, ge=-1000.0, le=1000.0)
     pid: Optional[Optional[str]]
@@ -530,7 +530,7 @@ class Service(BaseModel):
     storage_opt: Optional[Dict[str, Any]]
     tmpfs: Optional[StringOrList]
     tty: Optional[bool]
-    ulimits: Optional[Dict[constr(regex=r'^[a-z]+$'), Union[int, Ulimit]]]  # type: ignore [valid-type]
+    ulimits: Optional[Dict[constr(regex=r"^[a-z]+$"), Union[int, Ulimit]]]  # type: ignore [valid-type]
     user: Optional[str]
     userns_mode: Optional[str]
     volumes: Optional[List[Union[str, Volume1]]]

@@ -6,6 +6,7 @@ from typing import (
     List,
     Mapping,
     Optional,
+    cast,
 )
 
 from pydantic import (
@@ -118,7 +119,9 @@ class SystemConfigurationModel(BaseModel):
     @property
     def requires_can_network(self) -> bool:
         """Whether or not the system requires a CAN network."""
-        return self.robot.hardware == Hardware.OT3
+        # Have to cast self.robot because mypy is not picking up that robot_exists
+        # is checking for the value of self.robot being None
+        return self.robot_exists and cast(Robots, self.robot).hardware == Hardware.OT3
 
     @property
     def can_network_name(self) -> str:
