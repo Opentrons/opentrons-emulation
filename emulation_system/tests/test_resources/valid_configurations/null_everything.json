@@ -3,5 +3,5 @@
     "robot": null,
     "modules": null,
     "system-network-name": null,
-    "use-local-source-for-emulator-proxy": true
+    "use-local-source-for-emulator-proxy": null
 }
