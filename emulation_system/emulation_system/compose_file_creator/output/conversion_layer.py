@@ -34,13 +34,13 @@ class ConversionLayer:
 
         self._set_version()
         self._create_services()
+        self._add_local_network()
 
     def _set_version(self) -> None:
         """Sets version on Compose file."""
         self.compose_model.version = self._config_model.compose_file_version
 
-    @staticmethod
-    def _configure_service(container: Containers) -> Service:
+    def _configure_service(self, container: Containers) -> Service:
         """Configure and return an individual service."""
         service = Service()
         service.container_name = container.id
@@ -50,7 +50,10 @@ class ConversionLayer:
             context=DOCKERFILE_DIR_LOCATION, target=container.get_image_name()
         )
 
-        service.volumes = cast(List[Union[str, Volume1]], container.get_mount_strings())
+        mount_strings = container.get_mount_strings()
+
+        if len(mount_strings) > 0:
+            service.volumes = cast(List[Union[str, Volume1]], mount_strings)
         return service
 
     def _create_services(self) -> None:
@@ -69,13 +72,11 @@ class ConversionLayer:
         """Adds env vars to compose file."""
         pass
 
-    def add_networks(self) -> None:
+    def _add_local_network(self) -> None:
         """Adds networks to compose file."""
-        # If OT-2 add all to singular network
-
-        # If OT-3 add all CAN stuff to CAN network.
-        # Add everything else to singular network.
-        pass
+        self.compose_model.networks = {self._config_model.system_network_name: None}
+        for service in self.compose_model.services.values():
+            service.networks = [self._config_model.system_network_name]
 
     def add_service_dependencies(self) -> None:
         """Adds service dependencies to compose file."""

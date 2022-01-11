@@ -51,5 +51,6 @@
             "source-location": "/home/derek-maggio/Documents/repos/opentrons",
             "hardware-specific-attributes": {}
         }
-    ]
+    ],
+    "system-network-name": "sample-network"
 }

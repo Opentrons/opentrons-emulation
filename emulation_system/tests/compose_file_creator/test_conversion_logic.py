@@ -10,13 +10,15 @@ import pytest
 from pydantic import parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system.compose_file_creator.conversion_layer import ConversionLayer
 from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
     Service,
+)
+from emulation_system.compose_file_creator.output.conversion_layer import (
+    ConversionLayer,
 )
 from emulation_system.compose_file_creator.output.runtime_compose_file_model import (
     RuntimeComposeFileModel,
@@ -59,12 +61,25 @@ SERVICE_NAMES = [
 ]
 
 EXTRA_MOUNT_PATH = "/var/log/log_files"
+SYSTEM_NETWORK_NAME = "testing-1-2-3"
 
 
 @pytest.fixture
 def version_only() -> Dict[str, Any]:
     """Input file with only a compose-file-version specified."""
     return {"compose-file-version": "4.0"}
+
+
+@pytest.fixture
+def system_network_name_only() -> Dict[str, Any]:
+    """Return valid custom network name."""
+    return {"system-network-name": "custom-network-name"}
+
+
+@pytest.fixture
+def invalid_system_network_name_only() -> Dict[str, Any]:
+    """Return invalid custom network name."""
+    return {"system-network-name": "__custom-network-name__"}
 
 
 @pytest.fixture
@@ -84,11 +99,11 @@ def extra_mounts_dir(tmpdir: py.path.local) -> str:
 
 
 @pytest.fixture
-def robot_and_modules(
-    opentrons_dir: str, extra_mounts_dir: str, version_only: Dict[str, Any]
-) -> Dict[str, Any]:
+def robot_and_modules(opentrons_dir: str, extra_mounts_dir: str) -> Dict[str, Any]:
     """Create config with robots and modules."""
-    version_only["robot"] = {
+    config_dict = {}
+    config_dict["system-network-name"] = SYSTEM_NETWORK_NAME
+    config_dict["robot"] = {
         "id": ROBOT_NAME,
         "hardware": Hardware.OT2,
         "source-type": SourceType.REMOTE,
@@ -103,7 +118,7 @@ def robot_and_modules(
             }
         ],
     }
-    version_only["modules"] = [
+    config_dict["modules"] = [
         {
             "id": THERMOCYCLER_NAME,
             "hardware": Hardware.THERMOCYCLER_MODULE,
@@ -134,7 +149,7 @@ def robot_and_modules(
         },
     ]
 
-    return version_only
+    return config_dict
 
 
 @pytest.fixture
@@ -206,7 +221,7 @@ def test_service_without_bind_mounts(
     service_name: str, robot_and_modules_services: Dict[str, Service]
 ) -> None:
     """Verify services without volumes don't have volumes."""
-    assert robot_and_modules_services[service_name].volumes == []
+    assert robot_and_modules_services[service_name].volumes is None
 
 
 @pytest.mark.parametrize(
@@ -226,3 +241,16 @@ def test_service_with_bind_mounts(
     assert robot_and_modules_services[service_name].volumes == [
         f"{expected_source_path}:{expected_mount_path}"
     ]
+
+
+@pytest.mark.parametrize("service_name", SERVICE_NAMES)
+def test_service_local_network(
+    service_name: str, robot_and_modules_services: Dict[str, Service]
+) -> None:
+    """Verify local network on individual services are correct."""
+    assert robot_and_modules_services[service_name].networks == [SYSTEM_NETWORK_NAME]
+
+
+def test_top_level_network(robot_and_modules: Dict[str, Any]) -> None:
+    """Verify top level network is correct."""
+    assert to_compose_file(robot_and_modules).networks == {SYSTEM_NETWORK_NAME: None}

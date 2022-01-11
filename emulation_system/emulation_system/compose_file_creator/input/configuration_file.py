@@ -43,7 +43,7 @@ class SystemConfigurationModel(BaseModel):
     system_network_name: Optional[str] = Field(
         alias="system-network-name", regex=r"^[A-Za-z0-9-]+$"
     )
-    use_local_source_for_emulator_proxy: Optional[bool] = Field(
+    emulator_proxy_source: Optional[bool] = Field(
         alias="use-local-source-for-emulator-proxy"
     )
     robot: Optional[Robots]
@@ -108,7 +108,7 @@ class SystemConfigurationModel(BaseModel):
         """Sets default network name if nothing is specified."""
         return v or DEFAULT_NETWORK_NAME
 
-    @validator("use_local_source_for_emulator_proxy", pre=True, always=True)
+    @validator("emulator_proxy_source", pre=True, always=True)
     def set_default_proxy_source(cls, v: bool) -> bool:
         """Sets default network name if nothing is specified."""
         return v or False
