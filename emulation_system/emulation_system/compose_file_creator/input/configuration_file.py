@@ -17,6 +17,10 @@ from pydantic import (
     validator,
 )
 
+from emulation_system.compose_file_creator.settings.config_file_settings import (
+    DEFAULT_DOCKER_COMPOSE_VERSION,
+    DEFAULT_NETWORK_NAME,
+)
 from emulation_system.compose_file_creator.settings.custom_types import (
     Containers,
     Modules,
@@ -35,6 +39,9 @@ class SystemConfigurationModel(BaseModel):
     """
 
     compose_file_version: Optional[str] = Field(alias="compose-file-version")
+    system_network_name: Optional[str] = Field(
+        alias="system-network-name", regex=r"^[A-Za-z0-9-]+$"
+    )
     robot: Optional[Robots]
     modules: Optional[List[Modules]] = Field(default=[])
 
@@ -90,7 +97,12 @@ class SystemConfigurationModel(BaseModel):
     @validator("compose_file_version", pre=True, always=True)
     def set_default_version(cls, v: str) -> str:
         """Sets default version if nothing is specified."""
-        return v or "3.8"
+        return v or DEFAULT_DOCKER_COMPOSE_VERSION
+
+    @validator("system_network_name", pre=True, always=True)
+    def set_default_network_name(cls, v: str) -> str:
+        """Sets default network name if nothing is specified."""
+        return v or DEFAULT_NETWORK_NAME
 
     @property
     def modules_exist(self) -> bool:
