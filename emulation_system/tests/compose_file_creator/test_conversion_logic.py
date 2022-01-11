@@ -15,11 +15,10 @@ from emulation_system.compose_file_creator.input.configuration_file import (
 )
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
+    Network,
     Service,
 )
-from emulation_system.compose_file_creator.output.conversion_layer import (
-    ConversionLayer,
-)
+from emulation_system.compose_file_creator.conversion_functions import ToComposeFile
 from emulation_system.compose_file_creator.output.runtime_compose_file_model import (
     RuntimeComposeFileModel,
 )
@@ -160,7 +159,7 @@ def robot_and_modules_services(robot_and_modules: Dict[str, Any]) -> Dict[str, S
 
 def to_compose_file(input: Dict[str, Any]) -> RuntimeComposeFileModel:
     """Parses dict to SystemConfigurationModel then runs it through ConversionLayer."""
-    return ConversionLayer(parse_obj_as(SystemConfigurationModel, input)).compose_model
+    return ToComposeFile.from_obj(input)
 
 
 def test_version(version_only: Dict[str, str]) -> None:
@@ -253,4 +252,6 @@ def test_service_local_network(
 
 def test_top_level_network(robot_and_modules: Dict[str, Any]) -> None:
     """Verify top level network is correct."""
-    assert to_compose_file(robot_and_modules).networks == {SYSTEM_NETWORK_NAME: None}
+    assert to_compose_file(robot_and_modules).networks == {
+        SYSTEM_NETWORK_NAME: Network()
+    }
