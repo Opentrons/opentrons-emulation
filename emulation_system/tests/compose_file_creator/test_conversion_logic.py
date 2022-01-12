@@ -9,7 +9,9 @@ import py
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system.compose_file_creator.conversion_functions import ToComposeFile
+from emulation_system.compose_file_creator.conversion.conversion_functions import (
+    ToComposeFile,
+)
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
     Network,
