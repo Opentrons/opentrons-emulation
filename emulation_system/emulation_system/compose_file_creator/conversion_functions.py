@@ -108,7 +108,7 @@ class ServiceCreator:
             networks=required_networks.networks,
             volumes=mount_strings if len(mount_strings) > 0 else None,
             depends_on=service_depends_on,
-            command=service_command
+            command=service_command,
         )
         return service
 
