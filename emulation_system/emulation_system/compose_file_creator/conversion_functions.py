@@ -67,19 +67,21 @@ class ToComposeFile:
 
         def configure_service(container: Containers) -> Service:
             """Configure and return an individual service."""
-            service = Service()
-            service.container_name = container.id
-            service.tty = True
-            service.image = f"{container.get_image_name()}:latest"
-            service.build = BuildItem(
+            service_image = f"{container.get_image_name()}:latest"
+            service_build = BuildItem(
                 context=DOCKERFILE_DIR_LOCATION, target=container.get_image_name()
             )
-            service.networks = cast(ListOfStrings, required_networks.networks)
-            mount_strings = container.get_mount_strings()
-
-            if len(mount_strings) > 0:
-                service.volumes = cast(List[Union[str, Volume1]], mount_strings)
-            return service
+            mount_strings = cast(
+                List[Union[str, Volume1]], container.get_mount_strings()
+            )
+            return Service(
+                container_name=container.id,
+                image=service_image,
+                tty=True,
+                build=service_build,
+                networks=cast(ListOfStrings, required_networks.networks),
+                volumes=mount_strings
+            )
 
         return DockerServices(
             {
