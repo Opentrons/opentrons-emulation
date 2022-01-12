@@ -5,7 +5,9 @@ by definition of dict.
 """
 import os
 import pathlib
-from typing import Dict
+from typing import (
+    Dict,
+)
 
 import pytest
 from pydantic import ValidationError
@@ -43,8 +45,11 @@ EMPTY_ROBOT_KEY_PATH = os.path.join(VALID_CONFIG_DIR_PATH, "empty_robot_key.json
 EMPTY_MODULES_KEY_PATH = os.path.join(VALID_CONFIG_DIR_PATH, "empty_modules_key.json")
 VERSION_DEF_PATH = os.path.join(VALID_CONFIG_DIR_PATH, "version_def.json")
 NULL_EVERYTHING_PATH = os.path.join(VALID_CONFIG_DIR_PATH, "null_everything.json")
-SYSTEM_NETWORK_NAME_DEF_PATH = os.path.join(
-    VALID_CONFIG_DIR_PATH, "system_network_name_def.json"
+SYSTEM_UNIQUE_ID_DEF_PATH = os.path.join(
+    VALID_CONFIG_DIR_PATH, "system_unique_id_def.json"
+)
+INVALID_SYSTEM_UNIQUE_ID_DEF_PATH = os.path.join(
+    INVALID_CONFIG_DIR_PATH, "invalid_system_unique_id_def.json"
 )
 
 
@@ -191,5 +196,11 @@ def test_no_system_unique_id(path: str) -> None:
 
 def test_overriding_system_unique_id() -> None:
     """Test that system network name is overridden correctly."""
-    system_config = create_system_configuration_from_file(SYSTEM_NETWORK_NAME_DEF_PATH)
+    system_config = create_system_configuration_from_file(SYSTEM_UNIQUE_ID_DEF_PATH)
     assert system_config.system_unique_id == "you-have-passed-the-test"
+
+
+def test_invalid_system_unique_id() -> None:
+    """Verify exception is thrown when invalid system-unique-id is passed."""
+    with pytest.raises(ValidationError):
+        create_system_configuration_from_file(INVALID_SYSTEM_UNIQUE_ID_DEF_PATH)

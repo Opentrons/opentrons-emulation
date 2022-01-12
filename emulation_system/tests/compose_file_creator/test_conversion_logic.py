@@ -57,25 +57,13 @@ SERVICE_NAMES = [
 ]
 
 EXTRA_MOUNT_PATH = "/var/log/log_files"
-SYSTEM_NETWORK_NAME = "testing-1-2-3"
+SYSTEM_UNIQUE_ID = "testing-1-2-3"
 
 
 @pytest.fixture
 def version_only() -> Dict[str, Any]:
     """Input file with only a compose-file-version specified."""
     return {"compose-file-version": "4.0"}
-
-
-@pytest.fixture
-def system_network_name_only() -> Dict[str, Any]:
-    """Return valid custom network name."""
-    return {"system-unique-id": "custom-network-name"}
-
-
-@pytest.fixture
-def invalid_system_network_name_only() -> Dict[str, Any]:
-    """Return invalid custom network name."""
-    return {"system-unique-id": "__custom-network-name__"}
 
 
 @pytest.fixture
@@ -147,9 +135,24 @@ def robot_and_modules(opentrons_dir: str, extra_mounts_dir: str) -> Dict[str, An
 
 
 @pytest.fixture
+def with_system_unique_id(robot_and_modules: Dict[str, Any]) -> Dict[str, Any]:
+    """Add system-unique-id to dictionary."""
+    robot_and_modules["system-unique-id"] = SYSTEM_UNIQUE_ID
+    return robot_and_modules
+
+
+@pytest.fixture
 def robot_and_modules_services(robot_and_modules: Dict[str, Any]) -> Dict[str, Service]:
     """Get services from robot_and_modules."""
     return cast(Dict[str, Service], to_compose_file(robot_and_modules).services)
+
+
+@pytest.fixture
+def with_system_unique_id_services(
+    with_system_unique_id: Dict[str, Any]
+) -> Dict[str, Service]:
+    """Get services from with_system_unique_id."""
+    return cast(Dict[str, Service], to_compose_file(with_system_unique_id).services)
 
 
 def to_compose_file(input: Dict[str, Any]) -> RuntimeComposeFileModel:
@@ -253,10 +256,67 @@ def test_top_level_network(robot_and_modules: Dict[str, Any]) -> None:
     }
 
 
-# TODO: Add tests to validate network name, service name, and container name when
-#   system-unique-id is not blank.
-# TODO: Add test to verify emulation proxy is created when there are modules
-# TODO: Add test to verify emulation proxy is not created when there are not modules
-# TODO: Add test to verify volumes key is omitted on service if there are no bind mounts
-# TODO: Add test to verify CAN network is created on OT3 breakout
-# TODO: Add test to verify port is exposed on robot server
+def test_service_keys_with_system_unique_id(
+    with_system_unique_id_services: Dict[str, Service]
+) -> None:
+    """Confirms service names are created correctly."""
+    service_names = [
+        ROBOT_NAME,
+        THERMOCYCLER_NAME,
+        HEATER_SHAKER_NAME,
+        TEMPERATURE_MODULE_NAME,
+        MAGNETIC_MODULE_NAME,
+        "emulator-proxy",
+    ]
+
+    service_names_with_system_unique_id = {
+        f"{SYSTEM_UNIQUE_ID}-{service_name}" for service_name in service_names
+    }
+    assert (
+        set(with_system_unique_id_services.keys())
+        == service_names_with_system_unique_id
+    )
+
+
+@pytest.mark.parametrize("service_name", SERVICE_NAMES)
+def test_service_container_name_with_system_unique_id(
+    service_name: str, with_system_unique_id_services: Dict[str, Service]
+) -> None:
+    """Verify container name matches service name."""
+    modded_service_name = f"{SYSTEM_UNIQUE_ID}-{service_name}"
+    assert (
+        with_system_unique_id_services[modded_service_name].container_name
+        == modded_service_name
+    )
+
+
+@pytest.mark.parametrize("service_name", SERVICE_NAMES)
+def test_service_local_network_with_system_unique_id(
+    service_name: str, with_system_unique_id_services: Dict[str, Service]
+) -> None:
+    """Verify local network on individual services are correct."""
+    modded_service_name = f"{SYSTEM_UNIQUE_ID}-{service_name}"
+    assert with_system_unique_id_services[modded_service_name].networks == [
+        SYSTEM_UNIQUE_ID
+    ]
+
+
+def test_top_level_network_with_system_unique_id(
+    with_system_unique_id: Dict[str, Any]
+) -> None:
+    """Verify top level network is correct."""
+    assert to_compose_file(with_system_unique_id).networks == {
+        SYSTEM_UNIQUE_ID: Network()
+    }
+
+
+# TODO: Add following tests:
+#   - Emulation proxy is not created when there are not modules
+#   - Volumes key is omitted on service if there are no bind mounts
+#   - CAN network is created on OT3 breakout
+#   - Port is exposed on robot server
+#   - All module services depend on emulator-proxy
+#   - Robot-server does not depend on anything
+#   - All module service specify the emulator proxy name for their command
+#   - Module specifies correct proxy env var
+#   - Module settings env var is correct
