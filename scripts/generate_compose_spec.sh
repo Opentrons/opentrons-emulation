@@ -20,4 +20,11 @@ datamodel-codegen \
   --strip-default-none \
   --enum-field-as-literal one
 
+# Add type ignores to constr lines
 sed -i '/constr(/ s/$/  # type: ignore [valid-type]/' ../emulation_system/emulation_system/compose_file_creator/output/compose_file_model.py
+
+# Remove ListOfStrings Class
+sed -ie '/class ListOfStrings(BaseModel):/,+3d' ../emulation_system/emulation_system/compose_file_creator/output/compose_file_model.py
+
+# Change ListOfStrings usage to List[str]
+sed -i 's/ListOfStrings/List[str]/' ../emulation_system/emulation_system/compose_file_creator/output/compose_file_model.py
