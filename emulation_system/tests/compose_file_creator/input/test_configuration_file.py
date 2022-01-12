@@ -20,7 +20,6 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DEFAULT_DOCKER_COMPOSE_VERSION,
-    DEFAULT_NETWORK_NAME,
 )
 from tests.conftest import get_test_resources_dir
 
@@ -185,15 +184,12 @@ def test_overriding_version() -> None:
 
 
 @pytest.mark.parametrize("path", [ROBOT_AND_MODULES_PATH, NULL_EVERYTHING_PATH])
-def test_default_system_network_name(path: str) -> None:
+def test_no_system_unique_id(path: str) -> None:
     """Test that default network name is set correctly when field is not specified."""
-    assert (
-        create_system_configuration_from_file(path).system_network_name
-        == DEFAULT_NETWORK_NAME
-    )
+    assert create_system_configuration_from_file(path).system_unique_id is None
 
 
-def test_overriding_system_network_name() -> None:
+def test_overriding_system_unique_id() -> None:
     """Test that system network name is overridden correctly."""
     system_config = create_system_configuration_from_file(SYSTEM_NETWORK_NAME_DEF_PATH)
-    assert system_config.system_network_name == "you-have-passed-the-test"
+    assert system_config.system_unique_id == "you-have-passed-the-test"
