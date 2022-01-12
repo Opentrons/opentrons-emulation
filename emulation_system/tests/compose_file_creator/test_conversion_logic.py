@@ -39,6 +39,7 @@ THERMOCYCLER_NAME = "temperamental"
 HEATER_SHAKER_NAME = "shakey-and-warm"
 TEMPERATURE_MODULE_NAME = "t00-hot-to-handle"
 MAGNETIC_MODULE_NAME = "fatal-attraction"
+EMULATOR_PROXY_NAME = "emulator-proxy"
 
 CONTAINER_NAME_TO_IMAGE = {
     ROBOT_NAME: OT2Images().remote_firmware_image_name,
@@ -83,8 +84,8 @@ def extra_mounts_dir(tmpdir: py.path.local) -> str:
 
 
 @pytest.fixture
-def robot_and_modules(opentrons_dir: str, extra_mounts_dir: str) -> Dict[str, Any]:
-    """Create config with robots and modules."""
+def robot_only(extra_mounts_dir: str) -> Dict[str, Any]:
+    """Only the robot."""
     return {
         "robot": {
             "id": ROBOT_NAME,
@@ -100,38 +101,47 @@ def robot_and_modules(opentrons_dir: str, extra_mounts_dir: str) -> Dict[str, An
                     "source-path": extra_mounts_dir,
                 }
             ],
-        },
-        "modules": [
-            {
-                "id": THERMOCYCLER_NAME,
-                "hardware": Hardware.THERMOCYCLER_MODULE,
-                "source-type": SourceType.LOCAL,
-                "source-location": opentrons_dir,
-                "emulation-level": EmulationLevels.FIRMWARE,
-            },
-            {
-                "id": HEATER_SHAKER_NAME,
-                "hardware": Hardware.HEATER_SHAKER_MODULE,
-                "source-type": SourceType.REMOTE,
-                "source-location": "latest",
-                "emulation-level": EmulationLevels.HARDWARE,
-            },
-            {
-                "id": TEMPERATURE_MODULE_NAME,
-                "hardware": Hardware.TEMPERATURE_MODULE,
-                "source-type": SourceType.REMOTE,
-                "source-location": "latest",
-                "emulation-level": EmulationLevels.FIRMWARE,
-            },
-            {
-                "id": MAGNETIC_MODULE_NAME,
-                "hardware": Hardware.MAGNETIC_MODULE,
-                "source-type": SourceType.REMOTE,
-                "source-location": "latest",
-                "emulation-level": EmulationLevels.FIRMWARE,
-            },
-        ],
+        }
     }
+
+
+@pytest.fixture
+def robot_and_modules(
+    robot_only: Dict[str, Any], opentrons_dir: str, extra_mounts_dir: str
+) -> Dict[str, Any]:
+    """Create config with robots and modules."""
+    robot_only["modules"] = [
+        {
+            "id": THERMOCYCLER_NAME,
+            "hardware": Hardware.THERMOCYCLER_MODULE,
+            "source-type": SourceType.LOCAL,
+            "source-location": opentrons_dir,
+            "emulation-level": EmulationLevels.FIRMWARE,
+        },
+        {
+            "id": HEATER_SHAKER_NAME,
+            "hardware": Hardware.HEATER_SHAKER_MODULE,
+            "source-type": SourceType.REMOTE,
+            "source-location": "latest",
+            "emulation-level": EmulationLevels.HARDWARE,
+        },
+        {
+            "id": TEMPERATURE_MODULE_NAME,
+            "hardware": Hardware.TEMPERATURE_MODULE,
+            "source-type": SourceType.REMOTE,
+            "source-location": "latest",
+            "emulation-level": EmulationLevels.FIRMWARE,
+        },
+        {
+            "id": MAGNETIC_MODULE_NAME,
+            "hardware": Hardware.MAGNETIC_MODULE,
+            "source-type": SourceType.REMOTE,
+            "source-location": "latest",
+            "emulation-level": EmulationLevels.FIRMWARE,
+        },
+    ]
+
+    return robot_only
 
 
 @pytest.fixture
@@ -144,6 +154,7 @@ def with_system_unique_id(robot_and_modules: Dict[str, Any]) -> Dict[str, Any]:
 @pytest.fixture
 def robot_and_modules_services(robot_and_modules: Dict[str, Any]) -> Dict[str, Service]:
     """Get services from robot_and_modules."""
+    print(robot_and_modules)
     return cast(Dict[str, Service], to_compose_file(robot_and_modules).services)
 
 
@@ -173,7 +184,7 @@ def test_service_keys(robot_and_modules_services: Dict[str, Service]) -> None:
         HEATER_SHAKER_NAME,
         TEMPERATURE_MODULE_NAME,
         MAGNETIC_MODULE_NAME,
-        "emulator-proxy",
+        EMULATOR_PROXY_NAME,
     }
 
 
@@ -266,7 +277,7 @@ def test_service_keys_with_system_unique_id(
         HEATER_SHAKER_NAME,
         TEMPERATURE_MODULE_NAME,
         MAGNETIC_MODULE_NAME,
-        "emulator-proxy",
+        EMULATOR_PROXY_NAME,
     ]
 
     service_names_with_system_unique_id = {
@@ -310,9 +321,14 @@ def test_top_level_network_with_system_unique_id(
     }
 
 
+def test_emulation_proxy_not_created(robot_only: Dict[str, Any]) -> None:
+    """Verify emulator proxy is not created when there are no modules."""
+    services = to_compose_file(robot_only).services
+    assert services is not None
+    assert set(services.keys()) == {ROBOT_NAME}
+
+
 # TODO: Add following tests:
-#   - Emulation proxy is not created when there are not modules
-#   - Volumes key is omitted on service if there are no bind mounts
 #   - CAN network is created on OT3 breakout
 #   - Port is exposed on robot server
 #   - All module services depend on emulator-proxy
