@@ -4,6 +4,7 @@ from typing import (
     Any,
     Dict,
     List,
+    Optional,
     Union,
     cast,
 )
@@ -15,6 +16,9 @@ from pydantic import (
 
 from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
+)
+from emulation_system.compose_file_creator.input.hardware_models.modules.module_model import (  # noqa: E501
+    ModuleInputModel,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
@@ -78,7 +82,9 @@ class ToComposeFile:
                 else container_id
             )
 
-        def configure_service(container: Containers) -> Service:
+        def configure_service(
+            container: Containers, emulator_proxy_name: Optional[str]
+        ) -> Service:
             """Configure and return an individual service."""
             service_image = f"{container.get_image_name()}:latest"
             service_build = BuildItem(
@@ -87,7 +93,12 @@ class ToComposeFile:
             mount_strings = cast(
                 List[Union[str, Volume1]], container.get_mount_strings()
             )
-
+            service_depends_on = (
+                [emulator_proxy_name]
+                if emulator_proxy_name is not None
+                and issubclass(container.__class__, ModuleInputModel)
+                else None
+            )
             service = Service(
                 container_name=generate_container_name(container.id, config_model),
                 image=service_image,
@@ -95,28 +106,36 @@ class ToComposeFile:
                 build=service_build,
                 networks=required_networks.networks,
                 volumes=mount_strings if len(mount_strings) > 0 else None,
+                depends_on=service_depends_on,
             )
             return service
 
-        services = {
-            generate_container_name(container.id, config_model): configure_service(
-                container
-            )
-            for container in config_model.containers.values()
-        }
+        services = {}
+        emulator_proxy_name = None
 
         if config_model.modules_exist:
             # Going to just use the remote image for now. If someone ends up needing
             # the local image it can get added later.
             image = EmulatorProxyImages().remote_firmware_image_name
-            name = generate_container_name("emulator-proxy", config_model)
-            services[name] = Service(
-                container_name=name,
+            emulator_proxy_name = generate_container_name(
+                "emulator-proxy", config_model
+            )
+            services[emulator_proxy_name] = Service(
+                container_name=emulator_proxy_name,
                 image=f"{image}:latest",
                 build=BuildItem(context=DOCKERFILE_DIR_LOCATION, target=image),
                 tty=True,
                 networks=required_networks.networks,
             )
+
+        services.update(
+            {
+                generate_container_name(container.id, config_model): configure_service(
+                    container, emulator_proxy_name
+                )
+                for container in config_model.containers.values()
+            }
+        )
 
         return DockerServices(services)
 
