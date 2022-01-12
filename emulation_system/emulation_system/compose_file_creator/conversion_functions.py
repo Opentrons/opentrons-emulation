@@ -18,7 +18,6 @@ from emulation_system.compose_file_creator.input.configuration_file import (
 )
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
-    ListOfStrings,
     Network,
     Service,
     Volume1,
@@ -74,14 +73,16 @@ class ToComposeFile:
             mount_strings = cast(
                 List[Union[str, Volume1]], container.get_mount_strings()
             )
-            return Service(
+
+            service = Service(
                 container_name=container.id,
                 image=service_image,
                 tty=True,
                 build=service_build,
-                networks=cast(ListOfStrings, required_networks.networks),
-                volumes=mount_strings
+                networks=required_networks.networks,
+                volumes=mount_strings if len(mount_strings) > 0 else None,
             )
+            return service
 
         return DockerServices(
             {
