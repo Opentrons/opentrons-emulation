@@ -344,10 +344,34 @@ def test_module_depends_on(
     assert robot_and_modules_services[service_name].depends_on == [EMULATOR_PROXY_NAME]
 
 
+def test_robot_depends_on(robot_and_modules_services: Dict[str, Any]) -> None:
+    """Confirm that modules depend on emulator proxy."""
+    assert robot_and_modules_services[ROBOT_NAME].depends_on is None
+
+
+@pytest.mark.parametrize(
+    "service_name",
+    [
+        THERMOCYCLER_NAME,
+        TEMPERATURE_MODULE_NAME,
+        MAGNETIC_MODULE_NAME,
+        HEATER_SHAKER_NAME,
+    ],
+)
+def test_module_command(
+    service_name: str, robot_and_modules_services: Dict[str, Any]
+) -> None:
+    """Confirm that modules depend on emulator proxy."""
+    assert robot_and_modules_services[service_name].command == EMULATOR_PROXY_NAME
+
+
+def test_robot_command(robot_and_modules_services: Dict[str, Any]) -> None:
+    """Confirm that modules depend on emulator proxy."""
+    assert robot_and_modules_services[ROBOT_NAME].command is None
+
+
 # TODO: Add following tests:
 #   - CAN network is created on OT3 breakout
 #   - Port is exposed on robot server
-#   - Robot-server does not depend on anything
-#   - All module service specify the emulator proxy name for their command
 #   - Module specifies correct proxy env var
 #   - Module settings env var is correct

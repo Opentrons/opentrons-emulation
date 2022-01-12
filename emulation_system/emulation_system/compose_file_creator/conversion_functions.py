@@ -94,6 +94,12 @@ class ServiceCreator:
             and issubclass(container.__class__, ModuleInputModel)
             else None
         )
+        service_command = (
+            emulator_proxy_name
+            if emulator_proxy_name is not None
+            and issubclass(container.__class__, ModuleInputModel)
+            else None
+        )
         service = Service(
             container_name=cls._generate_container_name(container.id, config_model),
             image=service_image,
@@ -102,6 +108,7 @@ class ServiceCreator:
             networks=required_networks.networks,
             volumes=mount_strings if len(mount_strings) > 0 else None,
             depends_on=service_depends_on,
+            command=service_command
         )
         return service
 
