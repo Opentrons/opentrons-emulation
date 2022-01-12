@@ -25,9 +25,13 @@ from emulation_system.compose_file_creator.output.compose_file_model import (
 from emulation_system.compose_file_creator.output.runtime_compose_file_model import (
     RuntimeComposeFileModel,
 )
+from emulation_system.compose_file_creator.settings.config_file_settings import (
+    DEFAULT_NETWORK_NAME,
+)
 from emulation_system.compose_file_creator.settings.custom_types import (
     Containers,
 )
+from emulation_system.compose_file_creator.settings.images import EmulatorProxyImages
 from emulation_system.consts import DOCKERFILE_DIR_LOCATION
 
 
@@ -64,6 +68,16 @@ class ToComposeFile:
     ) -> DockerServices:
         """Creates all services to be added to compose file."""
 
+        def generate_container_name(
+            container_id: str, config_model: SystemConfigurationModel
+        ) -> str:
+            """Generates container name based off of system_unique_id value."""
+            return (
+                f"{config_model.system_unique_id}-{container_id}"
+                if config_model.system_unique_id is not None
+                else container_id
+            )
+
         def configure_service(container: Containers) -> Service:
             """Configure and return an individual service."""
             service_image = f"{container.get_image_name()}:latest"
@@ -75,7 +89,7 @@ class ToComposeFile:
             )
 
             service = Service(
-                container_name=container.id,
+                container_name=generate_container_name(container.id, config_model),
                 image=service_image,
                 tty=True,
                 build=service_build,
@@ -84,21 +98,40 @@ class ToComposeFile:
             )
             return service
 
-        return DockerServices(
-            {
-                container.id: configure_service(container)
-                for container in config_model.containers.values()
-            }
-        )
+        services = {
+            generate_container_name(container.id, config_model): configure_service(
+                container
+            )
+            for container in config_model.containers.values()
+        }
+
+        if config_model.modules_exist:
+            # Going to just use the remote image for now. If someone ends up needing
+            # the local image it can get added later.
+            image = EmulatorProxyImages().remote_firmware_image_name
+            name = generate_container_name("emulator-proxy", config_model)
+            services[name] = Service(
+                container_name=name,
+                image=f"{image}:latest",
+                build=BuildItem(context=DOCKERFILE_DIR_LOCATION, target=image),
+                tty=True,
+                networks=required_networks.networks,
+            )
+
+        return DockerServices(services)
 
     @staticmethod
     def _get_required_networks(
         config_model: SystemConfigurationModel,
     ) -> RequiredNetworks:
         """Get required networks to create for system."""
-        # system_network_name will always be a string because a default value is set for
-        # it. mypy is not picking up the default value.
-        required_networks = [cast(str, config_model.system_network_name)]
+        local_network_name = (
+            DEFAULT_NETWORK_NAME
+            if config_model.system_unique_id is None
+            else config_model.system_unique_id
+        )
+
+        required_networks = [cast(str, local_network_name)]
         if config_model.requires_can_network:
             required_networks.append(config_model.can_network_name)
 

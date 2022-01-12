@@ -19,6 +19,7 @@ from emulation_system.compose_file_creator.output.runtime_compose_file_model imp
     RuntimeComposeFileModel,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
+    DEFAULT_NETWORK_NAME,
     EmulationLevels,
     Hardware,
     MountTypes,
@@ -68,13 +69,13 @@ def version_only() -> Dict[str, Any]:
 @pytest.fixture
 def system_network_name_only() -> Dict[str, Any]:
     """Return valid custom network name."""
-    return {"system-network-name": "custom-network-name"}
+    return {"system-unique-id": "custom-network-name"}
 
 
 @pytest.fixture
 def invalid_system_network_name_only() -> Dict[str, Any]:
     """Return invalid custom network name."""
-    return {"system-network-name": "__custom-network-name__"}
+    return {"system-unique-id": "__custom-network-name__"}
 
 
 @pytest.fixture
@@ -97,7 +98,6 @@ def extra_mounts_dir(tmpdir: py.path.local) -> str:
 def robot_and_modules(opentrons_dir: str, extra_mounts_dir: str) -> Dict[str, Any]:
     """Create config with robots and modules."""
     return {
-        "system-network-name": SYSTEM_NETWORK_NAME,
         "robot": {
             "id": ROBOT_NAME,
             "hardware": Hardware.OT2,
@@ -170,6 +170,7 @@ def test_service_keys(robot_and_modules_services: Dict[str, Service]) -> None:
         HEATER_SHAKER_NAME,
         TEMPERATURE_MODULE_NAME,
         MAGNETIC_MODULE_NAME,
+        "emulator-proxy",
     }
 
 
@@ -242,11 +243,20 @@ def test_service_local_network(
     service_name: str, robot_and_modules_services: Dict[str, Service]
 ) -> None:
     """Verify local network on individual services are correct."""
-    assert robot_and_modules_services[service_name].networks == [SYSTEM_NETWORK_NAME]
+    assert robot_and_modules_services[service_name].networks == [DEFAULT_NETWORK_NAME]
 
 
 def test_top_level_network(robot_and_modules: Dict[str, Any]) -> None:
     """Verify top level network is correct."""
     assert to_compose_file(robot_and_modules).networks == {
-        SYSTEM_NETWORK_NAME: Network()
+        DEFAULT_NETWORK_NAME: Network()
     }
+
+
+# TODO: Add tests to validate network name, service name, and container name when
+#   system-unique-id is not blank.
+# TODO: Add test to verify emulation proxy is created when there are modules
+# TODO: Add test to verify emulation proxy is not created when there are not modules
+# TODO: Add test to verify volumes key is omitted on service if there are no bind mounts
+# TODO: Add test to verify CAN network is created on OT3 breakout
+# TODO: Add test to verify port is exposed on robot server
