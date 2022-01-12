@@ -60,56 +60,56 @@ class TopLevelNetworks:
     networks: Dict[str, None]
 
 
-class ToComposeFile:
-    """Conversion logic for input file -> compose file.
-
-    Created as a class to allow for encapsulation.
-    """
+class ServiceCreator:
+    """Class to create and return services."""
 
     @staticmethod
-    def _create_services(
-        config_model: SystemConfigurationModel, required_networks: RequiredNetworks
+    def _generate_container_name(
+        container_id: str, config_model: SystemConfigurationModel
+    ) -> str:
+        """Generates container name based off of system_unique_id value."""
+        return (
+            f"{config_model.system_unique_id}-{container_id}"
+            if config_model.system_unique_id is not None
+            else container_id
+        )
+
+    @classmethod
+    def _configure_service(
+        cls,
+        container: Containers,
+        emulator_proxy_name: Optional[str],
+        config_model: SystemConfigurationModel,
+        required_networks: RequiredNetworks,
+    ) -> Service:
+        """Configure and return an individual service."""
+        service_image = f"{container.get_image_name()}:latest"
+        service_build = BuildItem(
+            context=DOCKERFILE_DIR_LOCATION, target=container.get_image_name()
+        )
+        mount_strings = cast(List[Union[str, Volume1]], container.get_mount_strings())
+        service_depends_on = (
+            [emulator_proxy_name]
+            if emulator_proxy_name is not None
+            and issubclass(container.__class__, ModuleInputModel)
+            else None
+        )
+        service = Service(
+            container_name=cls._generate_container_name(container.id, config_model),
+            image=service_image,
+            tty=True,
+            build=service_build,
+            networks=required_networks.networks,
+            volumes=mount_strings if len(mount_strings) > 0 else None,
+            depends_on=service_depends_on,
+        )
+        return service
+
+    @classmethod
+    def create_services(
+        cls, config_model: SystemConfigurationModel, required_networks: RequiredNetworks
     ) -> DockerServices:
         """Creates all services to be added to compose file."""
-
-        def generate_container_name(
-            container_id: str, config_model: SystemConfigurationModel
-        ) -> str:
-            """Generates container name based off of system_unique_id value."""
-            return (
-                f"{config_model.system_unique_id}-{container_id}"
-                if config_model.system_unique_id is not None
-                else container_id
-            )
-
-        def configure_service(
-            container: Containers, emulator_proxy_name: Optional[str]
-        ) -> Service:
-            """Configure and return an individual service."""
-            service_image = f"{container.get_image_name()}:latest"
-            service_build = BuildItem(
-                context=DOCKERFILE_DIR_LOCATION, target=container.get_image_name()
-            )
-            mount_strings = cast(
-                List[Union[str, Volume1]], container.get_mount_strings()
-            )
-            service_depends_on = (
-                [emulator_proxy_name]
-                if emulator_proxy_name is not None
-                and issubclass(container.__class__, ModuleInputModel)
-                else None
-            )
-            service = Service(
-                container_name=generate_container_name(container.id, config_model),
-                image=service_image,
-                tty=True,
-                build=service_build,
-                networks=required_networks.networks,
-                volumes=mount_strings if len(mount_strings) > 0 else None,
-                depends_on=service_depends_on,
-            )
-            return service
-
         services = {}
         emulator_proxy_name = None
 
@@ -117,7 +117,7 @@ class ToComposeFile:
             # Going to just use the remote image for now. If someone ends up needing
             # the local image it can get added later.
             image = EmulatorProxyImages().remote_firmware_image_name
-            emulator_proxy_name = generate_container_name(
+            emulator_proxy_name = cls._generate_container_name(
                 "emulator-proxy", config_model
             )
             services[emulator_proxy_name] = Service(
@@ -130,14 +130,23 @@ class ToComposeFile:
 
         services.update(
             {
-                generate_container_name(container.id, config_model): configure_service(
-                    container, emulator_proxy_name
+                cls._generate_container_name(
+                    container.id, config_model
+                ): cls._configure_service(
+                    container, emulator_proxy_name, config_model, required_networks
                 )
                 for container in config_model.containers.values()
             }
         )
 
         return DockerServices(services)
+
+
+class ToComposeFile:
+    """Conversion logic for input file -> compose file.
+
+    Created as a class to allow for encapsulation.
+    """
 
     @staticmethod
     def _get_required_networks(
@@ -162,7 +171,7 @@ class ToComposeFile:
     ) -> RuntimeComposeFileModel:
         """Parses SystemConfigurationModel to compose file."""
         required_networks = cls._get_required_networks(config_model)
-        services = cls._create_services(config_model, required_networks)
+        services = ServiceCreator.create_services(config_model, required_networks)
         return RuntimeComposeFileModel(
             version=config_model.compose_file_version,
             services=services.services,
