@@ -10,7 +10,7 @@ import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
-    ToComposeFile,
+    convert_from_obj,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
@@ -170,7 +170,7 @@ def with_system_unique_id_services(
 
 def to_compose_file(input: Dict[str, Any]) -> RuntimeComposeFileModel:
     """Parses dict to SystemConfigurationModel then runs it through ConversionLayer."""
-    return ToComposeFile.from_obj(input)
+    return convert_from_obj(input)
 
 
 def test_version(version_only: Dict[str, str]) -> None:
