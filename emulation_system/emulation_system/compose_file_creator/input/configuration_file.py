@@ -1,11 +1,13 @@
 """Models necessary for parsing configuration file."""
 from __future__ import annotations
+
 from collections import Counter
 from typing import (
     Dict,
     List,
     Mapping,
     Optional,
+    cast,
 )
 
 from pydantic import (
@@ -17,6 +19,10 @@ from pydantic import (
     validator,
 )
 
+from emulation_system.compose_file_creator.settings.config_file_settings import (
+    DEFAULT_DOCKER_COMPOSE_VERSION,
+    Hardware,
+)
 from emulation_system.compose_file_creator.settings.custom_types import (
     Containers,
     Modules,
@@ -35,6 +41,9 @@ class SystemConfigurationModel(BaseModel):
     """
 
     compose_file_version: Optional[str] = Field(alias="compose-file-version")
+    system_unique_id: Optional[str] = Field(
+        alias="system-unique-id", regex=r"^[A-Za-z0-9-]+$", min_length=1
+    )
     robot: Optional[Robots]
     modules: Optional[List[Modules]] = Field(default=[])
 
@@ -90,7 +99,7 @@ class SystemConfigurationModel(BaseModel):
     @validator("compose_file_version", pre=True, always=True)
     def set_default_version(cls, v: str) -> str:
         """Sets default version if nothing is specified."""
-        return v or "3.8"
+        return v or DEFAULT_DOCKER_COMPOSE_VERSION
 
     @property
     def modules_exist(self) -> bool:
@@ -101,6 +110,18 @@ class SystemConfigurationModel(BaseModel):
     def robot_exists(self) -> bool:
         """Returns True if a robot was defined in config file, False if not."""
         return self.robot is not None and isinstance(self.robot, Robots)
+
+    @property
+    def requires_can_network(self) -> bool:
+        """Whether or not the system requires a CAN network."""
+        # Have to cast self.robot because mypy is not picking up that robot_exists
+        # is checking for the value of self.robot being None
+        return self.robot_exists and cast(Robots, self.robot).hardware == Hardware.OT3
+
+    @property
+    def can_network_name(self) -> str:
+        """Returns name of CAN network."""
+        return f"{self.system_unique_id}-CAN"
 
     @property
     def containers(self) -> Mapping[str, Containers]:

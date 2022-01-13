@@ -5,7 +5,9 @@ by definition of dict.
 """
 import os
 import pathlib
-from typing import Dict
+from typing import (
+    Dict,
+)
 
 import pytest
 from pydantic import ValidationError
@@ -17,6 +19,9 @@ from emulation_system.compose_file_creator.input.configuration_file import (
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
     OT2InputModel,
+)
+from emulation_system.compose_file_creator.settings.config_file_settings import (
+    DEFAULT_DOCKER_COMPOSE_VERSION,
 )
 from tests.conftest import get_test_resources_dir
 
@@ -39,7 +44,13 @@ ROBOT_AND_MODULES_PATH = os.path.join(VALID_CONFIG_DIR_PATH, "robot_and_modules.
 EMPTY_ROBOT_KEY_PATH = os.path.join(VALID_CONFIG_DIR_PATH, "empty_robot_key.json")
 EMPTY_MODULES_KEY_PATH = os.path.join(VALID_CONFIG_DIR_PATH, "empty_modules_key.json")
 VERSION_DEF_PATH = os.path.join(VALID_CONFIG_DIR_PATH, "version_def.json")
-NULL_VERSION_PATH = os.path.join(VALID_CONFIG_DIR_PATH, "null_version.json")
+NULL_EVERYTHING_PATH = os.path.join(VALID_CONFIG_DIR_PATH, "null_everything.json")
+SYSTEM_UNIQUE_ID_DEF_PATH = os.path.join(
+    VALID_CONFIG_DIR_PATH, "system_unique_id_def.json"
+)
+INVALID_SYSTEM_UNIQUE_ID_DEF_PATH = os.path.join(
+    INVALID_CONFIG_DIR_PATH, "invalid_system_unique_id_def.json"
+)
 
 
 @pytest.fixture
@@ -164,14 +175,32 @@ def test_get_by_id() -> None:
     )
 
 
-@pytest.mark.parametrize("path", [ROBOT_AND_MODULES_PATH, NULL_VERSION_PATH])
+@pytest.mark.parametrize("path", [ROBOT_AND_MODULES_PATH, NULL_EVERYTHING_PATH])
 def test_default_version(path: str) -> None:
     """Test that version is set to default when not specified."""
     system_config = create_system_configuration_from_file(path)
-    assert system_config.compose_file_version == "3.8"
+    assert system_config.compose_file_version == DEFAULT_DOCKER_COMPOSE_VERSION
 
 
 def test_overriding_version() -> None:
     """Test that version is overridden correctly."""
     system_config = create_system_configuration_from_file(VERSION_DEF_PATH)
     assert system_config.compose_file_version == "3.7"
+
+
+@pytest.mark.parametrize("path", [ROBOT_AND_MODULES_PATH, NULL_EVERYTHING_PATH])
+def test_no_system_unique_id(path: str) -> None:
+    """Test that default network name is set correctly when field is not specified."""
+    assert create_system_configuration_from_file(path).system_unique_id is None
+
+
+def test_overriding_system_unique_id() -> None:
+    """Test that system network name is overridden correctly."""
+    system_config = create_system_configuration_from_file(SYSTEM_UNIQUE_ID_DEF_PATH)
+    assert system_config.system_unique_id == "you-have-passed-the-test"
+
+
+def test_invalid_system_unique_id() -> None:
+    """Verify exception is thrown when invalid system-unique-id is passed."""
+    with pytest.raises(ValidationError):
+        create_system_configuration_from_file(INVALID_SYSTEM_UNIQUE_ID_DEF_PATH)

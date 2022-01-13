@@ -62,6 +62,15 @@ class OT2Images(Images):
     remote_hardware_image_name: Literal[None] = None
 
 
+class EmulatorProxyImages(Images):
+    """Image names for Emulator Proxy."""
+
+    local_firmware_image_name: str = "emulator-proxy-local"
+    local_hardware_image_name: Literal[None] = None
+    remote_firmware_image_name: str = "emulator-proxy-remote"
+    remote_hardware_image_name: Literal[None] = None
+
+
 IMAGE_MAPPING = {
     Hardware.HEATER_SHAKER_MODULE.value: HeaterShakerModuleImages(),
     Hardware.MAGNETIC_MODULE.value: MagneticModuleImages(),

@@ -1,16 +1,20 @@
 """Adds functions to generated compose_file_model."""
-import os
+import yaml
 from typing import Any
-
-from yaml import dump as yaml_dump
-
 # Have to ignore attr-defined errors from mypy because we are calling type: ignore at
 # the top of compose_file_model. This causes mypy to think that ComposeSpecification
 # and Service do not exist when they actually do.
 from emulation_system.compose_file_creator.output.compose_file_model import (  # type: ignore[attr-defined] # noqa: E501
     ComposeSpecification,
-    Service,
 )
+
+
+def represent_none(self, _):  # noqa: ANN001 ANN201
+    """Override how yaml is formatted and instead of putting null, leave it blank."""
+    return self.represent_scalar("tag:yaml.org,2002:null", "")
+
+
+yaml.add_representer(type(None), represent_none)
 
 
 class RuntimeComposeFileModel(ComposeSpecification):
@@ -22,19 +26,4 @@ class RuntimeComposeFileModel(ComposeSpecification):
 
     def to_yaml(self) -> str:
         """Convert pydantic model to yaml."""
-        return yaml_dump(self.dict(exclude_none=True), default_flow_style=False)
-
-    def to_compose_file(self, file_path: str) -> None:
-        """Convert pydantic model to compose file at passed file_path."""
-        yaml_content = self.to_yaml()
-        file = open(file_path, "w")
-        file.write(yaml_content)
-
-
-if __name__ == "__main__":
-    model = RuntimeComposeFileModel()
-    service_1 = Service(image="hello-world", container_name="hello-world")
-    model.services = {"hello-world": service_1}
-    file_path = os.path.join(os.getcwd(), "../docker-compose.yml")
-    print(model.to_yaml())  # type: ignore
-    model.to_compose_file(file_path)  # type: ignore
+        return yaml.dump(self.dict(exclude_none=True), default_flow_style=False)
