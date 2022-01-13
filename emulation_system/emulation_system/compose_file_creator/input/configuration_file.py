@@ -1,5 +1,6 @@
 """Models necessary for parsing configuration file."""
 from __future__ import annotations
+
 from collections import Counter
 from typing import (
     Dict,
@@ -20,7 +21,6 @@ from pydantic import (
 
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DEFAULT_DOCKER_COMPOSE_VERSION,
-    DEFAULT_NETWORK_NAME,
     Hardware,
 )
 from emulation_system.compose_file_creator.settings.custom_types import (
@@ -41,8 +41,8 @@ class SystemConfigurationModel(BaseModel):
     """
 
     compose_file_version: Optional[str] = Field(alias="compose-file-version")
-    system_network_name: Optional[str] = Field(
-        alias="system-network-name", regex=r"^[A-Za-z0-9-]+$"
+    system_unique_id: Optional[str] = Field(
+        alias="system-unique-id", regex=r"^[A-Za-z0-9-]+$", min_length=1
     )
     robot: Optional[Robots]
     modules: Optional[List[Modules]] = Field(default=[])
@@ -101,11 +101,6 @@ class SystemConfigurationModel(BaseModel):
         """Sets default version if nothing is specified."""
         return v or DEFAULT_DOCKER_COMPOSE_VERSION
 
-    @validator("system_network_name", pre=True, always=True)
-    def set_default_network_name(cls, v: str) -> str:
-        """Sets default network name if nothing is specified."""
-        return v or DEFAULT_NETWORK_NAME
-
     @property
     def modules_exist(self) -> bool:
         """Returns True if modules were defined in config file, False if not."""
@@ -126,7 +121,7 @@ class SystemConfigurationModel(BaseModel):
     @property
     def can_network_name(self) -> str:
         """Returns name of CAN network."""
-        return f"{self.system_network_name}-CAN"
+        return f"{self.system_unique_id}-CAN"
 
     @property
     def containers(self) -> Mapping[str, Containers]:

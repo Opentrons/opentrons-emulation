@@ -1,4 +1,5 @@
 {
+    "system-unique-id": "dereks-system",
     "robot": {
         "id": "ot-2",
         "hardware": "ot2",
@@ -51,6 +52,5 @@
             "source-location": "/home/derek-maggio/Documents/repos/opentrons",
             "hardware-specific-attributes": {}
         }
-    ],
-    "system-network-name": "sample-network"
+    ]
 }
