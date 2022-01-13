@@ -4,8 +4,6 @@ from typing import (
     Dict,
 )
 
-import py
-import pytest
 from pydantic import parse_obj_as
 
 from emulation_system.compose_file_creator.input.hardware_models import (
