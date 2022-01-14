@@ -135,15 +135,6 @@ def robot_with_mount_and_modules(
     return robot_with_mount
 
 
-#
-#
-# @pytest.fixture
-# def with_system_unique_id(robot_and_modules: Dict[str, Any]) -> Dict[str, Any]:
-#     """Add system-unique-id to dictionary."""
-#     robot_and_modules["system-unique-id"] = SYSTEM_UNIQUE_ID
-#     return robot_and_modules
-
-
 @pytest.fixture
 def robot_with_mount_and_modules_services(
     robot_with_mount_and_modules: Dict[str, Any],
