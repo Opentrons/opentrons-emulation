@@ -32,7 +32,7 @@ from tests.compose_file_creator.conftest import (
     OT2_ID,
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
-    SYSTEM_UNIQUE_ID
+    SYSTEM_UNIQUE_ID,
 )
 
 

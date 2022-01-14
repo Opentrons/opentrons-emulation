@@ -40,7 +40,7 @@ from tests.compose_file_creator.conftest import (
     OT2_ID,
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
-    SYSTEM_UNIQUE_ID
+    SYSTEM_UNIQUE_ID,
 )
 
 CONTAINER_NAME_TO_IMAGE = {
@@ -75,9 +75,7 @@ def extra_mounts_dir(tmpdir: py.path.local) -> str:
 
 
 @pytest.fixture
-def extra_mounts_and_opentrons(
-    extra_mounts_dir: str, opentrons_dir: str
-) -> List[str]:
+def extra_mounts_and_opentrons(extra_mounts_dir: str, opentrons_dir: str) -> List[str]:
     """List with mount dir and opentrons-modules dir together.
 
     I have to build the list in a separate fixture because pytest-lazy-fixture does
@@ -230,9 +228,7 @@ def test_service_build(
     assert build.target == CONTAINER_NAME_TO_IMAGE[service_name]
 
 
-@pytest.mark.parametrize(
-    "service_name", [HEATER_SHAKER_MODULE_ID]
-)
+@pytest.mark.parametrize("service_name", [HEATER_SHAKER_MODULE_ID])
 def test_service_without_bind_mounts(
     service_name: str, robot_with_mount_and_modules_services: Dict[str, Service]
 ) -> None:
@@ -255,16 +251,8 @@ def test_service_without_bind_mounts(
             lazy_fixture("modules_dir_in_list"),
             ["/opentrons-modules"],
         ],
-        [
-            MAGNETIC_MODULE_ID,
-            lazy_fixture("opentrons_dir_in_list"),
-            ["/opentrons"]
-        ],
-        [
-            TEMPERATURE_MODULE_ID,
-            lazy_fixture("opentrons_dir_in_list"),
-            ["/opentrons"]
-        ]
+        [MAGNETIC_MODULE_ID, lazy_fixture("opentrons_dir_in_list"), ["/opentrons"]],
+        [TEMPERATURE_MODULE_ID, lazy_fixture("opentrons_dir_in_list"), ["/opentrons"]],
     ],
 )
 def test_service_with_bind_mounts(
