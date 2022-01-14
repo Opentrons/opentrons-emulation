@@ -10,7 +10,7 @@ from typing import (
 
 import pytest
 from pydantic import ValidationError
-from pytest_lazyfixture import lazy_fixture
+from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system.compose_file_creator.input.configuration_file import (
     DuplicateHardwareNameError,
@@ -234,7 +234,7 @@ def test_containers_property(robot_and_modules: Dict[str, Any]) -> None:
         MAGNETIC_MODULE_ID,
         TEMPERATURE_MODULE_ID,
         THERMOCYCLER_MODULE_ID,
-        HEATER_SHAKER_MODULE_ID
+        HEATER_SHAKER_MODULE_ID,
     }
     assert isinstance(containers[OT2_ID], OT2InputModel)
     assert isinstance(containers[MAGNETIC_MODULE_ID], MagneticModuleInputModel)
@@ -295,4 +295,4 @@ def test_invalid_system_unique_id(
 ) -> None:
     """Verify exception is thrown when invalid system-unique-id is passed."""
     with pytest.raises(ValidationError):
-        create_system_configuration(test_invalid_system_unique_id)
+        create_system_configuration(with_invalid_system_unique_id)

@@ -1,16 +1,18 @@
 """Tests for OT-2 robot."""
-from typing import Dict, Any
+from typing import (
+    Any,
+    Dict,
+)
 
-import py
 import pytest
 from pydantic import (
     ValidationError,
     parse_obj_as,
 )
+
 from emulation_system.compose_file_creator.input.hardware_models import OT2InputModel
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     Hardware,
-    EmulationLevels,
     OpentronsRepository,
 )
 from tests.compose_file_creator.conftest import (
