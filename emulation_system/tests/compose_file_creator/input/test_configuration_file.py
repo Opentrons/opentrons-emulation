@@ -32,6 +32,7 @@ from tests.compose_file_creator.conftest import (
     OT2_ID,
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
+    SYSTEM_UNIQUE_ID
 )
 
 
@@ -62,39 +63,6 @@ def ot2_with_invalid_mounts(ot2_with_mounts: Dict) -> Dict:
     """Configuration with an invalid mount name."""
     ot2_with_mounts["robot"][OT2_ID]["extra-mounts"][0]["name"] = "data-dog"
     return ot2_with_mounts
-
-
-@pytest.fixture
-def robot_only(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
-    """Structure of SystemConfigurationModel with robot only."""
-    return {"robot": ot2_default}
-
-
-@pytest.fixture
-def modules_only(
-    thermocycler_module_default: Dict[str, Any],
-    temperature_module_default: Dict[str, Any],
-    magnetic_module_default: Dict[str, Any],
-    heater_shaker_module_default: Dict[str, Any],
-) -> Dict[str, Any]:
-    """Structure of SystemConfigurationModel with modules only."""
-    return {
-        "modules": [
-            thermocycler_module_default,
-            temperature_module_default,
-            magnetic_module_default,
-            heater_shaker_module_default,
-        ]
-    }
-
-
-@pytest.fixture
-def robot_and_modules(
-    modules_only: Dict[str, Any], ot2_default: Dict[str, Any]
-) -> Dict[str, Any]:
-    """Structure of SystemConfigurationModel with robot and modules."""
-    modules_only["robot"] = ot2_default
-    return modules_only
 
 
 @pytest.fixture
@@ -131,13 +99,6 @@ def null_everything() -> Dict[str, None]:
         "modules": None,
         "system-unique-id": None,
     }
-
-
-@pytest.fixture
-def with_system_unique_id(robot_and_modules: Dict[str, Any]) -> Dict[str, Any]:
-    """Structure of SystemConfigurationModel with robot, modules, and system-unique-id."""  # noqa: E501
-    robot_and_modules["system-unique-id"] = "you-have-passed-the-test"
-    return robot_and_modules
 
 
 @pytest.fixture
@@ -287,7 +248,7 @@ def test_no_system_unique_id(config: Dict[str, Any]) -> None:
 def test_overriding_system_unique_id(with_system_unique_id: Dict[str, Any]) -> None:
     """Test that system network name is overridden correctly."""
     system_config = create_system_configuration(with_system_unique_id)
-    assert system_config.system_unique_id == "you-have-passed-the-test"
+    assert system_config.system_unique_id == SYSTEM_UNIQUE_ID
 
 
 def test_invalid_system_unique_id(

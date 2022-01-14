@@ -17,7 +17,7 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
 from tests.compose_file_creator.conftest import (
     THERMOCYCLER_MODULE_EMULATION_LEVEL,
     THERMOCYCLER_MODULE_ID,
-    THREMOCYCLER_MODULE_SOURCE_TYPE,
+    THERMOCYCLER_MODULE_SOURCE_TYPE,
 )
 
 
@@ -27,7 +27,7 @@ def test_default_thermocycler(thermocycler_module_default: Dict[str, Any]) -> No
     assert therm.hardware == Hardware.THERMOCYCLER_MODULE.value
     assert therm.id == THERMOCYCLER_MODULE_ID
     assert therm.emulation_level == THERMOCYCLER_MODULE_EMULATION_LEVEL
-    assert therm.source_type == THREMOCYCLER_MODULE_SOURCE_TYPE
+    assert therm.source_type == THERMOCYCLER_MODULE_SOURCE_TYPE
     assert therm.hardware_specific_attributes.lid_temperature.degrees_per_tick == 2.0
     assert therm.hardware_specific_attributes.lid_temperature.starting == 23.0
     assert therm.hardware_specific_attributes.plate_temperature.degrees_per_tick == 2.0
@@ -42,7 +42,7 @@ def test_thermocycler_with_lid_temp(
     assert therm.hardware == Hardware.THERMOCYCLER_MODULE.value
     assert therm.id == THERMOCYCLER_MODULE_ID
     assert therm.emulation_level == THERMOCYCLER_MODULE_EMULATION_LEVEL
-    assert therm.source_type == THREMOCYCLER_MODULE_SOURCE_TYPE
+    assert therm.source_type == THERMOCYCLER_MODULE_SOURCE_TYPE
     assert therm.hardware_specific_attributes.lid_temperature.degrees_per_tick == 5.0
     assert therm.hardware_specific_attributes.lid_temperature.starting == 20.0
     assert therm.hardware_specific_attributes.plate_temperature.degrees_per_tick == 2.0
@@ -59,7 +59,7 @@ def test_thermocycler_with_plate_temp(
     assert therm.hardware == Hardware.THERMOCYCLER_MODULE.value
     assert therm.id == THERMOCYCLER_MODULE_ID
     assert therm.emulation_level == THERMOCYCLER_MODULE_EMULATION_LEVEL
-    assert therm.source_type == THREMOCYCLER_MODULE_SOURCE_TYPE
+    assert therm.source_type == THERMOCYCLER_MODULE_SOURCE_TYPE
     assert therm.hardware_specific_attributes.lid_temperature.degrees_per_tick == 5.0
     assert therm.hardware_specific_attributes.lid_temperature.starting == 20.0
     assert therm.hardware_specific_attributes.plate_temperature.degrees_per_tick == 4.5

@@ -15,12 +15,12 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     SourceType,
 )
 
-HEATER_SHAKER_MODULE_ID = "my-heater-shaker"
-MAGNETIC_MODULE_ID = "my-magnetic"
-TEMPERATURE_MODULE_ID = "my-temperature"
-THERMOCYCLER_MODULE_ID = "my-thermocycler"
-OT2_ID = "my-ot2"
-
+HEATER_SHAKER_MODULE_ID = "shakey-and-warm"
+MAGNETIC_MODULE_ID = "fatal-attraction"
+TEMPERATURE_MODULE_ID = "temperamental"
+THERMOCYCLER_MODULE_ID = "t00-hot-to-handle"
+OT2_ID = "brobot"
+EMULATOR_PROXY_ID = "emulator-proxy"
 
 HEATER_SHAKER_MODULE_EMULATION_LEVEL = EmulationLevels.HARDWARE.value
 MAGNETIC_MODULE_EMULATION_LEVEL = EmulationLevels.FIRMWARE.value
@@ -28,23 +28,44 @@ TEMPERATURE_MODULE_EMULATION_LEVEL = EmulationLevels.FIRMWARE.value
 THERMOCYCLER_MODULE_EMULATION_LEVEL = EmulationLevels.HARDWARE.value
 OT2_EMULATION_LEVEL = EmulationLevels.FIRMWARE.value
 
-
-HEATER_SHAKER_MODULE_SOURCE_TYPE = SourceType.LOCAL.value
+HEATER_SHAKER_MODULE_SOURCE_TYPE = SourceType.REMOTE.value
 MAGNETIC_MODULE_SOURCE_TYPE = SourceType.LOCAL.value
 TEMPERATURE_MODULE_SOURCE_TYPE = SourceType.LOCAL.value
-THREMOCYCLER_MODULE_SOURCE_TYPE = SourceType.LOCAL.value
+THERMOCYCLER_MODULE_SOURCE_TYPE = SourceType.LOCAL.value
 OT2_SOURCE_TYPE = SourceType.LOCAL.value
+
+SYSTEM_UNIQUE_ID = "testing-1-2-3"
 
 
 @pytest.fixture
-def heater_shaker_module_default(tmpdir: py.path.local) -> Dict[str, Any]:
+def opentrons_dir(tmpdir: py.path.local) -> str:
+    """Get path to temporary opentrons directory.
+
+    Note that this variable is scoped to the test. So if you call the fixture from
+    different places in the test the variable will be the same.
+    """
+    return str(tmpdir.mkdir("opentrons"))
+
+
+@pytest.fixture
+def opentrons_modules_dir(tmpdir: py.path.local) -> str:
+    """Get path to temporary opentrons-modules directory.
+
+    Note that this variable is scoped to the test. So if you call the fixture from
+    different places in the test the variable will be the same.
+    """
+    return str(tmpdir.mkdir("opentrons-modules"))
+
+
+@pytest.fixture
+def heater_shaker_module_default(opentrons_modules_dir: str) -> Dict[str, Any]:
     """Return heater-shaker configuration dictionary."""
     return {
         "id": HEATER_SHAKER_MODULE_ID,
         "hardware": Hardware.HEATER_SHAKER_MODULE.value,
         "emulation-level": HEATER_SHAKER_MODULE_EMULATION_LEVEL,
         "source-type": HEATER_SHAKER_MODULE_SOURCE_TYPE,
-        "source-location": str(tmpdir),
+        "source-location": opentrons_modules_dir,
     }
 
 
@@ -69,14 +90,14 @@ def heater_shaker_module_use_stdin(
 
 
 @pytest.fixture
-def magnetic_module_default(tmpdir: py.path.local) -> Dict[str, Any]:
+def magnetic_module_default(opentrons_dir: str) -> Dict[str, Any]:
     """Magnetic Module. Does not contain any hardware-specific-attributes."""
     return {
         "id": MAGNETIC_MODULE_ID,
         "hardware": Hardware.MAGNETIC_MODULE.value,
         "emulation-level": MAGNETIC_MODULE_EMULATION_LEVEL,
         "source-type": MAGNETIC_MODULE_SOURCE_TYPE,
-        "source-location": str(tmpdir),
+        "source-location": opentrons_dir,
         "hardware-specific-attributes": {},
     }
 
@@ -91,14 +112,14 @@ def magnetic_module_bad_emulation_level(
 
 
 @pytest.fixture
-def temperature_module_default(tmpdir: py.path.local) -> Dict[str, Any]:
+def temperature_module_default(opentrons_dir: str) -> Dict[str, Any]:
     """Temperature Module with default temperature settings specified."""
     return {
         "id": TEMPERATURE_MODULE_ID,
         "hardware": Hardware.TEMPERATURE_MODULE.value,
         "emulation-level": TEMPERATURE_MODULE_EMULATION_LEVEL,
         "source-type": TEMPERATURE_MODULE_SOURCE_TYPE,
-        "source-location": str(tmpdir),
+        "source-location": opentrons_dir,
         "hardware-specific-attributes": {},
     }
 
@@ -125,14 +146,14 @@ def temperature_module_bad_emulation_level(
 
 
 @pytest.fixture
-def thermocycler_module_default(tmpdir: py.path.local) -> Dict[str, Any]:
+def thermocycler_module_default(opentrons_modules_dir: str) -> Dict[str, Any]:
     """Thermocycler Module with default lid and plate temperature."""
     return {
         "id": THERMOCYCLER_MODULE_ID,
         "hardware": Hardware.THERMOCYCLER_MODULE.value,
         "emulation-level": THERMOCYCLER_MODULE_EMULATION_LEVEL,
-        "source-type": THREMOCYCLER_MODULE_SOURCE_TYPE,
-        "source-location": str(tmpdir),
+        "source-type": THERMOCYCLER_MODULE_SOURCE_TYPE,
+        "source-location": opentrons_modules_dir,
         "hardware-specific-attributes": {},
     }
 
@@ -173,14 +194,14 @@ def thermocycler_module_hardware_emulation_level(
 
 
 @pytest.fixture
-def ot2_default(tmpdir: py.path.local) -> Dict[str, Any]:
+def ot2_default(opentrons_dir: str) -> Dict[str, Any]:
     """OT-2 using default pipettes."""
     return {
         "id": OT2_ID,
         "hardware": Hardware.OT2.value,
         "emulation-level": OT2_EMULATION_LEVEL,
         "source-type": OT2_SOURCE_TYPE,
-        "source-location": str(tmpdir),
+        "source-location": opentrons_dir,
         "hardware-specific-attributes": {},
     }
 
@@ -231,3 +252,43 @@ def ot2_with_mounts(tmp_path: pathlib.Path, ot2_default: Dict) -> Dict:
         },
     ]
     return ot2_default
+
+
+@pytest.fixture
+def robot_only(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
+    """Structure of SystemConfigurationModel with robot only."""
+    return {"robot": ot2_default}
+
+
+@pytest.fixture
+def modules_only(
+    thermocycler_module_default: Dict[str, Any],
+    temperature_module_default: Dict[str, Any],
+    magnetic_module_default: Dict[str, Any],
+    heater_shaker_module_default: Dict[str, Any],
+) -> Dict[str, Any]:
+    """Structure of SystemConfigurationModel with modules only."""
+    return {
+        "modules": [
+            thermocycler_module_default,
+            temperature_module_default,
+            magnetic_module_default,
+            heater_shaker_module_default,
+        ]
+    }
+
+
+@pytest.fixture
+def robot_and_modules(
+    modules_only: Dict[str, Any], ot2_default: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Structure of SystemConfigurationModel with robot and modules."""
+    modules_only["robot"] = ot2_default
+    return modules_only
+
+
+@pytest.fixture
+def with_system_unique_id(robot_and_modules: Dict[str, Any]) -> Dict[str, Any]:
+    """Structure of SystemConfigurationModel with robot, modules, and system-unique-id."""  # noqa: E501
+    robot_and_modules["system-unique-id"] = SYSTEM_UNIQUE_ID
+    return robot_and_modules
