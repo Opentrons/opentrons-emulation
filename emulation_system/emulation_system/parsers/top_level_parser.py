@@ -10,7 +10,7 @@ from emulation_system.parsers.emulation_parser import EmulationParser
 from emulation_system.parsers.repo_parser import RepoParser
 from emulation_system.parsers.virtual_machine_parser import VirtualMachineParser
 from emulation_system.opentrons_emulation_configuration import (
-    load_opentrons_emulation_configuration,
+    OpentronsEmulationConfiguration,
 )
 
 
@@ -24,13 +24,13 @@ class TopLevelParser:
     # Parsers must inherit from emulation_system/src/parsers/abstract_parser.py
     SUBPARSERS = [EmulationParser, RepoParser, VirtualMachineParser]
 
-    def __init__(self) -> None:
+    def __init__(self, settings: OpentronsEmulationConfiguration) -> None:
         """Construct TopLevelParser object.
 
         Pull settings from settings file
         Build parser
         """
-        self._settings = load_opentrons_emulation_configuration()
+        self._settings = settings
         self._parser = argparse.ArgumentParser(
             description="Utility for managing Opentrons Emulation systems",
             formatter_class=get_formatter(),

@@ -1,8 +1,11 @@
 """Tests for emulation command."""
-from typing import List, Generator
+from typing import List
 
 import pytest
 
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
+)
 from emulation_system.parsers.top_level_parser import TopLevelParser
 from tests.emulation_conftest import (
     BASIC_DEV_CMDS_TO_RUN,
@@ -53,32 +56,44 @@ def complex_prod_emulation_cmd() -> List[str]:
 
 
 def test_basic_dev_em_commands(
-    set_config_file_env_var: Generator, basic_emulation_dev_cmd: List[str]
+    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    basic_emulation_dev_cmd: List[str],
 ) -> None:
     """Confirm that basic dev emulation command is parsed correctly."""
-    dev_em_creator = TopLevelParser().parse(basic_emulation_dev_cmd)
+    dev_em_creator = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+        basic_emulation_dev_cmd
+    )
     assert dev_em_creator.get_commands() == BASIC_DEV_CMDS_TO_RUN
 
 
 def test_complex_dev_em_commands(
-    set_config_file_env_var: Generator, complex_emulation_dev_cmd: List[str]
+    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    complex_emulation_dev_cmd: List[str],
 ) -> None:
     """Confirm that complex dev emulation command is parsed correctly."""
-    dev_em_creator = TopLevelParser().parse(complex_emulation_dev_cmd)
+    dev_em_creator = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+        complex_emulation_dev_cmd
+    )
     assert dev_em_creator.get_commands() == COMPLEX_DEV_COMMANDS_TO_RUN
 
 
 def test_basic_prod_em_commands(
-    set_config_file_env_var: Generator, basic_prod_emulation_cmd: List[str]
+    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    basic_prod_emulation_cmd: List[str],
 ) -> None:
     """Confirm that basic prod emulation command is parsed correctly."""
-    prod_em_creator = TopLevelParser().parse(basic_prod_emulation_cmd)
+    prod_em_creator = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+        basic_prod_emulation_cmd
+    )
     assert prod_em_creator.get_commands() == BASIC_PROD_COMMANDS_TO_RUN
 
 
 def test_complex_prod_em_commands(
-    set_config_file_env_var: Generator, complex_prod_emulation_cmd: List[str]
+    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    complex_prod_emulation_cmd: List[str],
 ) -> None:
     """Confirm that complex prod emulation command is parsed correctly."""
-    prod_em_creator = TopLevelParser().parse(complex_prod_emulation_cmd)
+    prod_em_creator = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+        complex_prod_emulation_cmd
+    )
     assert prod_em_creator.get_commands() == COMPLEX_PROD_COMMANDS_TO_RUN

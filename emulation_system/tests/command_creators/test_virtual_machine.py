@@ -1,10 +1,13 @@
 """Tests for virtual-machine sub-command."""
 import pytest
-from typing import List, Generator
+from typing import List
 from emulation_system.commands.virtual_machine_command_creator import (
     VirtualMachineCommandCreator,
 )
 from emulation_system.commands.command import CommandList, Command
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
+)
 from emulation_system.parsers.top_level_parser import TopLevelParser
 
 EXPECTED_DEV_CREATE = CommandList(
@@ -102,48 +105,78 @@ def prod_shell_virtual_machine_cmd() -> List[str]:
 
 
 def test_dev_create(
-    set_config_file_env_var: Generator, dev_create_virtual_machine_cmd: List[str]
+    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    dev_create_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that dev virtual-machine is created correctly."""
-    cmds = TopLevelParser().parse(dev_create_virtual_machine_cmd).get_commands()
+    cmds = (
+        TopLevelParser(testing_opentrons_emulation_configuration)
+        .parse(dev_create_virtual_machine_cmd)
+        .get_commands()
+    )
     assert cmds == EXPECTED_DEV_CREATE
 
 
 def test_dev_shell(
-    set_config_file_env_var: Generator, dev_shell_virtual_machine_cmd: List[str]
+    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    dev_shell_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that shell to dev virtual-machine is opened correctly."""
-    cmds = TopLevelParser().parse(dev_shell_virtual_machine_cmd).get_commands()
+    cmds = (
+        TopLevelParser(testing_opentrons_emulation_configuration)
+        .parse(dev_shell_virtual_machine_cmd)
+        .get_commands()
+    )
     assert cmds == EXPECTED_DEV_SHELL
 
 
 def test_dev_remove(
-    set_config_file_env_var: Generator, dev_remove_virtual_machine_cmd: List[str]
+    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    dev_remove_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that dev virtual-machine is removed correctly."""
-    cmds = TopLevelParser().parse(dev_remove_virtual_machine_cmd).get_commands()
+    cmds = (
+        TopLevelParser(testing_opentrons_emulation_configuration)
+        .parse(dev_remove_virtual_machine_cmd)
+        .get_commands()
+    )
     assert cmds == EXPECTED_DEV_REMOVE
 
 
 def test_prod_create(
-    set_config_file_env_var: Generator, prod_create_virtual_machine_cmd: List[str]
+    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    prod_create_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that prod virtual-machine is created correctly."""
-    cmds = TopLevelParser().parse(prod_create_virtual_machine_cmd).get_commands()
+    cmds = (
+        TopLevelParser(testing_opentrons_emulation_configuration)
+        .parse(prod_create_virtual_machine_cmd)
+        .get_commands()
+    )
     assert cmds == EXPECTED_PROD_CREATE
 
 
 def test_prod_shell(
-    set_config_file_env_var: Generator, prod_shell_virtual_machine_cmd: List[str]
+    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    prod_shell_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that shell to prod virtual-machine is opened correctly."""
-    cmds = TopLevelParser().parse(prod_shell_virtual_machine_cmd).get_commands()
+    cmds = (
+        TopLevelParser(testing_opentrons_emulation_configuration)
+        .parse(prod_shell_virtual_machine_cmd)
+        .get_commands()
+    )
     assert cmds == EXPECTED_PROD_SHELL
 
 
 def test_prod_remove(
-    set_config_file_env_var: Generator, prod_remove_virtual_machine_cmd: List[str]
+    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    prod_remove_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that prod virtual-machine is removed correctly."""
-    cmds = TopLevelParser().parse(prod_remove_virtual_machine_cmd).get_commands()
+    cmds = (
+        TopLevelParser(testing_opentrons_emulation_configuration)
+        .parse(prod_remove_virtual_machine_cmd)
+        .get_commands()
+    )
     assert cmds == EXPECTED_PROD_REMOVE

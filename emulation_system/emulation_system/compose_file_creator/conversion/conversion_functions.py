@@ -31,7 +31,7 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     DEFAULT_NETWORK_NAME,
 )
 from emulation_system.opentrons_emulation_configuration import (
-    load_opentrons_emulation_configuration,
+    OpentronsEmulationConfiguration,
 )
 
 
@@ -71,16 +71,17 @@ def _convert(config_model: SystemConfigurationModel) -> RuntimeComposeFileModel:
     )
 
 
-def convert_from_file(input_file_path: str) -> RuntimeComposeFileModel:
+def convert_from_file(
+    settings: OpentronsEmulationConfiguration, input_file_path: str
+) -> RuntimeComposeFileModel:
     """Parse from file.
 
     Will load either an absolute path, or a relative path against paths specified in
     emulation_configuration_file_locations setting.
     """
     if not os.path.isabs(input_file_path):
-        settings_file = load_opentrons_emulation_configuration()
         extra_locations = (
-            settings_file.global_settings.emulation_configuration_file_locations
+            settings.global_settings.emulation_configuration_file_locations
         )
         results = []
         for extra_location in extra_locations:
@@ -94,7 +95,6 @@ def convert_from_file(input_file_path: str) -> RuntimeComposeFileModel:
                 f" emulation_configuration_file_locations"
             )
         elif len(results) > 1:
-            print(extra_locations)
             paths = ", ".join(extra_locations)
             raise FileDisambiguationError(
                 f"Specified file found in multiple locations:" f" {paths}"
@@ -108,8 +108,3 @@ def convert_from_file(input_file_path: str) -> RuntimeComposeFileModel:
 def convert_from_obj(input_obj: Dict[str, Any]) -> RuntimeComposeFileModel:
     """Parse from obj."""
     return _convert(parse_obj_as(SystemConfigurationModel, input_obj))
-
-
-if __name__ == "__main__":
-    model = convert_from_file("/tests/test_resources/sample.json")
-    print(model.to_yaml())

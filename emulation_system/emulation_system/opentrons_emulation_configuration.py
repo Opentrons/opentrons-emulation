@@ -110,13 +110,10 @@ class OpentronsEmulationConfiguration(BaseModel):
         return parse_obj_as(cls, json.load(file))
 
 
-def load_opentrons_emulation_configuration(
-    file_path: str = None,
-) -> OpentronsEmulationConfiguration:
+def load_opentrons_emulation_configuration_from_env() -> OpentronsEmulationConfiguration:  # noqa: E501
     """Helper function for loading OpentronsEmulationConfiguration object."""
-    if file_path is None:
-        if CONFIGURATION_FILE_LOCATION_VAR_NAME in os.environ:
-            file_path = os.environ[CONFIGURATION_FILE_LOCATION_VAR_NAME]
-        else:
-            file_path = DEFAULT_CONFIGURATION_FILE_PATH
+    if CONFIGURATION_FILE_LOCATION_VAR_NAME in os.environ:
+        file_path = os.environ[CONFIGURATION_FILE_LOCATION_VAR_NAME]
+    else:
+        file_path = DEFAULT_CONFIGURATION_FILE_PATH
     return OpentronsEmulationConfiguration.from_file_path(file_path)
