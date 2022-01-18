@@ -76,14 +76,6 @@ TEST_CONF_MODULES_EXPECTED_COMMIT = get_commit("modules")
 
 
 @pytest.fixture
-def default_folder_paths() -> DefaultFolderPaths:
-    """Returns default folder paths from test configuration file."""
-    return get_test_conf().global_settings.default_folder_paths
-
-
-@pytest.fixture
-def set_config_file_env_var(json_for_testing_path: str) -> Generator:
-    """Sets configuration file location env var then removes it after test."""
-    os.environ[CONFIGURATION_FILE_LOCATION_VAR_NAME] = json_for_testing_path
-    yield
-    del os.environ[CONFIGURATION_FILE_LOCATION_VAR_NAME]
+def testing_opentrons_emulation_configuration() -> OpentronsEmulationConfiguration:
+    """Get test configuration of OpentronsEmulationConfiguration."""
+    return get_test_conf()
