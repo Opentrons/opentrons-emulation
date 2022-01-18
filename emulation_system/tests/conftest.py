@@ -1,12 +1,10 @@
 """Utilities for emulation_system tests."""
 import os
-from typing import Generator
 
 import pytest
-from emulation_system.consts import CONFIGURATION_FILE_LOCATION_VAR_NAME
+
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
-    DefaultFolderPaths,
     SourceDownloadLocations,
 )
 
@@ -16,17 +14,6 @@ def get_test_configuration_file_path() -> str:
     return os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "test_configuration.json"
     )
-
-
-def get_test_resources_dir() -> str:
-    """Get path to test_resources directory."""
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_resources")
-
-
-@pytest.fixture
-def json_for_testing_path() -> str:
-    """Returns path to test file."""
-    return get_test_configuration_file_path()
 
 
 def get_test_conf() -> OpentronsEmulationConfiguration:
