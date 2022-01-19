@@ -17,3 +17,7 @@ class RobotModel(HardwareModel):
 
     exposed_port: int = Field(..., alias="exposed-port")
     bound_port: int
+
+    def get_port_binding_string(self) -> str:
+        """Get port binding string for Docker Compose file."""
+        return f"{self.exposed_port}:{self.bound_port}"

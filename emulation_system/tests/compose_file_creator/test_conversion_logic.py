@@ -434,6 +434,11 @@ def test_robot_depends_on(
     assert robot_with_mount_and_modules_services[OT2_ID].depends_on is None
 
 
+def test_robot_port(robot_with_mount_and_modules_services: Dict[str, Any]) -> None:
+    """Confirm robot port string is created correctly."""
+    assert robot_with_mount_and_modules_services[OT2_ID].ports == ["5000:31950"]
+
+
 @pytest.mark.parametrize(
     "service_name",
     [
