@@ -1,12 +1,10 @@
 """Utilities for emulation_system tests."""
 import os
-from typing import Generator
 
 import pytest
-from emulation_system.consts import CONFIGURATION_FILE_LOCATION_VAR_NAME
+
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
-    DefaultFolderPaths,
     SourceDownloadLocations,
 )
 
@@ -16,17 +14,6 @@ def get_test_configuration_file_path() -> str:
     return os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "test_configuration.json"
     )
-
-
-def get_test_resources_dir() -> str:
-    """Get path to test_resources directory."""
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_resources")
-
-
-@pytest.fixture
-def json_for_testing_path() -> str:
-    """Returns path to test file."""
-    return get_test_configuration_file_path()
 
 
 def get_test_conf() -> OpentronsEmulationConfiguration:
@@ -76,14 +63,6 @@ TEST_CONF_MODULES_EXPECTED_COMMIT = get_commit("modules")
 
 
 @pytest.fixture
-def default_folder_paths() -> DefaultFolderPaths:
-    """Returns default folder paths from test configuration file."""
-    return get_test_conf().global_settings.default_folder_paths
-
-
-@pytest.fixture
-def set_config_file_env_var(json_for_testing_path: str) -> Generator:
-    """Sets configuration file location env var then removes it after test."""
-    os.environ[CONFIGURATION_FILE_LOCATION_VAR_NAME] = json_for_testing_path
-    yield
-    del os.environ[CONFIGURATION_FILE_LOCATION_VAR_NAME]
+def testing_opentrons_emulation_configuration() -> OpentronsEmulationConfiguration:
+    """Get test configuration of OpentronsEmulationConfiguration."""
+    return get_test_conf()

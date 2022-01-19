@@ -1,4 +1,6 @@
+from emulation_system.opentrons_emulation_configuration import load_opentrons_emulation_configuration_from_env
 from emulation_system.parsers.top_level_parser import TopLevelParser
 
 if __name__ == "__main__":
-    TopLevelParser().parse().get_commands().run_commands()
+    settings = load_opentrons_emulation_configuration_from_env()
+    TopLevelParser(settings).parse().get_commands().run_commands()
