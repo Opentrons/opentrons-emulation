@@ -2,6 +2,8 @@
 
 Used to group all robots together and distinguish them from modules.
 """
+from pydantic import Field
+
 from emulation_system.compose_file_creator.input.hardware_models.hardware_model import (
     HardwareModel,
 )
@@ -13,4 +15,5 @@ class RobotModel(HardwareModel):
     Used to group all robots together and distinguish them from modules.
     """
 
-    pass
+    exposed_port: int = Field(..., alias="exposed-port")
+    bound_port: int

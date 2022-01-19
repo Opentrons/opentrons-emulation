@@ -202,8 +202,16 @@ def ot2_default(opentrons_dir: str) -> Dict[str, Any]:
         "emulation-level": OT2_EMULATION_LEVEL,
         "source-type": OT2_SOURCE_TYPE,
         "source-location": opentrons_dir,
+        "exposed-port": 5000,
         "hardware-specific-attributes": {},
     }
+
+
+@pytest.fixture
+def ot2_with_overridden_bound_port(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
+    """OT-2 with overridden bound-port."""
+    ot2_default["bound-port"] = 2500
+    return ot2_default
 
 
 @pytest.fixture
