@@ -17,7 +17,7 @@ from emulation_system.compose_file_creator.input.hardware_models.modules.module_
     ModuleInputModel,
 )
 from emulation_system.compose_file_creator.input.hardware_models.robots.robot_model import (  # noqa: E501
-    RobotModel,
+    RobotInputModel,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
@@ -72,7 +72,7 @@ def _get_port_bindings(
 ) -> Optional[List[Union[float, str, Port]]]:
     port_string = (
         [container.get_port_binding_string()]
-        if issubclass(container.__class__, RobotModel)
+        if issubclass(container.__class__, RobotInputModel)
         else None
     )
     return cast(Optional[List[Union[float, str, Port]]], port_string)

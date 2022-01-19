@@ -6,7 +6,7 @@ from emulation_system.compose_file_creator.input.hardware_models.hardware_specif
     HardwareSpecificAttributes,
 )
 from emulation_system.compose_file_creator.input.hardware_models.robots.robot_model import (  # noqa: E501
-    RobotModel,
+    RobotInputModel,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     EmulationLevels,
@@ -35,7 +35,7 @@ class OT2SourceRepositories(SourceRepositories):
     hardware_repo_name: Literal[None] = None
 
 
-class OT2InputModel(RobotModel):
+class OT2InputModel(RobotInputModel):
     """Model for OT2."""
 
     hardware: Literal[Hardware.OT2]
