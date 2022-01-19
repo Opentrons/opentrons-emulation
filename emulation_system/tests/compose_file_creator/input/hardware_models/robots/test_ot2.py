@@ -29,6 +29,25 @@ def test_default_ot2(ot2_default: Dict[str, Any]) -> None:
     assert ot2.id == OT2_ID
     assert ot2.emulation_level == OT2_EMULATION_LEVEL
     assert ot2.source_type == OT2_SOURCE_TYPE
+    assert ot2.exposed_port == 5000
+    assert ot2.bound_port == 31950
+    assert ot2.hardware_specific_attributes.left_pipette.model == "p20_single_v2.0"
+    assert ot2.hardware_specific_attributes.left_pipette.id == "P20SV202020070101"
+    assert ot2.hardware_specific_attributes.right_pipette.model == "p20_single_v2.0"
+    assert ot2.hardware_specific_attributes.right_pipette.id == "P20SV202020070101"
+
+
+def test_ot2_with_overridden_bound_port(
+    ot2_with_overridden_bound_port: Dict[str, Any]
+) -> None:
+    """Confirm bound-port is overridden correctly."""
+    ot2 = parse_obj_as(OT2InputModel, ot2_with_overridden_bound_port)
+    assert ot2.hardware == Hardware.OT2.value
+    assert ot2.id == OT2_ID
+    assert ot2.emulation_level == OT2_EMULATION_LEVEL
+    assert ot2.source_type == OT2_SOURCE_TYPE
+    assert ot2.exposed_port == 5000
+    assert ot2.bound_port == 2500
     assert ot2.hardware_specific_attributes.left_pipette.model == "p20_single_v2.0"
     assert ot2.hardware_specific_attributes.left_pipette.id == "P20SV202020070101"
     assert ot2.hardware_specific_attributes.right_pipette.model == "p20_single_v2.0"
@@ -42,6 +61,8 @@ def test_ot2_with_custom_pipettes(ot2_with_pipettes: Dict[str, Any]) -> None:
     assert ot2.id == OT2_ID
     assert ot2.emulation_level == OT2_EMULATION_LEVEL
     assert ot2.source_type == OT2_SOURCE_TYPE
+    assert ot2.exposed_port == 5000
+    assert ot2.bound_port == 31950
     assert ot2.hardware_specific_attributes.left_pipette.model == "test_1"
     assert ot2.hardware_specific_attributes.left_pipette.id == "test_1_id"
     assert ot2.hardware_specific_attributes.right_pipette.model == "test_2"

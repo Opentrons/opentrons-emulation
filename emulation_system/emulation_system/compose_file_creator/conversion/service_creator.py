@@ -16,8 +16,12 @@ from emulation_system.compose_file_creator.input.configuration_file import (
 from emulation_system.compose_file_creator.input.hardware_models.modules.module_model import (  # noqa: E501
     ModuleInputModel,
 )
+from emulation_system.compose_file_creator.input.hardware_models.robots.robot_model import (  # noqa: E501
+    RobotInputModel,
+)
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
+    Port,
     Service,
     Volume1,
 )
@@ -37,6 +41,43 @@ def _generate_container_name(
     )
 
 
+def _get_service_depends_on(
+    emulator_proxy_name: Optional[str], container: Containers
+) -> Optional[List[str]]:
+    """Get list of other services that service depends on.
+
+    If service is module, return [emulator_proxy_name]
+    """
+    return (
+        [emulator_proxy_name]
+        if emulator_proxy_name is not None
+        and issubclass(container.__class__, ModuleInputModel)
+        else None
+    )
+
+
+def _get_command(
+    emulator_proxy_name: Optional[str], container: Containers
+) -> Optional[str]:
+    """Get command for service to run.
+
+    If service is module, return emulator_proxy_name
+    """
+    depends_on = _get_service_depends_on(emulator_proxy_name, container)
+    return depends_on[0] if depends_on is not None else None
+
+
+def _get_port_bindings(
+    container: Containers,
+) -> Optional[List[Union[float, str, Port]]]:
+    port_string = (
+        [container.get_port_binding_string()]
+        if issubclass(container.__class__, RobotInputModel)
+        else None
+    )
+    return cast(Optional[List[Union[float, str, Port]]], port_string)
+
+
 def _configure_service(
     container: Containers,
     emulator_proxy_name: Optional[str],
@@ -49,18 +90,6 @@ def _configure_service(
         context=DOCKERFILE_DIR_LOCATION, target=container.get_image_name()
     )
     mount_strings = cast(List[Union[str, Volume1]], container.get_mount_strings())
-    service_depends_on = (
-        [emulator_proxy_name]
-        if emulator_proxy_name is not None
-        and issubclass(container.__class__, ModuleInputModel)
-        else None
-    )
-    service_command = (
-        emulator_proxy_name
-        if emulator_proxy_name is not None
-        and issubclass(container.__class__, ModuleInputModel)
-        else None
-    )
     service = Service(
         container_name=_generate_container_name(container.id, config_model),
         image=service_image,
@@ -68,8 +97,9 @@ def _configure_service(
         build=service_build,
         networks=required_networks.networks,
         volumes=mount_strings if len(mount_strings) > 0 else None,
-        depends_on=service_depends_on,
-        command=service_command,
+        depends_on=_get_service_depends_on(emulator_proxy_name, container),
+        ports=_get_port_bindings(container),
+        command=_get_command(emulator_proxy_name, container),
     )
     return service
 

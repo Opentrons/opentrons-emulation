@@ -2,19 +2,18 @@
 from pydantic import Field
 from typing_extensions import Literal
 
+from emulation_system.compose_file_creator.input.hardware_models.hardware_specific_attributes import (  # noqa: E501
+    HardwareSpecificAttributes,
+)
+from emulation_system.compose_file_creator.input.hardware_models.robots.robot_model import (  # noqa: E501
+    RobotInputModel,
+)
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     EmulationLevels,
     Hardware,
     OpentronsRepository,
     PipetteSettings,
     SourceRepositories,
-)
-
-from emulation_system.compose_file_creator.input.hardware_models.hardware_specific_attributes import (  # noqa: E501
-    HardwareSpecificAttributes,
-)
-from emulation_system.compose_file_creator.input.hardware_models.robots.robot_model import (  # noqa: E501
-    RobotModel,
 )
 
 
@@ -36,7 +35,7 @@ class OT2SourceRepositories(SourceRepositories):
     hardware_repo_name: Literal[None] = None
 
 
-class OT2InputModel(RobotModel):
+class OT2InputModel(RobotInputModel):
     """Model for OT2."""
 
     hardware: Literal[Hardware.OT2]
@@ -47,3 +46,4 @@ class OT2InputModel(RobotModel):
         alias="hardware-specific-attributes", default=OT2Attributes()
     )
     emulation_level: Literal[EmulationLevels.FIRMWARE] = Field(alias="emulation-level")
+    bound_port: int = Field(alias="bound-port", default=31950)
