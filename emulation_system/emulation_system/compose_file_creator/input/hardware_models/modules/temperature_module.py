@@ -42,3 +42,7 @@ class TemperatureModuleInputModel(ModuleInputModel):
     )
 
     emulation_level: Literal[EmulationLevels.FIRMWARE] = Field(alias="emulation-level")
+
+    def is_temperature_module(self) -> bool:
+        """If hardware is a Temperature Module."""
+        return True

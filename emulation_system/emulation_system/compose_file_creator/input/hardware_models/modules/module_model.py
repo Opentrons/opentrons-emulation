@@ -13,4 +13,5 @@ class ModuleInputModel(HardwareModel):
     Used to group all modules together and distinguish them from robots.
     """
 
-    pass
+    def is_module(self) -> bool:
+        return True

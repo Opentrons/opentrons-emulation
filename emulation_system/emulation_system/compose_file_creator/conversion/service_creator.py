@@ -14,12 +14,6 @@ from emulation_system.compose_file_creator.conversion.intermediate_types import 
 from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
 )
-from emulation_system.compose_file_creator.input.hardware_models.modules.module_model import (  # noqa: E501
-    ModuleInputModel,
-)
-from emulation_system.compose_file_creator.input.hardware_models.robots.robot_model import (  # noqa: E501
-    RobotInputModel,
-)
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
     ListOrDict,
@@ -53,7 +47,7 @@ def _get_service_depends_on(
     return (
         [emulator_proxy_name]
         if emulator_proxy_name is not None
-        and issubclass(container.__class__, ModuleInputModel)
+        and container.is_module()
         else None
     )
 
@@ -74,7 +68,7 @@ def _get_port_bindings(
 ) -> Optional[List[Union[float, str, Port]]]:
     port_string = (
         [container.get_port_binding_string()]
-        if issubclass(container.__class__, RobotInputModel)
+        if container.is_robot()
         else None
     )
     return cast(Optional[List[Union[float, str, Port]]], port_string)
@@ -103,10 +97,7 @@ def _configure_service(
     )
     mount_strings = cast(List[Union[str, Volume1]], container.get_mount_strings())
 
-    proxy_exists_is_robot = emulator_proxy_name is not None and issubclass(
-        container.__class__, RobotInputModel
-    )
-    if proxy_exists_is_robot:
+    if emulator_proxy_name is not None and container.is_robot():
         # To get mypy to realize that emulator_proxy_name can't be None here
         assert emulator_proxy_name is not None
         temp_vars = _generate_robot_server_env_vars(emulator_proxy_name, 11000)

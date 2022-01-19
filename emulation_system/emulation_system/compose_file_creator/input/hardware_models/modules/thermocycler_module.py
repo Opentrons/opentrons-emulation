@@ -49,3 +49,7 @@ class ThermocyclerModuleInputModel(ModuleInputModel):
     emulation_level: Literal[
         EmulationLevels.FIRMWARE, EmulationLevels.HARDWARE
     ] = Field(alias="emulation-level")
+
+    def is_thermocycler_module(self) -> bool:
+        """If hardware is a Thermocycler Module."""
+        return True

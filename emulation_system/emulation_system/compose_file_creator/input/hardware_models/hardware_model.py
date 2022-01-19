@@ -198,3 +198,35 @@ class HardwareModel(BaseModel):
             volumes=self.get_mount_strings(),  # type: ignore[arg-type]
             tty=True,
         )
+
+    def is_robot(self) -> bool:
+        """If hardware is a robot."""
+        return False
+
+    def is_module(self) -> bool:
+        """If hardware is a module"""
+        return False
+
+    def is_ot2(self) -> bool:
+        """If hardware is an OT2."""
+        return False
+
+    def is_ot3(self) -> bool:
+        """If hardware is an OT3."""
+        return False
+
+    def is_heater_shaker_module(self) -> bool:
+        """If hardware is a Heater Shaker Module."""
+        return False
+
+    def is_magnetic_module(self) -> bool:
+        """If hardware is a Magnetic Module."""
+        return False
+
+    def is_temperature_module(self) -> bool:
+        """If hardware is a Temperature Module."""
+        return False
+
+    def is_thermocycler_module(self) -> bool:
+        """If hardware is a Thermocycler Module."""
+        return False

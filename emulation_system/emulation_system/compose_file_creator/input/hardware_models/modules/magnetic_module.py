@@ -40,3 +40,7 @@ class MagneticModuleInputModel(ModuleInputModel):
         alias="hardware-specific-attributes", default=MagneticModuleAttributes()
     )
     emulation_level: Literal[EmulationLevels.FIRMWARE] = Field(alias="emulation-level")
+
+    def is_magnetic_module(self) -> bool:
+        """If hardware is a Magnetic Module."""
+        return True
