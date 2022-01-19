@@ -20,6 +20,7 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
     convert_from_file,
     convert_from_obj,
 )
+from emulation_system.compose_file_creator.input.hardware_models.robots.robot_model import RobotInputModel
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
     Network,
@@ -478,6 +479,22 @@ def test_robot_server_emulator_proxy_env_vars_not_added(
     robot_services_env = robot_services[OT2_ID].environment
     assert robot_services_env is not None
     assert robot_services_env.__root__ == {}
+
+
+@patch.object(RobotInputModel, "is_ot3")
+def test_ot3_feature_flag_added(
+    mock_is_ot3: MagicMock,
+    robot_only: Dict[str, Any]
+) -> None:
+    """Confirm feature flag is added when robot is an OT3."""
+    mock_is_ot3.return_value = True
+    robot_services = to_compose_file(robot_only).services
+    assert robot_services is not None
+    robot_services_env = robot_services[OT2_ID].environment
+    assert robot_services_env is not None
+    assert robot_services_env.__root__ == {
+        "OT_API_FF_enableOT3HardwareController": "True"
+    }
 
 
 @pytest.mark.parametrize(

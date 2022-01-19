@@ -1,5 +1,6 @@
 """Class for creating intermediate type DockerServices."""
 from typing import (
+    Any,
     Dict,
     List,
     Optional,
@@ -47,7 +48,7 @@ def _get_service_depends_on(
     return (
         [emulator_proxy_name]
         if emulator_proxy_name is not None
-        and container.is_module()
+           and container.is_module()
         else None
     )
 
@@ -74,16 +75,6 @@ def _get_port_bindings(
     return cast(Optional[List[Union[float, str, Port]]], port_string)
 
 
-def _generate_robot_server_env_vars(
-    emulator_proxy_name: str, emulator_proxy_port: int
-) -> Dict[str, str]:
-    return {
-        "OT_SMOOTHIE_EMULATOR_URI": f"socket://{emulator_proxy_name}:"
-        f"{emulator_proxy_port}",
-        "OT_EMULATOR_module_server": f'{{"host": "{emulator_proxy_name}"}}',
-    }
-
-
 def _configure_service(
     container: Containers,
     emulator_proxy_name: Optional[str],
@@ -97,10 +88,15 @@ def _configure_service(
     )
     mount_strings = cast(List[Union[str, Volume1]], container.get_mount_strings())
 
+    temp_vars: Dict[str, Any] = {}
+
     if emulator_proxy_name is not None and container.is_robot():
-        # To get mypy to realize that emulator_proxy_name can't be None here
-        assert emulator_proxy_name is not None
-        temp_vars = _generate_robot_server_env_vars(emulator_proxy_name, 11000)
+        # TODO: If emulator proxy port is ever not hardcoded will have to update from
+        #  11000 to a variable
+        temp_vars["OT_SMOOTHIE_EMULATOR_URI"] = f"socket://{emulator_proxy_name}:11000"
+        temp_vars["OT_EMULATOR_module_server"] = f'{{"host": "{emulator_proxy_name}"}}'
+    elif container.is_ot3():
+        temp_vars["OT_API_FF_enableOT3HardwareController"] = True
     else:
         temp_vars = {}
 
