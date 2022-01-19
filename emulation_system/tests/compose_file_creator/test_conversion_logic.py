@@ -6,18 +6,15 @@ from typing import (
     List,
     cast,
 )
-
-import py
-import pytest
 from unittest.mock import (
     MagicMock,
     patch,
 )
+
+import py
+import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     FileDisambiguationError,
     convert_from_file,
@@ -44,6 +41,9 @@ from emulation_system.compose_file_creator.settings.images import (
 )
 from emulation_system.consts import (
     DOCKERFILE_DIR_LOCATION,
+)
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
 )
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
@@ -212,8 +212,6 @@ def robot_with_mount_and_modules_services(
     robot_with_mount_and_modules: Dict[str, Any],
 ) -> Dict[str, Service]:
     """Get services from robot_and_modules."""
-    print()
-    print(robot_with_mount_and_modules["robot"])
     return cast(
         Dict[str, Service], to_compose_file(robot_with_mount_and_modules).services
     )
@@ -437,6 +435,49 @@ def test_robot_depends_on(
 def test_robot_port(robot_with_mount_and_modules_services: Dict[str, Any]) -> None:
     """Confirm robot port string is created correctly."""
     assert robot_with_mount_and_modules_services[OT2_ID].ports == ["5000:31950"]
+
+
+def test_robot_server_emulator_proxy_env_vars_added(
+    robot_with_mount_and_modules_services: Dict[str, Any]
+) -> None:
+    """Confirm env vars are set correctly."""
+    assert robot_with_mount_and_modules_services[OT2_ID].environment.__root__ == {
+        "OT_SMOOTHIE_EMULATOR_URI": f"socket://{EMULATOR_PROXY_ID}:11000",
+        "OT_EMULATOR_module_server": f'{{"host": "{EMULATOR_PROXY_ID}"}}',
+    }
+    assert (
+        robot_with_mount_and_modules_services[MAGNETIC_MODULE_ID].environment.__root__
+        == {}
+    )
+    assert (
+        robot_with_mount_and_modules_services[
+            HEATER_SHAKER_MODULE_ID
+        ].environment.__root__
+        == {}
+    )
+    assert (
+        robot_with_mount_and_modules_services[
+            TEMPERATURE_MODULE_ID
+        ].environment.__root__
+        == {}
+    )
+    assert (
+        robot_with_mount_and_modules_services[
+            THERMOCYCLER_MODULE_ID
+        ].environment.__root__
+        == {}
+    )
+
+
+def test_robot_server_emulator_proxy_env_vars_not_added(
+    robot_only: Dict[str, Any]
+) -> None:
+    """Confirm that env vars are not added to robot server when there are no modules."""
+    robot_services = to_compose_file(robot_only).services
+    assert robot_services is not None
+    robot_services_env = robot_services[OT2_ID].environment
+    assert robot_services_env is not None
+    assert robot_services_env.__root__ == {}
 
 
 @pytest.mark.parametrize(
