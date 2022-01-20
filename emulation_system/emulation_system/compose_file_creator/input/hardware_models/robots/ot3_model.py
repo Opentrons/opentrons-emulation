@@ -32,7 +32,7 @@ class OT3SourceRepositories(SourceRepositories):
     """Source repositories for OT3."""
 
     firmware_repo_name: OpentronsRepository = OpentronsRepository.OPENTRONS
-    hardware_repo_name: Literal[None] = None
+    hardware_repo_name: OpentronsRepository = OpentronsRepository.OT3_FIRMWARE
 
 
 class OT3InputModel(RobotInputModel):
