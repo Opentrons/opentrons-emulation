@@ -47,7 +47,3 @@ class OT2InputModel(RobotInputModel):
     )
     emulation_level: Literal[EmulationLevels.FIRMWARE] = Field(alias="emulation-level")
     bound_port: int = Field(alias="bound-port", default=31950)
-
-    def is_ot2(self) -> bool:
-        """If hardware is an OT2."""
-        return True

@@ -42,7 +42,3 @@ class HeaterShakerModuleInputModel(ModuleInputModel):
         alias="hardware-specific-attributes", default=HeaterShakerModuleAttributes()
     )
     emulation_level: Literal[EmulationLevels.HARDWARE] = Field(alias="emulation-level")
-
-    def is_heater_shaker_module(self) -> bool:
-        """If hardware is a Heater Shaker Module."""
-        return True
