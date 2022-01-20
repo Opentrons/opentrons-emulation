@@ -84,6 +84,8 @@ def _get_env_vars(
         temp_vars["OT_EMULATOR_module_server"] = f'{{"host": "{emulator_proxy_name}"}}'
     elif issubclass(container.__class__, OT3InputModel):
         temp_vars["OT_API_FF_enableOT3HardwareController"] = True
+    elif issubclass(container.__class__, ModuleInputModel):
+        temp_vars.update(container.get_serial_number_env_var())
     else:
         temp_vars = {}
 
