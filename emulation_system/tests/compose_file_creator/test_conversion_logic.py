@@ -20,9 +20,6 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
     convert_from_file,
     convert_from_obj,
 )
-from emulation_system.compose_file_creator.input.hardware_models.robots.robot_model import (
-    RobotInputModel,
-)
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
     Network,
@@ -184,11 +181,9 @@ def opentrons_dir_in_list(opentrons_dir: str) -> List[str]:
 
 
 @pytest.fixture
-def robot_with_mount(
-    robot_only: Dict[str, Any], extra_mounts_dir: str
-) -> Dict[str, Any]:
+def robot_with_mount(ot2_only: Dict[str, Any], extra_mounts_dir: str) -> Dict[str, Any]:
     """Robot dict with a mount added."""
-    robot_only["robot"]["extra-mounts"] = [
+    ot2_only["robot"]["extra-mounts"] = [
         {
             "name": "LOG_FILES",
             "type": MountTypes.DIRECTORY,
@@ -196,7 +191,7 @@ def robot_with_mount(
             "source-path": extra_mounts_dir,
         }
     ]
-    return robot_only
+    return ot2_only
 
 
 @pytest.fixture
@@ -403,9 +398,9 @@ def test_top_level_network_with_system_unique_id(
     }
 
 
-def test_emulation_proxy_not_created(robot_only: Dict[str, Any]) -> None:
+def test_emulation_proxy_not_created(ot2_only: Dict[str, Any]) -> None:
     """Verify emulator proxy is not created when there are no modules."""
-    services = to_compose_file(robot_only).services
+    services = to_compose_file(ot2_only).services
     assert services is not None
     assert set(services.keys()) == {OT2_ID}
 
@@ -473,10 +468,10 @@ def test_robot_server_emulator_proxy_env_vars_added(
 
 
 def test_robot_server_emulator_proxy_env_vars_not_added(
-    robot_only: Dict[str, Any]
+    ot2_only: Dict[str, Any]
 ) -> None:
     """Confirm that env vars are not added to robot server when there are no modules."""
-    robot_services = to_compose_file(robot_only).services
+    robot_services = to_compose_file(ot2_only).services
     assert robot_services is not None
     robot_services_env = robot_services[OT2_ID].environment
     assert robot_services_env is not None
