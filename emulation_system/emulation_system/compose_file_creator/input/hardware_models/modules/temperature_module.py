@@ -1,19 +1,22 @@
 """Model and attributes for Temperature Module."""
+from typing import ClassVar
+
 from pydantic import Field
 from typing_extensions import Literal
 
+from emulation_system.compose_file_creator.input.hardware_models.hardware_specific_attributes import (  # noqa: E501
+    HardwareSpecificAttributes,
+)
+from emulation_system.compose_file_creator.input.hardware_models.modules.module_model import (  # noqa: E501
+    FirmwareSerialNumberModel,
+    ModuleInputModel,
+)
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     EmulationLevels,
     Hardware,
     OpentronsRepository,
     SourceRepositories,
     TemperatureModelSettings,
-)
-from emulation_system.compose_file_creator.input.hardware_models.hardware_specific_attributes import (  # noqa: E501
-    HardwareSpecificAttributes,
-)
-from emulation_system.compose_file_creator.input.hardware_models.modules.module_model import (  # noqa: E501
-    ModuleInputModel,
 )
 
 
@@ -32,6 +35,12 @@ class TemperatureModuleSourceRepositories(SourceRepositories):
 
 class TemperatureModuleInputModel(ModuleInputModel):
     """Model for Temperature Module."""
+
+    firmware_serial_number_info: ClassVar[
+        FirmwareSerialNumberModel
+    ] = FirmwareSerialNumberModel(
+        model="temp_deck_v20", version="v2.0.1", env_var_name="OT_EMULATOR_tempdeck"
+    )
 
     hardware: Literal[Hardware.TEMPERATURE_MODULE]
     source_repos: TemperatureModuleSourceRepositories = Field(
