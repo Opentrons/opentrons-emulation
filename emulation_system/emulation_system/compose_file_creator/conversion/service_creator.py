@@ -87,7 +87,7 @@ def _get_env_vars(
     else:
         temp_vars = {}
 
-    return cast(ListOrDict, temp_vars)
+    return ListOrDict(__root__=temp_vars)
 
 
 def _get_service_image(container: Containers) -> str:
