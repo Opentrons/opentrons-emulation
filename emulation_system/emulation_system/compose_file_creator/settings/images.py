@@ -53,13 +53,13 @@ class ThermocyclerModuleImages(Images):
     remote_hardware_image_name: str = "thermocycler-hardware-remote"
 
 
-class OT2Images(Images):
+class RobotServerImages(Images):
     """Image names for Magnetic Module."""
 
     local_firmware_image_name: str = "robot-server-local"
-    local_hardware_image_name: Literal[None] = None
+    local_hardware_image_name: str = "robot-server-local"
     remote_firmware_image_name: str = "robot-server-remote"
-    remote_hardware_image_name: Literal[None] = None
+    remote_hardware_image_name: str = "robot-server-remote"
 
 
 class EmulatorProxyImages(Images):
@@ -76,5 +76,8 @@ IMAGE_MAPPING = {
     Hardware.MAGNETIC_MODULE.value: MagneticModuleImages(),
     Hardware.THERMOCYCLER_MODULE.value: ThermocyclerModuleImages(),
     Hardware.TEMPERATURE_MODULE.value: TemperatureModuleImages(),
-    Hardware.OT2.value: OT2Images(),
+    # TODO: Will need to update OT2 to use Smoothie image once it is created
+    Hardware.OT2.value: RobotServerImages(),
+    # TODO: Will need to update OT3 to use OT3 image once it is created
+    Hardware.OT3.value: RobotServerImages(),
 }

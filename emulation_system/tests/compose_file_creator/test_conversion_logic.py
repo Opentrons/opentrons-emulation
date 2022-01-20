@@ -20,7 +20,9 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
     convert_from_file,
     convert_from_obj,
 )
-from emulation_system.compose_file_creator.input.hardware_models.robots.robot_model import RobotInputModel
+from emulation_system.compose_file_creator.input.hardware_models.robots.robot_model import (
+    RobotInputModel,
+)
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
     Network,
@@ -36,7 +38,7 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
 from emulation_system.compose_file_creator.settings.images import (
     HeaterShakerModuleImages,
     MagneticModuleImages,
-    OT2Images,
+    RobotServerImages,
     TemperatureModuleImages,
     ThermocyclerModuleImages,
 )
@@ -57,7 +59,7 @@ from tests.compose_file_creator.conftest import (
 )
 
 CONTAINER_NAME_TO_IMAGE = {
-    OT2_ID: OT2Images().local_firmware_image_name,
+    OT2_ID: RobotServerImages().local_firmware_image_name,
     THERMOCYCLER_MODULE_ID: ThermocyclerModuleImages().local_hardware_image_name,
     HEATER_SHAKER_MODULE_ID: HeaterShakerModuleImages().remote_hardware_image_name,
     TEMPERATURE_MODULE_ID: TemperatureModuleImages().local_firmware_image_name,
@@ -481,9 +483,7 @@ def test_robot_server_emulator_proxy_env_vars_not_added(
     assert robot_services_env.__root__ == {}
 
 
-@patch.object(RobotInputModel, "is_ot3")
 def test_ot3_feature_flag_added(
-    mock_is_ot3: MagicMock,
     robot_only: Dict[str, Any]
 ) -> None:
     """Confirm feature flag is added when robot is an OT3."""
