@@ -50,6 +50,7 @@ from tests.compose_file_creator.conftest import (
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,
     OT2_ID,
+    OT3_ID,
     SYSTEM_UNIQUE_ID,
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
@@ -478,14 +479,11 @@ def test_robot_server_emulator_proxy_env_vars_not_added(
     assert robot_services_env.__root__ == {}
 
 
-def test_ot3_feature_flag_added(
-    robot_only: Dict[str, Any]
-) -> None:
+def test_ot3_feature_flag_added(ot3_only: Dict[str, Any]) -> None:
     """Confirm feature flag is added when robot is an OT3."""
-    mock_is_ot3.return_value = True
-    robot_services = to_compose_file(robot_only).services
+    robot_services = to_compose_file(ot3_only).services
     assert robot_services is not None
-    robot_services_env = robot_services[OT2_ID].environment
+    robot_services_env = robot_services[OT3_ID].environment
     assert robot_services_env is not None
     assert robot_services_env.__root__ == {
         "OT_API_FF_enableOT3HardwareController": "True"
