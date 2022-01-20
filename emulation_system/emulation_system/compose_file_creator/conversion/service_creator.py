@@ -1,5 +1,6 @@
 """Class for creating intermediate type DockerServices."""
 from typing import (
+    Dict,
     List,
     Optional,
     Union,
@@ -21,6 +22,7 @@ from emulation_system.compose_file_creator.input.hardware_models.robots.robot_mo
 )
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
+    ListOrDict,
     Port,
     Service,
     Volume1,
@@ -78,6 +80,16 @@ def _get_port_bindings(
     return cast(Optional[List[Union[float, str, Port]]], port_string)
 
 
+def _generate_robot_server_env_vars(
+    emulator_proxy_name: str, emulator_proxy_port: int
+) -> Dict[str, str]:
+    return {
+        "OT_SMOOTHIE_EMULATOR_URI": f"socket://{emulator_proxy_name}:"
+        f"{emulator_proxy_port}",
+        "OT_EMULATOR_module_server": f'{{"host": "{emulator_proxy_name}"}}',
+    }
+
+
 def _configure_service(
     container: Containers,
     emulator_proxy_name: Optional[str],
@@ -90,6 +102,19 @@ def _configure_service(
         context=DOCKERFILE_DIR_LOCATION, target=container.get_image_name()
     )
     mount_strings = cast(List[Union[str, Volume1]], container.get_mount_strings())
+
+    proxy_exists_is_robot = emulator_proxy_name is not None and issubclass(
+        container.__class__, RobotInputModel
+    )
+    if proxy_exists_is_robot:
+        # To get mypy to realize that emulator_proxy_name can't be None here
+        assert emulator_proxy_name is not None
+        temp_vars = _generate_robot_server_env_vars(emulator_proxy_name, 11000)
+    else:
+        temp_vars = {}
+
+    env_vars = cast(ListOrDict, temp_vars)
+
     service = Service(
         container_name=_generate_container_name(container.id, config_model),
         image=service_image,
@@ -100,6 +125,7 @@ def _configure_service(
         depends_on=_get_service_depends_on(emulator_proxy_name, container),
         ports=_get_port_bindings(container),
         command=_get_command(emulator_proxy_name, container),
+        environment=env_vars,
     )
     return service
 
