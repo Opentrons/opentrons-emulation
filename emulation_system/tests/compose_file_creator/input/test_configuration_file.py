@@ -82,12 +82,12 @@ def null_robot_with_modules(modules_only: Dict[str, Any]) -> Dict[str, Any]:
 
 
 @pytest.fixture
-def null_module_with_robot(robot_only: Dict[str, Any]) -> Dict[str, Any]:
+def null_module_with_robot(ot2_only: Dict[str, Any]) -> Dict[str, Any]:
     """Structure of SystemConfigurationModel with modules and null robot."""
-    robot_only["modules"] = None
-    robot_only["compose-file-version"] = None
-    robot_only["system-unique-id"] = None
-    return robot_only
+    ot2_only["modules"] = None
+    ot2_only["compose-file-version"] = None
+    ot2_only["system-unique-id"] = None
+    return ot2_only
 
 
 @pytest.fixture
@@ -159,7 +159,7 @@ def test_modules_exist_is_true(config: Dict[str, Any]) -> None:
 
 
 @pytest.mark.parametrize(
-    "config", [lazy_fixture("robot_only"), lazy_fixture("null_module_with_robot")]
+    "config", [lazy_fixture("ot2_only"), lazy_fixture("null_module_with_robot")]
 )
 def test_modules_exist_is_false(config: Dict[str, Any]) -> None:
     """Test that modules_exist property is false when it is supposed to be."""
@@ -169,7 +169,7 @@ def test_modules_exist_is_false(config: Dict[str, Any]) -> None:
 @pytest.mark.parametrize(
     "config",
     [
-        lazy_fixture("robot_only"),
+        lazy_fixture("ot2_only"),
         lazy_fixture("robot_and_modules"),
         lazy_fixture("null_module_with_robot"),
     ],

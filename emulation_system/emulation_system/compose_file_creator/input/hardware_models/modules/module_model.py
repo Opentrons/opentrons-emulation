@@ -13,4 +13,4 @@ class ModuleInputModel(HardwareModel):
     Used to group all modules together and distinguish them from robots.
     """
 
-    pass
+    ...

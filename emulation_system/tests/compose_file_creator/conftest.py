@@ -20,6 +20,7 @@ MAGNETIC_MODULE_ID = "fatal-attraction"
 TEMPERATURE_MODULE_ID = "temperamental"
 THERMOCYCLER_MODULE_ID = "t00-hot-to-handle"
 OT2_ID = "brobot"
+OT3_ID = "edgar-allen-poebot"
 EMULATOR_PROXY_ID = "emulator-proxy"
 
 HEATER_SHAKER_MODULE_EMULATION_LEVEL = EmulationLevels.HARDWARE.value
@@ -27,12 +28,14 @@ MAGNETIC_MODULE_EMULATION_LEVEL = EmulationLevels.FIRMWARE.value
 TEMPERATURE_MODULE_EMULATION_LEVEL = EmulationLevels.FIRMWARE.value
 THERMOCYCLER_MODULE_EMULATION_LEVEL = EmulationLevels.HARDWARE.value
 OT2_EMULATION_LEVEL = EmulationLevels.FIRMWARE.value
+OT3_EMULATION_LEVEL = EmulationLevels.HARDWARE.value
 
 HEATER_SHAKER_MODULE_SOURCE_TYPE = SourceType.REMOTE.value
 MAGNETIC_MODULE_SOURCE_TYPE = SourceType.LOCAL.value
 TEMPERATURE_MODULE_SOURCE_TYPE = SourceType.LOCAL.value
 THERMOCYCLER_MODULE_SOURCE_TYPE = SourceType.LOCAL.value
 OT2_SOURCE_TYPE = SourceType.LOCAL.value
+OT3_SOURCE_TYPE = SourceType.LOCAL.value
 
 SYSTEM_UNIQUE_ID = "testing-1-2-3"
 
@@ -208,6 +211,20 @@ def ot2_default(opentrons_dir: str) -> Dict[str, Any]:
 
 
 @pytest.fixture
+def ot3_default(opentrons_dir: str) -> Dict[str, Any]:
+    """OT-3 using default pipettes."""
+    return {
+        "id": OT3_ID,
+        "hardware": Hardware.OT3.value,
+        "emulation-level": OT3_EMULATION_LEVEL,
+        "source-type": OT3_SOURCE_TYPE,
+        "source-location": opentrons_dir,
+        "exposed-port": 5000,
+        "hardware-specific-attributes": {},
+    }
+
+
+@pytest.fixture
 def ot2_with_overridden_bound_port(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
     """OT-2 with overridden bound-port."""
     ot2_default["bound-port"] = 2500
@@ -263,9 +280,15 @@ def ot2_with_mounts(tmp_path: pathlib.Path, ot2_default: Dict) -> Dict:
 
 
 @pytest.fixture
-def robot_only(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
-    """Structure of SystemConfigurationModel with robot only."""
+def ot2_only(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
+    """Structure of SystemConfigurationModel with OT-2 only."""
     return {"robot": ot2_default}
+
+
+@pytest.fixture
+def ot3_only(ot3_default: Dict[str, Any]) -> Dict[str, Any]:
+    """Structure of SystemConfigurationModel with OT-3 only."""
+    return {"robot": ot3_default}
 
 
 @pytest.fixture

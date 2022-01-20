@@ -35,7 +35,7 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
 from emulation_system.compose_file_creator.settings.images import (
     HeaterShakerModuleImages,
     MagneticModuleImages,
-    OT2Images,
+    RobotServerImages,
     TemperatureModuleImages,
     ThermocyclerModuleImages,
 )
@@ -50,13 +50,14 @@ from tests.compose_file_creator.conftest import (
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,
     OT2_ID,
+    OT3_ID,
     SYSTEM_UNIQUE_ID,
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
 )
 
 CONTAINER_NAME_TO_IMAGE = {
-    OT2_ID: OT2Images().local_firmware_image_name,
+    OT2_ID: RobotServerImages().local_firmware_image_name,
     THERMOCYCLER_MODULE_ID: ThermocyclerModuleImages().local_hardware_image_name,
     HEATER_SHAKER_MODULE_ID: HeaterShakerModuleImages().remote_hardware_image_name,
     TEMPERATURE_MODULE_ID: TemperatureModuleImages().local_firmware_image_name,
@@ -181,11 +182,9 @@ def opentrons_dir_in_list(opentrons_dir: str) -> List[str]:
 
 
 @pytest.fixture
-def robot_with_mount(
-    robot_only: Dict[str, Any], extra_mounts_dir: str
-) -> Dict[str, Any]:
+def robot_with_mount(ot2_only: Dict[str, Any], extra_mounts_dir: str) -> Dict[str, Any]:
     """Robot dict with a mount added."""
-    robot_only["robot"]["extra-mounts"] = [
+    ot2_only["robot"]["extra-mounts"] = [
         {
             "name": "LOG_FILES",
             "type": MountTypes.DIRECTORY,
@@ -193,7 +192,7 @@ def robot_with_mount(
             "source-path": extra_mounts_dir,
         }
     ]
-    return robot_only
+    return ot2_only
 
 
 @pytest.fixture
@@ -400,9 +399,9 @@ def test_top_level_network_with_system_unique_id(
     }
 
 
-def test_emulation_proxy_not_created(robot_only: Dict[str, Any]) -> None:
+def test_emulation_proxy_not_created(ot2_only: Dict[str, Any]) -> None:
     """Verify emulator proxy is not created when there are no modules."""
-    services = to_compose_file(robot_only).services
+    services = to_compose_file(ot2_only).services
     assert services is not None
     assert set(services.keys()) == {OT2_ID}
 
@@ -470,14 +469,25 @@ def test_robot_server_emulator_proxy_env_vars_added(
 
 
 def test_robot_server_emulator_proxy_env_vars_not_added(
-    robot_only: Dict[str, Any]
+    ot2_only: Dict[str, Any]
 ) -> None:
     """Confirm that env vars are not added to robot server when there are no modules."""
-    robot_services = to_compose_file(robot_only).services
+    robot_services = to_compose_file(ot2_only).services
     assert robot_services is not None
     robot_services_env = robot_services[OT2_ID].environment
     assert robot_services_env is not None
     assert robot_services_env.__root__ == {}
+
+
+def test_ot3_feature_flag_added(ot3_only: Dict[str, Any]) -> None:
+    """Confirm feature flag is added when robot is an OT3."""
+    robot_services = to_compose_file(ot3_only).services
+    assert robot_services is not None
+    robot_services_env = robot_services[OT3_ID].environment
+    assert robot_services_env is not None
+    assert robot_services_env.__root__ == {
+        "OT_API_FF_enableOT3HardwareController": "True"
+    }
 
 
 @pytest.mark.parametrize(

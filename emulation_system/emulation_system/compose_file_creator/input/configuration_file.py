@@ -19,6 +19,7 @@ from pydantic import (
     validator,
 )
 
+from emulation_system.compose_file_creator.input.hardware_models import RobotInputModel
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DEFAULT_DOCKER_COMPOSE_VERSION,
     Hardware,
@@ -109,7 +110,9 @@ class SystemConfigurationModel(BaseModel):
     @property
     def robot_exists(self) -> bool:
         """Returns True if a robot was defined in config file, False if not."""
-        return self.robot is not None and isinstance(self.robot, Robots)
+        return self.robot is not None and issubclass(
+            self.robot.__class__, RobotInputModel
+        )
 
     @property
     def requires_can_network(self) -> bool:

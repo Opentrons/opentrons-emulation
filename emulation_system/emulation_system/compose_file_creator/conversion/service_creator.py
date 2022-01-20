@@ -1,5 +1,6 @@
 """Class for creating intermediate type DockerServices."""
 from typing import (
+    Any,
     Dict,
     List,
     Optional,
@@ -14,11 +15,10 @@ from emulation_system.compose_file_creator.conversion.intermediate_types import 
 from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
 )
-from emulation_system.compose_file_creator.input.hardware_models.modules.module_model import (  # noqa: E501
-    ModuleInputModel,
-)
-from emulation_system.compose_file_creator.input.hardware_models.robots.robot_model import (  # noqa: E501
+from emulation_system.compose_file_creator.input.hardware_models import (
     RobotInputModel,
+    ModuleInputModel,
+    OT3InputModel,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
@@ -35,7 +35,6 @@ from emulation_system.consts import DOCKERFILE_DIR_LOCATION
 def _generate_container_name(
     container_id: str, config_model: SystemConfigurationModel
 ) -> str:
-    """Generates container name based off of system_unique_id value."""
     return (
         f"{config_model.system_unique_id}-{container_id}"
         if config_model.system_unique_id is not None
@@ -44,12 +43,8 @@ def _generate_container_name(
 
 
 def _get_service_depends_on(
-    emulator_proxy_name: Optional[str], container: Containers
+    container: Containers, emulator_proxy_name: Optional[str]
 ) -> Optional[List[str]]:
-    """Get list of other services that service depends on.
-
-    If service is module, return [emulator_proxy_name]
-    """
     return (
         [emulator_proxy_name]
         if emulator_proxy_name is not None
@@ -59,35 +54,57 @@ def _get_service_depends_on(
 
 
 def _get_command(
-    emulator_proxy_name: Optional[str], container: Containers
+    container: Containers, emulator_proxy_name: Optional[str]
 ) -> Optional[str]:
-    """Get command for service to run.
-
-    If service is module, return emulator_proxy_name
-    """
-    depends_on = _get_service_depends_on(emulator_proxy_name, container)
+    depends_on = _get_service_depends_on(container, emulator_proxy_name)
     return depends_on[0] if depends_on is not None else None
 
 
 def _get_port_bindings(
     container: Containers,
 ) -> Optional[List[Union[float, str, Port]]]:
-    port_string = (
-        [container.get_port_binding_string()]
-        if issubclass(container.__class__, RobotInputModel)
+
+    if issubclass(container.__class__, RobotInputModel):
+        return [container.get_port_binding_string()]
+    else:
+        return None
+
+
+def _get_env_vars(
+    container: Containers, emulator_proxy_name: Optional[str]
+) -> ListOrDict:
+    temp_vars: Dict[str, Any] = {}
+
+    if emulator_proxy_name is not None and issubclass(
+        container.__class__, RobotInputModel
+    ):
+        # TODO: If emulator proxy port is ever not hardcoded will have to update from
+        #  11000 to a variable
+        temp_vars["OT_SMOOTHIE_EMULATOR_URI"] = f"socket://{emulator_proxy_name}:11000"
+        temp_vars["OT_EMULATOR_module_server"] = f'{{"host": "{emulator_proxy_name}"}}'
+    elif issubclass(container.__class__, OT3InputModel):
+        temp_vars["OT_API_FF_enableOT3HardwareController"] = True
+    else:
+        temp_vars = {}
+
+    return ListOrDict(__root__=temp_vars)
+
+
+def _get_service_image(container: Containers) -> str:
+    return f"{container.get_image_name()}:latest"
+
+
+def _get_service_build(container: Containers) -> BuildItem:
+    return BuildItem(context=DOCKERFILE_DIR_LOCATION, target=container.get_image_name())
+
+
+def _get_mount_strings(container: Containers) -> Optional[List[Union[str, Volume1]]]:
+    mount_strings = container.get_mount_strings()
+    return (
+        cast(List[Union[str, Volume1]], mount_strings)
+        if len(mount_strings) > 0
         else None
     )
-    return cast(Optional[List[Union[float, str, Port]]], port_string)
-
-
-def _generate_robot_server_env_vars(
-    emulator_proxy_name: str, emulator_proxy_port: int
-) -> Dict[str, str]:
-    return {
-        "OT_SMOOTHIE_EMULATOR_URI": f"socket://{emulator_proxy_name}:"
-        f"{emulator_proxy_port}",
-        "OT_EMULATOR_module_server": f'{{"host": "{emulator_proxy_name}"}}',
-    }
 
 
 def _configure_service(
@@ -96,36 +113,17 @@ def _configure_service(
     config_model: SystemConfigurationModel,
     required_networks: RequiredNetworks,
 ) -> Service:
-    """Configure and return an individual service."""
-    service_image = f"{container.get_image_name()}:latest"
-    service_build = BuildItem(
-        context=DOCKERFILE_DIR_LOCATION, target=container.get_image_name()
-    )
-    mount_strings = cast(List[Union[str, Volume1]], container.get_mount_strings())
-
-    proxy_exists_is_robot = emulator_proxy_name is not None and issubclass(
-        container.__class__, RobotInputModel
-    )
-    if proxy_exists_is_robot:
-        # To get mypy to realize that emulator_proxy_name can't be None here
-        assert emulator_proxy_name is not None
-        temp_vars = _generate_robot_server_env_vars(emulator_proxy_name, 11000)
-    else:
-        temp_vars = {}
-
-    env_vars = cast(ListOrDict, temp_vars)
-
     service = Service(
         container_name=_generate_container_name(container.id, config_model),
-        image=service_image,
+        image=_get_service_image(container),
         tty=True,
-        build=service_build,
+        build=_get_service_build(container),
         networks=required_networks.networks,
-        volumes=mount_strings if len(mount_strings) > 0 else None,
-        depends_on=_get_service_depends_on(emulator_proxy_name, container),
+        volumes=_get_mount_strings(container),
+        depends_on=_get_service_depends_on(container, emulator_proxy_name),
         ports=_get_port_bindings(container),
-        command=_get_command(emulator_proxy_name, container),
-        environment=env_vars,
+        command=_get_command(container, emulator_proxy_name),
+        environment=_get_env_vars(container, emulator_proxy_name),
     )
     return service
 

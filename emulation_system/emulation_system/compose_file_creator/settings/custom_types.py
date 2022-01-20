@@ -5,6 +5,7 @@ from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
     MagneticModuleInputModel,
     OT2InputModel,
+    OT3InputModel,
     TemperatureModuleInputModel,
     ThermocyclerModuleInputModel,
 )
@@ -16,6 +17,6 @@ Modules = Union[
     MagneticModuleInputModel,
 ]
 
-Robots = Union[OT2InputModel]
+Robots = Union[OT2InputModel, OT3InputModel]
 
 Containers = Union[Robots, Modules]
