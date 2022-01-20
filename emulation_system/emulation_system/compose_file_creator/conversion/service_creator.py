@@ -15,13 +15,10 @@ from emulation_system.compose_file_creator.conversion.intermediate_types import 
 from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
 )
-from emulation_system.compose_file_creator.input.hardware_models import OT2InputModel
-from emulation_system.compose_file_creator.input.hardware_models.modules.module_model import (
-    ModuleInputModel,
-)
-from emulation_system.compose_file_creator.input.hardware_models.robots.ot3_model import OT3InputModel
-from emulation_system.compose_file_creator.input.hardware_models.robots.robot_model import (
+from emulation_system.compose_file_creator.input.hardware_models import (
     RobotInputModel,
+    ModuleInputModel,
+    OT3InputModel,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
@@ -66,12 +63,12 @@ def _get_command(
 def _get_port_bindings(
     container: Containers,
 ) -> Optional[List[Union[float, str, Port]]]:
-    port_bindings: Optional[List[Union[float, str, Port]]] = []
+    port_bindings = []
 
     if issubclass(container.__class__, RobotInputModel):
         port_bindings.append(container.get_port_binding_string())
 
-    return port_bindings
+    return cast(Optional[List[Union[float, str, Port]]], port_bindings)
 
 
 def _get_env_vars(
@@ -86,7 +83,7 @@ def _get_env_vars(
         #  11000 to a variable
         temp_vars["OT_SMOOTHIE_EMULATOR_URI"] = f"socket://{emulator_proxy_name}:11000"
         temp_vars["OT_EMULATOR_module_server"] = f'{{"host": "{emulator_proxy_name}"}}'
-    elif isinstance(container.__class__, OT3InputModel):
+    elif issubclass(container.__class__, OT3InputModel):
         temp_vars["OT_API_FF_enableOT3HardwareController"] = True
     else:
         temp_vars = {}
@@ -104,7 +101,11 @@ def _get_service_build(container: Containers) -> BuildItem:
 
 def _get_mount_strings(container: Containers) -> Optional[List[Union[str, Volume1]]]:
     mount_strings = container.get_mount_strings()
-    return mount_strings if len(mount_strings) > 0 else None
+    return (
+        cast(List[Union[str, Volume1]], mount_strings)
+        if len(mount_strings) > 0
+        else None
+    )
 
 
 def _configure_service(

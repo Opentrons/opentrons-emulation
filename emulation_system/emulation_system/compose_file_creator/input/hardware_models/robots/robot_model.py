@@ -7,7 +7,6 @@ from pydantic import Field
 from emulation_system.compose_file_creator.input.hardware_models.hardware_model import (
     HardwareModel,
 )
-from emulation_system.compose_file_creator.settings.config_file_settings import Hardware
 
 
 class RobotInputModel(HardwareModel):
