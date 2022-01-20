@@ -63,12 +63,11 @@ def _get_command(
 def _get_port_bindings(
     container: Containers,
 ) -> Optional[List[Union[float, str, Port]]]:
-    port_bindings = []
 
     if issubclass(container.__class__, RobotInputModel):
-        port_bindings.append(container.get_port_binding_string())
-
-    return cast(Optional[List[Union[float, str, Port]]], port_bindings)
+        return [container.get_port_binding_string()]
+    else:
+        return None
 
 
 def _get_env_vars(
