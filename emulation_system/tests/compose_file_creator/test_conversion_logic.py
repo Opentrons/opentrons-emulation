@@ -17,9 +17,11 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
     convert_from_obj,
 )
 from emulation_system.compose_file_creator.input.hardware_models import (
+    HeaterShakerModuleInputModel,
     MagneticModuleInputModel,
     ModuleInputModel,
     TemperatureModuleInputModel,
+    ThermocyclerModuleInputModel,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
@@ -531,6 +533,37 @@ def test_hardware_serial_number_env_vars(
 
     module_root = cast(Dict[str, str], module_env.__root__)
     assert module_root["SERIAL_NUMBER"] == service_name
+
+
+@pytest.mark.parametrize(
+    "service_name, input_class",
+    [
+        [TEMPERATURE_MODULE_ID, TemperatureModuleInputModel],
+        [THERMOCYCLER_MODULE_ID, ThermocyclerModuleInputModel],
+        [HEATER_SHAKER_MODULE_ID, HeaterShakerModuleInputModel],
+        [MAGNETIC_MODULE_ID, MagneticModuleInputModel],
+    ],
+)
+def test_em_proxy_info_env_vars(
+    service_name: str,
+    input_class: Type[ModuleInputModel],
+    robot_with_mount_and_modules_services: Dict[str, Service],
+) -> None:
+    """Confirm that serial number env vars are created correctly on hardware modules."""
+    services = robot_with_mount_and_modules_services
+    assert services is not None
+
+    module_env = services[service_name].environment
+    assert module_env is not None
+    assert input_class.proxy_info.env_var_name in module_env.__root__
+
+    module_root = cast(Dict[str, str], module_env.__root__)
+    assert module_root[input_class.proxy_info.env_var_name] == json.dumps(
+        {
+            "emulator_port": input_class.proxy_info.emulator_port,
+            "driver_port": input_class.proxy_info.driver_port,
+        }
+    )
 
 
 @pytest.mark.parametrize(
