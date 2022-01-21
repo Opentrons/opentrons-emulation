@@ -6,6 +6,7 @@ from typing import (
     Dict,
     List,
     cast,
+    Type
 )
 from unittest.mock import (
     MagicMock,
@@ -23,6 +24,7 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
 )
 from emulation_system.compose_file_creator.input.hardware_models import (
     MagneticModuleInputModel,
+    ModuleInputModel,
     TemperatureModuleInputModel,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import (
@@ -482,58 +484,62 @@ def test_ot3_feature_flag_added(ot3_only: Dict[str, Any]) -> None:
     assert root["OT_API_FF_enableOT3HardwareController"] == "True"
 
 
-def test_serial_number_env_vars(
+@pytest.mark.parametrize(
+    "service_name,input_class",
+    [
+        [TEMPERATURE_MODULE_ID, TemperatureModuleInputModel],
+        [MAGNETIC_MODULE_ID, MagneticModuleInputModel],
+    ],
+)
+def test_firmware_serial_number_env_vars(
+    service_name: str,
+    input_class: Type[ModuleInputModel],
     robot_with_mount_and_modules_services: Dict[str, Service]
 ) -> None:
-    """Confirm that serial number env vars are created correctly on modules."""
+    """Confirm that serial number env vars are created correctly on firmware modules."""
     services = robot_with_mount_and_modules_services
     assert services is not None
 
-    heater_shaker_env = services[HEATER_SHAKER_MODULE_ID].environment
-    assert heater_shaker_env is not None
-    assert "SERIAL_NUMBER" in heater_shaker_env.__root__
-    heater_shaker_root = cast(Dict[str, str], heater_shaker_env.__root__)
-    assert heater_shaker_root["SERIAL_NUMBER"] == HEATER_SHAKER_MODULE_ID
-
-    magdeck_env = services[MAGNETIC_MODULE_ID].environment
-    assert magdeck_env is not None
+    module_env = services[service_name].environment
+    assert module_env is not None
     assert (
-        MagneticModuleInputModel.firmware_serial_number_info.env_var_name
-        in magdeck_env.__root__
+        input_class.firmware_serial_number_info.env_var_name
+        in module_env.__root__
     )
-    magdeck_root = cast(Dict[str, str], magdeck_env.__root__)
-    assert magdeck_root[
-        MagneticModuleInputModel.firmware_serial_number_info.env_var_name
+
+    module_root = cast(Dict[str, str], module_env.__root__)
+    assert module_root[
+        input_class.firmware_serial_number_info.env_var_name
     ] == json.dumps(
         {
-            "serial_number": MAGNETIC_MODULE_ID,
-            "model": MagneticModuleInputModel.firmware_serial_number_info.model,
-            "version": MagneticModuleInputModel.firmware_serial_number_info.version,
+            "serial_number": service_name,
+            "model": input_class.firmware_serial_number_info.model,
+            "version": input_class.firmware_serial_number_info.version,
         }
     )
 
-    tempdeck_env = services[TEMPERATURE_MODULE_ID].environment
-    assert tempdeck_env is not None
-    assert (
-        TemperatureModuleInputModel.firmware_serial_number_info.env_var_name
-        in tempdeck_env.__root__
-    )
-    tempdeck_root = cast(Dict[str, str], tempdeck_env.__root__)
-    assert tempdeck_root[
-        TemperatureModuleInputModel.firmware_serial_number_info.env_var_name
-    ] == json.dumps(
-        {
-            "serial_number": TEMPERATURE_MODULE_ID,
-            "model": TemperatureModuleInputModel.firmware_serial_number_info.model,
-            "version": TemperatureModuleInputModel.firmware_serial_number_info.version,
-        }
-    )
 
-    thermocycler_env = services[THERMOCYCLER_MODULE_ID].environment
-    assert thermocycler_env is not None
-    assert "SERIAL_NUMBER" in thermocycler_env.__root__
-    thermocycler_root = cast(Dict[str, str], thermocycler_env.__root__)
-    assert thermocycler_root["SERIAL_NUMBER"] == THERMOCYCLER_MODULE_ID
+@pytest.mark.parametrize(
+    "service_name",
+    [
+        THERMOCYCLER_MODULE_ID,
+        HEATER_SHAKER_MODULE_ID,
+    ],
+)
+def test_hardware_serial_number_env_vars(
+    service_name: str,
+    robot_with_mount_and_modules_services: Dict[str, Service]
+) -> None:
+    """Confirm that serial number env vars are created correctly on hardware modules."""
+    services = robot_with_mount_and_modules_services
+    assert services is not None
+
+    module_env = services[service_name].environment
+    assert module_env is not None
+    assert "SERIAL_NUMBER" in module_env.__root__
+
+    module_root = cast(Dict[str, str], module_env.__root__)
+    assert module_root["SERIAL_NUMBER"] == service_name
 
 
 @pytest.mark.parametrize(
