@@ -1,4 +1,5 @@
 """Tests for converting input file to DockerComposeFile."""
+import json
 import os
 from typing import (
     Any,
@@ -19,6 +20,10 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
     FileDisambiguationError,
     convert_from_file,
     convert_from_obj,
+)
+from emulation_system.compose_file_creator.input.hardware_models import (
+    MagneticModuleInputModel,
+    TemperatureModuleInputModel,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
@@ -440,31 +445,17 @@ def test_robot_server_emulator_proxy_env_vars_added(
     robot_with_mount_and_modules_services: Dict[str, Any]
 ) -> None:
     """Confirm env vars are set correctly."""
-    assert robot_with_mount_and_modules_services[OT2_ID].environment.__root__ == {
-        "OT_SMOOTHIE_EMULATOR_URI": f"socket://{EMULATOR_PROXY_ID}:11000",
-        "OT_EMULATOR_module_server": f'{{"host": "{EMULATOR_PROXY_ID}"}}',
-    }
+    env = robot_with_mount_and_modules_services[OT2_ID].environment
+    assert env is not None
+    assert "OT_SMOOTHIE_EMULATOR_URI" in env.__root__
     assert (
-        robot_with_mount_and_modules_services[MAGNETIC_MODULE_ID].environment.__root__
-        == {}
+        env.__root__["OT_SMOOTHIE_EMULATOR_URI"]
+        == f"socket://{EMULATOR_PROXY_ID}:11000"
     )
+    assert "OT_EMULATOR_module_server" in env.__root__
     assert (
-        robot_with_mount_and_modules_services[
-            HEATER_SHAKER_MODULE_ID
-        ].environment.__root__
-        == {}
-    )
-    assert (
-        robot_with_mount_and_modules_services[
-            TEMPERATURE_MODULE_ID
-        ].environment.__root__
-        == {}
-    )
-    assert (
-        robot_with_mount_and_modules_services[
-            THERMOCYCLER_MODULE_ID
-        ].environment.__root__
-        == {}
+        env.__root__["OT_EMULATOR_module_server"]
+        == f'{{"host": "{EMULATOR_PROXY_ID}"}}'
     )
 
 
@@ -476,18 +467,73 @@ def test_robot_server_emulator_proxy_env_vars_not_added(
     assert robot_services is not None
     robot_services_env = robot_services[OT2_ID].environment
     assert robot_services_env is not None
-    assert robot_services_env.__root__ == {}
+    assert "OT_SMOOTHIE_EMULATOR_URI" not in robot_services_env.__root__
+    assert "OT_EMULATOR_module_server" not in robot_services_env.__root__
 
 
 def test_ot3_feature_flag_added(ot3_only: Dict[str, Any]) -> None:
     """Confirm feature flag is added when robot is an OT3."""
     robot_services = to_compose_file(ot3_only).services
     assert robot_services is not None
-    robot_services_env = robot_services[OT3_ID].environment
-    assert robot_services_env is not None
-    assert robot_services_env.__root__ == {
-        "OT_API_FF_enableOT3HardwareController": "True"
-    }
+    env = robot_services[OT3_ID].environment
+    assert env is not None
+    assert "OT_API_FF_enableOT3HardwareController" in env.__root__
+    root = cast(Dict[str, str], env.__root__)
+    assert root["OT_API_FF_enableOT3HardwareController"] == "True"
+
+
+def test_serial_number_env_vars(
+    robot_with_mount_and_modules_services: Dict[str, Service]
+) -> None:
+    """Confirm that serial number env vars are created correctly on modules."""
+    services = robot_with_mount_and_modules_services
+    assert services is not None
+
+    heater_shaker_env = services[HEATER_SHAKER_MODULE_ID].environment
+    assert heater_shaker_env is not None
+    assert "SERIAL_NUMBER" in heater_shaker_env.__root__
+    heater_shaker_root = cast(Dict[str, str], heater_shaker_env.__root__)
+    assert heater_shaker_root["SERIAL_NUMBER"] == HEATER_SHAKER_MODULE_ID
+
+    magdeck_env = services[MAGNETIC_MODULE_ID].environment
+    assert magdeck_env is not None
+    assert (
+        MagneticModuleInputModel.firmware_serial_number_info.env_var_name
+        in magdeck_env.__root__
+    )
+    magdeck_root = cast(Dict[str, str], magdeck_env.__root__)
+    assert magdeck_root[
+        MagneticModuleInputModel.firmware_serial_number_info.env_var_name
+    ] == json.dumps(
+        {
+            "serial_number": MAGNETIC_MODULE_ID,
+            "model": MagneticModuleInputModel.firmware_serial_number_info.model,
+            "version": MagneticModuleInputModel.firmware_serial_number_info.version,
+        }
+    )
+
+    tempdeck_env = services[TEMPERATURE_MODULE_ID].environment
+    assert tempdeck_env is not None
+    assert (
+        TemperatureModuleInputModel.firmware_serial_number_info.env_var_name
+        in tempdeck_env.__root__
+    )
+    tempdeck_root = cast(Dict[str, str], tempdeck_env.__root__)
+    assert tempdeck_root[
+        TemperatureModuleInputModel.firmware_serial_number_info.env_var_name
+    ] == json.dumps(
+        {
+            "serial_number": TEMPERATURE_MODULE_ID,
+            "model": TemperatureModuleInputModel.firmware_serial_number_info.model,
+            "version": TemperatureModuleInputModel.firmware_serial_number_info.version,
+        }
+    )
+
+    thermocycler_env = services[THERMOCYCLER_MODULE_ID].environment
+    assert thermocycler_env is not None
+    assert "SERIAL_NUMBER" in thermocycler_env.__root__
+    thermocycler_root = cast(Dict[str, str], thermocycler_env.__root__)
+    assert thermocycler_root["SERIAL_NUMBER"] == THERMOCYCLER_MODULE_ID
 
 
 @pytest.mark.parametrize(
