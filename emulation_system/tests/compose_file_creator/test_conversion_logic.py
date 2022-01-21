@@ -1,13 +1,7 @@
 """Tests for converting input file to DockerComposeFile."""
 import json
 import os
-from typing import (
-    Any,
-    Dict,
-    List,
-    cast,
-    Type
-)
+from typing import Any, Dict, List, cast, Type
 from unittest.mock import (
     MagicMock,
     patch,
@@ -494,7 +488,7 @@ def test_ot3_feature_flag_added(ot3_only: Dict[str, Any]) -> None:
 def test_firmware_serial_number_env_vars(
     service_name: str,
     input_class: Type[ModuleInputModel],
-    robot_with_mount_and_modules_services: Dict[str, Service]
+    robot_with_mount_and_modules_services: Dict[str, Service],
 ) -> None:
     """Confirm that serial number env vars are created correctly on firmware modules."""
     services = robot_with_mount_and_modules_services
@@ -502,10 +496,8 @@ def test_firmware_serial_number_env_vars(
 
     module_env = services[service_name].environment
     assert module_env is not None
-    assert (
-        input_class.firmware_serial_number_info.env_var_name
-        in module_env.__root__
-    )
+    assert input_class.firmware_serial_number_info is not None
+    assert input_class.firmware_serial_number_info.env_var_name in module_env.__root__
 
     module_root = cast(Dict[str, str], module_env.__root__)
     assert module_root[
@@ -527,8 +519,7 @@ def test_firmware_serial_number_env_vars(
     ],
 )
 def test_hardware_serial_number_env_vars(
-    service_name: str,
-    robot_with_mount_and_modules_services: Dict[str, Service]
+    service_name: str, robot_with_mount_and_modules_services: Dict[str, Service]
 ) -> None:
     """Confirm that serial number env vars are created correctly on hardware modules."""
     services = robot_with_mount_and_modules_services

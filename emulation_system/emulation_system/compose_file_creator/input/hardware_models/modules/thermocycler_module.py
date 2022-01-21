@@ -50,7 +50,7 @@ class ThermocyclerModuleInputModel(ModuleInputModel):
     proxy_info: ClassVar[ProxyInfoModel] = ProxyInfoModel(
         env_var_name="OT_EMULATOR_thermocycler_proxy",
         emulator_port=10003,
-        driver_port=11003
+        driver_port=11003,
     )
 
     hardware: Literal[Hardware.THERMOCYCLER_MODULE]

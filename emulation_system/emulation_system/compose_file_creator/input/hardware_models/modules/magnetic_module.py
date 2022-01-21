@@ -44,7 +44,7 @@ class MagneticModuleInputModel(ModuleInputModel):
     proxy_info: ClassVar[ProxyInfoModel] = ProxyInfoModel(
         env_var_name="OT_EMULATOR_magnetic_proxy",
         emulator_port=10002,
-        driver_port=11002
+        driver_port=11002,
     )
 
     hardware: Literal[Hardware.MAGNETIC_MODULE]

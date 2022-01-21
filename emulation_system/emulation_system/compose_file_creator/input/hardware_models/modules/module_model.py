@@ -33,6 +33,7 @@ class FirmwareSerialNumberModel(BaseModel):
 
 class ProxyInfoModel(BaseModel):
     """Model to provide information needed to connect module to proxy."""
+
     env_var_name: str
     emulator_port: int
     driver_port: int
@@ -47,7 +48,7 @@ class ModuleInputModel(HardwareModel):
     firmware_serial_number_info: ClassVar[Optional[FirmwareSerialNumberModel]] = Field(
         alias="firmware-serial-number-info", allow_mutation=False
     )
-    proxy_info: ClassVar[Optional[ProxyInfoModel]] = Field(
+    proxy_info: ClassVar[ProxyInfoModel] = Field(
         alias="proxy-info", allow_mutation=False
     )
 
@@ -81,6 +82,6 @@ class ModuleInputModel(HardwareModel):
         """Builds proxy info env var."""
         value = {
             "emulator_port": self.proxy_info.emulator_port,
-            "driver_port": self.proxy_info.driver_port
+            "driver_port": self.proxy_info.driver_port,
         }
         return {self.proxy_info.env_var_name: json.dumps(value)}

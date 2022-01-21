@@ -41,7 +41,7 @@ class HeaterShakerModuleInputModel(ModuleInputModel):
     proxy_info: ClassVar[ProxyInfoModel] = ProxyInfoModel(
         env_var_name="OT_EMULATOR_heatershaker_proxy",
         emulator_port=10004,
-        driver_port=11004
+        driver_port=11004,
     )
 
     hardware: Literal[Hardware.HEATER_SHAKER_MODULE]

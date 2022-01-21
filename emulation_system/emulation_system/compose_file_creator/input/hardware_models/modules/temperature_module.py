@@ -45,7 +45,7 @@ class TemperatureModuleInputModel(ModuleInputModel):
     proxy_info: ClassVar[ProxyInfoModel] = ProxyInfoModel(
         env_var_name="OT_EMULATOR_temperature_proxy",
         emulator_port=10001,
-        driver_port=11001
+        driver_port=11001,
     )
 
     hardware: Literal[Hardware.TEMPERATURE_MODULE]
