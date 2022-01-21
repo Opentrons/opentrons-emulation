@@ -16,9 +16,13 @@ from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
 )
 from emulation_system.compose_file_creator.input.hardware_models import (
+    HeaterShakerModuleInputModel,
+    MagneticModuleInputModel,
     RobotInputModel,
     ModuleInputModel,
     OT3InputModel,
+    TemperatureModuleInputModel,
+    ThermocyclerModuleInputModel,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
@@ -27,9 +31,18 @@ from emulation_system.compose_file_creator.output.compose_file_model import (
     Service,
     Volume1,
 )
-from emulation_system.compose_file_creator.settings.custom_types import Containers
+from emulation_system.compose_file_creator.settings.custom_types import (
+    Containers,
+)
 from emulation_system.compose_file_creator.settings.images import EmulatorProxyImages
 from emulation_system.consts import DOCKERFILE_DIR_LOCATION
+
+MODULE_TYPES = [
+    ThermocyclerModuleInputModel,
+    TemperatureModuleInputModel,
+    HeaterShakerModuleInputModel,
+    MagneticModuleInputModel,
+]
 
 
 def _generate_container_name(
@@ -75,8 +88,9 @@ def _get_env_vars(
 ) -> ListOrDict:
     temp_vars: Dict[str, Any] = {}
 
-    if emulator_proxy_name is not None and issubclass(
-        container.__class__, RobotInputModel
+    if (
+        issubclass(container.__class__, RobotInputModel)
+        and emulator_proxy_name is not None
     ):
         # TODO: If emulator proxy port is ever not hardcoded will have to update from
         #  11000 to a variable
@@ -86,6 +100,7 @@ def _get_env_vars(
         temp_vars["OT_API_FF_enableOT3HardwareController"] = True
     elif issubclass(container.__class__, ModuleInputModel):
         temp_vars.update(container.get_serial_number_env_var())
+        temp_vars.update(container.get_proxy_info_env_var())
     else:
         temp_vars = {}
 
@@ -130,6 +145,16 @@ def _configure_service(
     return service
 
 
+def _create_emulator_proxy_env_vars() -> ListOrDict:
+    return ListOrDict(
+        __root__={
+            env_var_name: env_var_value
+            for module in MODULE_TYPES
+            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()  # type: ignore [attr-defined] # noqa: E501
+        }
+    )
+
+
 def create_services(
     config_model: SystemConfigurationModel, required_networks: RequiredNetworks
 ) -> DockerServices:
@@ -148,6 +173,7 @@ def create_services(
             build=BuildItem(context=DOCKERFILE_DIR_LOCATION, target=image),
             tty=True,
             networks=required_networks.networks,
+            environment=_create_emulator_proxy_env_vars(),
         )
 
     services.update(
