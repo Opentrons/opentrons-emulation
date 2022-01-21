@@ -10,6 +10,7 @@ from emulation_system.compose_file_creator.input.hardware_models.hardware_specif
 from emulation_system.compose_file_creator.input.hardware_models.modules.module_model import (  # noqa: E501
     FirmwareSerialNumberModel,
     ModuleInputModel,
+    ProxyInfoModel,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     EmulationLevels,
@@ -40,6 +41,11 @@ class TemperatureModuleInputModel(ModuleInputModel):
         FirmwareSerialNumberModel
     ] = FirmwareSerialNumberModel(
         model="temp_deck_v20", version="v2.0.1", env_var_name="OT_EMULATOR_tempdeck"
+    )
+    proxy_info: ClassVar[ProxyInfoModel] = ProxyInfoModel(
+        env_var_name="OT_EMULATOR_temperature_proxy",
+        emulator_port=10001,
+        driver_port=11001
     )
 
     hardware: Literal[Hardware.TEMPERATURE_MODULE]

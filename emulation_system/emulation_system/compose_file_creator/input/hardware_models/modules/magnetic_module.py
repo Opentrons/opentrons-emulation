@@ -10,6 +10,7 @@ from emulation_system.compose_file_creator.input.hardware_models.hardware_specif
 from emulation_system.compose_file_creator.input.hardware_models.modules.module_model import (  # noqa: E501
     FirmwareSerialNumberModel,
     ModuleInputModel,
+    ProxyInfoModel,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     EmulationLevels,
@@ -39,6 +40,11 @@ class MagneticModuleInputModel(ModuleInputModel):
         FirmwareSerialNumberModel
     ] = FirmwareSerialNumberModel(
         model="mag_deck_v20", version="2.0.0", env_var_name="OT_EMULATOR_magdeck"
+    )
+    proxy_info: ClassVar[ProxyInfoModel] = ProxyInfoModel(
+        env_var_name="OT_EMULATOR_magnetic_proxy",
+        emulator_port=10002,
+        driver_port=11002
     )
 
     hardware: Literal[Hardware.MAGNETIC_MODULE]

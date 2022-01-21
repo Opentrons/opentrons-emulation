@@ -75,8 +75,9 @@ def _get_env_vars(
 ) -> ListOrDict:
     temp_vars: Dict[str, Any] = {}
 
-    if emulator_proxy_name is not None and issubclass(
-        container.__class__, RobotInputModel
+    if (
+        issubclass(container.__class__, RobotInputModel)
+        and emulator_proxy_name is not None
     ):
         # TODO: If emulator proxy port is ever not hardcoded will have to update from
         #  11000 to a variable
@@ -86,6 +87,7 @@ def _get_env_vars(
         temp_vars["OT_API_FF_enableOT3HardwareController"] = True
     elif issubclass(container.__class__, ModuleInputModel):
         temp_vars.update(container.get_serial_number_env_var())
+        temp_vars.update(container.get_proxy_info_env_var())
     else:
         temp_vars = {}
 

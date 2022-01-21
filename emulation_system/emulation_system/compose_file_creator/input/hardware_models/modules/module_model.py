@@ -26,9 +26,16 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
 class FirmwareSerialNumberModel(BaseModel):
     """Model for information needed to set a firmware emulator's serial number."""
 
+    env_var_name: str
     model: str
     version: str
+
+
+class ProxyInfoModel(BaseModel):
+    """Model to provide information needed to connect module to proxy."""
     env_var_name: str
+    emulator_port: int
+    driver_port: int
 
 
 class ModuleInputModel(HardwareModel):
@@ -39,6 +46,9 @@ class ModuleInputModel(HardwareModel):
 
     firmware_serial_number_info: ClassVar[Optional[FirmwareSerialNumberModel]] = Field(
         alias="firmware-serial-number-info", allow_mutation=False
+    )
+    proxy_info: ClassVar[Optional[ProxyInfoModel]] = Field(
+        alias="proxy-info", allow_mutation=False
     )
 
     def _get_firmware_serial_number_env_var(self) -> Dict[str, str]:
@@ -66,3 +76,11 @@ class ModuleInputModel(HardwareModel):
             if self.emulation_level == EmulationLevels.FIRMWARE
             else self._get_hardware_serial_number_env_var()
         )
+
+    def get_proxy_info_env_var(self) -> Dict[str, str]:
+        """Builds proxy info env var."""
+        value = {
+            "emulator_port": self.proxy_info.emulator_port,
+            "driver_port": self.proxy_info.driver_port
+        }
+        return {self.proxy_info.env_var_name: json.dumps(value)}
