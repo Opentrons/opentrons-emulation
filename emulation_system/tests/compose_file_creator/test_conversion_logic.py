@@ -1,7 +1,13 @@
 """Tests for converting input file to DockerComposeFile."""
 import json
 import os
-from typing import Any, Dict, List, cast, Type
+from typing import (
+    Any,
+    Dict,
+    List,
+    Type,
+    cast,
+)
 from unittest.mock import (
     MagicMock,
     patch,
@@ -108,7 +114,8 @@ def duplicate_emulation_files(
     testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
 ) -> OpentronsEmulationConfiguration:
     """Create file with same name in the 2 emulation_configuration_file_locations directories."""  # noqa: E501
-    testing_opentrons_emulation_configuration.global_settings.emulation_configuration_file_locations = [  # noqa: E501
+    settings = testing_opentrons_emulation_configuration.global_settings
+    settings.emulation_configuration_file_locations = [
         "file_1",
         "file_2",
     ]
@@ -544,7 +551,7 @@ def test_hardware_serial_number_env_vars(
         [MAGNETIC_MODULE_ID, MagneticModuleInputModel],
     ],
 )
-def test_em_proxy_info_env_vars(
+def test_em_proxy_info_env_vars_on_modules(
     service_name: str,
     input_class: Type[ModuleInputModel],
     robot_with_mount_and_modules_services: Dict[str, Service],
@@ -558,6 +565,36 @@ def test_em_proxy_info_env_vars(
     assert input_class.proxy_info.env_var_name in module_env.__root__
 
     module_root = cast(Dict[str, str], module_env.__root__)
+    assert module_root[input_class.proxy_info.env_var_name] == json.dumps(
+        {
+            "emulator_port": input_class.proxy_info.emulator_port,
+            "driver_port": input_class.proxy_info.driver_port,
+        }
+    )
+
+
+@pytest.mark.parametrize(
+    "input_class",
+    [
+        TemperatureModuleInputModel,
+        ThermocyclerModuleInputModel,
+        HeaterShakerModuleInputModel,
+        MagneticModuleInputModel,
+    ],
+)
+def test_em_proxy_info_env_vars_on_proxy(
+    input_class: Type[ModuleInputModel],
+    robot_with_mount_and_modules_services: Dict[str, Service],
+) -> None:
+    """Confirm that serial number env vars are created correctly on hardware modules."""
+    services = robot_with_mount_and_modules_services
+    assert services is not None
+
+    emulator_proxy_env = services[EMULATOR_PROXY_ID].environment
+    assert emulator_proxy_env is not None
+    assert input_class.proxy_info.env_var_name in emulator_proxy_env.__root__
+
+    module_root = cast(Dict[str, str], emulator_proxy_env.__root__)
     assert module_root[input_class.proxy_info.env_var_name] == json.dumps(
         {
             "emulator_port": input_class.proxy_info.emulator_port,

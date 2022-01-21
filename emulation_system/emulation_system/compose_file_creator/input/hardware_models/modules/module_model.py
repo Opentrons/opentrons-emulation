@@ -78,10 +78,11 @@ class ModuleInputModel(HardwareModel):
             else self._get_hardware_serial_number_env_var()
         )
 
-    def get_proxy_info_env_var(self) -> Dict[str, str]:
+    @classmethod
+    def get_proxy_info_env_var(cls) -> Dict[str, str]:
         """Builds proxy info env var."""
         value = {
-            "emulator_port": self.proxy_info.emulator_port,
-            "driver_port": self.proxy_info.driver_port,
+            "emulator_port": cls.proxy_info.emulator_port,
+            "driver_port": cls.proxy_info.driver_port,
         }
-        return {self.proxy_info.env_var_name: json.dumps(value)}
+        return {cls.proxy_info.env_var_name: json.dumps(value)}
