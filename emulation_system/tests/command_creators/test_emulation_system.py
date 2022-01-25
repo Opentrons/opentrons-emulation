@@ -14,7 +14,6 @@ import pytest
 from emulation_system.commands.emulation_system_command import (
     EmulationSystemCommand,
     InvalidFileExtensionException,
-    InvalidFormatPassedToStdinException,
     STDIN_NAME,
     STDOUT_NAME,
 )
@@ -71,13 +70,6 @@ def test_yaml_stdin(mocked_em_system: EmulationSystemCommand) -> None:
         mocked_em_system.execute()
 
     assert get_output_string(mp) == EXPECTED_YAML
-
-
-def test_invalid_stdin(mocked_em_system: EmulationSystemCommand) -> None:
-    """Confirm exception is thrown when read content is not YAML or JSON."""
-    with patch_command(mocked_em_system, STDIN_NAME, STDOUT_NAME, "NOT VALID"):
-        with pytest.raises(InvalidFormatPassedToStdinException):
-            mocked_em_system.execute()
 
 
 def test_yaml_file_in(mocked_em_system: EmulationSystemCommand) -> None:

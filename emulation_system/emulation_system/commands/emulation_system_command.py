@@ -20,12 +20,6 @@ STDIN_NAME = "<stdin>"
 STDOUT_NAME = "<stdout>"
 
 
-class InvalidFormatPassedToStdinException(Exception):
-    """Exception raised when invalid format is passed."""
-
-    ...
-
-
 class InvalidFileExtensionException(Exception):
     """Exception raise when file passed does not have yaml or json extension."""
 
@@ -48,18 +42,12 @@ class EmulationSystemCommand:
         """Parse input file to compose file."""
         extension = os.path.splitext(self.input_path.name)[1]
 
-        if self.input_path.name == STDIN_NAME or extension in [".yaml", ".json"]:
-            stdin_content = self.input_path.read().strip()
-            parsed_content = yaml.safe_load(stdin_content)
-            if not isinstance(parsed_content, dict):
-                raise InvalidFormatPassedToStdinException(
-                    f'"{stdin_content}" is not valid yaml or JSON'
-                )
-
-            converted_object = convert_from_obj(parsed_content)
-        else:
+        if self.input_path.name != STDIN_NAME and extension not in [".yaml", ".json"]:
             raise InvalidFileExtensionException(
                 "Passed file must either be a .json or" ".yaml extension."
             )
 
+        stdin_content = self.input_path.read().strip()
+        parsed_content = yaml.safe_load(stdin_content)
+        converted_object = convert_from_obj(parsed_content)
         self.output_path.write(converted_object.to_yaml())
