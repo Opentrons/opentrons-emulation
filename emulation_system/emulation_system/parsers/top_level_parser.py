@@ -4,6 +4,7 @@ import sys
 
 from emulation_system.commands.abstract_command_creator import (
     AbstractCommandCreator,
+from emulation_system.executable import Executable
 )
 from emulation_system.parser_utils import get_formatter
 from emulation_system.parsers.emulation_parser import EmulationParser
@@ -50,7 +51,7 @@ class TopLevelParser:
         for subparser in self.SUBPARSERS:
             subparser.get_parser(subparsers, self._settings)  # type: ignore
 
-    def parse(self, passed_args=[]) -> AbstractCommandCreator:  # noqa: ANN001
+    def parse(self, passed_args=[]) -> Executable:  # noqa: ANN001
         """Parse args into CommandCreator."""
         if len(passed_args) == 0:
             parsed_args = self._parser.parse_args(sys.argv[1:])
