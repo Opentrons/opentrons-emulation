@@ -1,18 +1,15 @@
 """Top-level parser for emulation cli."""
 import argparse
 import sys
-
-from emulation_system.commands.abstract_command_creator import (
-    AbstractCommandCreator,
 from emulation_system.executable import Executable
-)
-from emulation_system.parser_utils import get_formatter
-from emulation_system.parsers.emulation_parser import EmulationParser
-from emulation_system.parsers.repo_parser import RepoParser
-from emulation_system.parsers.virtual_machine_parser import VirtualMachineParser
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
+from emulation_system.parser_utils import get_formatter
+from emulation_system.parsers.emulation_parser import EmulationParser
+from emulation_system.parsers.emulation_system_parser import EmulationSystemParser
+from emulation_system.parsers.repo_parser import RepoParser
+from emulation_system.parsers.virtual_machine_parser import VirtualMachineParser
 
 
 class TopLevelParser:
@@ -23,7 +20,12 @@ class TopLevelParser:
 
     # Add subcommand parsers here
     # Parsers must inherit from emulation_system/src/parsers/abstract_parser.py
-    SUBPARSERS = [EmulationParser, RepoParser, VirtualMachineParser]
+    SUBPARSERS = [
+        EmulationParser,
+        RepoParser,
+        VirtualMachineParser,
+        EmulationSystemParser,
+    ]
 
     def __init__(self, settings: OpentronsEmulationConfiguration) -> None:
         """Construct TopLevelParser object.
