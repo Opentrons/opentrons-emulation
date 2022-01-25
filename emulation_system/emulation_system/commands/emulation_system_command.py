@@ -62,10 +62,4 @@ class EmulationSystemCommand:
                 "Passed file must either be a .json or" ".yaml extension."
             )
 
-        object_yaml = converted_object.to_yaml()
-
-        if self.output_path.name == STDOUT_NAME:
-            print(object_yaml)
-        else:
-            output_file = open(self.output_path.name, "w")
-            output_file.write(object_yaml)
+        self.output_path.write(converted_object.to_yaml())

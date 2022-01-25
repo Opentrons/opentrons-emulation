@@ -26,12 +26,12 @@ version: '3.8'
 """.strip()
 
 
-def test_json_stdin(capfd: pytest.CaptureFixture) -> None:
+def test_json_stdin() -> None:
     """Confirm reading JSON from stdin works."""
     mock = Mock(spec=io.TextIOWrapper)
     em_system_command = EmulationSystemCommand(mock, mock)
     with patch.multiple(
-        em_system_command, input_path=DEFAULT, output_path=DEFAULT
+            em_system_command, input_path=DEFAULT, output_path=DEFAULT
     ) as multiple_patch:
         multiple_patch["input_path"].name = STDIN_NAME
         multiple_patch["output_path"].name = STDOUT_NAME
@@ -40,22 +40,24 @@ def test_json_stdin(capfd: pytest.CaptureFixture) -> None:
         )
         em_system_command.execute()
 
-    assert capfd.readouterr().out.strip() == EXPECTED_YAML
+    string_passed_to_write = multiple_patch["output_path"].write.call_args[0][0].strip()
+    assert string_passed_to_write == EXPECTED_YAML
 
 
-def test_yaml_stdin(capfd: pytest.CaptureFixture) -> None:
+def test_yaml_stdin() -> None:
     """Confirm reading YAML from stdin works."""
     mock = Mock(spec=io.TextIOWrapper)
     em_system_command = EmulationSystemCommand(mock, mock)
     with patch.multiple(
-        em_system_command, input_path=DEFAULT, output_path=DEFAULT
+            em_system_command, input_path=DEFAULT, output_path=DEFAULT
     ) as multiple_patch:
         multiple_patch["input_path"].name = STDIN_NAME
         multiple_patch["output_path"].name = STDOUT_NAME
         multiple_patch["input_path"].read.return_value = 'system-unique-id: "derek"'
         em_system_command.execute()
 
-    assert capfd.readouterr().out.strip() == EXPECTED_YAML
+    string_passed_to_write = multiple_patch["output_path"].write.call_args[0][0].strip()
+    assert string_passed_to_write == EXPECTED_YAML
 
 
 def test_invalid_stdin() -> None:
@@ -63,7 +65,7 @@ def test_invalid_stdin() -> None:
     mock = Mock(spec=io.TextIOWrapper)
     em_system_command = EmulationSystemCommand(mock, mock)
     with patch.multiple(
-        em_system_command, input_path=DEFAULT, output_path=DEFAULT
+            em_system_command, input_path=DEFAULT, output_path=DEFAULT
     ) as multiple_patch:
         multiple_patch["input_path"].name = STDIN_NAME
         multiple_patch["output_path"].name = STDOUT_NAME
@@ -73,27 +75,28 @@ def test_invalid_stdin() -> None:
             em_system_command.execute()
 
 
-def test_yaml_file_in(capfd: pytest.CaptureFixture) -> None:
+def test_yaml_file_in() -> None:
     """Confirm you can read from a .yaml file."""
     mock = Mock(spec=io.TextIOWrapper)
     em_system_command = EmulationSystemCommand(mock, mock)
     with patch.multiple(
-        em_system_command, input_path=DEFAULT, output_path=DEFAULT
+            em_system_command, input_path=DEFAULT, output_path=DEFAULT
     ) as multiple_patch:
         multiple_patch["input_path"].name = "/fake/file.yaml"
         multiple_patch["output_path"].name = STDOUT_NAME
         multiple_patch["input_path"].read.return_value = 'system-unique-id: "derek"'
         em_system_command.execute()
 
-    assert capfd.readouterr().out.strip() == EXPECTED_YAML
+    string_passed_to_write = multiple_patch["output_path"].write.call_args[0][0].strip()
+    assert string_passed_to_write == EXPECTED_YAML
 
 
-def test_json_file_in(capfd: pytest.CaptureFixture) -> None:
+def test_json_file_in() -> None:
     """Confirm you can read from a .json file."""
     mock = Mock(spec=io.TextIOWrapper)
     em_system_command = EmulationSystemCommand(mock, mock)
     with patch.multiple(
-        em_system_command, input_path=DEFAULT, output_path=DEFAULT
+            em_system_command, input_path=DEFAULT, output_path=DEFAULT
     ) as multiple_patch:
         multiple_patch["input_path"].name = "/fake/file.json"
         multiple_patch["output_path"].name = STDOUT_NAME
@@ -102,7 +105,8 @@ def test_json_file_in(capfd: pytest.CaptureFixture) -> None:
         )
         em_system_command.execute()
 
-    assert capfd.readouterr().out.strip() == EXPECTED_YAML
+    string_passed_to_write = multiple_patch["output_path"].write.call_args[0][0].strip()
+    assert string_passed_to_write == EXPECTED_YAML
 
 
 def test_invalid_file_extension() -> None:
@@ -110,7 +114,7 @@ def test_invalid_file_extension() -> None:
     mock = Mock(spec=io.TextIOWrapper)
     em_system_command = EmulationSystemCommand(mock, mock)
     with patch.multiple(
-        em_system_command, input_path=DEFAULT, output_path=DEFAULT
+            em_system_command, input_path=DEFAULT, output_path=DEFAULT
     ) as multiple_patch:
         multiple_patch["input_path"].name = "/fake/file.txt"
         multiple_patch["output_path"].name = STDOUT_NAME
@@ -121,20 +125,18 @@ def test_invalid_file_extension() -> None:
             em_system_command.execute()
 
 
-def test_file_out(tmp_path: pathlib.Path) -> None:
+def test_file_out() -> None:
     """Confirm writing to a file works."""
-    d = tmp_path / "dir"
-    d.mkdir()
-    path = d / "test.yaml"
     mock = Mock(spec=io.TextIOWrapper)
     em_system_command = EmulationSystemCommand(mock, mock)
     with patch.multiple(
-        em_system_command, input_path=DEFAULT, output_path=DEFAULT
+            em_system_command, input_path=DEFAULT, output_path=DEFAULT
     ) as multiple_patch:
         multiple_patch["input_path"].name = STDIN_NAME
-        multiple_patch["output_path"].name = path
+        multiple_patch["output_path"].name = "/fake/path.yaml"
         multiple_patch["input_path"].read.return_value = json.dumps(
             {"system-unique-id": "derek"}
         )
         em_system_command.execute()
-    assert "".join(open(path, "r").readlines()).strip() == EXPECTED_YAML
+    string_passed_to_write = multiple_patch["output_path"].write.call_args[0][0].strip()
+    assert string_passed_to_write == EXPECTED_YAML
