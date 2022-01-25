@@ -1,67 +1,70 @@
 """Tests for virtual-machine sub-command."""
 import pytest
 from typing import List
-from emulation_system.commands.virtual_machine_command_creator import (
-    VirtualMachineCommandCreator,
+from emulation_system.commands.virtual_machine_command import (
+    VirtualMachineCommand,
 )
-from emulation_system.commands.command import CommandList, Command
+from emulation_system.commands.sub_process_command import (
+    SubProcessCommandList,
+    SubProcessCommand,
+)
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
 from emulation_system.parsers.top_level_parser import TopLevelParser
 
-EXPECTED_DEV_CREATE = CommandList(
+EXPECTED_DEV_CREATE = SubProcessCommandList(
     [
-        Command(
-            command_name=VirtualMachineCommandCreator.CREATE_COMMAND_NAME,
+        SubProcessCommand(
+            command_name=VirtualMachineCommand.CREATE_COMMAND_NAME,
             command="vagrant up dev",
-            cwd=VirtualMachineCommandCreator.VAGRANT_RESOURCES_LOCATION,
+            cwd=VirtualMachineCommand.VAGRANT_RESOURCES_LOCATION,
         )
     ]
 )
-EXPECTED_DEV_REMOVE = CommandList(
+EXPECTED_DEV_REMOVE = SubProcessCommandList(
     [
-        Command(
-            command_name=VirtualMachineCommandCreator.REMOVE_COMMAND_NAME,
+        SubProcessCommand(
+            command_name=VirtualMachineCommand.REMOVE_COMMAND_NAME,
             command="vagrant destroy --force dev",
-            cwd=VirtualMachineCommandCreator.VAGRANT_RESOURCES_LOCATION,
+            cwd=VirtualMachineCommand.VAGRANT_RESOURCES_LOCATION,
         )
     ]
 )
-EXPECTED_DEV_SHELL = CommandList(
+EXPECTED_DEV_SHELL = SubProcessCommandList(
     [
-        Command(
-            command_name=VirtualMachineCommandCreator.SHELL_COMMAND_NAME,
+        SubProcessCommand(
+            command_name=VirtualMachineCommand.SHELL_COMMAND_NAME,
             command="vagrant ssh dev",
-            cwd=VirtualMachineCommandCreator.VAGRANT_RESOURCES_LOCATION,
+            cwd=VirtualMachineCommand.VAGRANT_RESOURCES_LOCATION,
             shell=True,
         )
     ]
 )
-EXPECTED_PROD_CREATE = CommandList(
+EXPECTED_PROD_CREATE = SubProcessCommandList(
     [
-        Command(
-            command_name=VirtualMachineCommandCreator.CREATE_COMMAND_NAME,
+        SubProcessCommand(
+            command_name=VirtualMachineCommand.CREATE_COMMAND_NAME,
             command="vagrant up prod",
-            cwd=VirtualMachineCommandCreator.VAGRANT_RESOURCES_LOCATION,
+            cwd=VirtualMachineCommand.VAGRANT_RESOURCES_LOCATION,
         )
     ]
 )
-EXPECTED_PROD_REMOVE = CommandList(
+EXPECTED_PROD_REMOVE = SubProcessCommandList(
     [
-        Command(
-            command_name=VirtualMachineCommandCreator.REMOVE_COMMAND_NAME,
+        SubProcessCommand(
+            command_name=VirtualMachineCommand.REMOVE_COMMAND_NAME,
             command="vagrant destroy --force prod",
-            cwd=VirtualMachineCommandCreator.VAGRANT_RESOURCES_LOCATION,
+            cwd=VirtualMachineCommand.VAGRANT_RESOURCES_LOCATION,
         )
     ]
 )
-EXPECTED_PROD_SHELL = CommandList(
+EXPECTED_PROD_SHELL = SubProcessCommandList(
     [
-        Command(
-            command_name=VirtualMachineCommandCreator.SHELL_COMMAND_NAME,
+        SubProcessCommand(
+            command_name=VirtualMachineCommand.SHELL_COMMAND_NAME,
             command="vagrant ssh prod",
-            cwd=VirtualMachineCommandCreator.VAGRANT_RESOURCES_LOCATION,
+            cwd=VirtualMachineCommand.VAGRANT_RESOURCES_LOCATION,
             shell=True,
         )
     ]
@@ -109,10 +112,8 @@ def test_dev_create(
     dev_create_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that dev virtual-machine is created correctly."""
-    cmds = (
-        TopLevelParser(testing_opentrons_emulation_configuration)
-        .parse(dev_create_virtual_machine_cmd)
-        .get_commands()
+    cmds = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+        dev_create_virtual_machine_cmd
     )
     assert cmds == EXPECTED_DEV_CREATE
 
@@ -122,10 +123,8 @@ def test_dev_shell(
     dev_shell_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that shell to dev virtual-machine is opened correctly."""
-    cmds = (
-        TopLevelParser(testing_opentrons_emulation_configuration)
-        .parse(dev_shell_virtual_machine_cmd)
-        .get_commands()
+    cmds = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+        dev_shell_virtual_machine_cmd
     )
     assert cmds == EXPECTED_DEV_SHELL
 
@@ -135,10 +134,8 @@ def test_dev_remove(
     dev_remove_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that dev virtual-machine is removed correctly."""
-    cmds = (
-        TopLevelParser(testing_opentrons_emulation_configuration)
-        .parse(dev_remove_virtual_machine_cmd)
-        .get_commands()
+    cmds = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+        dev_remove_virtual_machine_cmd
     )
     assert cmds == EXPECTED_DEV_REMOVE
 
@@ -148,10 +145,8 @@ def test_prod_create(
     prod_create_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that prod virtual-machine is created correctly."""
-    cmds = (
-        TopLevelParser(testing_opentrons_emulation_configuration)
-        .parse(prod_create_virtual_machine_cmd)
-        .get_commands()
+    cmds = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+        prod_create_virtual_machine_cmd
     )
     assert cmds == EXPECTED_PROD_CREATE
 
@@ -161,10 +156,8 @@ def test_prod_shell(
     prod_shell_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that shell to prod virtual-machine is opened correctly."""
-    cmds = (
-        TopLevelParser(testing_opentrons_emulation_configuration)
-        .parse(prod_shell_virtual_machine_cmd)
-        .get_commands()
+    cmds = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+        prod_shell_virtual_machine_cmd
     )
     assert cmds == EXPECTED_PROD_SHELL
 
@@ -174,9 +167,7 @@ def test_prod_remove(
     prod_remove_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that prod virtual-machine is removed correctly."""
-    cmds = (
-        TopLevelParser(testing_opentrons_emulation_configuration)
-        .parse(prod_remove_virtual_machine_cmd)
-        .get_commands()
+    cmds = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+        prod_remove_virtual_machine_cmd
     )
     assert cmds == EXPECTED_PROD_REMOVE

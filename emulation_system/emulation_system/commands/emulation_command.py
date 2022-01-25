@@ -15,9 +15,12 @@ from emulation_system.consts import (
     LATEST_KEYWORD,
     ROOT_DIR,
 )
-from emulation_system.commands.command import CommandList, Command
-from emulation_system.commands.abstract_command_creator import (
-    AbstractCommandCreator,
+from emulation_system.commands.sub_process_command import (
+    SubProcessCommandList,
+    SubProcessCommand,
+)
+from emulation_system.commands.abstract_command import (
+    AbstractCommand,
 )
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
@@ -60,7 +63,7 @@ class InvalidModeError(ValueError):
     pass
 
 
-class AbstractEmulationCommandCreator(AbstractCommandCreator):
+class AbstractEmulationCommand(AbstractCommand):
     """Things common to both EmulationCreator classes."""
 
     BUILD_COMMAND_NAME = "Build Emulation"
@@ -81,12 +84,12 @@ class AbstractEmulationCommandCreator(AbstractCommandCreator):
         ...
 
     @abc.abstractmethod
-    def build(self) -> Command:
+    def build(self) -> SubProcessCommand:
         """Creates build command."""
         ...
 
     @abc.abstractmethod
-    def run(self) -> Command:
+    def run(self) -> SubProcessCommand:
         """Creates run command."""
         ...
 
@@ -96,25 +99,25 @@ class AbstractEmulationCommandCreator(AbstractCommandCreator):
         """Whether running as a dry run."""
         ...
 
-    def kill(self) -> Command:
+    def kill(self) -> SubProcessCommand:
         """Kill and remove any existing dev containers."""
-        return Command(
+        return SubProcessCommand(
             command_name=self.KILL_COMMAND_NAME,
             command=f"docker-compose -f {self.compose_file_name} kill",
             cwd=self.DOCKER_RESOURCES_LOCATION,
         )
 
-    def remove(self) -> Command:
+    def remove(self) -> SubProcessCommand:
         """Kill and remove any existing dev containers."""
-        return Command(
+        return SubProcessCommand(
             command_name=self.REMOVE_COMMAND_NAME,
             command=f"docker-compose -f {self.compose_file_name} rm -f",
             cwd=self.DOCKER_RESOURCES_LOCATION,
         )
 
-    def _get_commands(self) -> CommandList:
+    def _get_commands(self) -> SubProcessCommandList:
         """Returns list of commands that will be run with an emulation command."""
-        return CommandList(
+        return SubProcessCommandList(
             command_list=[
                 self.kill(),
                 self.remove(),
@@ -126,7 +129,7 @@ class AbstractEmulationCommandCreator(AbstractCommandCreator):
 
 
 @dataclass
-class ProdEmulationCommandCreator(AbstractEmulationCommandCreator):
+class ProdEmulationCommand(AbstractEmulationCommand):
     """Class to build docker commands for creating a Production Emulator.
 
     Supports `build`, `clean`, and `run` commands.
@@ -151,7 +154,7 @@ class ProdEmulationCommandCreator(AbstractEmulationCommandCreator):
     @classmethod
     def from_cli_input(
         cls, args: argparse.Namespace, settings: OpentronsEmulationConfiguration
-    ) -> ProdEmulationCommandCreator:
+    ) -> SubProcessCommandList:
         """Factory method to convert CLI input into a ProdEmulatorCreator object."""
         download_locations = settings.emulation_settings.source_download_locations
         return cls(
@@ -166,7 +169,7 @@ class ProdEmulationCommandCreator(AbstractEmulationCommandCreator):
                 "opentrons", args.opentrons_repo_sha, download_locations
             ),
             dry_run=args.dry_run,
-        )
+        ).get_commands()
 
     @staticmethod
     def _parse_download_location(
@@ -181,7 +184,7 @@ class ProdEmulationCommandCreator(AbstractEmulationCommandCreator):
             ).replace("{{commit-sha}}", location)
         return download_location
 
-    def build(self) -> Command:
+    def build(self) -> SubProcessCommand:
         """Construct a docker-compose build command."""
         cmd = (
             f"docker-compose -f {self.compose_file_name} build "
@@ -193,34 +196,34 @@ class ProdEmulationCommandCreator(AbstractEmulationCommandCreator):
             f"{self.opentrons_download_location} "
         )
 
-        return Command(
+        return SubProcessCommand(
             command_name=self.BUILD_COMMAND_NAME,
             command=cmd,
             cwd=self.DOCKER_RESOURCES_LOCATION,
             env=self.DOCKER_BUILD_ENV_VARS,
         )
 
-    def run(self) -> Command:
+    def run(self) -> SubProcessCommand:
         """Construct a docker-compose up command."""
         cmd = f"docker-compose -f {self.compose_file_name} up"
 
         if self.detached:
             cmd += " -d"
 
-        return Command(
+        return SubProcessCommand(
             command_name=self.RUN_COMMAND_NAME,
             command=cmd,
             cwd=self.DOCKER_RESOURCES_LOCATION,
         )
 
-    def get_commands(self) -> CommandList:
+    def get_commands(self) -> SubProcessCommandList:
         """Get a list of commands to create emulation."""
         return self._get_commands()
 
 
 @dataclass
-class DevEmulationCommandCreator(AbstractEmulationCommandCreator):
-    """Command creator for `dev` sub-command of `emulation` command.
+class DevEmulationCommand(AbstractEmulationCommand):
+    """SubProcessCommand creator for `dev` sub-command of `emulation` command.
 
     Supports `build`, `clean`, and `run` commands.
     """
@@ -257,7 +260,7 @@ class DevEmulationCommandCreator(AbstractEmulationCommandCreator):
     @classmethod
     def from_cli_input(
         cls, args: argparse.Namespace, settings: OpentronsEmulationConfiguration
-    ) -> DevEmulationCommandCreator:
+    ) -> SubProcessCommandList:
         """Factory method to convert CLI input into a DevEmulatorCreator object."""
         return cls(
             detached=args.detached,
@@ -265,34 +268,34 @@ class DevEmulationCommandCreator(AbstractEmulationCommandCreator):
             modules_path=args.opentrons_modules_repo_path,
             opentrons_path=args.opentrons_repo_path,
             dry_run=args.dry_run,
-        )
+        ).get_commands()
 
-    def build(self) -> Command:
+    def build(self) -> SubProcessCommand:
         """Construct a docker-compose build command."""
         # Need to specify env vars to satisfy docker-compose file even though nothing
         # is done with the env vars
 
-        return Command(
+        return SubProcessCommand(
             command_name=self.BUILD_COMMAND_NAME,
             command=f"docker-compose -f {self.compose_file_name} build",
             cwd=self.DOCKER_RESOURCES_LOCATION,
             env=self._get_build_env_vars(),
         )
 
-    def run(self) -> Command:
+    def run(self) -> SubProcessCommand:
         """Construct a docker-compose up command."""
         cmd = f"docker-compose -f {self.compose_file_name} up"
 
         if self.detached:
             cmd += " -d"
 
-        return Command(
+        return SubProcessCommand(
             command_name=self.RUN_COMMAND_NAME,
             command=cmd,
             cwd=self.DOCKER_RESOURCES_LOCATION,
             env=self._get_run_env_vars(),
         )
 
-    def get_commands(self) -> CommandList:
+    def get_commands(self) -> SubProcessCommandList:
         """Get a list of commands to create emulation."""
         return self._get_commands()

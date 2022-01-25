@@ -63,7 +63,7 @@ def test_basic_dev_em_commands(
     dev_em_creator = TopLevelParser(testing_opentrons_emulation_configuration).parse(
         basic_emulation_dev_cmd
     )
-    assert dev_em_creator.get_commands() == BASIC_DEV_CMDS_TO_RUN
+    assert dev_em_creator == BASIC_DEV_CMDS_TO_RUN
 
 
 def test_complex_dev_em_commands(
@@ -74,7 +74,7 @@ def test_complex_dev_em_commands(
     dev_em_creator = TopLevelParser(testing_opentrons_emulation_configuration).parse(
         complex_emulation_dev_cmd
     )
-    assert dev_em_creator.get_commands() == COMPLEX_DEV_COMMANDS_TO_RUN
+    assert dev_em_creator == COMPLEX_DEV_COMMANDS_TO_RUN
 
 
 def test_basic_prod_em_commands(
@@ -85,7 +85,7 @@ def test_basic_prod_em_commands(
     prod_em_creator = TopLevelParser(testing_opentrons_emulation_configuration).parse(
         basic_prod_emulation_cmd
     )
-    assert prod_em_creator.get_commands() == BASIC_PROD_COMMANDS_TO_RUN
+    assert prod_em_creator == BASIC_PROD_COMMANDS_TO_RUN
 
 
 def test_complex_prod_em_commands(
@@ -96,4 +96,4 @@ def test_complex_prod_em_commands(
     prod_em_creator = TopLevelParser(testing_opentrons_emulation_configuration).parse(
         complex_prod_emulation_cmd
     )
-    assert prod_em_creator.get_commands() == COMPLEX_PROD_COMMANDS_TO_RUN
+    assert prod_em_creator == COMPLEX_PROD_COMMANDS_TO_RUN
