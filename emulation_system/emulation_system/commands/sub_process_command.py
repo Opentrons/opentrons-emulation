@@ -3,15 +3,22 @@
 import os
 import shlex
 import subprocess
-from dataclasses import dataclass, field
-from typing import List, Dict
+from dataclasses import (
+    dataclass,
+    field,
+)
+from typing import (
+    Dict,
+    List,
+)
+
 from emulation_system.consts import ROOT_DIR
 
 
 class SubProcessCommandExecutionError(ValueError):
     """Thrown when there is an error executing a command."""
 
-    pass
+    ...
 
 
 @dataclass
@@ -32,24 +39,6 @@ class SubProcessCommand:
     cwd: str = ROOT_DIR
     env: Dict = field(default_factory=dict)
     shell: bool = False
-
-    @staticmethod
-    def _capture_and_print_output(process: subprocess.Popen) -> str:
-        """Capture command output in a list of strings and print it to stdout.
-
-        Return single string containing all output at end.
-        """
-        stdout = []
-        while True:
-            output = process.stdout
-            if output is None:
-                continue
-            line = output.readline().strip()
-            stdout.append(line)
-            print(line)
-            if line == "" and process.poll() is not None:
-                break
-        return "".join(stdout)
 
     @staticmethod
     def _gen_env(var_dict: Dict[str, str]) -> Dict[str, str]:
@@ -80,8 +69,6 @@ class SubProcessCommand:
         try:
             return subprocess.Popen(
                 shlex.split(self.command),
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
                 text=True,
                 cwd=self.cwd,
                 env=self._gen_env(self.env),
@@ -89,24 +76,12 @@ class SubProcessCommand:
         except subprocess.CalledProcessError as err:
             raise SubProcessCommandExecutionError(err.stderr)
 
-    def execute(self) -> SubProcessCommandOutput:
+    def execute(self) -> None:
         """Execute shell command using subprocess. and return output."""
         if self.shell:
             self._get_shell()
-            output = SubProcessCommandOutput(
-                command_name=self.command_name,
-                command=self.command,
-                command_output="Shell finished",
-            )
         else:
-            p = self._get_command()
-            output = SubProcessCommandOutput(
-                command_name=self.command_name,
-                command=self.command,
-                command_output=self._capture_and_print_output(p),
-            )
-
-        return output
+            self._get_command()
 
 
 @dataclass
@@ -120,10 +95,11 @@ class SubProcessCommandList:
         """Add command to list of commands to run."""
         self.command_list.append(command)
 
-    def execute(self) -> List[SubProcessCommandOutput]:
+    def execute(self) -> None:
         """Run commands in shell. Prints output to stdout."""
         if self.dry_run:
             print("\n".join(command.get_command_str() for command in self.command_list))
-            return []
+
         else:
-            return [command.execute() for command in self.command_list]
+            for command in self.command_list:
+                command.execute()

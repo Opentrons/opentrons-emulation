@@ -6,13 +6,13 @@ from emulation_system.consts import LATEST_KEYWORD
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
-from emulation_system.commands.emulation_command_creator import (
+from emulation_system.commands.emulation_command import (
     CommonEmulationOptions,
     ProductionEmulationOptions,
     DevelopmentEmulationOptions,
     EmulationSubCommands,
-    ProdEmulationCommandCreator,
-    DevEmulationCommandCreator,
+    ProdEmulationCommand,
+    DevEmulationCommand,
 )
 from emulation_system.os_state import OSState
 
@@ -49,7 +49,7 @@ class EmulationParser(AbstractParser):
             conflict_handler="resolve",
             formatter_class=get_formatter(),
         )
-        prod_parser.set_defaults(func=ProdEmulationCommandCreator.from_cli_input)
+        prod_parser.set_defaults(func=ProdEmulationCommand.from_cli_input)
         prod_parser.add_argument(
             f"{ProductionEmulationOptions.OT3_FIRMWARE_SHA.value}",
             action="store",
@@ -79,7 +79,7 @@ class EmulationParser(AbstractParser):
             conflict_handler="resolve",
             formatter_class=get_formatter(),
         )
-        dev_parser.set_defaults(func=DevEmulationCommandCreator.from_cli_input)
+        dev_parser.set_defaults(func=DevEmulationCommand.from_cli_input)
 
         os_state = OSState()
 

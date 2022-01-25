@@ -10,10 +10,13 @@ from pydantic import BaseModel, parse_obj_as
 from dataclasses import dataclass
 from enum import Enum
 
-from emulation_system.commands.command import CommandList, Command
+from emulation_system.commands.sub_process_command import (
+    SubProcessCommandList,
+    SubProcessCommand,
+)
 from emulation_system.consts import ROOT_DIR
-from emulation_system.commands.abstract_command_creator import (
-    AbstractCommandCreator,
+from emulation_system.commands.abstract_command import (
+    AbstractCommand,
 )
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
@@ -53,7 +56,7 @@ class VirtualMachineConfig(BaseModel):
 
 
 @dataclass
-class VirtualMachineCommandCreator(AbstractCommandCreator):
+class VirtualMachineCommand(AbstractCommand):
     """Class to build vagrant commands for creating a Virtual Machine.
 
     Supports create, shell, remove.
@@ -92,13 +95,15 @@ class VirtualMachineCommandCreator(AbstractCommandCreator):
     @classmethod
     def from_cli_input(
         cls, args: argparse.Namespace, settings: OpentronsEmulationConfiguration
-    ) -> VirtualMachineCommandCreator:
-        """Construct VirtualMachineCommandCreator from CLI input.
+    ) -> SubProcessCommandList:
+        """Construct VirtualMachineCommand from CLI input.
 
         Also creates settings.json file to pass with vagrant commands.
         """
         cls._create_json_settings_file(settings)
-        return cls(command=args.vm_command, mode=args.mode, dry_run=args.dry_run)
+        return cls(
+            command=args.vm_command, mode=args.mode, dry_run=args.dry_run
+        ).get_commands()
 
     @classmethod
     def _add_source_code_folder(cls, host_path: str) -> SharedFolder:
@@ -140,32 +145,32 @@ class VirtualMachineCommandCreator(AbstractCommandCreator):
         settings_file.write(json_output)
         settings_file.close()
 
-    def get_commands(self) -> CommandList:
+    def get_commands(self) -> SubProcessCommandList:
         """Returns list of commands to run with vagrant."""
-        return CommandList(
+        return SubProcessCommandList(
             command_list=[self.command_mapping[self.command]()], dry_run=self.dry_run
         )
 
-    def create(self) -> Command:
-        """Command to build and start a Virtual Machine."""
-        return Command(
+    def create(self) -> SubProcessCommand:
+        """SubProcessCommand to build and start a Virtual Machine."""  # noqa: D403
+        return SubProcessCommand(
             command_name=self.CREATE_COMMAND_NAME,
             command=f"vagrant up {self.mode}",
             cwd=self.VAGRANT_RESOURCES_LOCATION,
         )
 
-    def shell(self) -> Command:
-        """Command to open a shell to a VirtualMachine."""
-        return Command(
+    def shell(self) -> SubProcessCommand:
+        """SubProcessCommand to open a shell to a VirtualMachine."""  # noqa: D403
+        return SubProcessCommand(
             command_name=self.SHELL_COMMAND_NAME,
             command=f"vagrant ssh {self.mode}",
             cwd=self.VAGRANT_RESOURCES_LOCATION,
             shell=True,
         )
 
-    def remove(self) -> Command:
-        """Command to remove Virtual Machine."""
-        return Command(
+    def remove(self) -> SubProcessCommand:
+        """SubProcessCommand to remove Virtual Machine."""  # noqa: D403
+        return SubProcessCommand(
             command_name=self.REMOVE_COMMAND_NAME,
             command=f"vagrant destroy --force {self.mode}",
             cwd=self.VAGRANT_RESOURCES_LOCATION,
