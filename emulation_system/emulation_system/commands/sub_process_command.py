@@ -8,14 +8,14 @@ from typing import List, Dict
 from emulation_system.consts import ROOT_DIR
 
 
-class CommandExecutionError(ValueError):
+class SubProcessCommandExecutionError(ValueError):
     """Thrown when there is an error executing a command."""
 
     pass
 
 
 @dataclass
-class CommandOutput:
+class SubProcessCommandOutput:
     """Dataclass for the output of a command run by subprocess."""
 
     command_name: str
@@ -24,8 +24,8 @@ class CommandOutput:
 
 
 @dataclass
-class Command:
-    """Command to be run by subprocess."""
+class SubProcessCommand:
+    """SubProcessCommand to be run by subprocess."""
 
     command_name: str
     command: str
@@ -87,20 +87,20 @@ class Command:
                 env=self._gen_env(self.env),
             )
         except subprocess.CalledProcessError as err:
-            raise CommandExecutionError(err.stderr)
+            raise SubProcessCommandExecutionError(err.stderr)
 
-    def run_command(self) -> CommandOutput:
+    def execute(self) -> SubProcessCommandOutput:
         """Execute shell command using subprocess. and return output."""
         if self.shell:
             self._get_shell()
-            output = CommandOutput(
+            output = SubProcessCommandOutput(
                 command_name=self.command_name,
                 command=self.command,
                 command_output="Shell finished",
             )
         else:
             p = self._get_command()
-            output = CommandOutput(
+            output = SubProcessCommandOutput(
                 command_name=self.command_name,
                 command=self.command,
                 command_output=self._capture_and_print_output(p),
@@ -110,20 +110,20 @@ class Command:
 
 
 @dataclass
-class CommandList:
+class SubProcessCommandList:
     """List of commands for subprocess to run."""
 
-    command_list: List[Command]
+    command_list: List[SubProcessCommand]
     dry_run: bool = False
 
-    def add_command(self, command: Command) -> None:
+    def add_command(self, command: SubProcessCommand) -> None:
         """Add command to list of commands to run."""
         self.command_list.append(command)
 
-    def run_commands(self) -> List[CommandOutput]:
+    def execute(self) -> List[SubProcessCommandOutput]:
         """Run commands in shell. Prints output to stdout."""
         if self.dry_run:
             print("\n".join(command.get_command_str() for command in self.command_list))
             return []
         else:
-            return [command.run_command() for command in self.command_list]
+            return [command.execute() for command in self.command_list]
