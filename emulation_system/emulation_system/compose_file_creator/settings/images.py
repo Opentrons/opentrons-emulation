@@ -75,6 +75,15 @@ class EmulatorProxyImages(Images):
     remote_hardware_image_name: Literal[None] = None
 
 
+class SmoothieImages(Images):
+    """Image names for Smoothie."""
+
+    local_firmware_image_name: str = "smoothie-local"
+    local_hardware_image_name: Literal[None] = None
+    remote_firmware_image_name: str = "smoothie-remote"
+    remote_hardware_image_name: Literal[None] = None
+
+
 IMAGE_MAPPING = {
     Hardware.HEATER_SHAKER_MODULE.value: HeaterShakerModuleImages(),
     Hardware.MAGNETIC_MODULE.value: MagneticModuleImages(),
