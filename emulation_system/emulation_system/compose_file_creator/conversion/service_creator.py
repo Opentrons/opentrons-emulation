@@ -1,11 +1,8 @@
 """Class for creating intermediate type DockerServices."""
-from typing import (
-    Any,
-    Dict,
-    List,
-    Optional,
-    Union,
-    cast,
+from .service_creation.emulator_proxy_creation import create_emulator_proxy_service
+from .service_creation.input_service_creation import configure_input_service
+from .service_creation.shared_functions import (
+    generate_container_name,
 )
 
 from emulation_system.compose_file_creator.conversion.intermediate_types import (
@@ -15,144 +12,6 @@ from emulation_system.compose_file_creator.conversion.intermediate_types import 
 from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
 )
-from emulation_system.compose_file_creator.input.hardware_models import (
-    HeaterShakerModuleInputModel,
-    MagneticModuleInputModel,
-    RobotInputModel,
-    ModuleInputModel,
-    OT3InputModel,
-    TemperatureModuleInputModel,
-    ThermocyclerModuleInputModel,
-)
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    BuildItem,
-    ListOrDict,
-    Port,
-    Service,
-    Volume1,
-)
-from emulation_system.compose_file_creator.settings.custom_types import (
-    Containers,
-)
-from emulation_system.compose_file_creator.settings.images import EmulatorProxyImages
-from emulation_system.consts import DOCKERFILE_DIR_LOCATION
-
-MODULE_TYPES = [
-    ThermocyclerModuleInputModel,
-    TemperatureModuleInputModel,
-    HeaterShakerModuleInputModel,
-    MagneticModuleInputModel,
-]
-
-
-def _generate_container_name(
-    container_id: str, config_model: SystemConfigurationModel
-) -> str:
-    return (
-        f"{config_model.system_unique_id}-{container_id}"
-        if config_model.system_unique_id is not None
-        else container_id
-    )
-
-
-def _get_service_depends_on(
-    container: Containers, emulator_proxy_name: Optional[str]
-) -> Optional[List[str]]:
-    return (
-        [emulator_proxy_name]
-        if emulator_proxy_name is not None
-        and issubclass(container.__class__, ModuleInputModel)
-        else None
-    )
-
-
-def _get_command(
-    container: Containers, emulator_proxy_name: Optional[str]
-) -> Optional[str]:
-    depends_on = _get_service_depends_on(container, emulator_proxy_name)
-    return depends_on[0] if depends_on is not None else None
-
-
-def _get_port_bindings(
-    container: Containers,
-) -> Optional[List[Union[float, str, Port]]]:
-
-    if issubclass(container.__class__, RobotInputModel):
-        return [container.get_port_binding_string()]
-    else:
-        return None
-
-
-def _get_env_vars(
-    container: Containers, emulator_proxy_name: Optional[str]
-) -> ListOrDict:
-    temp_vars: Dict[str, Any] = {}
-
-    if (
-        issubclass(container.__class__, RobotInputModel)
-        and emulator_proxy_name is not None
-    ):
-        # TODO: If emulator proxy port is ever not hardcoded will have to update from
-        #  11000 to a variable
-        temp_vars["OT_SMOOTHIE_EMULATOR_URI"] = f"socket://{emulator_proxy_name}:11000"
-        temp_vars["OT_EMULATOR_module_server"] = f'{{"host": "{emulator_proxy_name}"}}'
-    elif issubclass(container.__class__, OT3InputModel):
-        temp_vars["OT_API_FF_enableOT3HardwareController"] = True
-    elif issubclass(container.__class__, ModuleInputModel):
-        temp_vars.update(container.get_serial_number_env_var())
-        temp_vars.update(container.get_proxy_info_env_var())
-    else:
-        temp_vars = {}
-
-    return ListOrDict(__root__=temp_vars)
-
-
-def _get_service_image(container: Containers) -> str:
-    return f"{container.get_image_name()}:latest"
-
-
-def _get_service_build(container: Containers) -> BuildItem:
-    return BuildItem(context=DOCKERFILE_DIR_LOCATION, target=container.get_image_name())
-
-
-def _get_mount_strings(container: Containers) -> Optional[List[Union[str, Volume1]]]:
-    mount_strings = container.get_mount_strings()
-    return (
-        cast(List[Union[str, Volume1]], mount_strings)
-        if len(mount_strings) > 0
-        else None
-    )
-
-
-def _configure_service(
-    container: Containers,
-    emulator_proxy_name: Optional[str],
-    config_model: SystemConfigurationModel,
-    required_networks: RequiredNetworks,
-) -> Service:
-    service = Service(
-        container_name=_generate_container_name(container.id, config_model),
-        image=_get_service_image(container),
-        tty=True,
-        build=_get_service_build(container),
-        networks=required_networks.networks,
-        volumes=_get_mount_strings(container),
-        depends_on=_get_service_depends_on(container, emulator_proxy_name),
-        ports=_get_port_bindings(container),
-        command=_get_command(container, emulator_proxy_name),
-        environment=_get_env_vars(container, emulator_proxy_name),
-    )
-    return service
-
-
-def _create_emulator_proxy_env_vars() -> ListOrDict:
-    return ListOrDict(
-        __root__={
-            env_var_name: env_var_value
-            for module in MODULE_TYPES
-            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()  # type: ignore [attr-defined] # noqa: E501
-        }
-    )
 
 
 def create_services(
@@ -163,22 +22,17 @@ def create_services(
     emulator_proxy_name = None
 
     if config_model.modules_exist:
-        # Going to just use the remote image for now. If someone ends up needing
-        # the local image it can get added later.
-        image = EmulatorProxyImages().remote_firmware_image_name
-        emulator_proxy_name = _generate_container_name("emulator-proxy", config_model)
-        services[emulator_proxy_name] = Service(
-            container_name=emulator_proxy_name,
-            image=f"{image}:latest",
-            build=BuildItem(context=DOCKERFILE_DIR_LOCATION, target=image),
-            tty=True,
-            networks=required_networks.networks,
-            environment=_create_emulator_proxy_env_vars(),
+        emulator_proxy_service = create_emulator_proxy_service(
+            config_model, required_networks
         )
+        emulator_proxy_name = emulator_proxy_service.container_name
+        services[emulator_proxy_name] = emulator_proxy_service
 
     services.update(
         {
-            _generate_container_name(container.id, config_model): _configure_service(
+            generate_container_name(
+                container.id, config_model
+            ): configure_input_service(
                 container, emulator_proxy_name, config_model, required_networks
             )
             for container in config_model.containers.values()
