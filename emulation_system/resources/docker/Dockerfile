@@ -154,6 +154,8 @@ ENV OPENTRONS_HARDWARE "emulator-proxy"
 FROM python-base as robot-server-local
 ENV OPENTRONS_HARDWARE "robot-server"
 
+FROM python-base as smoothie-local
+ENV OPENTRONS_HARDWARE "smoothie"
 
 
 
@@ -335,5 +337,10 @@ ENTRYPOINT ["/entrypoint.sh", "run"]
 
 FROM firmware-common as robot-server-remote
 ENV OPENTRONS_HARDWARE "robot-server"
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM firmware-common as smoothie-remote
+ENV OPENTRONS_HARDWARE "smoothie"
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
