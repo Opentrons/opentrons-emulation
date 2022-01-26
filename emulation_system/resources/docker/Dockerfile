@@ -297,13 +297,13 @@ COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
 FROM ubuntu-base as heater-shaker-hardware-remote
-ENV OPENTRONS_HARDWARE "heater-shaker"
+ENV OPENTRONS_HARDWARE "heater-shaker-hardware"
 COPY --from=heater-shaker-builder /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
 FROM ubuntu-base as thermocycler-hardware-remote
-ENV OPENTRONS_HARDWARE "thermocycler"
+ENV OPENTRONS_HARDWARE "thermocycler-hardware"
 COPY --from=thermocycler-builder /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
