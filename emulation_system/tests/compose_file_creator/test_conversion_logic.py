@@ -1,6 +1,5 @@
 """Tests for converting input file to DockerComposeFile."""
 import json
-import os
 from typing import (
     Any,
     Dict,
@@ -8,19 +7,14 @@ from typing import (
     Type,
     cast,
 )
-from unittest.mock import (
-    MagicMock,
-    patch,
-)
+
 
 import py
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
-    FileDisambiguationError,
-    convert_from_file,
-    convert_from_obj,
+    convert_from_obj
 )
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
@@ -130,29 +124,6 @@ def duplicate_emulation_files(
         "file_2",
     ]
     return testing_opentrons_emulation_configuration
-
-
-@pytest.fixture
-def valid_configuration_load(
-    tmpdir: py.path.local,
-    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
-) -> OpentronsEmulationConfiguration:
-    """Setup test to load a valid configuration."""
-    root_dir = tmpdir.mkdir("emulation-configurations")
-    path_1 = root_dir.mkdir(EMULATION_CONFIGURATION_DIR_1)
-    test_conf = testing_opentrons_emulation_configuration
-    test_conf.global_settings.emulation_configuration_file_locations.extend(
-        [str(path_1)]
-    )
-
-    valid_dir = test_conf.global_settings.emulation_configuration_file_locations[0]
-    file_path = os.path.join(valid_dir, EMULATION_CONFIGURATION_FILE_NAME)
-    file = open(file_path, "w")
-    # Technically an empty JSON is valid and we don't really care what is in the file
-    # for this test.
-    file.write("{}")
-    file.close()
-    return test_conf
 
 
 @pytest.fixture
@@ -635,49 +606,3 @@ def test_module_command(
 def test_robot_command(robot_with_mount_and_modules_services: Dict[str, Any]) -> None:
     """Confirm that modules depend on emulator proxy."""
     assert robot_with_mount_and_modules_services[OT2_ID].command is None
-
-
-@patch("os.path.isabs")
-@patch("os.path.isfile")
-def test_emulation_configuration_file_not_found(
-    mock_isabs: MagicMock,
-    mock_isfile: MagicMock,
-    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
-) -> None:
-    """Test that correct error is thrown when configuration file cannot be found."""
-    mock_isabs.return_value = False
-    mock_isfile.return_value = False
-    with pytest.raises(FileNotFoundError) as err:
-        convert_from_file(
-            testing_opentrons_emulation_configuration, EMULATION_CONFIGURATION_FILE_NAME
-        )
-
-    err.match(
-        f"File {EMULATION_CONFIGURATION_FILE_NAME} not found in any specified "
-        f"emulation_configuration_file_locations"
-    )
-
-
-@patch("os.path.isabs")
-@patch("os.path.isfile")
-def test_duplicate_emulation_configuration_file(
-    mock_isfile: MagicMock,
-    mock_isabs: MagicMock,
-    duplicate_emulation_files: OpentronsEmulationConfiguration,
-) -> None:
-    """Test that correct error is thrown when configuration file cannot be found."""
-    mock_isabs.return_value = False
-    mock_isfile.return_value = True
-    with pytest.raises(FileDisambiguationError) as err:
-        convert_from_file(duplicate_emulation_files, EMULATION_CONFIGURATION_FILE_NAME)
-    possible_locations = ", ".join(
-        duplicate_emulation_files.global_settings.emulation_configuration_file_locations
-    )
-    err.match(f"Specified file found in multiple locations:" f" {possible_locations}")
-
-
-def test_successful_conversion(
-    valid_configuration_load: OpentronsEmulationConfiguration,
-) -> None:
-    """Test convert_from_file loads a valid configuration correctly."""
-    convert_from_file(valid_configuration_load, EMULATION_CONFIGURATION_FILE_NAME)
