@@ -19,7 +19,7 @@ from pydantic import (
     validator,
 )
 
-from emulation_system.compose_file_creator.input.hardware_models import RobotInputModel
+from emulation_system.compose_file_creator.errors import DuplicateHardwareNameError
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DEFAULT_DOCKER_COMPOSE_VERSION,
     Hardware,
@@ -29,10 +29,6 @@ from emulation_system.compose_file_creator.settings.custom_types import (
     Modules,
     Robots,
 )
-
-
-class DuplicateHardwareNameError(Exception):
-    """Exception thrown when there is hardware with duplicate names."""
 
 
 class SystemConfigurationModel(BaseModel):
@@ -89,11 +85,7 @@ class SystemConfigurationModel(BaseModel):
             if num_of_instances > 1
         }
         if len(duplicates) > 0:
-            raise DuplicateHardwareNameError(
-                "The following container names are "
-                "duplicated in the configuration file: "
-                f"{', '.join(duplicates)}"
-            )
+            raise DuplicateHardwareNameError(duplicates)
 
         return values
 

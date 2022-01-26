@@ -16,6 +16,12 @@ from pydantic import (
     validator,
 )
 
+from emulation_system.compose_file_creator.errors import (
+    EmulationLevelNotSupportedError,
+    LocalSourceDoesNotExistError,
+    MountNotFoundError,
+    NoMountsDefinedError,
+)
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
     Service,
@@ -35,36 +41,6 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
 from emulation_system.compose_file_creator.settings.images import (
     get_image_name,
 )
-
-
-class MountError(Exception):
-    """Base mount exception."""
-
-    ...
-
-
-class NoMountsDefinedError(MountError):
-    """Exception thrown when you try to load a mount and none are defined."""
-
-    ...
-
-
-class MountNotFoundError(MountError):
-    """Exception thrown when mount of a certain name is not found."""
-
-    ...
-
-
-class EmulationLevelNotSupportedError(Exception):
-    """Exception thrown when emulation level is not supported."""
-
-    ...
-
-
-class LocalSourceDoesNotExistError(Exception):
-    """Exception thrown when local source-location does not exist."""
-
-    ...
 
 
 class HardwareModel(BaseModel):
@@ -117,9 +93,7 @@ class HardwareModel(BaseModel):
         """If source type is local, confirms directory path specified exists."""
         if values["source_type"] == SourceType.LOCAL:
             if not os.path.isdir(v):
-                raise LocalSourceDoesNotExistError(
-                    f'"{v}" is not a valid directory path'
-                )
+                raise LocalSourceDoesNotExistError(v)
         return v
 
     @validator("mounts", pre=True, each_item=True)
@@ -145,12 +119,12 @@ class HardwareModel(BaseModel):
     def get_mount_by_name(self, name: str) -> Mount:
         """Lookup and return Mount by name."""
         if len(self.mounts) == 0:
-            raise NoMountsDefinedError("You have no mounts defined.")
+            raise NoMountsDefinedError
         else:
             found_mounts = [mount for mount in self.mounts if mount.name == name]
 
             if len(found_mounts) == 0:
-                raise MountNotFoundError(f'Mount named "{name}" not found.')
+                raise MountNotFoundError(name)
             else:
                 return found_mounts[0]
 
@@ -162,10 +136,7 @@ class HardwareModel(BaseModel):
             repo = self.source_repos.firmware_repo_name
 
         if repo is None:
-            raise EmulationLevelNotSupportedError(
-                f'Emulation level, "{self.emulation_level}" not supported for '
-                f"{self.hardware}"
-            )
+            raise EmulationLevelNotSupportedError(self.emulation_level, self.hardware)
 
         return repo
 

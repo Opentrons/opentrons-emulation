@@ -55,10 +55,7 @@ class ModuleInputModel(HardwareModel):
     def _get_firmware_serial_number_env_var(self) -> Dict[str, str]:
         """Builds firmware level serial number environment variable."""
         if self.firmware_serial_number_info is None:
-            raise EmulationLevelNotSupportedError(
-                f'Emulation level, "{self.emulation_level}" not supported for '
-                f"{self.hardware}"
-            )
+            raise EmulationLevelNotSupportedError(self.emulation_level, self.hardware)
         value = {
             "serial_number": self.id,
             "model": self.firmware_serial_number_info.model,
