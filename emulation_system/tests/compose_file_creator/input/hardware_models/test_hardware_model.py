@@ -1,6 +1,9 @@
 """Tests for confirming returned image names are correct."""
 import pathlib
-from typing import Dict
+from typing import (
+    Dict,
+    Optional,
+)
 
 import pytest
 from pydantic import (
@@ -26,13 +29,37 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     SOURCE_CODE_MOUNT_NAME,
     SourceType,
 )
+from emulation_system.compose_file_creator.settings.images import (
+    ImageNotDefinedError,
+    get_image_name,
+)
 
 CONFIGURATIONS = [
     # OT2
-    [Hardware.OT2, EmulationLevels.HARDWARE, SourceType.LOCAL, None],
-    [Hardware.OT2, EmulationLevels.HARDWARE, SourceType.REMOTE, None],
-    [Hardware.OT2, EmulationLevels.FIRMWARE, SourceType.LOCAL, "robot-server-local"],
-    [Hardware.OT2, EmulationLevels.FIRMWARE, SourceType.REMOTE, "robot-server-remote"],
+    [
+        Hardware.OT2,
+        EmulationLevels.HARDWARE,
+        SourceType.LOCAL,
+        "robot-server-local",
+    ],
+    [
+        Hardware.OT2,
+        EmulationLevels.HARDWARE,
+        SourceType.REMOTE,
+        "robot-server-remote",
+    ],
+    [
+        Hardware.OT2,
+        EmulationLevels.FIRMWARE,
+        SourceType.LOCAL,
+        "robot-server-local",
+    ],
+    [
+        Hardware.OT2,
+        EmulationLevels.FIRMWARE,
+        SourceType.REMOTE,
+        "robot-server-remote",
+    ],
     # Heater Shaker Module
     [
         Hardware.HEATER_SHAKER_MODULE,
@@ -46,11 +73,31 @@ CONFIGURATIONS = [
         SourceType.REMOTE,
         "heater-shaker-hardware-remote",
     ],
-    [Hardware.HEATER_SHAKER_MODULE, EmulationLevels.FIRMWARE, SourceType.LOCAL, None],
-    [Hardware.HEATER_SHAKER_MODULE, EmulationLevels.FIRMWARE, SourceType.REMOTE, None],
+    [
+        Hardware.HEATER_SHAKER_MODULE,
+        EmulationLevels.FIRMWARE,
+        SourceType.LOCAL,
+        None,
+    ],
+    [
+        Hardware.HEATER_SHAKER_MODULE,
+        EmulationLevels.FIRMWARE,
+        SourceType.REMOTE,
+        None,
+    ],
     # Temperature Module
-    [Hardware.TEMPERATURE_MODULE, EmulationLevels.HARDWARE, SourceType.LOCAL, None],
-    [Hardware.TEMPERATURE_MODULE, EmulationLevels.HARDWARE, SourceType.REMOTE, None],
+    [
+        Hardware.TEMPERATURE_MODULE,
+        EmulationLevels.HARDWARE,
+        SourceType.LOCAL,
+        None,
+    ],
+    [
+        Hardware.TEMPERATURE_MODULE,
+        EmulationLevels.HARDWARE,
+        SourceType.REMOTE,
+        None,
+    ],
     [
         Hardware.TEMPERATURE_MODULE,
         EmulationLevels.FIRMWARE,
@@ -89,8 +136,18 @@ CONFIGURATIONS = [
         "thermocycler-firmware-remote",
     ],
     # Magnetic Module
-    [Hardware.MAGNETIC_MODULE, EmulationLevels.HARDWARE, SourceType.LOCAL, None],
-    [Hardware.MAGNETIC_MODULE, EmulationLevels.HARDWARE, SourceType.REMOTE, None],
+    [
+        Hardware.MAGNETIC_MODULE,
+        EmulationLevels.HARDWARE,
+        SourceType.LOCAL,
+        None,
+    ],
+    [
+        Hardware.MAGNETIC_MODULE,
+        EmulationLevels.HARDWARE,
+        SourceType.REMOTE,
+        None,
+    ],
     [
         Hardware.MAGNETIC_MODULE,
         EmulationLevels.FIRMWARE,
@@ -156,6 +213,24 @@ def bad_mount_name(directory_mount: Dict[str, str]) -> Dict[str, str]:
     """Create a Directory mount with an invalid name."""
     directory_mount["name"] = "A bad mount name"
     return directory_mount
+
+
+@pytest.mark.parametrize(
+    "hardware,emulation_level,source_type,expected_image",
+    CONFIGURATIONS,
+)
+def test_getting_image(
+    hardware: Hardware,
+    emulation_level: EmulationLevels,
+    source_type: SourceType,
+    expected_image: Optional[str],
+) -> None:
+    """Confirm that correct image is returned, otherwise config exception is thrown if image is not defined."""  # noqa: E501
+    if expected_image is None:
+        with pytest.raises(ImageNotDefinedError):
+            get_image_name(hardware, source_type, emulation_level)
+    else:
+        assert get_image_name(hardware, source_type, emulation_level) == expected_image
 
 
 def test_get_image_name_from_hardware_model() -> None:

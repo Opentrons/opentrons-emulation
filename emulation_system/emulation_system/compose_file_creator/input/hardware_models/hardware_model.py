@@ -7,7 +7,6 @@ from typing import (
     Any,
     Dict,
     List,
-    Optional,
     Union,
 )
 
@@ -33,7 +32,9 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     SourceRepositories,
     SourceType,
 )
-from emulation_system.compose_file_creator.settings.images import IMAGE_MAPPING
+from emulation_system.compose_file_creator.settings.images import (
+    get_image_name,
+)
 
 
 class MountError(Exception):
@@ -168,21 +169,9 @@ class HardwareModel(BaseModel):
 
         return repo
 
-    def get_image_name(self) -> Optional[str]:
+    def get_image_name(self) -> str:
         """Get image name to run based off of passed parameters."""
-        image = IMAGE_MAPPING[self.hardware]
-        comp_tuple = (self.source_type, self.emulation_level)
-
-        if comp_tuple == (SourceType.REMOTE, EmulationLevels.HARDWARE):
-            image_name = image.remote_hardware_image_name
-        elif comp_tuple == (SourceType.REMOTE, EmulationLevels.FIRMWARE):
-            image_name = image.remote_firmware_image_name
-        elif comp_tuple == (SourceType.LOCAL, EmulationLevels.HARDWARE):
-            image_name = image.local_hardware_image_name
-        else:  # (SourceType.LOCAL, EmulationLevels.FIRMWARE)
-            image_name = image.local_firmware_image_name
-
-        return image_name
+        return get_image_name(self.hardware, self.source_type, self.emulation_level)
 
     def get_mount_strings(self) -> List[str]:
         """Get list of all mount strings for hardware."""

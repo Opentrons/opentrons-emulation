@@ -1,0 +1,60 @@
+"""Pure functions related to creating emulator-proxy service."""
+
+from emulation_system.compose_file_creator.conversion.intermediate_types import (
+    RequiredNetworks,
+)
+from .shared_functions import (
+    generate_container_name,
+    get_service_build,
+    get_service_image,
+)
+from emulation_system.compose_file_creator.input.configuration_file import (
+    SystemConfigurationModel,
+)
+from emulation_system.compose_file_creator.input.hardware_models import (
+    HeaterShakerModuleInputModel,
+    MagneticModuleInputModel,
+    TemperatureModuleInputModel,
+    ThermocyclerModuleInputModel,
+)
+from emulation_system.compose_file_creator.output.compose_file_model import (
+    ListOrDict,
+    Service,
+)
+from emulation_system.compose_file_creator.settings.images import EmulatorProxyImages
+
+MODULE_TYPES = [
+    ThermocyclerModuleInputModel,
+    TemperatureModuleInputModel,
+    HeaterShakerModuleInputModel,
+    MagneticModuleInputModel,
+]
+
+
+def _create_emulator_proxy_env_vars() -> ListOrDict:
+    # Build dict of all module env vars and add them to emulator proxy.
+    return ListOrDict(
+        __root__={
+            env_var_name: env_var_value
+            for module in MODULE_TYPES
+            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()  # type: ignore [attr-defined] # noqa: E501
+        }
+    )
+
+
+def create_emulator_proxy_service(
+    config_model: SystemConfigurationModel, required_networks: RequiredNetworks
+) -> Service:
+    """Creates emulator-proxy service."""
+    # Going to just use the remote image for now. If someone ends up needing
+    # the local image it can get added later.
+    image = EmulatorProxyImages().remote_firmware_image_name
+    emulator_proxy_name = generate_container_name("emulator-proxy", config_model)
+    return Service(
+        container_name=emulator_proxy_name,
+        image=get_service_image(image),
+        build=get_service_build(image),
+        tty=True,
+        networks=required_networks.networks,
+        environment=_create_emulator_proxy_env_vars(),
+    )
