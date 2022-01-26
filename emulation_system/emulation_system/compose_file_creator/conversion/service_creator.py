@@ -26,6 +26,7 @@ def create_services(
             config_model, required_networks
         )
         emulator_proxy_name = emulator_proxy_service.container_name
+        assert emulator_proxy_name is not None  # For mypy
         services[emulator_proxy_name] = emulator_proxy_service
 
     services.update(
