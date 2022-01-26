@@ -5,7 +5,11 @@ from typing_extensions import Literal
 
 from pydantic import BaseModel
 
-from emulation_system.compose_file_creator.settings.config_file_settings import Hardware
+from emulation_system.compose_file_creator.settings.config_file_settings import (
+    EmulationLevels,
+    Hardware,
+    SourceType,
+)
 
 
 class Images(BaseModel):
@@ -81,3 +85,34 @@ IMAGE_MAPPING = {
     # TODO: Will need to update OT3 to use OT3 image once it is created
     Hardware.OT3.value: RobotServerImages(),
 }
+
+
+class ImageNotDefinedError(Exception):
+    """Exception thrown when there is no image defined for specified emulation level/source type."""  # noqa: E501
+
+    ...
+
+
+def get_image_name(
+    hardware: str, source_type: SourceType, emulation_level: EmulationLevels
+) -> str:
+    """Load image name."""
+    image_class = IMAGE_MAPPING[hardware]
+    comp_tuple = (source_type, emulation_level)
+
+    if comp_tuple == (SourceType.REMOTE, EmulationLevels.HARDWARE):
+        image_name = image_class.remote_hardware_image_name
+    elif comp_tuple == (SourceType.REMOTE, EmulationLevels.FIRMWARE):
+        image_name = image_class.remote_firmware_image_name
+    elif comp_tuple == (SourceType.LOCAL, EmulationLevels.HARDWARE):
+        image_name = image_class.local_hardware_image_name
+    else:  # (SourceType.LOCAL, EmulationLevels.FIRMWARE)
+        image_name = image_class.local_firmware_image_name
+
+    if image_name is None:
+        raise ImageNotDefinedError(
+            f'Image with emulation level of "{emulation_level}" and source'
+            f' type "{source_type}" does not exist for {hardware}'
+        )
+
+    return image_name
