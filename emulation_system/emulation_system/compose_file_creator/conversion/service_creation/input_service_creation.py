@@ -14,6 +14,7 @@ from emulation_system.compose_file_creator.conversion.intermediate_types import 
 )
 from .shared_functions import (
     generate_container_name,
+    get_mount_strings,
     get_service_build,
     get_service_image,
 )
@@ -93,15 +94,6 @@ def _get_env_vars(
     return ListOrDict(__root__=temp_vars)
 
 
-def _get_mount_strings(container: Containers) -> Optional[List[Union[str, Volume1]]]:
-    mount_strings = container.get_mount_strings()
-    return (
-        cast(List[Union[str, Volume1]], mount_strings)
-        if len(mount_strings) > 0
-        else None
-    )
-
-
 def configure_input_service(
     container: Containers,
     emulator_proxy_name: Optional[str],
@@ -115,7 +107,7 @@ def configure_input_service(
         tty=True,
         build=get_service_build(container.get_image_name()),
         networks=required_networks.networks,
-        volumes=_get_mount_strings(container),
+        volumes=get_mount_strings(container),
         depends_on=_get_service_depends_on(container, emulator_proxy_name),
         ports=_get_port_bindings(container),
         command=_get_command(container, emulator_proxy_name),
