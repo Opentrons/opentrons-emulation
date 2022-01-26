@@ -22,6 +22,7 @@ THERMOCYCLER_MODULE_ID = "t00-hot-to-handle"
 OT2_ID = "brobot"
 OT3_ID = "edgar-allen-poebot"
 EMULATOR_PROXY_ID = "emulator-proxy"
+SMOOTHIE_ID = "smoothie"
 
 HEATER_SHAKER_MODULE_EMULATION_LEVEL = EmulationLevels.HARDWARE.value
 MAGNETIC_MODULE_EMULATION_LEVEL = EmulationLevels.FIRMWARE.value

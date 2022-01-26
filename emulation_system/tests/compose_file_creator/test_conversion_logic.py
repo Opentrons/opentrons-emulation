@@ -63,7 +63,17 @@ from tests.compose_file_creator.conftest import (
     SYSTEM_UNIQUE_ID,
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
+    SMOOTHIE_ID,
 )
+
+# TODO: Add following tests:
+#   - CAN network is created on OT3 breakout
+#   - Smoothie service is not created with OT3
+#   - Smoothie service is not created if no robot exists
+#   - Robot server does not get pipettes env var
+#   - Smoothie gets pipettes env var
+#   - Smoothie image is local or remote based off of what OT2 emulation level is specified as  # noqa: E501
+#   - Smoothie volume is the same as robot volumes
 
 CONTAINER_NAME_TO_IMAGE = {
     OT2_ID: RobotServerImages().local_firmware_image_name,
@@ -255,6 +265,7 @@ def test_service_keys(
         TEMPERATURE_MODULE_ID,
         MAGNETIC_MODULE_ID,
         EMULATOR_PROXY_ID,
+        SMOOTHIE_ID
     }
 
 
@@ -366,6 +377,7 @@ def test_service_keys_with_system_unique_id(
         TEMPERATURE_MODULE_ID,
         MAGNETIC_MODULE_ID,
         EMULATOR_PROXY_ID,
+        SMOOTHIE_ID
     ]
 
     service_names_with_system_unique_id = {
@@ -413,7 +425,7 @@ def test_emulation_proxy_not_created(ot2_only: Dict[str, Any]) -> None:
     """Verify emulator proxy is not created when there are no modules."""
     services = to_compose_file(ot2_only).services
     assert services is not None
-    assert set(services.keys()) == {OT2_ID}
+    assert EMULATOR_PROXY_ID not in set(services.keys())
 
 
 @pytest.mark.parametrize(
@@ -455,7 +467,7 @@ def test_robot_server_emulator_proxy_env_vars_added(
     assert "OT_SMOOTHIE_EMULATOR_URI" in env.__root__
     assert (
         env.__root__["OT_SMOOTHIE_EMULATOR_URI"]
-        == f"socket://{EMULATOR_PROXY_ID}:11000"
+        == f"socket://{SMOOTHIE_ID}:11000"
     )
     assert "OT_EMULATOR_module_server" in env.__root__
     assert (
@@ -472,7 +484,6 @@ def test_robot_server_emulator_proxy_env_vars_not_added(
     assert robot_services is not None
     robot_services_env = robot_services[OT2_ID].environment
     assert robot_services_env is not None
-    assert "OT_SMOOTHIE_EMULATOR_URI" not in robot_services_env.__root__
     assert "OT_EMULATOR_module_server" not in robot_services_env.__root__
 
 
@@ -670,10 +681,3 @@ def test_successful_conversion(
 ) -> None:
     """Test convert_from_file loads a valid configuration correctly."""
     convert_from_file(valid_configuration_load, EMULATION_CONFIGURATION_FILE_NAME)
-
-
-# TODO: Add following tests:
-#   - CAN network is created on OT3 breakout
-#   - Port is exposed on robot server
-#   - Module specifies correct proxy env var
-#   - Module settings env var is correct
