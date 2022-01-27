@@ -395,7 +395,10 @@ def test_exception_thrown_when_invalid_remote_source_location(
     "valid_location", [
         "ca82a6dff817ec66f44342007202690a93763949",
         "CA82A6DFF817EC66F44342007202690A93763949",
-        "latest"]
+        "latest",
+        "Latest",
+        "LATEST",
+    ]
 )
 def test_accepts_valid_remote_source_location(valid_location: str) -> None:
     """Confirm LocalSourceDoesNotExistError is thrown when local path does not exist."""
