@@ -43,6 +43,15 @@ class LocalSourceDoesNotExistError(Exception):
         super().__init__(f'"{path}" is not a valid directory path')
 
 
+class InvalidRemoteSourceError(Exception):
+    """Exception thrown when remote source is not valid."""
+    def __init__(self, value: str) -> None:
+        super().__init__(
+            f"\"{value}\" is not valid. Must either be a valid commit sha, or the "
+            f"value \"latest\""
+        )
+
+
 class DuplicateHardwareNameError(Exception):
     """Exception thrown when there is hardware with duplicate names."""
 
