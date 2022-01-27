@@ -5,6 +5,7 @@ from typing_extensions import Literal
 
 from pydantic import BaseModel
 
+from emulation_system.compose_file_creator.errors import ImageNotDefinedError
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     EmulationLevels,
     Hardware,
@@ -75,6 +76,15 @@ class EmulatorProxyImages(Images):
     remote_hardware_image_name: Literal[None] = None
 
 
+class SmoothieImages(Images):
+    """Image names for Smoothie."""
+
+    local_firmware_image_name: str = "smoothie-local"
+    local_hardware_image_name: Literal[None] = None
+    remote_firmware_image_name: str = "smoothie-remote"
+    remote_hardware_image_name: Literal[None] = None
+
+
 IMAGE_MAPPING = {
     Hardware.HEATER_SHAKER_MODULE.value: HeaterShakerModuleImages(),
     Hardware.MAGNETIC_MODULE.value: MagneticModuleImages(),
@@ -85,12 +95,6 @@ IMAGE_MAPPING = {
     # TODO: Will need to update OT3 to use OT3 image once it is created
     Hardware.OT3.value: RobotServerImages(),
 }
-
-
-class ImageNotDefinedError(Exception):
-    """Exception thrown when there is no image defined for specified emulation level/source type."""  # noqa: E501
-
-    ...
 
 
 def get_image_name(
@@ -110,9 +114,6 @@ def get_image_name(
         image_name = image_class.local_firmware_image_name
 
     if image_name is None:
-        raise ImageNotDefinedError(
-            f'Image with emulation level of "{emulation_level}" and source'
-            f' type "{source_type}" does not exist for {hardware}'
-        )
+        raise ImageNotDefinedError(emulation_level, source_type, hardware)
 
     return image_name

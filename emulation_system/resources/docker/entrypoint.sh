@@ -15,19 +15,29 @@ if [ "$COMMAND" != "build" ] && [ "$COMMAND" != "run" ]; then
   exit 1
 fi
 
+build_ot3_simulator() {
+  cd /ot3-firmware && \
+  cmake --preset host-gcc10 && \
+  cmake --build ./build-host --target $1
+}
+
+build_module_simulator() {
+  cd /opentrons-modules && \
+  cmake --preset=stm32-host-gcc10 . && \
+  cmake --build ./build-stm32-host --target $1
+}
+
 # OPENTRONS_HARDWARE is an env variable that is passed to every container
 
 FULL_COMMAND="$COMMAND"-"$OPENTRONS_HARDWARE"
 OTHER_ARGS=`echo "${@:2}"`
 echo "${FULL_COMMAND}"
 case $FULL_COMMAND in
+
+  # Hardware Level
+
   build-heater-shaker-hardware)
-    (
-      cd /opentrons-modules && \
-      cmake --preset=stm32-host-gcc10 . && \
-      cmake --build ./build-stm32-host --target heater-shaker-simulator
-    )
-    ;;
+    build_module_simulator "heater-shaker-simulator"
   build-ot3-echo-hardware)
     (
       cd /ot3-firmware && \
@@ -36,13 +46,10 @@ case $FULL_COMMAND in
     )
     ;;
   build-thermocycler-hardware)
-    (
-      cd /opentrons-modules && \
-      cmake --preset=stm32-host-gcc10 . && \
-      cmake --build ./build-stm32-host --target thermocycler-refresh-simulator
-    )
+    build_module_simulator "thermocycler-refresh-simulator"
     ;;
-  build-thermocycler-firmware|build-magdeck-firmware|build-tempdeck-firmware|build-emulator-proxy|build-robot-server|build-common-firmware)
+
+  build-thermocycler-firmware|build-magdeck-firmware|build-tempdeck-firmware|build-emulator-proxy|build-robot-server|build-common-firmware|build-smoothie)
     (cd /opentrons/shared-data/python && python3 setup.py bdist_wheel -d /dist/)
     (cd /opentrons/api && python3 setup.py bdist_wheel -d /dist/)
     (cd /opentrons/notify-server && python3 setup.py bdist_wheel -d /dist/)
@@ -73,6 +80,8 @@ case $FULL_COMMAND in
   run-emulator-proxy)
     python3 -m opentrons.hardware_control.emulation.app
     ;;
+  run-smoothie)
+    bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_smoothie"
 
   *)
     echo "Command ${FULL_COMMAND} not found."

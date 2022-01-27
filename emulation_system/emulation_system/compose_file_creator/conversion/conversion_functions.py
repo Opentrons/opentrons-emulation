@@ -1,16 +1,11 @@
 """Functions for converting from SystemConfigurationModel to RuntimeComposeFileModel."""
-import os
-
 from typing import (
     Any,
     Dict,
     cast,
 )
 
-from pydantic import (
-    parse_file_as,
-    parse_obj_as,
-)
+from pydantic import parse_obj_as
 
 from emulation_system.compose_file_creator.conversion.intermediate_types import (
     RequiredNetworks,
@@ -30,15 +25,6 @@ from emulation_system.compose_file_creator.output.runtime_compose_file_model imp
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DEFAULT_NETWORK_NAME,
 )
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
-
-
-class FileDisambiguationError(Exception):
-    """Exception thrown when there is multiple files with specified relative path."""
-
-    ...
 
 
 def _get_required_networks(
@@ -69,40 +55,6 @@ def _convert(config_model: SystemConfigurationModel) -> RuntimeComposeFileModel:
             network_name: Network() for network_name in required_networks.networks
         },
     )
-
-
-def convert_from_file(
-    settings: OpentronsEmulationConfiguration, input_file_path: str
-) -> RuntimeComposeFileModel:
-    """Parse from file.
-
-    Will load either an absolute path, or a relative path against paths specified in
-    emulation_configuration_file_locations setting.
-    """
-    if not os.path.isabs(input_file_path):
-        extra_locations = (
-            settings.global_settings.emulation_configuration_file_locations
-        )
-        results = []
-        for extra_location in extra_locations:
-            possible_path = os.path.join(extra_location, input_file_path)
-            if os.path.isfile(possible_path):
-                results.append(possible_path)
-
-        if len(results) == 0:
-            raise FileNotFoundError(
-                f"File {input_file_path} not found in any specified"
-                f" emulation_configuration_file_locations"
-            )
-        elif len(results) > 1:
-            paths = ", ".join(extra_locations)
-            raise FileDisambiguationError(
-                f"Specified file found in multiple locations:" f" {paths}"
-            )
-        else:
-            input_file_path = results[0]
-
-    return _convert(parse_file_as(SystemConfigurationModel, input_file_path))
 
 
 def convert_from_obj(input_obj: Dict[str, Any]) -> RuntimeComposeFileModel:

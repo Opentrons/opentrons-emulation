@@ -12,8 +12,8 @@ import pytest
 from pydantic import ValidationError
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
+from emulation_system.compose_file_creator.errors import DuplicateHardwareNameError
 from emulation_system.compose_file_creator.input.configuration_file import (
-    DuplicateHardwareNameError,
     SystemConfigurationModel,
 )
 from emulation_system.compose_file_creator.input.hardware_models import (
@@ -66,10 +66,10 @@ def ot2_with_invalid_mounts(ot2_with_mounts: Dict) -> Dict:
 
 
 @pytest.fixture
-def version_defined(robot_and_modules: Dict[str, Any]) -> Dict[str, Any]:
+def version_defined(ot2_and_modules: Dict[str, Any]) -> Dict[str, Any]:
     """Structure of SystemConfigurationModel with robot, modules, and version."""
-    robot_and_modules["compose-file-version"] = "3.7"
-    return robot_and_modules
+    ot2_and_modules["compose-file-version"] = "3.7"
+    return ot2_and_modules
 
 
 @pytest.fixture
@@ -102,10 +102,10 @@ def null_everything() -> Dict[str, None]:
 
 
 @pytest.fixture
-def with_invalid_system_unique_id(robot_and_modules: Dict[str, Any]) -> Dict[str, Any]:
+def with_invalid_system_unique_id(ot2_and_modules: Dict[str, Any]) -> Dict[str, Any]:
     """Structure of SystemConfigurationModel with robot, modules, and an invalid system-unique-id."""  # noqa: E501
-    robot_and_modules["system-unique-id"] = "I aM uNiQuE bUt InVaLiD"
-    return robot_and_modules
+    ot2_and_modules["system-unique-id"] = "I aM uNiQuE bUt InVaLiD"
+    return ot2_and_modules
 
 
 def create_system_configuration(obj: Dict) -> SystemConfigurationModel:
@@ -149,7 +149,7 @@ def test_invalid_container_name(invalid_ot2_name: Dict[str, Any]) -> None:
     "config",
     [
         lazy_fixture("modules_only"),
-        lazy_fixture("robot_and_modules"),
+        lazy_fixture("ot2_and_modules"),
         lazy_fixture("null_robot_with_modules"),
     ],
 )
@@ -170,7 +170,7 @@ def test_modules_exist_is_false(config: Dict[str, Any]) -> None:
     "config",
     [
         lazy_fixture("ot2_only"),
-        lazy_fixture("robot_and_modules"),
+        lazy_fixture("ot2_and_modules"),
         lazy_fixture("null_module_with_robot"),
     ],
 )
@@ -187,9 +187,9 @@ def test_robot_exists_is_false(config: Dict[str, Any]) -> None:
     assert not create_system_configuration(config).robot_exists
 
 
-def test_containers_property(robot_and_modules: Dict[str, Any]) -> None:
+def test_containers_property(ot2_and_modules: Dict[str, Any]) -> None:
     """Test the containers property is constructed correctly."""
-    containers = create_system_configuration(robot_and_modules).containers
+    containers = create_system_configuration(ot2_and_modules).containers
     assert set(containers.keys()) == {
         OT2_ID,
         MAGNETIC_MODULE_ID,
@@ -204,9 +204,9 @@ def test_containers_property(robot_and_modules: Dict[str, Any]) -> None:
     assert isinstance(containers[HEATER_SHAKER_MODULE_ID], HeaterShakerModuleInputModel)
 
 
-def test_get_by_id(robot_and_modules: Dict[str, Any]) -> None:
+def test_get_by_id(ot2_and_modules: Dict[str, Any]) -> None:
     """Test that loading containers by id works correctly."""
-    system_config = create_system_configuration(robot_and_modules)
+    system_config = create_system_configuration(ot2_and_modules)
     assert isinstance(system_config.get_by_id(OT2_ID), OT2InputModel)
     assert isinstance(
         system_config.get_by_id(HEATER_SHAKER_MODULE_ID), HeaterShakerModuleInputModel
@@ -223,7 +223,7 @@ def test_get_by_id(robot_and_modules: Dict[str, Any]) -> None:
 
 
 @pytest.mark.parametrize(
-    "config", [lazy_fixture("robot_and_modules"), lazy_fixture("null_everything")]
+    "config", [lazy_fixture("ot2_and_modules"), lazy_fixture("null_everything")]
 )
 def test_default_version(config: Dict[str, Any]) -> None:
     """Test that version is set to default when not specified."""
@@ -238,7 +238,7 @@ def test_overriding_version(version_defined: Dict[str, Any]) -> None:
 
 
 @pytest.mark.parametrize(
-    "config", [lazy_fixture("robot_and_modules"), lazy_fixture("null_everything")]
+    "config", [lazy_fixture("ot2_and_modules"), lazy_fixture("null_everything")]
 )
 def test_no_system_unique_id(config: Dict[str, Any]) -> None:
     """Test that default network name is set correctly when field is not specified."""

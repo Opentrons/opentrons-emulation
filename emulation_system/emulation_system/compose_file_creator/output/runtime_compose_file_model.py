@@ -1,6 +1,10 @@
 """Adds functions to generated compose_file_model."""
+from typing import (
+    Any,
+)
+
 import yaml
-from typing import Any
+
 # Have to ignore attr-defined errors from mypy because we are calling type: ignore at
 # the top of compose_file_model. This causes mypy to think that ComposeSpecification
 # and Service do not exist when they actually do.

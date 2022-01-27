@@ -12,6 +12,8 @@ from emulation_system.compose_file_creator.conversion.intermediate_types import 
 from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
 )
+from .service_creation.smoothie_service_creation import create_smoothie_service
+from ..input.hardware_models import OT2InputModel
 
 
 def create_services(
@@ -20,6 +22,7 @@ def create_services(
     """Creates all services to be added to compose file."""
     services = {}
     emulator_proxy_name = None
+    smoothie_name = None
 
     if config_model.modules_exist:
         emulator_proxy_service = create_emulator_proxy_service(
@@ -29,12 +32,22 @@ def create_services(
         assert emulator_proxy_name is not None  # For mypy
         services[emulator_proxy_name] = emulator_proxy_service
 
+    if config_model.robot is not None and config_model.robot.__class__ == OT2InputModel:
+        smoothie_service = create_smoothie_service(config_model, required_networks)
+        smoothie_name = smoothie_service.container_name
+        assert smoothie_name is not None
+        services[smoothie_name] = smoothie_service
+
     services.update(
         {
             generate_container_name(
                 container.id, config_model
             ): configure_input_service(
-                container, emulator_proxy_name, config_model, required_networks
+                container,
+                emulator_proxy_name,
+                smoothie_name,
+                config_model,
+                required_networks,
             )
             for container in config_model.containers.values()
         }

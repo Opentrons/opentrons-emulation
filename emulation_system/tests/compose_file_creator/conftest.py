@@ -22,6 +22,7 @@ THERMOCYCLER_MODULE_ID = "t00-hot-to-handle"
 OT2_ID = "brobot"
 OT3_ID = "edgar-allen-poebot"
 EMULATOR_PROXY_ID = "emulator-proxy"
+SMOOTHIE_ID = "smoothie"
 
 HEATER_SHAKER_MODULE_EMULATION_LEVEL = EmulationLevels.HARDWARE.value
 MAGNETIC_MODULE_EMULATION_LEVEL = EmulationLevels.FIRMWARE.value
@@ -286,6 +287,14 @@ def ot2_only(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
 
 
 @pytest.fixture
+def ot2_only_with_remote_source_type(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
+    """An OT2 with remote source-type."""
+    ot2_default["source-type"] = SourceType.REMOTE
+    ot2_default["source-location"] = "latest"
+    return {"robot": ot2_default}
+
+
+@pytest.fixture
 def ot3_only(ot3_default: Dict[str, Any]) -> Dict[str, Any]:
     """Structure of SystemConfigurationModel with OT-3 only."""
     return {"robot": ot3_default}
@@ -310,7 +319,7 @@ def modules_only(
 
 
 @pytest.fixture
-def robot_and_modules(
+def ot2_and_modules(
     modules_only: Dict[str, Any], ot2_default: Dict[str, Any]
 ) -> Dict[str, Any]:
     """Structure of SystemConfigurationModel with robot and modules."""
@@ -319,7 +328,16 @@ def robot_and_modules(
 
 
 @pytest.fixture
-def with_system_unique_id(robot_and_modules: Dict[str, Any]) -> Dict[str, Any]:
+def ot3_and_modules(
+    modules_only: Dict[str, Any], ot3_default: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Structure of SystemConfigurationModel with robot and modules."""
+    modules_only["robot"] = ot3_default
+    return modules_only
+
+
+@pytest.fixture
+def with_system_unique_id(ot2_and_modules: Dict[str, Any]) -> Dict[str, Any]:
     """Structure of SystemConfigurationModel with robot, modules, and system-unique-id."""  # noqa: E501
-    robot_and_modules["system-unique-id"] = SYSTEM_UNIQUE_ID
-    return robot_and_modules
+    ot2_and_modules["system-unique-id"] = SYSTEM_UNIQUE_ID
+    return ot2_and_modules
