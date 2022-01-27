@@ -102,9 +102,7 @@ class SystemConfigurationModel(BaseModel):
     @property
     def robot_exists(self) -> bool:
         """Returns True if a robot was defined in config file, False if not."""
-        return self.robot is not None and issubclass(
-            self.robot.__class__, RobotInputModel
-        )
+        return self.robot is not None
 
     @property
     def requires_can_network(self) -> bool:
