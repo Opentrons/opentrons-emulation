@@ -35,16 +35,18 @@ from emulation_system.compose_file_creator.settings.custom_types import Containe
 
 
 def _get_service_depends_on(
-    container: Containers, emulator_proxy_name: Optional[str]
+    container: Containers,
+    emulator_proxy_name: Optional[str],
+    smoothie_name: Optional[str]
 ) -> Optional[List[str]]:
-    # If emulator proxy exists and container is module then it needs to
-    # depend on emulator proxy.
-    return (
-        [emulator_proxy_name]
-        if emulator_proxy_name is not None
-        and issubclass(container.__class__, ModuleInputModel)
-        else None
-    )
+    dependencies = []
+    if emulator_proxy_name is not None:
+        dependencies.append(emulator_proxy_name)
+
+    if smoothie_name is not None and issubclass(container.__class__, OT2InputModel):
+        dependencies.append(smoothie_name)
+
+    return dependencies if len(dependencies) != 0 else None
 
 
 def _get_command(
@@ -113,7 +115,9 @@ def configure_input_service(
         build=get_service_build(container.get_image_name()),
         networks=required_networks.networks,
         volumes=get_mount_strings(container),
-        depends_on=_get_service_depends_on(container, emulator_proxy_name),
+        depends_on=_get_service_depends_on(
+            container, emulator_proxy_name, smoothie_name
+        ),
         ports=_get_port_bindings(container),
         command=_get_command(container, emulator_proxy_name),
         environment=_get_env_vars(container, emulator_proxy_name, smoothie_name),

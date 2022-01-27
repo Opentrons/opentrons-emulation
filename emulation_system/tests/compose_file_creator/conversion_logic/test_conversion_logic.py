@@ -118,30 +118,6 @@ def test_top_level_network(ot2_and_modules: Dict[str, Any]) -> None:
     }
 
 
-@pytest.mark.parametrize(
-    "service_name",
-    [
-        THERMOCYCLER_MODULE_ID,
-        TEMPERATURE_MODULE_ID,
-        MAGNETIC_MODULE_ID,
-        HEATER_SHAKER_MODULE_ID,
-    ],
-)
-def test_module_depends_on(
-    service_name: str, robot_with_mount_and_modules_services: Dict[str, Any]
-) -> None:
-    """Confirm that modules depend on emulator proxy."""
-    assert robot_with_mount_and_modules_services[service_name].depends_on == [
-        EMULATOR_PROXY_ID
-    ]
-
-
-def test_robot_depends_on(
-    robot_with_mount_and_modules_services: Dict[str, Any]
-) -> None:
-    """Confirm that modules depend on emulator proxy."""
-    assert robot_with_mount_and_modules_services[OT2_ID].depends_on is None
-
 
 def test_robot_port(robot_with_mount_and_modules_services: Dict[str, Any]) -> None:
     """Confirm robot port string is created correctly."""
