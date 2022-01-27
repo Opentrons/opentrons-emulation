@@ -19,9 +19,14 @@ from emulation_system.compose_file_creator.output.compose_file_model import (
     Service,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
+    Hardware,
     SourceType,
 )
 from emulation_system.compose_file_creator.settings.images import SmoothieImages
+from ...errors import (
+    HardwareDoesNotExistError,
+    IncorrectHardwareError,
+)
 
 
 def create_smoothie_service(
@@ -29,6 +34,12 @@ def create_smoothie_service(
 ) -> Service:
     """Create smoothie service."""
     ot2 = config_model.robot
+
+    if ot2 is None:
+        raise HardwareDoesNotExistError(Hardware.OT2)
+    if ot2.hardware != Hardware.OT2:
+        raise IncorrectHardwareError(ot2.hardware, Hardware.OT2)
+
     smoothie_images = SmoothieImages()
     # Because creation of Smoothie Service should be invisible to user, we want to infer
     # source type of smoothie from source type specified in robot.
@@ -63,5 +74,5 @@ def create_smoothie_service(
         # when running a smoothie type container. See run-smoothie inside entrypoint.sh
         command=None,
         # No ports needed for smoothie
-        ports=None
+        ports=None,
     )

@@ -13,7 +13,7 @@ from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
 )
 from .service_creation.smoothie_service_creation import create_smoothie_service
-from ..settings.config_file_settings import Hardware
+from ..input.hardware_models import OT2InputModel
 
 
 def create_services(
@@ -32,10 +32,10 @@ def create_services(
         assert emulator_proxy_name is not None  # For mypy
         services[emulator_proxy_name] = emulator_proxy_service
 
-    if config_model.robot_exists and config_model.robot.hardware == Hardware.OT2:
+    if config_model.robot is not None and config_model.robot.__class__ == OT2InputModel:
         smoothie_service = create_smoothie_service(config_model, required_networks)
         smoothie_name = smoothie_service.container_name
-        assert smoothie_name is not None  # For mypy
+        assert smoothie_name is not None
         services[smoothie_name] = smoothie_service
 
     services.update(
