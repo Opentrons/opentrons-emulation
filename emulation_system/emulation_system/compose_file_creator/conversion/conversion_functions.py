@@ -5,9 +5,7 @@ from typing import (
     cast,
 )
 
-from pydantic import (
-    parse_obj_as
-)
+from pydantic import parse_obj_as
 
 from emulation_system.compose_file_creator.conversion.intermediate_types import (
     RequiredNetworks,

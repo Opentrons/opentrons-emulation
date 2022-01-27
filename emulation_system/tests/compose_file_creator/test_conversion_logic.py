@@ -14,7 +14,7 @@ import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
-    convert_from_obj
+    convert_from_obj,
 )
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
@@ -236,7 +236,7 @@ def test_service_keys(
         TEMPERATURE_MODULE_ID,
         MAGNETIC_MODULE_ID,
         EMULATOR_PROXY_ID,
-        SMOOTHIE_ID
+        SMOOTHIE_ID,
     }
 
 
@@ -348,7 +348,7 @@ def test_service_keys_with_system_unique_id(
         TEMPERATURE_MODULE_ID,
         MAGNETIC_MODULE_ID,
         EMULATOR_PROXY_ID,
-        SMOOTHIE_ID
+        SMOOTHIE_ID,
     ]
 
     service_names_with_system_unique_id = {
@@ -436,10 +436,7 @@ def test_robot_server_emulator_proxy_env_vars_added(
     env = robot_with_mount_and_modules_services[OT2_ID].environment
     assert env is not None
     assert "OT_SMOOTHIE_EMULATOR_URI" in env.__root__
-    assert (
-        env.__root__["OT_SMOOTHIE_EMULATOR_URI"]
-        == f"socket://{SMOOTHIE_ID}:11000"
-    )
+    assert env.__root__["OT_SMOOTHIE_EMULATOR_URI"] == f"socket://{SMOOTHIE_ID}:11000"
     assert "OT_EMULATOR_module_server" in env.__root__
     assert (
         env.__root__["OT_EMULATOR_module_server"]

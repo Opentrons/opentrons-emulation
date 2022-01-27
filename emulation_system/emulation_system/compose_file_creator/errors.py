@@ -1,6 +1,10 @@
 """One-stop shop for all errors."""
 
-from typing import List
+from typing import (
+    Set,
+)
+
+from emulation_system.compose_file_creator.settings.config_file_settings import Hardware
 
 
 class MountError(Exception):
@@ -25,6 +29,7 @@ class MountNotFoundError(MountError):
 
 class EmulationLevelNotSupportedError(Exception):
     """Exception thrown when emulation level is not supported."""
+
     def __init__(self, emulation_level: str, hardware: str) -> None:
         super().__init__(
             f'Emulation level, "{emulation_level}" not supported for "{hardware}"'
@@ -33,13 +38,15 @@ class EmulationLevelNotSupportedError(Exception):
 
 class LocalSourceDoesNotExistError(Exception):
     """Exception thrown when local source-location does not exist."""
+
     def __init__(self, path: str) -> None:
         super().__init__(f'"{path}" is not a valid directory path')
 
 
 class DuplicateHardwareNameError(Exception):
     """Exception thrown when there is hardware with duplicate names."""
-    def __init__(self, duplicate_names: List[str]) -> None:
+
+    def __init__(self, duplicate_names: Set[str]) -> None:
         super().__init__(
             "The following container names are duplicated in the configuration file: "
             f"{', '.join(duplicate_names)}"
@@ -48,10 +55,28 @@ class DuplicateHardwareNameError(Exception):
 
 class ImageNotDefinedError(Exception):
     """Exception thrown when there is no image defined for specified emulation level/source type."""  # noqa: E501
-    def __init__(
-        self, emulation_level: str, source_type: str, hardware: str
-    ) -> None:
+
+    def __init__(self, emulation_level: str, source_type: str, hardware: str) -> None:
         super().__init__(
             f'Image with emulation level of "{emulation_level}" and source type '
             f'"{source_type}" does not exist for {hardware}'
         )
+
+
+class IncorrectHardwareError(Exception):
+    """Exception thrown when incorrect hardware is specified."""
+
+    def __init__(
+        self, specifed_hardware: Hardware, expected_hardware: Hardware
+    ) -> None:
+        super().__init__(
+            f"Incorrect hardware specifed: {specifed_hardware}. "
+            f"Expected: {expected_hardware}"
+        )
+
+
+class HardwareDoesNotExistError(Exception):
+    """Exception thrown when hardware does not exist."""
+
+    def __init__(self, specified_hardware: Hardware) -> None:
+        super().__init__(f"{specified_hardware} not defined.")
