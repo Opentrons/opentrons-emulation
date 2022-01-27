@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import os
 import pathlib
+import re
 from typing import (
     Any,
     Dict,
@@ -18,6 +19,7 @@ from pydantic import (
 
 from emulation_system.compose_file_creator.errors import (
     EmulationLevelNotSupportedError,
+    InvalidRemoteSourceError,
     LocalSourceDoesNotExistError,
     MountNotFoundError,
     NoMountsDefinedError,
@@ -41,6 +43,8 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
 from emulation_system.compose_file_creator.settings.images import (
     get_image_name,
 )
+
+COMMIT_SHA_REGEX = r"^[0-9a-f]{40}"
 
 
 class HardwareModel(BaseModel):
@@ -94,6 +98,9 @@ class HardwareModel(BaseModel):
         if values["source_type"] == SourceType.LOCAL:
             if not os.path.isdir(v):
                 raise LocalSourceDoesNotExistError(v)
+        else:
+            if v != "latest" and re.compile(COMMIT_SHA_REGEX).match(v) is None:
+                raise InvalidRemoteSourceError(v)
         return v
 
     @validator("mounts", pre=True, each_item=True)
