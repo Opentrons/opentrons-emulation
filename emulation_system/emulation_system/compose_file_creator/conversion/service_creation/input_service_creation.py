@@ -77,22 +77,21 @@ def _get_env_vars(
 ) -> ListOrDict:
     temp_vars: Dict[str, Any] = {}
 
-    container_class = container.__class__
     if (
-        issubclass(container_class, RobotInputModel)
+        issubclass(container.__class__, RobotInputModel)
         and emulator_proxy_name is not None
     ):
         temp_vars["OT_EMULATOR_module_server"] = f'{{"host": "{emulator_proxy_name}"}}'
 
-    if issubclass(container_class, OT2InputModel):
+    if issubclass(container.__class__, OT2InputModel):
         # TODO: If emulator proxy port is ever not hardcoded will have to update from
         #  11000 to a variable
         temp_vars["OT_SMOOTHIE_EMULATOR_URI"] = f"socket://{smoothie_name}:11000"
 
-    if issubclass(container_class, OT3InputModel):
+    if issubclass(container.__class__, OT3InputModel):
         temp_vars["OT_API_FF_enableOT3HardwareController"] = True
 
-    if issubclass(container_class, ModuleInputModel):
+    if issubclass(container.__class__, ModuleInputModel):
         temp_vars.update(container.get_serial_number_env_var())
         temp_vars.update(container.get_proxy_info_env_var())
 
