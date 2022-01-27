@@ -99,7 +99,7 @@ class HardwareModel(BaseModel):
             if not os.path.isdir(v):
                 raise LocalSourceDoesNotExistError(v)
         else:
-            if v != "latest" and re.compile(COMMIT_SHA_REGEX).match(v) is None:
+            if v != "latest" and re.compile(COMMIT_SHA_REGEX).match(v.lower()) is None:
                 raise InvalidRemoteSourceError(v)
         return v
 
