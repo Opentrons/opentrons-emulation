@@ -118,7 +118,6 @@ def test_top_level_network(ot2_and_modules: Dict[str, Any]) -> None:
     }
 
 
-
 def test_robot_port(robot_with_mount_and_modules_services: Dict[str, Any]) -> None:
     """Confirm robot port string is created correctly."""
     assert robot_with_mount_and_modules_services[OT2_ID].ports == ["5000:31950"]

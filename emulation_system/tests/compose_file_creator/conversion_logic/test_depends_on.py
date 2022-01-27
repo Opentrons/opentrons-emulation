@@ -1,4 +1,4 @@
-"""Tests related to depends_on property of services"""
+"""Tests related to depends_on property of services."""
 
 from typing import (
     Any,
@@ -7,7 +7,9 @@ from typing import (
 
 import pytest
 
-from emulation_system.compose_file_creator.conversion.conversion_functions import convert_from_obj
+from emulation_system.compose_file_creator.conversion.conversion_functions import (
+    convert_from_obj,
+)
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,
@@ -26,7 +28,7 @@ from tests.compose_file_creator.conftest import (
         TEMPERATURE_MODULE_ID,
         MAGNETIC_MODULE_ID,
         HEATER_SHAKER_MODULE_ID,
-        OT2_ID
+        OT2_ID,
     ],
 )
 def test_emulator_proxy_in_depends_on(
@@ -34,14 +36,12 @@ def test_emulator_proxy_in_depends_on(
 ) -> None:
     """Confirm that modules depend on emulator proxy."""
     assert (
-        EMULATOR_PROXY_ID in
-        robot_with_mount_and_modules_services[service_name].depends_on
+        EMULATOR_PROXY_ID
+        in robot_with_mount_and_modules_services[service_name].depends_on
     )
 
 
-def test_ot2_emulator_proxy_not_in_depends_on(
-    ot2_only: Dict[str, Any]
-) -> None:
+def test_ot2_emulator_proxy_not_in_depends_on(ot2_only: Dict[str, Any]) -> None:
     """Confirm that OT2 does not depend on emulator proxy when there are no modules.
 
     Have to check for membership in list because depends_on will have the smoothie
@@ -49,12 +49,12 @@ def test_ot2_emulator_proxy_not_in_depends_on(
     """
     services = convert_from_obj(ot2_only).services
     assert services is not None
-    assert EMULATOR_PROXY_ID not in services[OT2_ID].depends_on
+    depends_on = services[OT2_ID].depends_on
+    assert isinstance(depends_on, list)
+    assert EMULATOR_PROXY_ID not in depends_on
 
 
-def test_ot3_emulator_proxy_not_in_depends_on(
-    ot3_only: Dict[str, Any]
-) -> None:
+def test_ot3_emulator_proxy_not_in_depends_on(ot3_only: Dict[str, Any]) -> None:
     """Confirm that OT3 does not depend on emulator proxy when there are no modules.
 
     OT3 should not have an other dependencies so make sure depends_on is None

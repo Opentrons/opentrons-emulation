@@ -37,7 +37,7 @@ from emulation_system.compose_file_creator.settings.custom_types import Containe
 def _get_service_depends_on(
     container: Containers,
     emulator_proxy_name: Optional[str],
-    smoothie_name: Optional[str]
+    smoothie_name: Optional[str],
 ) -> Optional[List[str]]:
     dependencies = []
     if emulator_proxy_name is not None:
