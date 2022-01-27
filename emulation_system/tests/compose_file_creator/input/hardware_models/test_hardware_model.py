@@ -375,7 +375,7 @@ def test_exception_thrown_when_local_source_code_does_not_exist() -> None:
     "invalid_location", ["/a/file/path.txt", "notavalidsha", "", "{something}"]
 )
 def test_exception_thrown_when_invalid_remote_source_location(
-    invalid_location: str
+    invalid_location: str,
 ) -> None:
     """Confirm LocalSourceDoesNotExistError is thrown when local path does not exist."""
     with pytest.raises(InvalidRemoteSourceError):
@@ -394,9 +394,7 @@ def test_exception_thrown_when_invalid_remote_source_location(
 @pytest.mark.parametrize(
     "valid_location", ["ca82a6dff817ec66f44342007202690a93763949", "latest"]
 )
-def test_accepts_valid_remote_source_location(
-    valid_location: str
-) -> None:
+def test_accepts_valid_remote_source_location(valid_location: str) -> None:
     """Confirm LocalSourceDoesNotExistError is thrown when local path does not exist."""
     hs = HeaterShakerModuleInputModel.parse_obj(
         {
