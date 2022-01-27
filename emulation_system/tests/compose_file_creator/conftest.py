@@ -69,7 +69,7 @@ def heater_shaker_module_default(opentrons_modules_dir: str) -> Dict[str, Any]:
         "hardware": Hardware.HEATER_SHAKER_MODULE.value,
         "emulation-level": HEATER_SHAKER_MODULE_EMULATION_LEVEL,
         "source-type": HEATER_SHAKER_MODULE_SOURCE_TYPE,
-        "source-location": opentrons_modules_dir,
+        "source-location": "latest",
     }
 
 

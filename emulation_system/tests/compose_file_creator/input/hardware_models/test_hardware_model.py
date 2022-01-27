@@ -12,6 +12,7 @@ from pydantic import (
 )
 from pytest_lazyfixture import lazy_fixture  # type: ignore
 
+from emulation_system.compose_file_creator.errors import InvalidRemoteSourceError
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
 )
@@ -368,6 +369,47 @@ def test_exception_thrown_when_local_source_code_does_not_exist() -> None:
         )
 
     assert err.match(f'"{bad_path}" is not a valid directory path')
+
+
+@pytest.mark.parametrize(
+    "invalid_location", ["/a/file/path.txt", "notavalidsha", "", "{something}"]
+)
+def test_exception_thrown_when_invalid_remote_source_location(
+    invalid_location: str
+) -> None:
+    """Confirm LocalSourceDoesNotExistError is thrown when local path does not exist."""
+    with pytest.raises(InvalidRemoteSourceError):
+        HeaterShakerModuleInputModel.parse_obj(
+            {
+                "id": "my-heater-shaker",
+                "hardware": Hardware.HEATER_SHAKER_MODULE,
+                "source-type": SourceType.REMOTE,
+                "source-location": invalid_location,
+                "emulation-level": EmulationLevels.HARDWARE,
+                "mounts": [],
+            }
+        )
+
+
+@pytest.mark.parametrize(
+    "valid_location", ["ca82a6dff817ec66f44342007202690a93763949", "latest"]
+)
+def test_accepts_valid_remote_source_location(
+    valid_location: str
+) -> None:
+    """Confirm LocalSourceDoesNotExistError is thrown when local path does not exist."""
+    hs = HeaterShakerModuleInputModel.parse_obj(
+        {
+            "id": "my-heater-shaker",
+            "hardware": Hardware.HEATER_SHAKER_MODULE,
+            "source-type": SourceType.REMOTE,
+            "source-location": valid_location,
+            "emulation-level": EmulationLevels.HARDWARE,
+            "mounts": [],
+        }
+    )
+
+    assert hs.source_location == valid_location
 
 
 def test_extra_mounts(file_mount: Dict, directory_mount: Dict) -> None:
