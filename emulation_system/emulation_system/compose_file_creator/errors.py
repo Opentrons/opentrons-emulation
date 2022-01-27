@@ -45,10 +45,11 @@ class LocalSourceDoesNotExistError(Exception):
 
 class InvalidRemoteSourceError(Exception):
     """Exception thrown when remote source is not valid."""
+
     def __init__(self, value: str) -> None:
         super().__init__(
-            f"\"{value}\" is not valid. Must either be a valid commit sha, or the "
-            f"value \"latest\""
+            f'"{value}" is not valid. Must either be a valid commit sha, or the '
+            f'value "latest"'
         )
 
 
