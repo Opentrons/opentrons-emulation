@@ -101,8 +101,8 @@ class HardwareModel(BaseModel):
         else:
             lower_case_v = v.lower()
             if (
-                    lower_case_v != "latest"
-                    and re.compile(COMMIT_SHA_REGEX).match(lower_case_v) is None
+                lower_case_v != "latest"
+                and re.compile(COMMIT_SHA_REGEX).match(lower_case_v) is None
             ):
                 raise InvalidRemoteSourceError(v)
         return v
