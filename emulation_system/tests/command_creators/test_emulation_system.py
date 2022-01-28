@@ -2,7 +2,11 @@
 import contextlib
 import io
 import json
-from typing import Generator
+from typing import (
+    Any,
+    Dict,
+    Generator,
+)
 from unittest.mock import (
     DEFAULT,
     Mock,
@@ -10,6 +14,7 @@ from unittest.mock import (
 )
 
 import pytest
+import yaml
 
 from emulation_system.commands.emulation_system_command import (
     EmulationSystemCommand,
@@ -18,28 +23,40 @@ from emulation_system.commands.emulation_system_command import (
     STDOUT_NAME,
 )
 
-EXPECTED_YAML = """
-networks:
-  derek: {}
-services:
-  derek-emulator-proxy:
-    build:
-      args:
-        OPENTRONS_SOURCE_DOWNLOAD_LOCATION: https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip
-      context: /home/derek-maggio/Documents/repos/opentrons-emulation/emulation_system/resources/docker/
-      target: emulator-proxy-remote
-    container_name: derek-emulator-proxy
-    environment:
-      OT_EMULATOR_heatershaker_proxy: '{"emulator_port": 10004, "driver_port": 11004}'
-      OT_EMULATOR_magnetic_proxy: '{"emulator_port": 10002, "driver_port": 11002}'
-      OT_EMULATOR_temperature_proxy: '{"emulator_port": 10001, "driver_port": 11001}'
-      OT_EMULATOR_thermocycler_proxy: '{"emulator_port": 10003, "driver_port": 11003}'
-    image: emulator-proxy-remote:latest
+
+def convert_yaml(yaml_string: str) -> Dict[str, Any]:
+    """Converts and removes context because that is tied to local file system."""
+    converted_dict = yaml.safe_load(yaml_string)
+    for service in converted_dict["services"].values():
+        del service["build"]["context"]
+
+    return converted_dict
+
+
+EXPECTED_YAML = convert_yaml(
+    """
     networks:
-    - derek
-    tty: true
-version: '3.8'
-""".strip()  # noqa: E501
+      derek: {}
+    services:
+      derek-emulator-proxy:
+        build:
+          args:
+            OPENTRONS_SOURCE_DOWNLOAD_LOCATION: https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip
+          context: /home/derek-maggio/Documents/repos/opentrons-emulation/emulation_system/resources/docker/
+          target: emulator-proxy-remote
+        container_name: derek-emulator-proxy
+        environment:
+          OT_EMULATOR_heatershaker_proxy: '{"emulator_port": 10004, "driver_port": 11004}'
+          OT_EMULATOR_magnetic_proxy: '{"emulator_port": 10002, "driver_port": 11002}'
+          OT_EMULATOR_temperature_proxy: '{"emulator_port": 10001, "driver_port": 11001}'
+          OT_EMULATOR_thermocycler_proxy: '{"emulator_port": 10003, "driver_port": 11003}'
+        image: emulator-proxy-remote:latest
+        networks:
+        - derek
+        tty: true
+    version: '3.8'
+    """  # noqa: E501
+)
 
 JSON_INPUT = json.dumps({"system-unique-id": "derek"})
 YAML_INPUT = 'system-unique-id: "derek"'
@@ -76,9 +93,7 @@ def test_json_stdin(mocked_em_system: EmulationSystemCommand) -> None:
     """Confirm reading JSON from stdin works."""
     with patch_command(mocked_em_system, STDIN_NAME, STDOUT_NAME, JSON_INPUT) as mp:
         mocked_em_system.execute()
-    print(get_output_string(mp))
-
-    assert get_output_string(mp) == EXPECTED_YAML
+    assert convert_yaml(get_output_string(mp)) == EXPECTED_YAML
 
 
 def test_yaml_stdin(mocked_em_system: EmulationSystemCommand) -> None:
@@ -86,7 +101,7 @@ def test_yaml_stdin(mocked_em_system: EmulationSystemCommand) -> None:
     with patch_command(mocked_em_system, STDIN_NAME, STDOUT_NAME, YAML_INPUT) as mp:
         mocked_em_system.execute()
 
-    assert get_output_string(mp) == EXPECTED_YAML
+    assert convert_yaml(get_output_string(mp)) == EXPECTED_YAML
 
 
 def test_yaml_file_in(mocked_em_system: EmulationSystemCommand) -> None:
@@ -96,7 +111,7 @@ def test_yaml_file_in(mocked_em_system: EmulationSystemCommand) -> None:
     ) as mp:
         mocked_em_system.execute()
 
-    assert get_output_string(mp) == EXPECTED_YAML
+    assert convert_yaml(get_output_string(mp)) == EXPECTED_YAML
 
 
 def test_json_file_in(mocked_em_system: EmulationSystemCommand) -> None:
@@ -106,7 +121,7 @@ def test_json_file_in(mocked_em_system: EmulationSystemCommand) -> None:
     ) as mp:
         mocked_em_system.execute()
 
-    assert get_output_string(mp) == EXPECTED_YAML
+    assert convert_yaml(get_output_string(mp)) == EXPECTED_YAML
 
 
 def test_invalid_file_extension(mocked_em_system: EmulationSystemCommand) -> None:
@@ -123,4 +138,4 @@ def test_file_out(mocked_em_system: EmulationSystemCommand) -> None:
     ) as mp:
         mocked_em_system.execute()
 
-    assert get_output_string(mp) == EXPECTED_YAML
+    assert convert_yaml(get_output_string(mp)) == EXPECTED_YAML

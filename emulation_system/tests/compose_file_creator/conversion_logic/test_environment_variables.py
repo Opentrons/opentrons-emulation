@@ -9,6 +9,7 @@ from typing import (
 )
 
 import pytest
+from pytest_lazyfixture import lazy_fixture
 
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
@@ -36,11 +37,17 @@ from tests.compose_file_creator.conftest import (
 )
 
 
+@pytest.mark.parametrize(
+    "config", [lazy_fixture("robot_with_mount_and_modules"), lazy_fixture("ot2_only")]
+)
 def test_robot_server_emulator_proxy_env_vars_added(
-    robot_with_mount_and_modules_services: Dict[str, Any]
+    config: Dict[str, Any],
+    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm env vars are set correctly."""
-    env = robot_with_mount_and_modules_services[OT2_ID].environment
+    env = (
+        convert_from_obj(config, testing_global_em_config).services[OT2_ID].environment
+    )
     assert env is not None
     assert "OT_SMOOTHIE_EMULATOR_URI" in env.__root__
     assert env.__root__["OT_SMOOTHIE_EMULATOR_URI"] == f"socket://{SMOOTHIE_ID}:11000"
@@ -49,17 +56,6 @@ def test_robot_server_emulator_proxy_env_vars_added(
         env.__root__["OT_EMULATOR_module_server"]
         == f'{{"host": "{EMULATOR_PROXY_ID}"}}'
     )
-
-
-def test_robot_server_emulator_proxy_env_vars_not_added(
-    ot2_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
-) -> None:
-    """Confirm that env vars are not added to robot server when there are no modules."""
-    robot_services = convert_from_obj(ot2_only, testing_global_em_config).services
-    assert robot_services is not None
-    robot_services_env = robot_services[OT2_ID].environment
-    assert robot_services_env is not None
-    assert "OT_EMULATOR_module_server" not in robot_services_env.__root__
 
 
 def test_ot3_feature_flag_added(

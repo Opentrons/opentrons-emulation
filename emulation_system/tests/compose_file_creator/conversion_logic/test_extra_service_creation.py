@@ -26,21 +26,17 @@ from tests.compose_file_creator.conftest import (
 )
 
 
-@pytest.mark.parametrize("config", [lazy_fixture("ot2_only"), lazy_fixture("ot3_only")])
-def test_emulation_proxy_not_created(
-    config: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
-) -> None:
-    """Verify emulator proxy is not created when there are no modules."""
-    services = convert_from_obj(config, testing_global_em_config).services
-    assert services is not None
-    assert EMULATOR_PROXY_ID not in set(services.keys())
-
-
 @pytest.mark.parametrize(
     "config",
     [
         lazy_fixture(name)
-        for name in ["ot2_and_modules", "modules_only", "ot3_and_modules"]
+        for name in [
+            "ot2_and_modules",
+            "modules_only",
+            "ot3_and_modules",
+            "ot2_only",
+            "ot3_only",
+        ]
     ],
 )
 def test_emulation_proxy_created(
