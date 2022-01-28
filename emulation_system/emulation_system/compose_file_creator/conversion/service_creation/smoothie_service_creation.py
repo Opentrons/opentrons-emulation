@@ -59,9 +59,11 @@ def create_smoothie_service(
     smoothie_name = generate_container_name("smoothie", config_model)
     # Pulling pipettes from robot because they are actually defined on smoothie, not
     # robot server.
+    env = ot2.hardware_specific_attributes.dict()
+    env["port"] = 11000
     converted_env = ListOrDict(
         __root__={
-            "OT_EMULATOR_smoothie": json.dumps(ot2.hardware_specific_attributes.dict())
+            "OT_EMULATOR_smoothie": json.dumps(env)
         }
     )
     repo = OpentronsRepository.OPENTRONS
