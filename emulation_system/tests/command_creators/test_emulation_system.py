@@ -22,6 +22,9 @@ from emulation_system.commands.emulation_system_command import (
     STDIN_NAME,
     STDOUT_NAME,
 )
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
+)
 
 
 def convert_yaml(yaml_string: str) -> Dict[str, Any]:
@@ -41,7 +44,7 @@ EXPECTED_YAML = convert_yaml(
       derek-emulator-proxy:
         build:
           args:
-            OPENTRONS_SOURCE_DOWNLOAD_LOCATION: https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip
+            OPENTRONS_SOURCE_DOWNLOAD_LOCATION: https://github.com/AnotherOrg/opentrons/archive/refs/heads/edge.zip
           context: /home/derek-maggio/Documents/repos/opentrons-emulation/emulation_system/resources/docker/
           target: emulator-proxy-remote
         container_name: derek-emulator-proxy
@@ -83,10 +86,12 @@ def get_output_string(patch_obj: Mock) -> str:
 
 
 @pytest.fixture
-def mocked_em_system() -> EmulationSystemCommand:
+def mocked_em_system(
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> EmulationSystemCommand:
     """Get a mocked EmulationSystemCommand."""
     mock = Mock(spec=io.TextIOWrapper)
-    return EmulationSystemCommand(mock, mock)
+    return EmulationSystemCommand(mock, mock, testing_global_em_config)
 
 
 def test_json_stdin(mocked_em_system: EmulationSystemCommand) -> None:
