@@ -61,11 +61,7 @@ def create_smoothie_service(
     # robot server.
     env = ot2.hardware_specific_attributes.dict()
     env["port"] = 11000
-    converted_env = ListOrDict(
-        __root__={
-            "OT_EMULATOR_smoothie": json.dumps(env)
-        }
-    )
+    converted_env = ListOrDict(__root__={"OT_EMULATOR_smoothie": json.dumps(env)})
     repo = OpentronsRepository.OPENTRONS
     build_args = (
         get_build_args(
