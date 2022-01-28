@@ -60,7 +60,7 @@ TEMP_OPENTRONS_EMULATION_CONFIGURATION_FILE_NAME = "temp_test_configuration.json
 
 @pytest.fixture
 def emulation_configuration_setup(
-    testing_global_em_config,
+    testing_global_em_config: OpentronsEmulationConfiguration,
     tmpdir: py.path.local,
 ) -> OpentronsEmulationConfiguration:
     """Creates temporary directories for loading configuration files from.
@@ -81,7 +81,7 @@ def emulation_configuration_setup(
 
 @pytest.fixture
 def duplicate_emulation_files(
-    testing_global_em_config,
+    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> OpentronsEmulationConfiguration:
     """Create file with same name in the 2 emulation_configuration_file_locations directories."""  # noqa: E501
     settings = testing_global_em_config.global_settings

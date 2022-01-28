@@ -6,7 +6,7 @@ from typing import (
 )
 
 import pytest
-from pytest_lazyfixture import lazy_fixture
+from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,

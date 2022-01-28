@@ -1,9 +1,7 @@
 """Tests for conversion pure functions."""
 
 from typing import (
-    List,
     Optional,
-    Type,
 )
 
 import pytest
@@ -85,7 +83,7 @@ from emulation_system.consts import DOCKERFILE_DIR_LOCATION
             OpentronsRepository.OPENTRONS_MODULES,
             "latest",
             "https://github.com/Opentrons/opentrons-modules/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip",
+            "https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip",  # noqa: E501
             ListOrDict(
                 __root__={
                     "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/"
