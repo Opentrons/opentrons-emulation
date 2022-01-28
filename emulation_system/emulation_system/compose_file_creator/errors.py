@@ -90,3 +90,10 @@ class HardwareDoesNotExistError(Exception):
 
     def __init__(self, specified_hardware: Hardware) -> None:
         super().__init__(f"{specified_hardware} not defined.")
+
+
+class RepoDoesNotExistError(Exception):
+    """Exception thrown when repo does not exist."""
+
+    def __init__(self, repo_name: str) -> None:
+        super().__init__(f'Repo "{repo_name}" does not exist.')
