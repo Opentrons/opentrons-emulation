@@ -64,8 +64,14 @@ def create_smoothie_service(
             "OT_EMULATOR_smoothie": json.dumps(ot2.hardware_specific_attributes.dict())
         }
     )
+    repo = OpentronsRepository.OPENTRONS
     build_args = (
-        get_build_args(OpentronsRepository.OPENTRONS, "latest", global_settings)
+        get_build_args(
+            repo,
+            "latest",
+            global_settings.get_repo_commit(repo),
+            global_settings.get_repo_head(repo),
+        )
         if ot2.source_type == SourceType.REMOTE
         else None
     )
