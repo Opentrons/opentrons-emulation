@@ -116,8 +116,12 @@ def configure_input_service(
     """Configures services that are defined in input file."""
     build_args = None
     if container.source_type == SourceType.REMOTE:
+        repo = container.get_source_repo()
         build_args = get_build_args(
-            container.get_source_repo(), container.source_location, global_settings
+            repo,
+            container.source_location,
+            global_settings.get_repo_commit(repo),
+            global_settings.get_repo_head(repo),
         )
     service = Service(
         container_name=generate_container_name(container.id, config_model),

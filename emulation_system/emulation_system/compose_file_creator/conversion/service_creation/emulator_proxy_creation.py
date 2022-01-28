@@ -57,13 +57,19 @@ def create_emulator_proxy_service(
     # the local image it can get added later.
     image = EmulatorProxyImages().remote_firmware_image_name
     emulator_proxy_name = generate_container_name("emulator-proxy", config_model)
+    repo = OpentronsRepository.OPENTRONS
     return Service(
         container_name=emulator_proxy_name,
         image=get_service_image(image),
         build=get_service_build(
             image,
             # Will always have build args since we are always using the remote image
-            get_build_args(OpentronsRepository.OPENTRONS, "latest", global_settings),
+            get_build_args(
+                repo,
+                "latest",
+                global_settings.get_repo_commit(repo),
+                global_settings.get_repo_head(repo)
+            ),
         ),
         tty=True,
         networks=required_networks.networks,
