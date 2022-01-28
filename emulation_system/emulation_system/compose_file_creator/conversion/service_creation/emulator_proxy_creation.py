@@ -68,7 +68,7 @@ def create_emulator_proxy_service(
                 repo,
                 "latest",
                 global_settings.get_repo_commit(repo),
-                global_settings.get_repo_head(repo)
+                global_settings.get_repo_head(repo),
             ),
         ),
         tty=True,
