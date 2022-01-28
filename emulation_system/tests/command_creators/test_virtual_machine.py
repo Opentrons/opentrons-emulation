@@ -108,7 +108,7 @@ def prod_shell_virtual_machine_cmd() -> List[str]:
 
 
 def test_dev_create(
-    testing_global_em_config,
+    testing_global_em_config: OpentronsEmulationConfiguration,
     dev_create_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that dev virtual-machine is created correctly."""
@@ -119,7 +119,7 @@ def test_dev_create(
 
 
 def test_dev_shell(
-    testing_global_em_config,
+    testing_global_em_config: OpentronsEmulationConfiguration,
     dev_shell_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that shell to dev virtual-machine is opened correctly."""
@@ -128,7 +128,7 @@ def test_dev_shell(
 
 
 def test_dev_remove(
-    testing_global_em_config,
+    testing_global_em_config: OpentronsEmulationConfiguration,
     dev_remove_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that dev virtual-machine is removed correctly."""
@@ -139,7 +139,7 @@ def test_dev_remove(
 
 
 def test_prod_create(
-    testing_global_em_config,
+    testing_global_em_config: OpentronsEmulationConfiguration,
     prod_create_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that prod virtual-machine is created correctly."""
@@ -150,7 +150,7 @@ def test_prod_create(
 
 
 def test_prod_shell(
-    testing_global_em_config,
+    testing_global_em_config: OpentronsEmulationConfiguration,
     prod_shell_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that shell to prod virtual-machine is opened correctly."""
@@ -161,7 +161,7 @@ def test_prod_shell(
 
 
 def test_prod_remove(
-    testing_global_em_config,
+    testing_global_em_config: OpentronsEmulationConfiguration,
     prod_remove_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that prod virtual-machine is removed correctly."""

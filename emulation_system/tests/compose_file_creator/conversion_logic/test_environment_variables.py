@@ -9,7 +9,7 @@ from typing import (
 )
 
 import pytest
-from pytest_lazyfixture import lazy_fixture
+from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
@@ -45,17 +45,17 @@ def test_robot_server_emulator_proxy_env_vars_added(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm env vars are set correctly."""
-    env = (
-        convert_from_obj(config, testing_global_em_config).services[OT2_ID].environment
-    )
+    services = convert_from_obj(config, testing_global_em_config).services
+    assert services is not None
+    env = services[OT2_ID].environment
     assert env is not None
-    assert "OT_SMOOTHIE_EMULATOR_URI" in env.__root__
-    assert env.__root__["OT_SMOOTHIE_EMULATOR_URI"] == f"socket://{SMOOTHIE_ID}:11000"
-    assert "OT_EMULATOR_module_server" in env.__root__
-    assert (
-        env.__root__["OT_EMULATOR_module_server"]
-        == f'{{"host": "{EMULATOR_PROXY_ID}"}}'
-    )
+    env_root = cast(Dict[str, Any], env.__root__)
+
+    assert env_root is not None
+    assert "OT_SMOOTHIE_EMULATOR_URI" in env_root
+    assert env_root["OT_SMOOTHIE_EMULATOR_URI"] == f"socket://{SMOOTHIE_ID}:11000"
+    assert "OT_EMULATOR_module_server" in env_root
+    assert env_root["OT_EMULATOR_module_server"] == f'{{"host": "{EMULATOR_PROXY_ID}"}}'
 
 
 def test_ot3_feature_flag_added(

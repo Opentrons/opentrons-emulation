@@ -10,9 +10,6 @@ import pytest
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
-from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import (
-    REPO_TO_BUILD_ARG_MAPPING,
-)
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
     Network,
@@ -20,8 +17,6 @@ from emulation_system.compose_file_creator.output.compose_file_model import (
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DEFAULT_NETWORK_NAME,
-    OpentronsRepository,
-    SourceType,
 )
 from emulation_system.consts import (
     DOCKERFILE_DIR_LOCATION,
@@ -32,16 +27,11 @@ from emulation_system.opentrons_emulation_configuration import (
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,
-    HEATER_SHAKER_MODULE_SOURCE_TYPE,
     MAGNETIC_MODULE_ID,
-    MAGNETIC_MODULE_SOURCE_TYPE,
     OT2_ID,
-    OT2_SOURCE_TYPE,
     SMOOTHIE_ID,
     TEMPERATURE_MODULE_ID,
-    TEMPERATURE_MODULE_SOURCE_TYPE,
     THERMOCYCLER_MODULE_ID,
-    THERMOCYCLER_MODULE_SOURCE_TYPE,
 )
 from tests.compose_file_creator.conversion_logic.conftest import (
     CONTAINER_NAME_TO_IMAGE,

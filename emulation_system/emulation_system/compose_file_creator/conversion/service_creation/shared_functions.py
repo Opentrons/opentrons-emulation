@@ -1,5 +1,7 @@
 """Function useful to multiple service creation modules."""
 from typing import (
+    Any,
+    Dict,
     List,
     Optional,
     Union,
@@ -73,5 +75,5 @@ def get_build_args(
         if source_location == "latest"
         else format_string.replace("{{commit-sha}}", source_location)
     )
-    arg_dict = {env_var_to_use: value}
+    arg_dict: Dict[str, Any] = {env_var_to_use: value}
     return ListOrDict(__root__=arg_dict)
