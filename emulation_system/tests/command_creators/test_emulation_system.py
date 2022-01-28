@@ -21,9 +21,25 @@ from emulation_system.commands.emulation_system_command import (
 EXPECTED_YAML = """
 networks:
   derek: {}
-services: {}
+services:
+  derek-emulator-proxy:
+    build:
+      args:
+        OPENTRONS_SOURCE_DOWNLOAD_LOCATION: https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip
+      context: /home/derek-maggio/Documents/repos/opentrons-emulation/emulation_system/resources/docker/
+      target: emulator-proxy-remote
+    container_name: derek-emulator-proxy
+    environment:
+      OT_EMULATOR_heatershaker_proxy: '{"emulator_port": 10004, "driver_port": 11004}'
+      OT_EMULATOR_magnetic_proxy: '{"emulator_port": 10002, "driver_port": 11002}'
+      OT_EMULATOR_temperature_proxy: '{"emulator_port": 10001, "driver_port": 11001}'
+      OT_EMULATOR_thermocycler_proxy: '{"emulator_port": 10003, "driver_port": 11003}'
+    image: emulator-proxy-remote:latest
+    networks:
+    - derek
+    tty: true
 version: '3.8'
-""".strip()
+""".strip()  # noqa: E501
 
 JSON_INPUT = json.dumps({"system-unique-id": "derek"})
 YAML_INPUT = 'system-unique-id: "derek"'
@@ -60,6 +76,7 @@ def test_json_stdin(mocked_em_system: EmulationSystemCommand) -> None:
     """Confirm reading JSON from stdin works."""
     with patch_command(mocked_em_system, STDIN_NAME, STDOUT_NAME, JSON_INPUT) as mp:
         mocked_em_system.execute()
+    print(get_output_string(mp))
 
     assert get_output_string(mp) == EXPECTED_YAML
 
