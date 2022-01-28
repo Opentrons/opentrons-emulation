@@ -10,6 +10,7 @@ import pytest
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
+from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import REPO_TO_BUILD_ARG_MAPPING
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
     Network,
@@ -17,20 +18,29 @@ from emulation_system.compose_file_creator.output.compose_file_model import (
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DEFAULT_NETWORK_NAME,
+    OpentronsRepository,
+    SourceType,
 )
 from emulation_system.consts import (
     DOCKERFILE_DIR_LOCATION,
 )
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
+)
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,
+    HEATER_SHAKER_MODULE_SOURCE_TYPE,
     MAGNETIC_MODULE_ID,
+    MAGNETIC_MODULE_SOURCE_TYPE,
     OT2_ID,
+    OT2_SOURCE_TYPE,
     SMOOTHIE_ID,
     TEMPERATURE_MODULE_ID,
+    TEMPERATURE_MODULE_SOURCE_TYPE,
     THERMOCYCLER_MODULE_ID,
+    THERMOCYCLER_MODULE_SOURCE_TYPE,
 )
-
 from tests.compose_file_creator.conversion_logic.conftest import (
     CONTAINER_NAME_TO_IMAGE,
     SERVICE_NAMES,
@@ -41,9 +51,12 @@ from tests.compose_file_creator.conversion_logic.conftest import (
 #   - CAN network is created on OT3 breakout
 
 
-def test_version(version_only: Dict[str, str]) -> None:
+def test_version(
+    version_only: Dict[str, str],
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> None:
     """Confirms that version is set correctly on compose file."""
-    assert convert_from_obj(version_only).version == "4.0"
+    assert convert_from_obj(version_only, testing_global_em_config).version == "4.0"
 
 
 def test_service_keys(
@@ -75,8 +88,8 @@ def test_service_container_name(
 ) -> None:
     """Verify container name matches service name."""
     assert (
-        robot_with_mount_and_modules_services[service_name].container_name
-        == service_name
+            robot_with_mount_and_modules_services[service_name].container_name
+            == service_name
     )
 
 
@@ -86,8 +99,8 @@ def test_service_image(
 ) -> None:
     """Verify image name is correct."""
     assert (
-        robot_with_mount_and_modules_services[service_name].image
-        == f"{CONTAINER_NAME_TO_IMAGE[service_name]}:latest"
+            robot_with_mount_and_modules_services[service_name].image
+            == f"{CONTAINER_NAME_TO_IMAGE[service_name]}:latest"
     )
 
 
@@ -111,9 +124,12 @@ def test_service_local_network(
     ]
 
 
-def test_top_level_network(ot2_and_modules: Dict[str, Any]) -> None:
+def test_top_level_network(
+    ot2_and_modules: Dict[str, Any],
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> None:
     """Verify top level network is correct."""
-    assert convert_from_obj(ot2_and_modules).networks == {
+    assert convert_from_obj(ot2_and_modules, testing_global_em_config).networks == {
         DEFAULT_NETWORK_NAME: Network()
     }
 
@@ -137,7 +153,8 @@ def test_module_command(
 ) -> None:
     """Confirm that modules depend on emulator proxy."""
     assert (
-        robot_with_mount_and_modules_services[service_name].command == EMULATOR_PROXY_ID
+            robot_with_mount_and_modules_services[
+                service_name].command == EMULATOR_PROXY_ID
     )
 
 

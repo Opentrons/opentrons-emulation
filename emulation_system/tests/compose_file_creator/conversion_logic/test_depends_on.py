@@ -10,6 +10,9 @@ import pytest
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
+)
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,
@@ -41,24 +44,28 @@ def test_emulator_proxy_in_depends_on(
     )
 
 
-def test_ot2_emulator_proxy_not_in_depends_on(ot2_only: Dict[str, Any]) -> None:
+def test_ot2_emulator_proxy_not_in_depends_on(
+    ot2_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
+) -> None:
     """Confirm that OT2 does not depend on emulator proxy when there are no modules.
 
     Have to check for membership in list because depends_on will have the smoothie
     dependency for OT2
     """
-    services = convert_from_obj(ot2_only).services
+    services = convert_from_obj(ot2_only, testing_global_em_config).services
     assert services is not None
     depends_on = services[OT2_ID].depends_on
     assert isinstance(depends_on, list)
     assert EMULATOR_PROXY_ID not in depends_on
 
 
-def test_ot3_emulator_proxy_not_in_depends_on(ot3_only: Dict[str, Any]) -> None:
+def test_ot3_emulator_proxy_not_in_depends_on(
+    ot3_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
+) -> None:
     """Confirm that OT3 does not depend on emulator proxy when there are no modules.
 
     OT3 should not have an other dependencies so make sure depends_on is None
     """
-    services = convert_from_obj(ot3_only).services
+    services = convert_from_obj(ot3_only, testing_global_em_config).services
     assert services is not None
     assert services[OT3_ID].depends_on is None

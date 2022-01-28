@@ -11,11 +11,15 @@ from typing import (
 from emulation_system.compose_file_creator.conversion.intermediate_types import (
     RequiredNetworks,
 )
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
+)
 from .shared_functions import (
     generate_container_name,
     get_mount_strings,
     get_service_build,
     get_service_image,
+    get_build_args,
 )
 from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
@@ -32,6 +36,7 @@ from emulation_system.compose_file_creator.output.compose_file_model import (
     Service,
 )
 from emulation_system.compose_file_creator.settings.custom_types import Containers
+from ...settings.config_file_settings import SourceType
 
 
 def _get_service_depends_on(
@@ -106,13 +111,19 @@ def configure_input_service(
     smoothie_name: Optional[str],
     config_model: SystemConfigurationModel,
     required_networks: RequiredNetworks,
+    global_settings: OpentronsEmulationConfiguration,
 ) -> Service:
     """Configures services that are defined in input file."""
+    build_args = None
+    if container.source_type == SourceType.REMOTE:
+        build_args = get_build_args(
+            container.get_source_repo(), container.source_location, global_settings
+        )
     service = Service(
         container_name=generate_container_name(container.id, config_model),
         image=get_service_image(container.get_image_name()),
         tty=True,
-        build=get_service_build(container.get_image_name()),
+        build=get_service_build(container.get_image_name(), build_args),
         networks=required_networks.networks,
         volumes=get_mount_strings(container),
         depends_on=_get_service_depends_on(

@@ -108,66 +108,64 @@ def prod_shell_virtual_machine_cmd() -> List[str]:
 
 
 def test_dev_create(
-    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    testing_global_em_config,
     dev_create_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that dev virtual-machine is created correctly."""
-    cmds = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+    cmds = TopLevelParser(testing_global_em_config).parse(
         dev_create_virtual_machine_cmd
     )
     assert cmds == EXPECTED_DEV_CREATE
 
 
 def test_dev_shell(
-    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    testing_global_em_config,
     dev_shell_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that shell to dev virtual-machine is opened correctly."""
-    cmds = TopLevelParser(testing_opentrons_emulation_configuration).parse(
-        dev_shell_virtual_machine_cmd
-    )
+    cmds = TopLevelParser(testing_global_em_config).parse(dev_shell_virtual_machine_cmd)
     assert cmds == EXPECTED_DEV_SHELL
 
 
 def test_dev_remove(
-    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    testing_global_em_config,
     dev_remove_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that dev virtual-machine is removed correctly."""
-    cmds = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+    cmds = TopLevelParser(testing_global_em_config).parse(
         dev_remove_virtual_machine_cmd
     )
     assert cmds == EXPECTED_DEV_REMOVE
 
 
 def test_prod_create(
-    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    testing_global_em_config,
     prod_create_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that prod virtual-machine is created correctly."""
-    cmds = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+    cmds = TopLevelParser(testing_global_em_config).parse(
         prod_create_virtual_machine_cmd
     )
     assert cmds == EXPECTED_PROD_CREATE
 
 
 def test_prod_shell(
-    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    testing_global_em_config,
     prod_shell_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that shell to prod virtual-machine is opened correctly."""
-    cmds = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+    cmds = TopLevelParser(testing_global_em_config).parse(
         prod_shell_virtual_machine_cmd
     )
     assert cmds == EXPECTED_PROD_SHELL
 
 
 def test_prod_remove(
-    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    testing_global_em_config,
     prod_remove_virtual_machine_cmd: List[str],
 ) -> None:
     """Confirm that prod virtual-machine is removed correctly."""
-    cmds = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+    cmds = TopLevelParser(testing_global_em_config).parse(
         prod_remove_virtual_machine_cmd
     )
     assert cmds == EXPECTED_PROD_REMOVE

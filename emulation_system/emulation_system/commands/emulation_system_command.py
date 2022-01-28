@@ -14,6 +14,7 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
 )
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
+    load_opentrons_emulation_configuration_from_env,
 )
 
 STDIN_NAME = "<stdin>"
@@ -46,8 +47,8 @@ class EmulationSystemCommand:
             raise InvalidFileExtensionException(
                 "Passed file must either be a .json or" ".yaml extension."
             )
-
+        global_settings = load_opentrons_emulation_configuration_from_env()
         stdin_content = self.input_path.read().strip()
         parsed_content = yaml.safe_load(stdin_content)
-        converted_object = convert_from_obj(parsed_content)
+        converted_object = convert_from_obj(parsed_content, global_settings)
         self.output_path.write(converted_object.to_yaml())
