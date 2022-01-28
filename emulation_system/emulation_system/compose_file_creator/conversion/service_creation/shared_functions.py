@@ -19,15 +19,13 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
 )
 from emulation_system.compose_file_creator.settings.custom_types import Containers
 from emulation_system.consts import DOCKERFILE_DIR_LOCATION
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
 
 REPO_TO_BUILD_ARG_MAPPING = {
     OpentronsRepository.OPENTRONS: "OPENTRONS_SOURCE_DOWNLOAD_LOCATION",
     OpentronsRepository.OPENTRONS_MODULES: "MODULE_SOURCE_DOWNLOAD_LOCATION",
     OpentronsRepository.OT3_FIRMWARE: "FIRMWARE_SOURCE_DOWNLOAD_LOCATION",
 }
+
 
 def generate_container_name(
     container_id: str, config_model: SystemConfigurationModel
@@ -61,23 +59,19 @@ def get_mount_strings(container: Containers) -> Optional[List[Union[str, Volume1
         else None
     )
 
+
 def get_build_args(
     source_repo: OpentronsRepository,
     source_location: str,
-    global_settings: OpentronsEmulationConfiguration,
+    format_string: str,
+    head: str,
 ) -> ListOrDict:
-
-
-    REPO_TO_COMMIT_FORMAT_STRING_MAPPING = {
-        OpentronsRepository.OPENTRONS: global_settings.emulation_settings.source_download_locations.commits.opentrons,  # noqa: E501
-        OpentronsRepository.OPENTRONS_MODULES: global_settings.emulation_settings.source_download_locations.commits.modules,  # noqa: E501
-        OpentronsRepository.OT3_FIRMWARE: global_settings.emulation_settings.source_download_locations.commits.ot3_firmware,  # noqa: E501
-    }
+    """Get build arguments for service."""
     env_var_to_use = REPO_TO_BUILD_ARG_MAPPING[source_repo]
-    commit_format_string_to_use = REPO_TO_COMMIT_FORMAT_STRING_MAPPING[source_repo]
-    arg_dict = {
-        env_var_to_use: commit_format_string_to_use.replace(
-            "{{commit-sha}}", source_location
-        )
-    }
+    value = (
+        head
+        if source_location == "latest"
+        else format_string.replace("{{commit-sha}}", source_location)
+    )
+    arg_dict = {env_var_to_use: value}
     return ListOrDict(__root__=arg_dict)
