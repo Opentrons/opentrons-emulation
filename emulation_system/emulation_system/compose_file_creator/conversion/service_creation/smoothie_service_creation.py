@@ -5,8 +5,12 @@ import json
 from emulation_system.compose_file_creator.conversion.intermediate_types import (
     RequiredNetworks,
 )
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
+)
 from .shared_functions import (
     generate_container_name,
+    get_build_args,
     get_mount_strings,
     get_service_build,
     get_service_image,
@@ -20,6 +24,7 @@ from emulation_system.compose_file_creator.output.compose_file_model import (
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     Hardware,
+    OpentronsRepository,
     SourceType,
 )
 from emulation_system.compose_file_creator.settings.images import SmoothieImages
@@ -30,7 +35,9 @@ from ...errors import (
 
 
 def create_smoothie_service(
-    config_model: SystemConfigurationModel, required_networks: RequiredNetworks
+    config_model: SystemConfigurationModel,
+    required_networks: RequiredNetworks,
+    global_settings: OpentronsEmulationConfiguration,
 ) -> Service:
     """Create smoothie service."""
     ot2 = config_model.robot
@@ -57,11 +64,16 @@ def create_smoothie_service(
             "OT_EMULATOR_smoothie": json.dumps(ot2.hardware_specific_attributes.dict())
         }
     )
+    build_args = (
+        get_build_args(OpentronsRepository.OPENTRONS, "latest", global_settings)
+        if ot2.source_type == SourceType.REMOTE
+        else None
+    )
 
     return Service(
         container_name=smoothie_name,
         image=get_service_image(image),
-        build=get_service_build(image),
+        build=get_service_build(image, build_args),
         networks=required_networks.networks,
         # Using ot2 mount strings here. This will add the constraint that robot-server
         # and smoothie use same source code. Going to leave this for now until it

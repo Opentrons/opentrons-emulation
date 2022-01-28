@@ -63,6 +63,6 @@ TEST_CONF_MODULES_EXPECTED_COMMIT = get_commit("modules")
 
 
 @pytest.fixture
-def testing_opentrons_emulation_configuration() -> OpentronsEmulationConfiguration:
+def testing_global_em_config() -> OpentronsEmulationConfiguration:
     """Get test configuration of OpentronsEmulationConfiguration."""
     return get_test_conf()

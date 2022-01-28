@@ -25,6 +25,9 @@ from emulation_system.compose_file_creator.output.runtime_compose_file_model imp
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DEFAULT_NETWORK_NAME,
 )
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
+)
 
 
 def _get_required_networks(
@@ -44,10 +47,13 @@ def _get_required_networks(
     return RequiredNetworks(required_networks)
 
 
-def _convert(config_model: SystemConfigurationModel) -> RuntimeComposeFileModel:
+def _convert(
+    config_model: SystemConfigurationModel,
+    global_settings: OpentronsEmulationConfiguration,
+) -> RuntimeComposeFileModel:
     """Parses SystemConfigurationModel to compose file."""
     required_networks = _get_required_networks(config_model)
-    services = create_services(config_model, required_networks)
+    services = create_services(config_model, required_networks, global_settings)
     return RuntimeComposeFileModel(
         version=config_model.compose_file_version,
         services=services.services,
@@ -57,6 +63,8 @@ def _convert(config_model: SystemConfigurationModel) -> RuntimeComposeFileModel:
     )
 
 
-def convert_from_obj(input_obj: Dict[str, Any]) -> RuntimeComposeFileModel:
+def convert_from_obj(
+    input_obj: Dict[str, Any], global_settings: OpentronsEmulationConfiguration
+) -> RuntimeComposeFileModel:
     """Parse from obj."""
-    return _convert(parse_obj_as(SystemConfigurationModel, input_obj))
+    return _convert(parse_obj_as(SystemConfigurationModel, input_obj), global_settings)
