@@ -10,7 +10,9 @@ import pytest
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
-from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import REPO_TO_BUILD_ARG_MAPPING
+from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import (
+    REPO_TO_BUILD_ARG_MAPPING,
+)
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
     Network,
@@ -88,8 +90,8 @@ def test_service_container_name(
 ) -> None:
     """Verify container name matches service name."""
     assert (
-            robot_with_mount_and_modules_services[service_name].container_name
-            == service_name
+        robot_with_mount_and_modules_services[service_name].container_name
+        == service_name
     )
 
 
@@ -99,8 +101,8 @@ def test_service_image(
 ) -> None:
     """Verify image name is correct."""
     assert (
-            robot_with_mount_and_modules_services[service_name].image
-            == f"{CONTAINER_NAME_TO_IMAGE[service_name]}:latest"
+        robot_with_mount_and_modules_services[service_name].image
+        == f"{CONTAINER_NAME_TO_IMAGE[service_name]}:latest"
     )
 
 
@@ -153,8 +155,7 @@ def test_module_command(
 ) -> None:
     """Confirm that modules depend on emulator proxy."""
     assert (
-            robot_with_mount_and_modules_services[
-                service_name].command == EMULATOR_PROXY_ID
+        robot_with_mount_and_modules_services[service_name].command == EMULATOR_PROXY_ID
     )
 
 
