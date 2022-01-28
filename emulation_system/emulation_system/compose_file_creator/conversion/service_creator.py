@@ -23,16 +23,14 @@ def create_services(
 ) -> DockerServices:
     """Creates all services to be added to compose file."""
     services = {}
-    emulator_proxy_name = None
     smoothie_name = None
 
-    if config_model.modules_exist:
-        emulator_proxy_service = create_emulator_proxy_service(
-            config_model, required_networks, global_settings
-        )
-        emulator_proxy_name = emulator_proxy_service.container_name
-        assert emulator_proxy_name is not None  # For mypy
-        services[emulator_proxy_name] = emulator_proxy_service
+    emulator_proxy_service = create_emulator_proxy_service(
+        config_model, required_networks, global_settings
+    )
+    emulator_proxy_name = emulator_proxy_service.container_name
+    assert emulator_proxy_name is not None  # For mypy
+    services[emulator_proxy_name] = emulator_proxy_service
 
     if config_model.robot is not None and config_model.robot.__class__ == OT2InputModel:
         smoothie_service = create_smoothie_service(
