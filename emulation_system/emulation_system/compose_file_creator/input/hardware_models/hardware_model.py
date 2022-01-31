@@ -8,6 +8,7 @@ from typing import (
     Any,
     Dict,
     List,
+    Optional,
     Union,
 )
 
@@ -169,3 +170,15 @@ class HardwareModel(BaseModel):
             volumes=self.get_mount_strings(),  # type: ignore[arg-type]
             tty=True,
         )
+
+    def get_hardware_level_command(
+        self, emulator_proxy_name: str
+    ) -> Optional[List[str]]:
+        """Get command for module when it is being emulated at hardware level."""
+        return None
+
+    def get_firmware_level_command(
+        self, emulator_proxy_name: str
+    ) -> Optional[List[str]]:
+        """Get command for module when it is being emulated at hardware level."""
+        return None

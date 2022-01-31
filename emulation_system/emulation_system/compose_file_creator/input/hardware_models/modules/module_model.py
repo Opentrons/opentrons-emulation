@@ -2,21 +2,21 @@
 
 Used to group all modules together and distinguish them from robots.
 """
-import json
 from typing import (
     ClassVar,
     Dict,
     Optional,
 )
 
+import json
 from pydantic import (
     BaseModel,
     Field,
 )
 
 from emulation_system.compose_file_creator.input.hardware_models.hardware_model import (
-    HardwareModel,
     EmulationLevelNotSupportedError,
+    HardwareModel,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     EmulationLevels,
