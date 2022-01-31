@@ -13,7 +13,9 @@ from .service_creation.shared_functions import (
 )
 from .service_creation.smoothie_service_creation import create_smoothie_service
 from ..input.hardware_models import OT2InputModel
-from ...opentrons_emulation_configuration import OpentronsEmulationConfiguration
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
+)
 
 
 def create_services(

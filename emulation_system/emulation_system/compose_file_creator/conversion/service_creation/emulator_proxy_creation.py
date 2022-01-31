@@ -26,7 +26,9 @@ from emulation_system.compose_file_creator.output.compose_file_model import (
     Service,
 )
 from emulation_system.compose_file_creator.settings.images import EmulatorProxyImages
-from ...settings.config_file_settings import OpentronsRepository
+from emulation_system.compose_file_creator.settings.config_file_settings import (
+    OpentronsRepository,
+)
 
 MODULE_TYPES = [
     ThermocyclerModuleInputModel,

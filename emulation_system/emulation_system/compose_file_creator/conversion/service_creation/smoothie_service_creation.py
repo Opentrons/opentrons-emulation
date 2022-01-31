@@ -28,7 +28,7 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     SourceType,
 )
 from emulation_system.compose_file_creator.settings.images import SmoothieImages
-from ...errors import (
+from emulation_system.compose_file_creator.errors import (
     HardwareDoesNotExistError,
     IncorrectHardwareError,
 )
