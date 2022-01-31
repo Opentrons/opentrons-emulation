@@ -1,5 +1,5 @@
 {
-    "system-unique-id": "ot2-and-heater-shaker",
+    "system-unique-id": "ot2-and-2-heater-shakers",
     "robot": {
         "id": "otie",
         "hardware": "ot2",
@@ -13,7 +13,7 @@
             "id": "shakey-and-warm",
             "hardware": "heater-shaker-module",
             "source-type": "remote",
-            "source-location": "latest",
+            "source-location": "b6231ae3c08746e62cf6e426020aedd1ffc3ab3b",
             "emulation_level": "hardware"
         }
     ]

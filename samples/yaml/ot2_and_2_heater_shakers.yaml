@@ -1,4 +1,4 @@
-system-unique-id: ot2-and-heater-shaker
+system-unique-id: ot2-and-2-heater-shakers
 robot:
   id: otie
   hardware: ot2
