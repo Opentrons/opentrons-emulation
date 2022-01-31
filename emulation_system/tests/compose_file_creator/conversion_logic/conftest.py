@@ -33,6 +33,7 @@ from tests.compose_file_creator.conftest import (
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
 )
+from tests.conftest import get_test_conf
 
 CONTAINER_NAME_TO_IMAGE = {
     OT2_ID: RobotServerImages().local_firmware_image_name,
@@ -59,7 +60,7 @@ TEMP_OPENTRONS_EMULATION_CONFIGURATION_FILE_NAME = "temp_test_configuration.json
 
 @pytest.fixture
 def emulation_configuration_setup(
-    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    testing_global_em_config: OpentronsEmulationConfiguration,
     tmpdir: py.path.local,
 ) -> OpentronsEmulationConfiguration:
     """Creates temporary directories for loading configuration files from.
@@ -69,7 +70,7 @@ def emulation_configuration_setup(
     root_dir = tmpdir.mkdir("emulation-configurations")
     path_1 = root_dir.mkdir(EMULATION_CONFIGURATION_DIR_1)
     path_2 = root_dir.mkdir(EMULATION_CONFIGURATION_DIR_2)
-    test_conf = testing_opentrons_emulation_configuration
+    test_conf = testing_global_em_config
 
     test_conf.global_settings.emulation_configuration_file_locations.extend(
         [str(path_1), str(path_2)]
@@ -80,15 +81,15 @@ def emulation_configuration_setup(
 
 @pytest.fixture
 def duplicate_emulation_files(
-    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> OpentronsEmulationConfiguration:
     """Create file with same name in the 2 emulation_configuration_file_locations directories."""  # noqa: E501
-    settings = testing_opentrons_emulation_configuration.global_settings
+    settings = testing_global_em_config.global_settings
     settings.emulation_configuration_file_locations = [
         "file_1",
         "file_2",
     ]
-    return testing_opentrons_emulation_configuration
+    return testing_global_em_config
 
 
 @pytest.fixture
@@ -168,7 +169,8 @@ def robot_with_mount_and_modules_services(
 ) -> Dict[str, Service]:
     """Get services from ot2_and_modules."""
     return cast(
-        Dict[str, Service], convert_from_obj(robot_with_mount_and_modules).services
+        Dict[str, Service],
+        convert_from_obj(robot_with_mount_and_modules, get_test_conf()).services,
     )
 
 
@@ -177,4 +179,7 @@ def with_system_unique_id_services(
     with_system_unique_id: Dict[str, Any]
 ) -> Dict[str, Service]:
     """Get services from with_system_unique_id."""
-    return cast(Dict[str, Service], convert_from_obj(with_system_unique_id).services)
+    return cast(
+        Dict[str, Service],
+        convert_from_obj(with_system_unique_id, get_test_conf()).services,
+    )

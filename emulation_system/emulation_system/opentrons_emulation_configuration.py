@@ -7,6 +7,10 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, parse_obj_as
 
+from emulation_system.compose_file_creator.errors import RepoDoesNotExistError
+from emulation_system.compose_file_creator.settings.config_file_settings import (
+    OpentronsRepository,
+)
 from emulation_system.consts import (
     CONFIGURATION_FILE_LOCATION_VAR_NAME,
     DEFAULT_CONFIGURATION_FILE_PATH,
@@ -108,6 +112,36 @@ class OpentronsEmulationConfiguration(BaseModel):
             )
 
         return parse_obj_as(cls, json.load(file))
+
+    def get_repo_commit(self, repo: OpentronsRepository) -> str:
+        """Helper method to get repo commit string."""
+        lookup = {
+            OpentronsRepository.OPENTRONS: self.emulation_settings.source_download_locations.commits.opentrons,  # noqa: E501
+            OpentronsRepository.OT3_FIRMWARE: self.emulation_settings.source_download_locations.commits.ot3_firmware,  # noqa: E501
+            OpentronsRepository.OPENTRONS_MODULES: self.emulation_settings.source_download_locations.commits.modules,  # noqa: E501
+        }
+
+        try:
+            commit = lookup[repo]
+        except KeyError:
+            raise RepoDoesNotExistError(repo.value)
+
+        return commit
+
+    def get_repo_head(self, repo: OpentronsRepository) -> str:
+        """Helper method to get repo head string."""
+        lookup = {
+            OpentronsRepository.OPENTRONS: self.emulation_settings.source_download_locations.heads.opentrons,  # noqa: E501
+            OpentronsRepository.OT3_FIRMWARE: self.emulation_settings.source_download_locations.heads.ot3_firmware,  # noqa: E501
+            OpentronsRepository.OPENTRONS_MODULES: self.emulation_settings.source_download_locations.heads.modules,  # noqa: E501
+        }
+
+        try:
+            head = lookup[repo]
+        except KeyError:
+            raise RepoDoesNotExistError(repo.value)
+
+        return head
 
 
 def load_opentrons_emulation_configuration_from_env() -> OpentronsEmulationConfiguration:  # noqa: E501

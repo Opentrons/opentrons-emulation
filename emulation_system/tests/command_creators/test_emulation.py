@@ -56,44 +56,44 @@ def complex_prod_emulation_cmd() -> List[str]:
 
 
 def test_basic_dev_em_commands(
-    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    testing_global_em_config: OpentronsEmulationConfiguration,
     basic_emulation_dev_cmd: List[str],
 ) -> None:
     """Confirm that basic dev emulation command is parsed correctly."""
-    dev_em_creator = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+    dev_em_creator = TopLevelParser(testing_global_em_config).parse(
         basic_emulation_dev_cmd
     )
     assert dev_em_creator == BASIC_DEV_CMDS_TO_RUN
 
 
 def test_complex_dev_em_commands(
-    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    testing_global_em_config: OpentronsEmulationConfiguration,
     complex_emulation_dev_cmd: List[str],
 ) -> None:
     """Confirm that complex dev emulation command is parsed correctly."""
-    dev_em_creator = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+    dev_em_creator = TopLevelParser(testing_global_em_config).parse(
         complex_emulation_dev_cmd
     )
     assert dev_em_creator == COMPLEX_DEV_COMMANDS_TO_RUN
 
 
 def test_basic_prod_em_commands(
-    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    testing_global_em_config: OpentronsEmulationConfiguration,
     basic_prod_emulation_cmd: List[str],
 ) -> None:
     """Confirm that basic prod emulation command is parsed correctly."""
-    prod_em_creator = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+    prod_em_creator = TopLevelParser(testing_global_em_config).parse(
         basic_prod_emulation_cmd
     )
     assert prod_em_creator == BASIC_PROD_COMMANDS_TO_RUN
 
 
 def test_complex_prod_em_commands(
-    testing_opentrons_emulation_configuration: OpentronsEmulationConfiguration,
+    testing_global_em_config: OpentronsEmulationConfiguration,
     complex_prod_emulation_cmd: List[str],
 ) -> None:
     """Confirm that complex prod emulation command is parsed correctly."""
-    prod_em_creator = TopLevelParser(testing_opentrons_emulation_configuration).parse(
+    prod_em_creator = TopLevelParser(testing_global_em_config).parse(
         complex_prod_emulation_cmd
     )
     assert prod_em_creator == COMPLEX_PROD_COMMANDS_TO_RUN

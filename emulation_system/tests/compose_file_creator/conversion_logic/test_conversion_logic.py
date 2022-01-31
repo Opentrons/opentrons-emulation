@@ -2,6 +2,7 @@
 from typing import (
     Any,
     Dict,
+    List,
     cast,
 )
 
@@ -21,6 +22,9 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
 from emulation_system.consts import (
     DOCKERFILE_DIR_LOCATION,
 )
+from emulation_system.opentrons_emulation_configuration import (
+    OpentronsEmulationConfiguration,
+)
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,
@@ -30,7 +34,6 @@ from tests.compose_file_creator.conftest import (
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
 )
-
 from tests.compose_file_creator.conversion_logic.conftest import (
     CONTAINER_NAME_TO_IMAGE,
     SERVICE_NAMES,
@@ -41,9 +44,12 @@ from tests.compose_file_creator.conversion_logic.conftest import (
 #   - CAN network is created on OT3 breakout
 
 
-def test_version(version_only: Dict[str, str]) -> None:
+def test_version(
+    version_only: Dict[str, str],
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> None:
     """Confirms that version is set correctly on compose file."""
-    assert convert_from_obj(version_only).version == "4.0"
+    assert convert_from_obj(version_only, testing_global_em_config).version == "4.0"
 
 
 def test_service_keys(
@@ -111,9 +117,12 @@ def test_service_local_network(
     ]
 
 
-def test_top_level_network(ot2_and_modules: Dict[str, Any]) -> None:
+def test_top_level_network(
+    ot2_and_modules: Dict[str, Any],
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> None:
     """Verify top level network is correct."""
-    assert convert_from_obj(ot2_and_modules).networks == {
+    assert convert_from_obj(ot2_and_modules, testing_global_em_config).networks == {
         DEFAULT_NETWORK_NAME: Network()
     }
 
@@ -124,21 +133,21 @@ def test_robot_port(robot_with_mount_and_modules_services: Dict[str, Any]) -> No
 
 
 @pytest.mark.parametrize(
-    "service_name",
+    "service_name, expected_value",
     [
-        THERMOCYCLER_MODULE_ID,
-        TEMPERATURE_MODULE_ID,
-        MAGNETIC_MODULE_ID,
-        HEATER_SHAKER_MODULE_ID,
+        [THERMOCYCLER_MODULE_ID, ["--socket", f"http://{EMULATOR_PROXY_ID}:10003"]],
+        [TEMPERATURE_MODULE_ID, [EMULATOR_PROXY_ID]],
+        [MAGNETIC_MODULE_ID, [EMULATOR_PROXY_ID]],
+        [HEATER_SHAKER_MODULE_ID, ["--socket", f"http://{EMULATOR_PROXY_ID}:10004"]],
     ],
 )
 def test_module_command(
-    service_name: str, robot_with_mount_and_modules_services: Dict[str, Any]
+    service_name: str,
+    expected_value: List[str],
+    robot_with_mount_and_modules_services: Dict[str, Any],
 ) -> None:
     """Confirm that modules depend on emulator proxy."""
-    assert (
-        robot_with_mount_and_modules_services[service_name].command == EMULATOR_PROXY_ID
-    )
+    assert robot_with_mount_and_modules_services[service_name].command == expected_value
 
 
 def test_robot_command(robot_with_mount_and_modules_services: Dict[str, Any]) -> None:

@@ -3,10 +3,12 @@ from __future__ import annotations
 
 import os
 import pathlib
+import re
 from typing import (
     Any,
     Dict,
     List,
+    Optional,
     Union,
 )
 
@@ -18,6 +20,7 @@ from pydantic import (
 
 from emulation_system.compose_file_creator.errors import (
     EmulationLevelNotSupportedError,
+    InvalidRemoteSourceError,
     LocalSourceDoesNotExistError,
     MountNotFoundError,
     NoMountsDefinedError,
@@ -41,6 +44,8 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
 from emulation_system.compose_file_creator.settings.images import (
     get_image_name,
 )
+
+COMMIT_SHA_REGEX = r"^[0-9a-f]{40}"
 
 
 class HardwareModel(BaseModel):
@@ -94,6 +99,13 @@ class HardwareModel(BaseModel):
         if values["source_type"] == SourceType.LOCAL:
             if not os.path.isdir(v):
                 raise LocalSourceDoesNotExistError(v)
+        else:
+            lower_case_v = v.lower()
+            if (
+                lower_case_v != "latest"
+                and re.compile(COMMIT_SHA_REGEX).match(lower_case_v) is None
+            ):
+                raise InvalidRemoteSourceError(v)
         return v
 
     @validator("mounts", pre=True, each_item=True)
@@ -158,3 +170,15 @@ class HardwareModel(BaseModel):
             volumes=self.get_mount_strings(),  # type: ignore[arg-type]
             tty=True,
         )
+
+    def get_hardware_level_command(
+        self, emulator_proxy_name: str
+    ) -> Optional[List[str]]:
+        """Get command for module when it is being emulated at hardware level."""
+        return None
+
+    def get_firmware_level_command(
+        self, emulator_proxy_name: str
+    ) -> Optional[List[str]]:
+        """Get command for module when it is being emulated at hardware level."""
+        return None

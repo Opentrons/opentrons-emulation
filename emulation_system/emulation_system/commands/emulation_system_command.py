@@ -30,13 +30,16 @@ class EmulationSystemCommand:
 
     input_path: io.TextIOWrapper
     output_path: io.TextIOWrapper
+    settings: OpentronsEmulationConfiguration
 
     @classmethod
     def from_cli_input(
         cls, args: argparse.Namespace, settings: OpentronsEmulationConfiguration
     ) -> EmulationSystemCommand:
         """Construct EmulationSystemCommand from CLI input."""
-        return cls(input_path=args.input_path, output_path=args.output_path)
+        return cls(
+            input_path=args.input_path, output_path=args.output_path, settings=settings
+        )
 
     def execute(self) -> None:
         """Parse input file to compose file."""
@@ -46,8 +49,7 @@ class EmulationSystemCommand:
             raise InvalidFileExtensionException(
                 "Passed file must either be a .json or" ".yaml extension."
             )
-
         stdin_content = self.input_path.read().strip()
         parsed_content = yaml.safe_load(stdin_content)
-        converted_object = convert_from_obj(parsed_content)
+        converted_object = convert_from_obj(parsed_content, self.settings)
         self.output_path.write(converted_object.to_yaml())

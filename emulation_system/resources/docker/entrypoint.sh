@@ -38,6 +38,7 @@ case $FULL_COMMAND in
 
   build-heater-shaker-hardware)
     build_module_simulator "heater-shaker-simulator"
+    ;;
   build-ot3-echo-hardware)
     (
       cd /ot3-firmware && \
@@ -82,7 +83,7 @@ case $FULL_COMMAND in
     ;;
   run-smoothie)
     bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_smoothie"
-
+    ;;
   *)
     echo "Command ${FULL_COMMAND} not found."
     exit 2
