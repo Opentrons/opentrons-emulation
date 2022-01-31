@@ -2,6 +2,7 @@
 from typing import (
     Any,
     Dict,
+    List,
     cast,
 )
 
@@ -132,21 +133,21 @@ def test_robot_port(robot_with_mount_and_modules_services: Dict[str, Any]) -> No
 
 
 @pytest.mark.parametrize(
-    "service_name",
+    "service_name, expected_value",
     [
-        THERMOCYCLER_MODULE_ID,
-        TEMPERATURE_MODULE_ID,
-        MAGNETIC_MODULE_ID,
-        HEATER_SHAKER_MODULE_ID,
+        [THERMOCYCLER_MODULE_ID, ["--socket", f"http://{EMULATOR_PROXY_ID}:10003"]],
+        [TEMPERATURE_MODULE_ID, [EMULATOR_PROXY_ID]],
+        [MAGNETIC_MODULE_ID, [EMULATOR_PROXY_ID]],
+        [HEATER_SHAKER_MODULE_ID, ["--socket", f"http://{EMULATOR_PROXY_ID}:10004"]],
     ],
 )
 def test_module_command(
-    service_name: str, robot_with_mount_and_modules_services: Dict[str, Any]
+    service_name: str,
+    expected_value: List[str],
+    robot_with_mount_and_modules_services: Dict[str, Any],
 ) -> None:
     """Confirm that modules depend on emulator proxy."""
-    assert (
-        robot_with_mount_and_modules_services[service_name].command == EMULATOR_PROXY_ID
-    )
+    assert robot_with_mount_and_modules_services[service_name].command == expected_value
 
 
 def test_robot_command(robot_with_mount_and_modules_services: Dict[str, Any]) -> None:

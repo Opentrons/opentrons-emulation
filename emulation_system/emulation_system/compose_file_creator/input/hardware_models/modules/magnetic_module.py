@@ -1,5 +1,9 @@
 """Model and attributes for Magnetic Module."""
-from typing import ClassVar
+from typing import (
+    ClassVar,
+    List,
+    Optional,
+)
 
 from pydantic import Field
 from typing_extensions import Literal
@@ -55,3 +59,9 @@ class MagneticModuleInputModel(ModuleInputModel):
         alias="hardware-specific-attributes", default=MagneticModuleAttributes()
     )
     emulation_level: Literal[EmulationLevels.FIRMWARE] = Field(alias="emulation-level")
+
+    def get_firmware_level_command(
+        self, emulator_proxy_name: str
+    ) -> Optional[List[str]]:
+        """Get command for module when it is being emulated at hardware level."""
+        return [emulator_proxy_name]
