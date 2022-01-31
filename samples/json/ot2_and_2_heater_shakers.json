@@ -1,0 +1,27 @@
+{
+    "system-unique-id": "ot2-and-heater-shaker",
+    "robot": {
+        "id": "otie",
+        "hardware": "ot2",
+        "source-type": "remote",
+        "source-location": "latest",
+        "emulation-level": "firmware",
+        "exposed-port": 5000
+    },
+    "modules": [
+        {
+            "id": "shakey-and-warm",
+            "hardware": "heater-shaker-module",
+            "source-type": "remote",
+            "source-location": "latest",
+            "emulation_level": "hardware"
+        },
+        {
+            "id": "warm-and-shakey",
+            "hardware": "heater-shaker-module",
+            "source-type": "remote",
+            "source-location": "latest",
+            "emulation_level": "hardware"
+        }
+    ]
+}
