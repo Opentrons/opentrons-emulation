@@ -17,6 +17,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider "virtualbox" do |vb|
     vb.gui = false
+    vb.name = "Opentrons Emulation"
     vb.memory = settings['VM_MEMORY']
     vb.cpus = settings['VM_CPUS']
   end
