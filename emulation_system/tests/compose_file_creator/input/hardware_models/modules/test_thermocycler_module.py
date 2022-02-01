@@ -67,12 +67,10 @@ def test_thermocycler_with_plate_temp(
 
 
 def test_thermocycler_hardware_emulation_level(
-    thermocycler_module_hardware_emulation_level: Dict[str, Any]
+    thermocycler_module_default: Dict[str, Any]
 ) -> None:
     """Confirm you can set Thermocycler to be emulated at the hardware level."""
-    therm = parse_obj_as(
-        ThermocyclerModuleInputModel, thermocycler_module_hardware_emulation_level
-    )
+    therm = parse_obj_as(ThermocyclerModuleInputModel, thermocycler_module_default)
     assert therm.emulation_level == EmulationLevels.HARDWARE.value
 
 

@@ -20,6 +20,7 @@ from emulation_system.compose_file_creator.input.hardware_models.hardware_model 
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     EmulationLevels,
+    Hardware,
 )
 
 
@@ -61,6 +62,10 @@ class ModuleInputModel(HardwareModel):
             "model": self.firmware_serial_number_info.model,
             "version": self.firmware_serial_number_info.version,
         }
+
+        if self.hardware in [Hardware.THERMOCYCLER_MODULE, Hardware.TEMPERATURE_MODULE]:
+            value.update(self.hardware_specific_attributes.dict())
+
         return {self.firmware_serial_number_info.env_var_name: json.dumps(value)}
 
     def _get_hardware_serial_number_env_var(self) -> Dict[str, str]:
