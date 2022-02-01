@@ -25,6 +25,9 @@ from emulation_system.compose_file_creator.errors import (
     MountNotFoundError,
     NoMountsDefinedError,
 )
+from .hardware_specific_attributes import (
+    HardwareSpecificAttributes,
+)
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
     Service,
@@ -64,6 +67,7 @@ class HardwareModel(BaseModel):
 
     source_repos: SourceRepositories = NotImplemented
     emulation_level: EmulationLevels = NotImplemented
+    hardware_specific_attributes: HardwareSpecificAttributes = NotImplemented
 
     class Config:
         """Config class used by pydantic."""

@@ -189,11 +189,11 @@ def thermocycler_module_set_plate_temp(
 
 
 @pytest.fixture
-def thermocycler_module_hardware_emulation_level(
+def thermocycler_module_firmware_emulation_level(
     thermocycler_module_default: Dict[str, Any]
 ) -> Dict[str, Any]:
     """Return heater-shaker configuration with an invalid emulation level."""
-    thermocycler_module_default["emulation-level"] = EmulationLevels.HARDWARE.value
+    thermocycler_module_default["emulation-level"] = EmulationLevels.FIRMWARE.value
     return thermocycler_module_default
 
 

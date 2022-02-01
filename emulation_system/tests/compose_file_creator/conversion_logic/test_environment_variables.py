@@ -72,22 +72,51 @@ def test_ot3_feature_flag_added(
 
 
 @pytest.mark.parametrize(
-    "service_name,input_class",
+    "model,input_class,expected_value",
     [
-        [TEMPERATURE_MODULE_ID, TemperatureModuleInputModel],
-        [MAGNETIC_MODULE_ID, MagneticModuleInputModel],
+        [
+            lazy_fixture("temperature_module_default"),
+            TemperatureModuleInputModel,
+            {
+                "serial_number": "temperamental",
+                "model": "temp_deck_v20",
+                "version": "v2.0.1",
+                "temperature": {"degrees_per_tick": 2.0, "starting": 23.0},
+            },
+        ],
+        [
+            lazy_fixture("magnetic_module_default"),
+            MagneticModuleInputModel,
+            {
+                "serial_number": "fatal-attraction",
+                "model": "mag_deck_v20",
+                "version": "2.0.0",
+            },
+        ],
+        [
+            lazy_fixture("thermocycler_module_firmware_emulation_level"),
+            ThermocyclerModuleInputModel,
+            {
+                "serial_number": "t00-hot-to-handle",
+                "model": "v02",
+                "version": "v1.1.0",
+                "lid_temperature": {"degrees_per_tick": 2.0, "starting": 23.0},
+                "plate_temperature": {"degrees_per_tick": 2.0, "starting": 23.0},
+            },
+        ],
     ],
 )
 def test_firmware_serial_number_env_vars(
-    service_name: str,
+    model: Dict[str, Any],
     input_class: Type[ModuleInputModel],
-    robot_with_mount_and_modules_services: Dict[str, Service],
+    expected_value: Dict[str, Any],
+    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that serial number env vars are created correctly on firmware modules."""
-    services = robot_with_mount_and_modules_services
+    services = convert_from_obj({"modules": [model]}, testing_global_em_config).services
     assert services is not None
 
-    module_env = services[service_name].environment
+    module_env = services[model["id"]].environment
     assert module_env is not None
     assert input_class.firmware_serial_number_info is not None
     assert input_class.firmware_serial_number_info.env_var_name in module_env.__root__
@@ -95,13 +124,7 @@ def test_firmware_serial_number_env_vars(
     module_root = cast(Dict[str, str], module_env.__root__)
     assert module_root[
         input_class.firmware_serial_number_info.env_var_name
-    ] == json.dumps(
-        {
-            "serial_number": service_name,
-            "model": input_class.firmware_serial_number_info.model,
-            "version": input_class.firmware_serial_number_info.version,
-        }
-    )
+    ] == json.dumps(expected_value)
 
 
 @pytest.mark.parametrize(
