@@ -6,7 +6,9 @@ import argparse
 import os
 from dataclasses import dataclass
 from enum import Enum
-from typing import List
+from typing import (
+    List,
+)
 
 from pydantic import (
     BaseModel,
@@ -45,19 +47,17 @@ class VirtualMachineConfig(BaseModel):
 
     VM_MEMORY: int
     VM_CPUS: int
-    PRODUCTION_VM_NAME: str
-    DEVELOPMENT_VM_NAME: str
     NUM_SOCKET_CAN_NETWORKS: str
     SHARED_FOLDERS: List[SharedFolder]
 
 
 @dataclass
 class VirtualMachineCommand:
+    """Class to build settings file for Vagrant."""
+
     LOCAL_EMULATION_FOLDER_LOCATION = os.path.normpath(os.path.join("..", ROOT_DIR))
     VAGRANT_HOME_LOCATION = "/home/vagrant"
-    SETTINGS_FILE_LOCATION = os.path.join(
-        ROOT_DIR, "vagrant", "settings.json"
-    )
+    SETTINGS_FILE_LOCATION = os.path.join(ROOT_DIR, "vagrant", "settings.json")
 
     settings: OpentronsEmulationConfiguration
 
@@ -73,8 +73,8 @@ class VirtualMachineCommand:
         vm_path = os.path.join(self.VAGRANT_HOME_LOCATION, os.path.basename(host_path))
         return parse_obj_as(SharedFolder, {"host-path": host_path, "vm-path": vm_path})
 
-    def execute(self) -> None:
-        """Build settings file for vagrant commands."""
+    def get_settings_obj(self) -> VirtualMachineConfig:
+        """Generate and return setting object."""
         vm_settings = self.settings.virtual_machine_settings
         default_folder_paths = self.settings.global_settings.default_folder_paths
         folders = [
@@ -87,19 +87,19 @@ class VirtualMachineCommand:
         if vm_settings.shared_folders is not None:
             folders += vm_settings.shared_folders
 
-        json_output = VirtualMachineConfig(
+        return VirtualMachineConfig(
             VM_MEMORY=vm_settings.vm_memory,
             VM_CPUS=vm_settings.vm_cpus,
-            PRODUCTION_VM_NAME=vm_settings.prod_vm_name,
-            DEVELOPMENT_VM_NAME=vm_settings.dev_vm_name,
             NUM_SOCKET_CAN_NETWORKS=str(vm_settings.num_socket_can_networks),
             SHARED_FOLDERS=[
                 self._add_source_code_folder(folder_path)
                 for folder_path in folders
                 if folder_path is not None
             ],
-        ).json()
+        )
 
+    def execute(self) -> None:
+        """Build settings file for vagrant commands."""
         settings_file = open(self.SETTINGS_FILE_LOCATION, "w")
-        settings_file.write(json_output)
+        settings_file.write(self.get_settings_obj().json())
         settings_file.close()
