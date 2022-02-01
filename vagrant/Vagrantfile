@@ -1,6 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 require 'json'
+
 settings = JSON.parse(File.read(File.join(File.dirname(__FILE__), 'settings.json')))
 
 Vagrant.configure("2") do |config|
@@ -29,23 +30,5 @@ Vagrant.configure("2") do |config|
   name: "docker",
   type: "shell",
   path: "provisioning_scripts/docker.sh"
-
-  config.vm.provision "socket_can",
-  name: "socket_can",
-  type: "shell",
-  env: {"NUM_SOCKET_CAN_NETWORKS" => settings['NUM_SOCKET_CAN_NETWORKS']},
-  path: "provisioning_scripts/socket_can.sh"
-
-  config.vm.define "prod" do |prod|
-    prod.vm.provider "virtualbox" do |vb|
-        vb.name = settings['PRODUCTION_VM_NAME']
-    end
-  end
-
-  config.vm.define "dev" do |dev|
-      dev.vm.provider "virtualbox" do |vb|
-          vb.name = settings['DEVELOPMENT_VM_NAME']
-      end
-  end
 
 end
