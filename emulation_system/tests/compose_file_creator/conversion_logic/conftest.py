@@ -23,9 +23,6 @@ from emulation_system.compose_file_creator.settings.images import (
     TemperatureModuleImages,
     ThermocyclerModuleImages,
 )
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
 from tests.compose_file_creator.conftest import (
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,
@@ -52,44 +49,7 @@ SERVICE_NAMES = [
 ]
 
 EXTRA_MOUNT_PATH = "/var/log/log_files"
-EMULATION_CONFIGURATION_DIR_1 = "em-config-dir-1"
-EMULATION_CONFIGURATION_DIR_2 = "em-config-dir-2"
 EMULATION_CONFIGURATION_FILE_NAME = "test-config.json"
-TEMP_OPENTRONS_EMULATION_CONFIGURATION_FILE_NAME = "temp_test_configuration.json"
-
-
-@pytest.fixture
-def emulation_configuration_setup(
-    testing_global_em_config: OpentronsEmulationConfiguration,
-    tmpdir: py.path.local,
-) -> OpentronsEmulationConfiguration:
-    """Creates temporary directories for loading configuration files from.
-
-    Stores these directories to OpentronsEmulationConfiguration.
-    """
-    root_dir = tmpdir.mkdir("emulation-configurations")
-    path_1 = root_dir.mkdir(EMULATION_CONFIGURATION_DIR_1)
-    path_2 = root_dir.mkdir(EMULATION_CONFIGURATION_DIR_2)
-    test_conf = testing_global_em_config
-
-    test_conf.global_settings.emulation_configuration_file_locations.extend(
-        [str(path_1), str(path_2)]
-    )
-
-    return test_conf
-
-
-@pytest.fixture
-def duplicate_emulation_files(
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> OpentronsEmulationConfiguration:
-    """Create file with same name in the 2 emulation_configuration_file_locations directories."""  # noqa: E501
-    settings = testing_global_em_config.global_settings
-    settings.emulation_configuration_file_locations = [
-        "file_1",
-        "file_2",
-    ]
-    return testing_global_em_config
 
 
 @pytest.fixture
