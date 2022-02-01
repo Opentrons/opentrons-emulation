@@ -5,7 +5,7 @@
 .env
 
 # Vagrant state files
-.vagrant/
+vagrant/.vagrant/
 
 *.egg-info
 
@@ -16,7 +16,7 @@ __pycache__/
 configuration.json
 
 # Generated Vagrant Settings File
-emulation_system/resources/vagrant/settings.json
+vagrant/settings.json
 
 # Test Coverage Files
 .coverage
