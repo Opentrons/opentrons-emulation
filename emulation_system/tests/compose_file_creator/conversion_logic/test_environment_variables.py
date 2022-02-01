@@ -81,8 +81,8 @@ def test_ot3_feature_flag_added(
                 "serial_number": "temperamental",
                 "model": "temp_deck_v20",
                 "version": "v2.0.1",
-                "temperature": {"degrees_per_tick": 2.0, "starting": 23.0}
-            }
+                "temperature": {"degrees_per_tick": 2.0, "starting": 23.0},
+            },
         ],
         [
             lazy_fixture("magnetic_module_default"),
@@ -90,8 +90,8 @@ def test_ot3_feature_flag_added(
             {
                 "serial_number": "fatal-attraction",
                 "model": "mag_deck_v20",
-                "version": "2.0.0"
-            }
+                "version": "2.0.0",
+            },
         ],
         [
             lazy_fixture("thermocycler_module_firmware_emulation_level"),
@@ -101,8 +101,8 @@ def test_ot3_feature_flag_added(
                 "model": "v02",
                 "version": "v1.1.0",
                 "lid_temperature": {"degrees_per_tick": 2.0, "starting": 23.0},
-                "plate_temperature": {"degrees_per_tick": 2.0, "starting": 23.0}
-            }
+                "plate_temperature": {"degrees_per_tick": 2.0, "starting": 23.0},
+            },
         ],
     ],
 )
@@ -110,7 +110,7 @@ def test_firmware_serial_number_env_vars(
     model: Dict[str, Any],
     input_class: Type[ModuleInputModel],
     expected_value: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration
+    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that serial number env vars are created correctly on firmware modules."""
     services = convert_from_obj({"modules": [model]}, testing_global_em_config).services
