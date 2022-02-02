@@ -31,28 +31,28 @@ def test_get_virtual_machine_config(test_vm_command: VirtualMachineCommand) -> N
             SharedFolder,
             {
                 "host-path": "/home/Documents/repos/opentrons",
-                "vm-path": "/home/vagrant/opentrons"
-            }
+                "vm-path": "/home/vagrant/opentrons",
+            },
         ),
         parse_obj_as(
             SharedFolder,
             {
                 "host-path": "/home/Documents/repos/ot3-firmware",
-                "vm-path": "/home/vagrant/ot3-firmware"
-            }
+                "vm-path": "/home/vagrant/ot3-firmware",
+            },
         ),
         parse_obj_as(
             SharedFolder,
             {
                 "host-path": "/home/Documents/repos/opentrons-modules",
-                "vm-path": "/home/vagrant/opentrons-modules"
-            }
+                "vm-path": "/home/vagrant/opentrons-modules",
+            },
         ),
         parse_obj_as(
             SharedFolder,
             {
                 "host-path": "/home/derek-maggio/Documents/repos/opentrons-emulation",
-                "vm-path": "/home/vagrant/opentrons-emulation"
-            }
+                "vm-path": "/home/vagrant/opentrons-emulation",
+            },
         ),
     ]
