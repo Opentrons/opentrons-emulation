@@ -5,7 +5,8 @@ VAGRANT_CMD := ./opentrons-emulation vm && (cd vagrant && vagrant{SUB})
 EMULATION_SYSTEM_CMD := ./opentrons-emulation emulation-system {SUB} -
 COMPOSE_BUILD_COMMAND := COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose -f - build
 COMPOSE_RUN_COMMAND := docker-compose -f - up -d
-COMPOSE_REMOVE_COMMAND := docker-compose -f - down
+COMPOSE_KILL_COMMAND := docker-compose -f - kill
+COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
 
 .PHONY: vm-create
 vm-create:
@@ -41,6 +42,7 @@ em-run:
 .PHONY: em-remove
 em-remove:
 	$(if $(file_path),@echo "Removing system from $(file_path)",$(error file_path variable required))
+	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_KILL_COMMAND)
 	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_REMOVE_COMMAND)
 
 
