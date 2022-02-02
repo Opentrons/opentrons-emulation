@@ -8,11 +8,15 @@ from emulation_system.compose_file_creator.input.configuration_file import (
 )
 from .service_creation.emulator_proxy_creation import create_emulator_proxy_service
 from .service_creation.input_service_creation import configure_input_service
+from .service_creation.ot3_service_creation import create_ot3_services
 from .service_creation.shared_functions import (
     generate_container_name,
 )
 from .service_creation.smoothie_service_creation import create_smoothie_service
-from ..input.hardware_models import OT2InputModel
+from ..input.hardware_models import (
+    OT2InputModel,
+    OT3InputModel,
+)
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
@@ -41,6 +45,17 @@ def create_services(
         smoothie_name = smoothie_service.container_name
         assert smoothie_name is not None
         services[smoothie_name] = smoothie_service
+
+    if config_model.robot is not None and config_model.robot.__class__ == OT3InputModel:
+        ot3_services = create_ot3_services(
+            config_model, required_networks, global_settings
+        )
+        services.update(
+            {
+                ot3_service.container_name: ot3_service
+                for ot3_service in ot3_services
+            }
+        )
 
     services.update(
         {
