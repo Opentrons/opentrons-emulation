@@ -16,12 +16,20 @@ from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
-from emulation_system.compose_file_creator.settings.images import SmoothieImages
+from emulation_system.compose_file_creator.settings.config_file_settings import OT3Hardware
+from emulation_system.compose_file_creator.settings.images import (
+    OT3GantryXImages,
+    OT3GantryYImages,
+    OT3HeadImages,
+    OT3PipettesImages,
+    SmoothieImages,
+)
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
+    OT3_ID,
     SMOOTHIE_ID,
 )
 
@@ -31,12 +39,12 @@ from tests.compose_file_creator.conftest import (
     [
         lazy_fixture(name)
         for name in [
-            "ot2_and_modules",
-            "modules_only",
-            "ot3_and_modules",
-            "ot2_only",
-            "ot3_only",
-        ]
+        "ot2_and_modules",
+        "modules_only",
+        "ot3_and_modules",
+        "ot2_only",
+        "ot3_only",
+    ]
     ],
 )
 def test_emulation_proxy_created(
@@ -101,3 +109,29 @@ def test_smoothie_with_remote_source(
     smoothie = services[SMOOTHIE_ID]
     assert smoothie.image == f"{SmoothieImages().remote_firmware_image_name}:latest"
     assert smoothie.volumes is None
+
+
+@pytest.mark.parametrize(
+    "container_name, expected_image_name",
+    [
+        [OT3Hardware.PIPETTES.value, OT3PipettesImages().local_hardware_image_name],
+        [OT3Hardware.HEAD.value, OT3HeadImages().local_hardware_image_name],
+        [OT3Hardware.GANTRY_X.value, OT3GantryXImages().local_hardware_image_name],
+        [OT3Hardware.GANTRY_Y.value, OT3GantryYImages().local_hardware_image_name],
+    ]
+)
+def test_local_ot3_services_created(
+    container_name: str,
+    expected_image_name: str,
+    ot3_only: Dict[str, Any],
+    testing_global_em_config: OpentronsEmulationConfiguration
+) -> None:
+    services = convert_from_obj(ot3_only, testing_global_em_config).services
+    assert services is not None
+    assert container_name in list(services.keys())
+
+    service = services[container_name]
+    assert service.image == expected_image_name
+
+    ot3 = services[OT3_ID]
+    assert service.volumes == ot3.volumes
