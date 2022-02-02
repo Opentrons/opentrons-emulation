@@ -256,19 +256,19 @@ COPY entrypoint.sh /entrypoint.sh
 # Building separately from the Production Target to reduce image size
 
 FROM ot3-firmware-source as ot3-pipettes-builder
-ENV OPENTRONS_HARDWARE "ot3-pipettes-harware"
+ENV OPENTRONS_HARDWARE "ot3-pipettes-hardware"
 RUN /entrypoint.sh build
 
 FROM ot3-firmware-source as ot3-head-builder
-ENV OPENTRONS_HARDWARE "ot3-head-harware"
+ENV OPENTRONS_HARDWARE "ot3-head-hardware"
 RUN /entrypoint.sh build
 
 FROM ot3-firmware-source as ot3-gantry-x-builder
-ENV OPENTRONS_HARDWARE "ot3-gantry-x-harware"
+ENV OPENTRONS_HARDWARE "ot3-gantry-x-hardware"
 RUN /entrypoint.sh build
 
 FROM ot3-firmware-source as ot3-gantry-y-builder
-ENV OPENTRONS_HARDWARE "ot3-gantry-y-harware"
+ENV OPENTRONS_HARDWARE "ot3-gantry-y-hardware"
 RUN /entrypoint.sh build
 
 FROM opentrons-modules-source as heater-shaker-builder

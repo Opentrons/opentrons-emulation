@@ -49,7 +49,7 @@ case $FULL_COMMAND in
     (cd /opentrons/notify-server && python3 setup.py bdist_wheel -d /dist/)
     (cd /opentrons/robot-server && python3 setup.py bdist_wheel -d /dist/)
     pip install /dist/*
-
+    ;;
   build-ot3-pipettes-hardware)
     build_ot3_simulator "pipettes-simulator"
     ;;
