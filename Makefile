@@ -1,17 +1,23 @@
-em_vm := ./opentrons-emulation vm
+SUB = {SUB}
+VAGRANT_CMD := ./opentrons-emulation vm && (cd vagrant && vagrant{SUB})
 
 .PHONY: vm-create
 vm-create:
-	$(em_vm) && (cd vagrant && vagrant up)
+	$(eval CMD := up)
+	$(subst $(SUB), $(CMD), $(VAGRANT_CMD))
 
 .PHONY: vm-remove
 vm-remove:
-	$(em_vm) && (cd vagrant && vagrant destroy --force)
+	$(eval CMD := destroy --force)
+	$(subst $(SUB), $(CMD), $(VAGRANT_CMD))
 
 .PHONY: vm-ssh
 vm-ssh:
-	$(em_vm) && (cd vagrant && vagrant ssh default)
+	$(eval CMD := ssh default)
+	$(subst $(SUB), $(CMD), $(VAGRANT_CMD))
 
 .PHONY: vm-setup
 vm-setup:
-	$(em_vm) && (cd vagrant && vagrant ssh default -c "(cd opentrons-emulation/emulation_system && make setup)")
+	$(eval CMD := ssh default -c '(cd opentrons-emulation/emulation_system && make setup)')
+	$(subst $(SUB), $(CMD), $(VAGRANT_CMD))
+
