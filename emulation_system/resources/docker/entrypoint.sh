@@ -39,13 +39,6 @@ case $FULL_COMMAND in
   build-heater-shaker-hardware)
     build_module_simulator "heater-shaker-simulator"
     ;;
-  build-ot3-echo-hardware)
-    (
-      cd /ot3-firmware && \
-      cmake --preset host-gcc10 && \
-      cmake --build ./build-host --target can-simulator
-    )
-    ;;
   build-thermocycler-hardware)
     build_module_simulator "thermocycler-refresh-simulator"
     ;;
@@ -57,15 +50,49 @@ case $FULL_COMMAND in
     (cd /opentrons/robot-server && python3 setup.py bdist_wheel -d /dist/)
     pip install /dist/*
     ;;
+  build-ot3-pipettes-hardware)
+    build_ot3_simulator "pipettes-simulator"
+    ;;
+  build-ot3-head-hardware)
+    build_ot3_simulator "head-simulator"
+    ;;
+  build-ot3-gantry-x-hardware)
+    build_ot3_simulator "gantry-x-simulator"
+    ;;
+  build-ot3-gantry-y-hardware)
+    build_ot3_simulator "gantry-y-simulator"
+    ;;
+
   run-heater-shaker-hardware)
     bash -c "/opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator $OTHER_ARGS"
     ;;
   run-thermocycler-hardware)
     bash -c "/opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator $OTHER_ARGS"
     ;;
-  run-ot3-echo-hardware)
-    /ot3-firmware/build-host/can/simulator/can-simulator
+
+  run-ot3-pipettes-hardware)
+    /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator
     ;;
+  run-ot3-head-hardware)
+    /ot3-firmware/build-host/head/simulator/head-simulator
+    ;;
+  run-ot3-gantry-x-hardware)
+    /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator
+    ;;
+  run-ot3-gantry-y-hardware)
+    /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator
+    ;;
+
+  # Firmware Level
+
+  build-thermocycler-firmware|build-magdeck-firmware|build-tempdeck-firmware|build-emulator-proxy|build-robot-server|build-common-firmware)
+    (cd /opentrons/shared-data/python && python3 setup.py bdist_wheel -d /dist/)
+    (cd /opentrons/api && python3 setup.py bdist_wheel -d /dist/)
+    (cd /opentrons/notify-server && python3 setup.py bdist_wheel -d /dist/)
+    (cd /opentrons/robot-server && python3 setup.py bdist_wheel -d /dist/)
+    pip install /dist/*
+    ;;
+
   run-thermocycler-firmware)
     bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_module_emulator thermocycler $OTHER_ARGS"
     ;;

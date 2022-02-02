@@ -126,14 +126,23 @@ RUN apt-get install -y nodejs && npm install --global yarn
 # Hardware Local Emulators #
 ############################
 
-FROM cpp-base as ot3-echo-hardware-local
-ENV OPENTRONS_HARDWARE "ot3-echo-hardware"
-
 FROM cpp-base as heater-shaker-hardware-local
 ENV OPENTRONS_HARDWARE "heater-shaker-hardware"
 
 FROM cpp-base as thermocycler-hardware-local
 ENV OPENTRONS_HARDWARE "thermocycler-hardware"
+
+FROM cpp-base as ot3-pipettes-hardware-local
+ENV OPENTRONS_HARDWARE "ot3-pipettes-hardware"
+
+FROM cpp-base as ot3-head-hardware-local
+ENV OPENTRONS_HARDWARE "ot3-head-hardware"
+
+FROM cpp-base as ot3-gantry-x-hardware-local
+ENV OPENTRONS_HARDWARE "ot3-gantry-x-hardware"
+
+FROM cpp-base as ot3-gantry-y-hardware-local
+ENV OPENTRONS_HARDWARE "ot3-gantry-y-hardware"
 
 ############################
 # Firmware Local Emulators #
@@ -246,8 +255,20 @@ COPY entrypoint.sh /entrypoint.sh
 # from the executable builder target
 # Building separately from the Production Target to reduce image size
 
-FROM ot3-firmware-source as ot3-echo-builder
-ENV OPENTRONS_HARDWARE "ot3-echo-hardware"
+FROM ot3-firmware-source as ot3-pipettes-builder
+ENV OPENTRONS_HARDWARE "ot3-pipettes-hardware"
+RUN /entrypoint.sh build
+
+FROM ot3-firmware-source as ot3-head-builder
+ENV OPENTRONS_HARDWARE "ot3-head-hardware"
+RUN /entrypoint.sh build
+
+FROM ot3-firmware-source as ot3-gantry-x-builder
+ENV OPENTRONS_HARDWARE "ot3-gantry-x-hardware"
+RUN /entrypoint.sh build
+
+FROM ot3-firmware-source as ot3-gantry-y-builder
+ENV OPENTRONS_HARDWARE "ot3-gantry-y-hardware"
 RUN /entrypoint.sh build
 
 FROM opentrons-modules-source as heater-shaker-builder
@@ -290,9 +311,27 @@ RUN pip install /dist/*
 # Each Hardware Production Target should copy the executable from the Executable Builder target
 # Each Hardware Production Target should have a corresponding Executable Builder target
 
-FROM ubuntu-base as ot3-echo-hardware-remote
-ENV OPENTRONS_HARDWARE "ot3-echo"
-COPY --from=ot3-echo-builder /ot3-firmware/build-host/can/simulator/can-simulator /ot3-firmware/build-host/can/simulator/can-simulator
+FROM ubuntu-base as ot3-pipettes-hardware-remote
+ENV OPENTRONS_HARDWARE "ot3-pipettes-hardware"
+COPY --from=ot3-pipettes-builder /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM ubuntu-base as ot3-head-hardware-remote
+ENV OPENTRONS_HARDWARE "ot3-head-hardware"
+COPY --from=ot3-head-builder /ot3-firmware/build-host/head/simulator/head-simulator /ot3-firmware/build-host/head/simulator/head-simulator
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM ubuntu-base as ot3-gantry-x-hardware-remote
+ENV OPENTRONS_HARDWARE "ot3-gantry-x-hardware"
+COPY --from=ot3-gantry-x-builder /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM ubuntu-base as ot3-gantry-y-hardware-remote
+ENV OPENTRONS_HARDWARE "ot3-gantry-y-hardware"
+COPY --from=ot3-gantry-y-builder /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
