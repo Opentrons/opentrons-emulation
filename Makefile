@@ -42,3 +42,9 @@ em-run:
 em-remove:
 	$(if $(file_path),@echo "Removing system from $(file_path)",$(error file_path variable required))
 	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_REMOVE_COMMAND)
+
+
+.PHONY: generate-compose-file
+generate-compose-file:
+	$(if $(file_path),,$(error file_path variable required))
+	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD))
