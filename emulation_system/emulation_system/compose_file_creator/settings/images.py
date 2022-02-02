@@ -1,9 +1,8 @@
 """Mapping for getting image names for hardware."""
 from typing import Optional
 
-from typing_extensions import Literal
-
 from pydantic import BaseModel
+from typing_extensions import Literal
 
 from emulation_system.compose_file_creator.errors import ImageNotDefinedError
 from emulation_system.compose_file_creator.settings.config_file_settings import (
@@ -83,6 +82,42 @@ class SmoothieImages(Images):
     local_hardware_image_name: Literal[None] = None
     remote_firmware_image_name: str = "smoothie-remote"
     remote_hardware_image_name: Literal[None] = None
+
+
+class OT3PipettesImages(Images):
+    """Image names for OT3 Pipettes."""
+
+    local_firmware_image_name: Literal[None] = None
+    local_hardware_image_name: str = "ot3-pipettes-hardware-local"
+    remote_firmware_image_name: Literal[None] = None
+    remote_hardware_image_name: str = "ot3-pipettes-hardware-remote"
+
+
+class OT3HeadImages(Images):
+    """Image names for OT3 Pipettes."""
+
+    local_firmware_image_name: Literal[None] = None
+    local_hardware_image_name: str = "ot3-head-hardware-local"
+    remote_firmware_image_name: Literal[None] = None
+    remote_hardware_image_name: str = "ot3-head-hardware-remote"
+
+
+class OT3GantryXImages(Images):
+    """Image names for OT3 Pipettes."""
+
+    local_firmware_image_name: Literal[None] = None
+    local_hardware_image_name: str = "ot3-gantry-x-hardware-local"
+    remote_firmware_image_name: Literal[None] = None
+    remote_hardware_image_name: str = "ot3-gantry-x-hardware-remote"
+
+
+class OT3GantryYImages(Images):
+    """Image names for OT3 Pipettes."""
+
+    local_firmware_image_name: Literal[None] = None
+    local_hardware_image_name: str = "ot3-gantry-y-hardware-local"
+    remote_firmware_image_name: Literal[None] = None
+    remote_hardware_image_name: str = "ot3-gantry-y-hardware-remote"
 
 
 IMAGE_MAPPING = {

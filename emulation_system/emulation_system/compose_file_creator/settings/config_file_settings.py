@@ -32,6 +32,15 @@ class Hardware(str, Enum):
     OT3 = "ot3"
 
 
+class OT3Hardware(str, Enum):
+    """Names of OT3 hardware."""
+
+    PIPETTES = "ot3-pipettes"
+    HEAD = "ot3-head"
+    GANTRY_X = "ot3-gantry-x"
+    GANTRY_Y = "ot3-gantry-y"
+
+
 class EmulationLevels(str, Enum):
     """The emulation level of the emulator."""
 
