@@ -32,7 +32,10 @@ class OT3SourceRepositories(SourceRepositories):
     """Source repositories for OT3."""
 
     firmware_repo_name: OpentronsRepository = OpentronsRepository.OPENTRONS
-    hardware_repo_name: OpentronsRepository = OpentronsRepository.OT3_FIRMWARE
+    # This is the monorepo because we are specifying where the robot server
+    # should get it's source code. Not the hardware emulators, those are hardcoded
+    # to ot3-firmware
+    hardware_repo_name: OpentronsRepository = OpentronsRepository.OPENTRONS
 
 
 class OT3InputModel(RobotInputModel):
