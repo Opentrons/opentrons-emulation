@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import List
 
 from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration
+    OpentronsEmulationConfiguration,
 )
 from .shared_functions import (
     generate_container_name,
@@ -36,6 +36,7 @@ from ...settings.images import (
 @dataclass
 class ServiceInfo:
     """Info about service to be created."""
+
     image: Images
     container_name: OT3Hardware
 
@@ -51,7 +52,7 @@ SERVICES_TO_CREATE = [
 def create_ot3_services(
     config_model: SystemConfigurationModel,
     required_networks: RequiredNetworks,
-    global_settings: OpentronsEmulationConfiguration
+    global_settings: OpentronsEmulationConfiguration,
 ) -> List[Service]:
     """Create emulated OT3 hardware services."""
     ot3 = config_model.robot
@@ -69,6 +70,7 @@ def create_ot3_services(
             if ot3.source_type == SourceType.LOCAL
             else service_info.image.remote_hardware_image_name
         )
+        assert image_name is not None
         container_name = generate_container_name(
             service_info.container_name, config_model
         )
@@ -90,7 +92,7 @@ def create_ot3_services(
                 build=get_service_build(image_name, build_args),
                 networks=required_networks.networks,
                 volumes=get_mount_strings(ot3),
-                tty=True
+                tty=True,
             )
         )
     return ot3_services

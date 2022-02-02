@@ -16,7 +16,9 @@ from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
-from emulation_system.compose_file_creator.settings.config_file_settings import OT3Hardware
+from emulation_system.compose_file_creator.settings.config_file_settings import (
+    OT3Hardware,
+)
 from emulation_system.compose_file_creator.settings.images import (
     OT3GantryXImages,
     OT3GantryYImages,
@@ -39,12 +41,12 @@ from tests.compose_file_creator.conftest import (
     [
         lazy_fixture(name)
         for name in [
-        "ot2_and_modules",
-        "modules_only",
-        "ot3_and_modules",
-        "ot2_only",
-        "ot3_only",
-    ]
+            "ot2_and_modules",
+            "modules_only",
+            "ot3_and_modules",
+            "ot2_only",
+            "ot3_only",
+        ]
     ],
 )
 def test_emulation_proxy_created(
@@ -118,14 +120,15 @@ def test_smoothie_with_remote_source(
         [OT3Hardware.HEAD.value, OT3HeadImages().local_hardware_image_name],
         [OT3Hardware.GANTRY_X.value, OT3GantryXImages().local_hardware_image_name],
         [OT3Hardware.GANTRY_Y.value, OT3GantryYImages().local_hardware_image_name],
-    ]
+    ],
 )
 def test_local_ot3_services_created(
     container_name: str,
     expected_image_name: str,
     ot3_only: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration
+    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
+    """Confirm OT3 hardware emulators are added with OT3 is specified."""
     services = convert_from_obj(ot3_only, testing_global_em_config).services
     assert services is not None
     assert container_name in list(services.keys())

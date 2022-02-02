@@ -50,12 +50,9 @@ def create_services(
         ot3_services = create_ot3_services(
             config_model, required_networks, global_settings
         )
-        services.update(
-            {
-                ot3_service.container_name: ot3_service
-                for ot3_service in ot3_services
-            }
-        )
+        for ot3_service in ot3_services:
+            assert ot3_service.container_name is not None
+            services[ot3_service.container_name] = ot3_service
 
     services.update(
         {
