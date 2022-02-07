@@ -5,4 +5,4 @@ robot:
   source-type: "remote"
   source-location: "latest"
   emulation-level: "firmware"
-  exposed-port: 5000
+  exposed-port: 31950
