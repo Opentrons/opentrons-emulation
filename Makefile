@@ -33,12 +33,18 @@ vm-setup:
 
 .PHONY: em-build-amd64
 em-build-amd64:
+	# TODO: Remove tmp file creation when Buildx 0.8.0 is released.
+	# PR: https://github.com/docker/buildx/milestone/11
+	# Ticket: https://github.com/docker/buildx/pull/864
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
 	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND)
 	rm tmp-compose.yaml
 
 .PHONY: em-build-arm64
 em-build-arm64:
+	# TODO: Remove tmp file creation when Buildx 0.8.0 is released.
+	# PR: https://github.com/docker/buildx/milestone/11
+	# Ticket: https://github.com/docker/buildx/pull/864
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
 	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND) --set *.platform=linux/arm64
 	rm tmp-compose.yaml
