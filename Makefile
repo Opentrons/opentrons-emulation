@@ -1,3 +1,5 @@
+EMULATION_SYSTEM_DIR := emulation_system
+
 SUB = {SUB}
 VAGRANT_CMD := ./opentrons-emulation vm && (cd vagrant && vagrant{SUB})
 
