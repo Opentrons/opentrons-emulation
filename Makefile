@@ -4,8 +4,8 @@ SUB = {SUB}
 VAGRANT_CMD := (cd ./emulation_system && pipenv run python main.py vm) && (cd vagrant && vagrant{SUB})
 
 EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} -)
-EMULATION_SYSTEM_CMD := ./opentrons-emulation emulation-system {SUB} -
-COMPOSE_BUILD_COMMAND := COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose -f - build
+COMPOSE_BUILD_COMMAND := docker buildx bake --file tmp-compose.yaml
+COMPOSE_ARM_BUILD_COMMAND := docker buildx bake --file tmp-compose.yaml
 COMPOSE_RUN_COMMAND := docker-compose -f - up -d
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
@@ -31,10 +31,17 @@ vm-setup:
 	$(eval CMD := ssh default -c '(cd opentrons-emulation/emulation_system && make setup)')
 	$(subst $(SUB), $(CMD), $(VAGRANT_CMD))
 
-.PHONY: em-build
-em-build:
+.PHONY: em-build-amd64
+em-build-amd64:
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_BUILD_COMMAND)
+	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND)
+	rm tmp-compose.yaml
+
+.PHONY: em-build-arm64
+em-build-arm64:
+	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
+	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND) --set *.platform=linux/arm64
+	rm tmp-compose.yaml
 
 .PHONY: em-run
 em-run:
