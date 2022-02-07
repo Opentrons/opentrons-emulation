@@ -9,6 +9,7 @@ COMPOSE_BUILD_COMMAND := COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-com
 COMPOSE_RUN_COMMAND := docker-compose -f - up -d
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
+COMPOSE_LOGS_COMMAND := docker-compose -f - logs -f
 
 .PHONY: vm-create
 vm-create:
@@ -46,6 +47,12 @@ em-remove:
 	$(if $(file_path),@echo "Removing system from $(file_path)",$(error file_path variable required))
 	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_KILL_COMMAND)
 	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_REMOVE_COMMAND)
+
+
+.PHONY: em-logs
+em-logs:
+	$(if $(file_path),@echo "Printing logs from $(file_path)",$(error file_path variable required))
+	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_LOGS_COMMAND)
 
 
 .PHONY: generate-compose-file
