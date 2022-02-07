@@ -1,9 +1,9 @@
 EMULATION_SYSTEM_DIR := emulation_system
 
 SUB = {SUB}
-VAGRANT_CMD := ./opentrons-emulation vm && (cd vagrant && vagrant{SUB})
+VAGRANT_CMD := (cd ./emulation_system && pipenv run python main.py vm) && (cd vagrant && vagrant{SUB})
 
-
+EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} -)
 EMULATION_SYSTEM_CMD := ./opentrons-emulation emulation-system {SUB} -
 COMPOSE_BUILD_COMMAND := COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose -f - build
 COMPOSE_RUN_COMMAND := docker-compose -f - up -d
