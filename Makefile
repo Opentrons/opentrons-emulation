@@ -50,3 +50,33 @@ em-remove:
 generate-compose-file:
 	$(if $(file_path),,$(error file_path variable required))
 	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD))
+
+
+.PHONY: setup
+setup:
+	$(MAKE) -C $(EMULATION_SYSTEM_DIR) setup
+
+
+.PHONY: clean
+clean:
+	$(MAKE) -C $(EMULATION_SYSTEM_DIR) clean
+
+
+.PHONY: teardown
+teardown:
+	$(MAKE) -C $(EMULATION_SYSTEM_DIR) teardown
+
+
+.PHONY: lint
+lint:
+	$(MAKE) -C $(EMULATION_SYSTEM_DIR) lint
+
+
+.PHONY: format
+format:
+	$(MAKE) -C $(EMULATION_SYSTEM_DIR) format
+
+
+.PHONY: test
+test:
+	$(MAKE) -C $(EMULATION_SYSTEM_DIR) test
