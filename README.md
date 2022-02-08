@@ -96,14 +96,21 @@ Configuration File Alias: `emulation-level`
 Emulation level is the point in tech stack that is abstracted away by a software model. There are 2 types of emulation
 levels. Firmware Emulation and Hardware Emulation.
 
+#### Firmware Emulation
+
+Firmware Emulation replaces the firmware with a software model and the drivers interact with the model.
+
 ![](./README_RESOURCES/emulation-level-illustration.svg "emulation-level-illustration")
+
+#### Hardware Emulation
+
 ![](./README_RESOURCES/hardware-level-illustration.svg "hardware-level-illustration")
 
-Firmware Emulation replaces the firmware with a software model and the drivers interact with the model. While Hardware
-Emulation replaces the hardware with a software model and the firmware interacts with the model. Below is a table with
-the available levels for each piece of hardware.
+Hardware Emulation replaces the hardware with a software model and the firmware interacts with the model.
 
-**Supported Emulation Levels**
+Below is a table with the available levels for each piece of hardware.
+
+#### Supported Emulation Levels
 
 | Hardware                 | Firmware Emulation | Hardware Emulation         |
 |--------------------------|--------------------|----------------------------|
