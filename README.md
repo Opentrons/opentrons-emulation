@@ -48,7 +48,7 @@ Install the following software:
 
 ## Initial Configuration
 
-1. In the root of the directory, copy and paste `configuration_sample.json` to `configuration.json`
+1. In the root of the repository, copy and paste `configuration_sample.json` to `configuration.json`
 2. You can leave everything default.
     1. TODO: `global-settings`, `virtual-machine-settings`, and `aws-ecr-settings` will be removed in future releases
 3. Run `make setup`
