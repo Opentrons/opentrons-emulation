@@ -3,6 +3,27 @@
 Framework to set up emulated Opentrons hardware. Uses Docker and Docker-Compose to create systems in which either the
 firmware or hardware is emulated with software.
 
+- [Opentrons Emulation](#opentrons-emulation)
+    * [Supported Hardware](#supported-hardware)
+    * [Getting Started](#getting-started)
+        + [Required Software](#required-software)
+    * [Initial Configuration](#initial-configuration)
+    * [Using Emulation](#using-emulation)
+        + [Getting started](#getting-started)
+    * [Emulation Configuration File Key Definitions](#emulation-configuration-file-key-definitions)
+        + [id](#id)
+        + [system-unique-id](#system-unique-id)
+        + [hardware](#hardware)
+        + [source-type](#source-type)
+        + [source-location](#source-location)
+        + [emulation-level](#emulation-level)
+        + [exposed-port](#exposed-port)
+        + [hardware-specific-attributes](#hardware-specific-attributes)
+            - [Pipettes](#pipettes)
+                * [Available Pipette Models:](#available-pipette-models-)
+            - [Heater-Shaker and Thermocycler Refresh Communication Mode](#heater-shaker-and-thermocycler-refresh-communication-mode)
+            - [Temperature Model for Thermocycler and Temperature Modules](#temperature-model-for-thermocycler-and-temperature-modules)
+
 ## Supported Hardware
 
 The following hardware is supported:
@@ -55,7 +76,7 @@ Once you know the hardware that you want, you will need to figure out what emula
 The following definitions are available for usage in the emulation configuration file.
 `Configuration File Alias` is the value that needs to be put in the configuration file
 
-### `id`
+### id
 
 **Description:** A string value for the name of the emulator.
 
@@ -63,14 +84,14 @@ The following definitions are available for usage in the emulation configuration
 
 **Examples:** `a-name-for-a-container` `s0me-other-name`
 
-### `system-unique-id`
+### system-unique-id
 
 **Description:** A string value that will be prefixed to all emulator and network names. Use this to differentiate
 systems with the same configuration.
 
 **Acceptable Values:** Can consist of alphanumeric characters and dashes.
 
-#### Example:
+**Example:**
 
 You are testing 2 different versions of Heater-Shaker firmware. So you want 2 systems, each with an OT2 and a
 Heater-Shaker, with ids `otie` and `twitchy` respectively. The first system can have a `system-unique-id` of
@@ -79,21 +100,21 @@ The ids of system 2 will be `system-2-otie` and `system-2-twitchy`.
 
 Because of the `system-unique-id` the emulator names do not clash.
 
-### `hardware`
+### hardware
 
 **Description:** A string value specifying which hardware to create.
 
 **Acceptable Values:** `ot2`, `ot3`, `heater-shaker-module`, `thermocycler-module`, `temperature-module`,
 `magnetic-module`
 
-### `source-type`
+### source-type
 
 **Description:** A string value specifying where to pull source code from to build the emulator. You can either pull
 committed code from Github, or bind in your own local code.
 
 **Acceptable Values:** `remote` `local`
 
-### `source-location`
+### source-location
 
 **Description:** A string value specifying where the system should look for the source code based on the `source-type`.
 
@@ -102,7 +123,7 @@ branch, or specify a full commit sha to pull.
 
 If you are using `local` type, specify a path to the source on your system.
 
-### `emulation-level`
+### emulation-level
 
 **Description:** Emulation level is the point in tech stack that is abstracted away by a software model. There are 2
 types of emulation levels: `Firmware Emulation` and `Hardware Emulation`.
@@ -129,20 +150,20 @@ Below is a table with the available levels for each piece of hardware.
 | **Magnetic Module**      | Yes                | No                         |
 | **Temperature Module**   | Yes                | No                         |
 
-### `exposed-port`
+### exposed-port
 
 **Description:** An integer value specifying a port to expose to the host system. This is currently only available for
 ot2 and ot3 hardware.
 
 **Acceptable Values:** Any free port number
 
-### `hardware-specific-attributes`
+### hardware-specific-attributes
 
 **Description:** An object containing any specific configuration values for hardware you are using.
 
 **Acceptable Values:** Varies. Breakdown below.
 
-### Pipettes
+#### Pipettes
 
 For OT2 and OT3 you can configure the pipettes attached to the emulated robot.
 
@@ -174,7 +195,7 @@ Example: An OT2 with a P1000 Single and P300 Multi
 
 ----
 
-#### Available Pipette Models:
+##### Available Pipette Models:
 
 **Version 1 Pipette Models**
 
@@ -227,7 +248,7 @@ Example: An OT2 with a P1000 Single and P300 Multi
 
 ----
 
-### Heater-Shaker and Thermocycler Refresh Communication Mode
+#### Heater-Shaker and Thermocycler Refresh Communication Mode
 
 For Heater-Shaker and Thermocycler Refresh you can specify the communication mode for the firmware. Either socket or
 through typing G-Codes through stdin. Stdin mode is really only useful for the lowest level debugging and for debugging
@@ -253,7 +274,7 @@ Example: Heater-Shaker in Stdin mode
 }
 ```
 
-### Temperature Model for Thermocycler and Temperature Modules
+#### Temperature Model for Thermocycler and Temperature Modules
 
 For the Thermocycler and Temperature modules you can specify the starting temperature and temperature ramp rate
 (degrees-per-tick).
