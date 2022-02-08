@@ -226,3 +226,84 @@ Example: An OT2 with a P1000 Single and P300 Multi
 `p20_single_v3.0` `p300_single_v3.0` `p1000_single_v3.0`
 
 ----
+
+### Heater-Shaker and Thermocycler Refresh Communication Mode
+
+For Heater-Shaker and Thermocycler Refresh you can specify the communication mode for the firmware. Either socket or
+through typing G-Codes through stdin. Stdin mode is really only useful for the lowest level debugging and for debugging
+the module by itself with nothing else attached. Therefore, it is defaulted to socket mode.
+
+Example: Heater-Shaker in Stdin mode
+
+```json
+{
+    "system-unique-id": "heater-shaker-stdin-debug",
+    "modules": [
+        {
+            "id": "shakey-and-warm",
+            "hardware": "heater-shaker-module",
+            "source-type": "remote",
+            "source-location": "latest",
+            "emulation_level": "hardware",
+            "hardware-specific-attributes": {
+                "mode": "stdin"
+            }
+        }
+    ]
+}
+```
+
+### Temperature Model for Thermocycler and Temperature Modules
+
+For the Thermocycler and Temperature modules you can specify the starting temperature and temperature ramp rate
+(degrees-per-tick).
+
+Example 1: Thermocycler Module with custom temperature model
+
+```json
+{
+    "system-unique-id": "thermocycler-with-custom-temperature-model",
+    "modules": [
+        {
+            "id": "t00-hot-to-handle",
+            "hardware": "thermocycler-module",
+            "source-type": "remote",
+            "source-location": "latest",
+            "emulation_level": "firmware",
+            "hardware-specific-attributes": {
+                "lid-temperature": {
+                    "starting": 27.0,
+                    "degrees-per-tick": 2.3
+                },
+                "plate-temperature": {
+                    "starting": 23.0,
+                    "degrees-per-tick": 3.2
+                }
+            }
+        }
+    ]
+}
+```
+
+Example 2: Temperature Module with custom temperature model
+
+```json
+{
+    "system-unique-id": "temperature-module-with-custom-temperature-model",
+    "modules": [
+        {
+            "id": "temperamental",
+            "hardware": "temperature-module",
+            "source-type": "remote",
+            "source-location": "latest",
+            "emulation_level": "firmware",
+            "hardware-specific-attributes": {
+                "temperature": {
+                    "starting": 27.0,
+                    "degrees-per-tick": 2.3
+                }
+            }
+        }
+    ]
+}
+```
