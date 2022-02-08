@@ -8,13 +8,13 @@ on:
   push:
     paths:
       - 'emulation_system/**'
-      - 'opentrons-emulation'
       - '.github/workflows/generate-uml.yaml'
     tags-ignore:
       - '*'
   pull_request:
     paths:
       - 'emulation_system/**'
+      - '.github/workflows/generate-uml.yaml'
   workflow_dispatch:
 
 defaults:
