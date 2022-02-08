@@ -55,22 +55,18 @@ Once you know the hardware that you want, you will need to figure out what emula
 The following definitions are available for usage in the emulation configuration file.
 `Configuration File Alias` is the value that needs to be put in the configuration file
 
-### ID
+### `id`
 
 **Description:** A string value for the name of the emulator.
-
-**Configuration File Alias:** `id`
 
 **Acceptable Values:** Can consist of alphanumeric characters and dashes.
 
 **Examples:** `a-name-for-a-container` `s0me-other-name`
 
-### System Unique ID
+### `system-unique-id`
 
 **Description:** A string value that will be prefixed to all emulator and network names. Use this to differentiate
 systems with the same configuration.
-
-**Configuration File Alias:** `system-unique-id`
 
 **Acceptable Values:** Can consist of alphanumeric characters and dashes.
 
@@ -83,19 +79,13 @@ The ids of system 2 will be `system-2-otie` and `system-2-twitchy`.
 
 Because of the `system-unique-id` the emulator names do not clash.
 
-### Hardware
+### `hardware`
 
-**Configuration File Alias:** `hardware`
+### `source-type`
 
-### Source Type
+### `source-location`
 
-**Configuration File Alias:** `source-type`
-
-### Source Location
-
-**Configuration File Alias:** `source-location`
-
-### Emulation Level
+### `emulation-level`
 
 **Description:** Emulation level is the point in tech stack that is abstracted away by a software model. There are 2
 types of emulation levels: `Firmware Emulation` and `Hardware Emulation`.
@@ -103,8 +93,6 @@ types of emulation levels: `Firmware Emulation` and `Hardware Emulation`.
 Firmware Emulation replaces the firmware with a software model and the drivers interact with the model.
 
 Hardware Emulation replaces the hardware with a software model and the firmware interacts with the model.
-
-**Configuration File Alias:** `emulation-level`
 
 **Acceptable Values:** `firmware` `hardware`
 
@@ -124,10 +112,6 @@ Below is a table with the available levels for each piece of hardware.
 | **Magnetic Module**      | Yes                | No                         |
 | **Temperature Module**   | Yes                | No                         |
 
-### Exposed Port
+### `exposed-port`
 
-**Configuration File Alias:** `exposed-port`
-
-### Hardware Specific Attributes
-
-**Configuration File Alias:** `hardware-specific-attributes`
+### `hardware-specific-attributes`
