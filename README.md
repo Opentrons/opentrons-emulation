@@ -1,27 +1,31 @@
 # Opentrons Emulation
 
-Framework to set up emulated Opentrons hardware. Uses Docker and Docker-Compose to create systems in which either the
-firmware or hardware is emulated with software.
+Opentrons has various software emulations of their hardware. This repository defines a framework to dynamically connect
+all these emulators together into systems.
 
-- [Opentrons Emulation](#opentrons-emulation)
-  * [Supported Hardware](#supported-hardware)
-  * [Required Software](#required-software)
-  * [Initial Configuration](#initial-configuration)
-  * [Using Emulation](#using-emulation)
-    + [Getting started](#getting-started)
-  * [Emulation Configuration File Key Definitions](#emulation-configuration-file-key-definitions)
-    + [id](#id)
-    + [system-unique-id](#system-unique-id)
-    + [hardware](#hardware)
-    + [source-type](#source-type)
-    + [source-location](#source-location)
-    + [emulation-level](#emulation-level)
-    + [exposed-port](#exposed-port)
-    + [hardware-specific-attributes](#hardware-specific-attributes)
-      - [Pipettes](#pipettes)
-        * [Available Pipette Models:](#available-pipette-models-)
-      - [Heater-Shaker and Thermocycler Refresh Communication Mode](#heater-shaker-and-thermocycler-refresh-communication-mode)
-      - [Temperature Model for Thermocycler and Temperature Modules](#temperature-model-for-thermocycler-and-temperature-modules)
+- [Supported Hardware](#supported-hardware)
+- [Required Software](#required-software)
+- [Initial Configuration](#initial-configuration)
+- [Using Emulation](#using-emulation)
+    * [Emulation Commands](#emulation-commands)
+        + [Building System](#building-system)
+        + [Running System](#running-system)
+        + [Viewing System Logs](#viewing-system-logs)
+        + [Removing System](#removing-system)
+        + [Generate Compose File](#generate-compose-file)
+- [Emulation Configuration File Key Definitions](#emulation-configuration-file-key-definitions)
+    * [id](#id)
+    * [system-unique-id](#system-unique-id)
+    * [hardware](#hardware)
+    * [source-type](#source-type)
+    * [source-location](#source-location)
+    * [emulation-level](#emulation-level)
+    * [exposed-port](#exposed-port)
+    * [hardware-specific-attributes](#hardware-specific-attributes)
+        + [Pipettes](#pipettes)
+            - [Available Pipette Models:](#available-pipette-models-)
+        + [Heater-Shaker and Thermocycler Refresh Communication Mode](#heater-shaker-and-thermocycler-refresh-communication-mode)
+        + [Temperature Model for Thermocycler and Temperature Modules](#temperature-model-for-thermocycler-and-temperature-modules)
 
 ## Supported Hardware
 
@@ -61,12 +65,57 @@ required.
 
 The `samples` directory contains samples of both JSON and YAML configurations.
 
-### Getting started
+Once you have a configuration file together you can utilize the various Make commands to build, run, view the logs of,
+and remove systems.
 
-To get started, pick out what hardware you want to use. You can choose any combination of available hardware that you
-want. The only constraint is that you can choose only 1 robot.
+### Emulation Commands
 
-Once you know the hardware that you want, you will need to figure out what emulation level you want for each.
+The following emulation commands require a `file_path` argument with a path to a valid emulation configuration file. Can
+use environment variables like `PWD` for building paths. They are executed in the top-level directory of the repository.
+
+#### Building System
+
+**Description:** Use this command to build the necessary Docker images from your system. Docker images should be rebuilt
+under the following conditions:
+
+- If anything changes in your configuration file
+- If you have an emulator using `remote` source type, `latest` source location, and there has been an update to the main
+  branch of the source repo
+- If the underlying Dockerfile changes
+
+**Command:** `em-build-amd64` OR `em-build-arm64`
+
+Use `em-build-amd64` if you are on an Intel based processor.
+
+Use `em-build-arm64` if you are on a Mac M1 processor.
+
+TODO: Note arm builds are currently not working
+
+**Example:** `make em-build-amd64 file_path=${PWD}/samples/yaml/ot2.yaml`
+
+#### Running System
+
+**Description:** Use this command to bring up an emulated system.
+
+**Command:** `make em-run file_path=${PWD}/samples/yaml/ot2.yaml`
+
+#### Viewing System Logs
+
+**Description:** Use this command view the logs of a running emulation system.
+
+**Command:** `make em-logs file_path=${PWD}/samples/yaml/ot2.yaml`
+
+#### Removing System
+
+**Description:** Use this command to remove an emulated system.
+
+**Command:** `make em-remove file_path=${PWD}/samples/yaml/ot2.yaml`
+
+#### Generate Compose File
+
+**Description:** Use this command to generate the Docker Compose file that the system runs under the hood.
+
+**Command:** `make generate-compose-file file_path=${PWD}/samples/yaml/ot2.yaml`
 
 ## Emulation Configuration File Key Definitions
 
