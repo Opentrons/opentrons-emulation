@@ -22,7 +22,7 @@
 # ubuntu-base #
 ###############
 
-FROM --platform=linux/amd64 ubuntu:20.04 as ubuntu-base
+FROM ubuntu:20.04 as ubuntu-base
 # Only need to fill out these args, in CI builds to push images to AWS ECR.
 # Don't bother when you are doing manual builds. It will break your cache and your
 # build will take forever
@@ -66,7 +66,7 @@ RUN apt-get update \
 # cpp-base #
 ############
 
-FROM --platform=linux/amd64 ubuntu-base as cpp-base
+FROM ubuntu-base as cpp-base
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get update && \
     apt-get install \
@@ -91,7 +91,7 @@ RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.2
 # python-base #
 ###############
 
-FROM --platform=linux/amd64 ubuntu-base as python-base
+FROM ubuntu-base as python-base
 
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get update && \
@@ -126,44 +126,44 @@ RUN apt-get install -y nodejs && npm install --global yarn
 # Hardware Local Emulators #
 ############################
 
-FROM --platform=linux/amd64 cpp-base as heater-shaker-hardware-local
+FROM cpp-base as heater-shaker-hardware-local
 ENV OPENTRONS_HARDWARE "heater-shaker-hardware"
 
-FROM --platform=linux/amd64 cpp-base as thermocycler-hardware-local
+FROM cpp-base as thermocycler-hardware-local
 ENV OPENTRONS_HARDWARE "thermocycler-hardware"
 
-FROM --platform=linux/amd64 cpp-base as ot3-pipettes-hardware-local
+FROM cpp-base as ot3-pipettes-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-pipettes-hardware"
 
-FROM --platform=linux/amd64 cpp-base as ot3-head-hardware-local
+FROM cpp-base as ot3-head-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-head-hardware"
 
-FROM --platform=linux/amd64 cpp-base as ot3-gantry-x-hardware-local
+FROM cpp-base as ot3-gantry-x-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-gantry-x-hardware"
 
-FROM --platform=linux/amd64 cpp-base as ot3-gantry-y-hardware-local
+FROM cpp-base as ot3-gantry-y-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-gantry-y-hardware"
 
 ############################
 # Firmware Local Emulators #
 ############################
 
-FROM --platform=linux/amd64 python-base as thermocycler-firmware-local
+FROM python-base as thermocycler-firmware-local
 ENV OPENTRONS_HARDWARE "thermocycler-firmware"
 
-FROM --platform=linux/amd64 python-base as magdeck-firmware-local
+FROM python-base as magdeck-firmware-local
 ENV OPENTRONS_HARDWARE "magdeck-firmware"
 
-FROM --platform=linux/amd64 python-base as tempdeck-firmware-local
+FROM python-base as tempdeck-firmware-local
 ENV OPENTRONS_HARDWARE "tempdeck-firmware"
 
-FROM --platform=linux/amd64 python-base as emulator-proxy-local
+FROM python-base as emulator-proxy-local
 ENV OPENTRONS_HARDWARE "emulator-proxy"
 
-FROM --platform=linux/amd64 python-base as robot-server-local
+FROM python-base as robot-server-local
 ENV OPENTRONS_HARDWARE "robot-server"
 
-FROM --platform=linux/amd64 python-base as smoothie-local
+FROM python-base as smoothie-local
 ENV OPENTRONS_HARDWARE "smoothie"
 
 
@@ -209,7 +209,7 @@ ENV OPENTRONS_HARDWARE "smoothie"
 # ot3-firmware-source #
 #######################
 
-FROM --platform=linux/amd64 cpp-base as ot3-firmware-source
+FROM cpp-base as ot3-firmware-source
 ARG FIRMWARE_SOURCE_DOWNLOAD_LOCATION
 ADD $FIRMWARE_SOURCE_DOWNLOAD_LOCATION /ot3-firmware.zip
 RUN (cd / &&  \
@@ -222,7 +222,7 @@ COPY entrypoint.sh /entrypoint.sh
 # modules-source #
 ##################
 
-FROM --platform=linux/amd64 cpp-base as opentrons-modules-source
+FROM cpp-base as opentrons-modules-source
 ARG MODULE_SOURCE_DOWNLOAD_LOCATION
 ADD $MODULE_SOURCE_DOWNLOAD_LOCATION /opentrons-modules.zip
 RUN (cd / &&  \
@@ -235,7 +235,7 @@ COPY entrypoint.sh /entrypoint.sh
 # opentrons-source #
 ####################
 
-FROM --platform=linux/amd64 python-base as opentrons-source
+FROM python-base as opentrons-source
 ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION
 ADD $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons.zip
 RUN (cd / &&  \
@@ -255,31 +255,31 @@ COPY entrypoint.sh /entrypoint.sh
 # from the executable builder target
 # Building separately from the Production Target to reduce image size
 
-FROM --platform=linux/amd64 ot3-firmware-source as ot3-pipettes-builder
+FROM ot3-firmware-source as ot3-pipettes-builder
 ENV OPENTRONS_HARDWARE "ot3-pipettes-hardware"
 RUN /entrypoint.sh build
 
-FROM --platform=linux/amd64 ot3-firmware-source as ot3-head-builder
+FROM ot3-firmware-source as ot3-head-builder
 ENV OPENTRONS_HARDWARE "ot3-head-hardware"
 RUN /entrypoint.sh build
 
-FROM --platform=linux/amd64 ot3-firmware-source as ot3-gantry-x-builder
+FROM ot3-firmware-source as ot3-gantry-x-builder
 ENV OPENTRONS_HARDWARE "ot3-gantry-x-hardware"
 RUN /entrypoint.sh build
 
-FROM --platform=linux/amd64 ot3-firmware-source as ot3-gantry-y-builder
+FROM ot3-firmware-source as ot3-gantry-y-builder
 ENV OPENTRONS_HARDWARE "ot3-gantry-y-hardware"
 RUN /entrypoint.sh build
 
-FROM --platform=linux/amd64 opentrons-modules-source as heater-shaker-builder
+FROM opentrons-modules-source as heater-shaker-builder
 ENV OPENTRONS_HARDWARE "heater-shaker-hardware"
 RUN /entrypoint.sh build
 
-FROM --platform=linux/amd64 opentrons-modules-source as thermocycler-builder
+FROM opentrons-modules-source as thermocycler-builder
 ENV OPENTRONS_HARDWARE "thermocycler-hardware"
 RUN /entrypoint.sh build
 
-FROM --platform=linux/amd64 opentrons-source as firmware-builder
+FROM opentrons-source as firmware-builder
 ENV OPENTRONS_HARDWARE "common-firmware"
 RUN /entrypoint.sh build
 
@@ -290,7 +290,7 @@ RUN /entrypoint.sh build
 # Added this firmware-common image because all firmware level emulator images are based off of
 # the opentrons monorepo, it's just a different command that is ran for each.
 
-FROM --platform=linux/amd64 python-base as firmware-common
+FROM python-base as firmware-common
 RUN mkdir /dist
 COPY --from=firmware-builder /dist/* /dist/
 RUN pip install /dist/*
@@ -311,37 +311,37 @@ RUN pip install /dist/*
 # Each Hardware Production Target should copy the executable from the Executable Builder target
 # Each Hardware Production Target should have a corresponding Executable Builder target
 
-FROM --platform=linux/amd64 ubuntu-base as ot3-pipettes-hardware-remote
+FROM ubuntu-base as ot3-pipettes-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-pipettes-hardware"
 COPY --from=ot3-pipettes-builder /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM --platform=linux/amd64 ubuntu-base as ot3-head-hardware-remote
+FROM ubuntu-base as ot3-head-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-head-hardware"
 COPY --from=ot3-head-builder /ot3-firmware/build-host/head/simulator/head-simulator /ot3-firmware/build-host/head/simulator/head-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM --platform=linux/amd64 ubuntu-base as ot3-gantry-x-hardware-remote
+FROM ubuntu-base as ot3-gantry-x-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-gantry-x-hardware"
 COPY --from=ot3-gantry-x-builder /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM --platform=linux/amd64 ubuntu-base as ot3-gantry-y-hardware-remote
+FROM ubuntu-base as ot3-gantry-y-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-gantry-y-hardware"
 COPY --from=ot3-gantry-y-builder /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM --platform=linux/amd64 ubuntu-base as heater-shaker-hardware-remote
+FROM ubuntu-base as heater-shaker-hardware-remote
 ENV OPENTRONS_HARDWARE "heater-shaker-hardware"
 COPY --from=heater-shaker-builder /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM --platform=linux/amd64 ubuntu-base as thermocycler-hardware-remote
+FROM ubuntu-base as thermocycler-hardware-remote
 ENV OPENTRONS_HARDWARE "thermocycler-hardware"
 COPY --from=thermocycler-builder /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator
 COPY entrypoint.sh /entrypoint.sh
@@ -354,32 +354,32 @@ ENTRYPOINT ["/entrypoint.sh", "run"]
 # There emulators run python driver code and emulator the firmware
 # All Firmware level emulators should be based off of firmware-common
 
-FROM --platform=linux/amd64 firmware-common as thermocycler-firmware-remote
+FROM firmware-common as thermocycler-firmware-remote
 ENV OPENTRONS_HARDWARE "thermocycler-firmware"
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM --platform=linux/amd64 firmware-common as magdeck-firmware-remote
+FROM firmware-common as magdeck-firmware-remote
 ENV OPENTRONS_HARDWARE "magdeck-firmware"
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM --platform=linux/amd64 firmware-common as tempdeck-firmware-remote
+FROM firmware-common as tempdeck-firmware-remote
 ENV OPENTRONS_HARDWARE "tempdeck-firmware"
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM --platform=linux/amd64 firmware-common as emulator-proxy-remote
+FROM firmware-common as emulator-proxy-remote
 ENV OPENTRONS_HARDWARE "emulator-proxy"
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM --platform=linux/amd64 firmware-common as robot-server-remote
+FROM firmware-common as robot-server-remote
 ENV OPENTRONS_HARDWARE "robot-server"
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM --platform=linux/amd64 firmware-common as smoothie-remote
+FROM firmware-common as smoothie-remote
 ENV OPENTRONS_HARDWARE "smoothie"
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
