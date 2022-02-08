@@ -131,4 +131,98 @@ Below is a table with the available levels for each piece of hardware.
 
 ### `exposed-port`
 
+**Description:** An integer value specifying a port to expose to the host system. This is currently only available for
+ot2 and ot3 hardware.
+
+**Acceptable Values:** Any free port number
+
 ### `hardware-specific-attributes`
+
+**Description:** An object containing any specific configuration values for hardware you are using.
+
+**Acceptable Values:** Varies. Breakdown below.
+
+### Pipettes
+
+For OT2 and OT3 you can configure the pipettes attached to the emulated robot.
+
+Example: An OT2 with a P1000 Single and P300 Multi
+
+```json
+{
+    "system-unique-id": "ot2-only",
+    "robot": {
+        "id": "otie",
+        "hardware": "ot2",
+        "source-type": "remote",
+        "source-location": "latest",
+        "emulation-level": "firmware",
+        "exposed-port": 31950,
+        "hardware-specific-attributes": {
+            "left-pipette": {
+                "model": "p1000_single_v2.2",
+                "id": "somerandomid"
+            },
+            "right-pipette": {
+                "model": "p300_multi_v2.1",
+                "id": "someotherrandomid"
+            }
+        }
+    }
+}
+```
+
+----
+
+#### Available Pipette Models:
+
+**Version 1 Pipette Models**
+
+**P10 Single V1:**
+`p10_single_v1` `p10_single_v1.3` `p10_single_v1.4` `p10_single_v1.5`
+
+**P10 Multi V1:**
+`p10_multi_v1` `p10_multi_v1.3` `p10_multi_v1.4` `p10_multi_v1.5` `p10_multi_v1.6`
+
+**P50 Single V1:**
+`p50_single_v1` `p50_single_v1.3` `p50_single_v1.4` `p50_single_v1.5`
+
+**P50 Single V1:**
+`p50_multi_v1` `p50_multi_v1.3` `p50_multi_v1.4` `p50_multi_v1.5`
+
+**P300 Single V1:**
+`p300_single_v1` `p300_single_v1.3` `p300_single_v1.4` `p300_single_v1.5`
+
+**P300 Multi V1:**
+`p300_multi_v1` `p300_multi_v1.3` `p300_multi_v1.4` `p300_multi_v1.5`
+
+----
+
+**Version 2 Pipette Models**
+
+**P20 Single V2:**
+`p20_single_v2.0` `p20_single_v2.1` `p20_single_v2.2`
+
+**P20 Single V2:**
+`p20_multi_v2.0` `p20_multi_v2.1`
+
+**P300 Single V2:**
+`p300_single_v2.0` `p300_single_v2.1`
+
+**P300 Multi V2:**
+`p300_multi_v2.0` `p300_multi_v2.1`
+
+**P1000 Single V1:**
+`p1000_single_v1` `p1000_single_v1.3` `p1000_single_v1.4` `p1000_single_v1.5`
+
+**P1000 Single V2:**
+`p1000_single_v2.0` `p1000_single_v2.1` `p1000_single_v2.2`
+
+----
+
+**Version 3 Pipette Models**
+
+**P1000 Single V3:**
+`p20_single_v3.0` `p300_single_v3.0` `p1000_single_v3.0`
+
+----
