@@ -1,0 +1,49 @@
+# This workflow runs test and lint on branch pushes that touch the
+# notify-server project or its dependencies
+
+name: 'emulation-system Lint & Test'
+
+on:
+  # Most of the time, we run on pull requests, which lets us handle external PRs
+  push:
+    paths:
+      - 'emulation_system/**'
+      - 'opentrons-emulation'
+      - '.github/workflows/generate-uml.yaml'
+    tags-ignore:
+      - '*'
+  pull_request:
+    paths:
+      - 'emulation_system/**'
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  generate-uml:
+    name: 'Generate UML for Input Model'
+    runs-on: 'ubuntu-18.04'
+    steps:
+      - name: "Checkout Repo"
+        uses: 'actions/checkout@v2'
+        with:
+          node-version: '12'
+      - name: "Setup Python"
+        uses: 'actions/setup-python@v2'
+        with:
+          python-version: '3.8'
+
+      - name: "Setup Env"
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libsystemd-dev graphviz graphviz-dev
+          pip install pipenv==2021.5.29 pygraphviz
+
+      - name: "Setup Project"
+        run: make setup
+
+      - name: "Generate Graph"
+        working-directory: emulation_system
+        run: erdantic emulation_system.compose_file_creator.input.configuration_file.SystemConfigurationModel
