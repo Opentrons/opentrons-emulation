@@ -1,0 +1,34 @@
+name: Github Runner Robot
+on:
+  push:
+    branches:
+      - "github-actions-build"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NGROK_TOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
+    steps:
+      - uses: "actions/setup-python@v2"
+        with:
+          python-version: "3.7"
+      - name: Check out repository code.
+        uses: actions/checkout@v2
+      - name: Setup the emulation tool
+        run: make setup
+      - name: Create config
+        run: cat configuration_sample.json > configuration.json
+      - name: Build the emulator
+        run: make em-build-amd64 file_path=${PWD}/samples/yaml/ot2.yaml
+      - name: Bring up the robot
+        run: make em-run file_path=${PWD}/samples/yaml/ot2.yaml
+      - name: Run establish a ngrok tunnel
+        uses: vmactions/ngrok-tunnel@v0.0.1
+        with:
+          protocol: http
+          port: 31950
+      - name: Sleep for 900 seconds
+        run: sleep 900s
+        shell: bash

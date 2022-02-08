@@ -25,3 +25,6 @@ coverage.xml
 # Cache files
 .pytest_cache/
 .mypy_cache/
+
+tmp-compose.yaml
+.vscode
