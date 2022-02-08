@@ -57,18 +57,24 @@ The following definitions are available for usage in the emulation configuration
 
 ### ID
 
-Configuration File Alias: `id`
+**Description:** A string value for the name of the emulator.
 
-A string value for the name of the emulator
+**Configuration File Alias:** `id`
+
+**Acceptable Values:** Can consist of alphanumeric characters and dashes.
+
+**Examples:** `a-name-for-a-container` `s0me-other-name`
 
 ### System Unique ID
 
-Configuration File Alias: `system-unique-id`
+**Description:** A string value that will be prefixed to all emulator and network names. Use this to differentiate
+systems with the same configuration.
 
-A string value that will be prefixed to all emulator and network names. Use this to differentiate systems with the same
-configuration.
+**Configuration File Alias:** `system-unique-id`
 
-**Example:**
+**Acceptable Values:** Can consist of alphanumeric characters and dashes.
+
+#### Example:
 
 You are testing 2 different versions of Heater-Shaker firmware. So you want 2 systems, each with an OT2 and a
 Heater-Shaker with ids `otie` and `twitchy` respectively. The first system can have a `system-unique-id` of
@@ -79,38 +85,35 @@ Because of the `system-unique-id` the emulator names do not clash.
 
 ### Hardware
 
-Configuration File Alias: `hardware`
+**Configuration File Alias:** `hardware`
 
 ### Source Type
 
-Configuration File Alias: `source-type`
+**Configuration File Alias:** `source-type`
 
 ### Source Location
 
-Configuration File Alias: `source-location`
+**Configuration File Alias:** `source-location`
 
 ### Emulation Level
 
-Configuration File Alias: `emulation-level`
-
-Emulation level is the point in tech stack that is abstracted away by a software model. There are 2 types of emulation
-levels. Firmware Emulation and Hardware Emulation.
-
-#### Firmware Emulation
+**Description:** Emulation level is the point in tech stack that is abstracted away by a software model. There are 2
+types of emulation levels: `Firmware Emulation` and `Hardware Emulation`.
 
 Firmware Emulation replaces the firmware with a software model and the drivers interact with the model.
 
-![](./README_RESOURCES/emulation-level-illustration.svg "emulation-level-illustration")
-
-#### Hardware Emulation
-
-![](./README_RESOURCES/hardware-level-illustration.svg "hardware-level-illustration")
-
 Hardware Emulation replaces the hardware with a software model and the firmware interacts with the model.
 
-Below is a table with the available levels for each piece of hardware.
+**Configuration File Alias:** `emulation-level`
 
-#### Supported Emulation Levels
+**Acceptable Values:** `firmware` `hardware`
+
+![](./README_RESOURCES/emulation-level-illustration.svg "emulation-level-illustration")
+![](./README_RESOURCES/hardware-level-illustration.svg "hardware-level-illustration")
+
+**Supported Emulation Levels By Hardware:**
+
+Below is a table with the available levels for each piece of hardware.
 
 | Hardware                 | Firmware Emulation | Hardware Emulation         |
 |--------------------------|--------------------|----------------------------|
@@ -121,12 +124,10 @@ Below is a table with the available levels for each piece of hardware.
 | **Magnetic Module**      | Yes                | No                         |
 | **Temperature Module**   | Yes                | No                         |
 
-Firmware Emulation
-
 ### Exposed Port
 
-Configuration File Alias: `exposed-port`
+**Configuration File Alias:** `exposed-port`
 
 ### Hardware Specific Attributes
 
-Configuration File Alias: `hardware-specific-attributes`
+**Configuration File Alias:** `hardware-specific-attributes`
