@@ -4,25 +4,24 @@ Framework to set up emulated Opentrons hardware. Uses Docker and Docker-Compose 
 firmware or hardware is emulated with software.
 
 - [Opentrons Emulation](#opentrons-emulation)
-    * [Supported Hardware](#supported-hardware)
-    * [Getting Started](#getting-started)
-        + [Required Software](#required-software)
-    * [Initial Configuration](#initial-configuration)
-    * [Using Emulation](#using-emulation)
-        + [Getting started](#getting-started)
-    * [Emulation Configuration File Key Definitions](#emulation-configuration-file-key-definitions)
-        + [id](#id)
-        + [system-unique-id](#system-unique-id)
-        + [hardware](#hardware)
-        + [source-type](#source-type)
-        + [source-location](#source-location)
-        + [emulation-level](#emulation-level)
-        + [exposed-port](#exposed-port)
-        + [hardware-specific-attributes](#hardware-specific-attributes)
-            - [Pipettes](#pipettes)
-                * [Available Pipette Models:](#available-pipette-models-)
-            - [Heater-Shaker and Thermocycler Refresh Communication Mode](#heater-shaker-and-thermocycler-refresh-communication-mode)
-            - [Temperature Model for Thermocycler and Temperature Modules](#temperature-model-for-thermocycler-and-temperature-modules)
+  * [Supported Hardware](#supported-hardware)
+  * [Required Software](#required-software)
+  * [Initial Configuration](#initial-configuration)
+  * [Using Emulation](#using-emulation)
+    + [Getting started](#getting-started)
+  * [Emulation Configuration File Key Definitions](#emulation-configuration-file-key-definitions)
+    + [id](#id)
+    + [system-unique-id](#system-unique-id)
+    + [hardware](#hardware)
+    + [source-type](#source-type)
+    + [source-location](#source-location)
+    + [emulation-level](#emulation-level)
+    + [exposed-port](#exposed-port)
+    + [hardware-specific-attributes](#hardware-specific-attributes)
+      - [Pipettes](#pipettes)
+        * [Available Pipette Models:](#available-pipette-models-)
+      - [Heater-Shaker and Thermocycler Refresh Communication Mode](#heater-shaker-and-thermocycler-refresh-communication-mode)
+      - [Temperature Model for Thermocycler and Temperature Modules](#temperature-model-for-thermocycler-and-temperature-modules)
 
 ## Supported Hardware
 
@@ -35,9 +34,7 @@ The following hardware is supported:
 - Magnetic Module
 - Heater Shaker Module
 
-## Getting Started
-
-### Required Software
+## Required Software
 
 Install the following software:
 
