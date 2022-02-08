@@ -6,14 +6,14 @@
         "source-type": "remote",
         "source-location": "latest",
         "emulation-level": "firmware",
-        "exposed-port": 5000
+        "exposed-port": 31950
     },
     "modules": [
         {
             "id": "shakey-and-warm",
             "hardware": "heater-shaker-module",
             "source-type": "remote",
-            "source-location": "b6231ae3c08746e62cf6e426020aedd1ffc3ab3b",
+            "source-location": "latest",
             "emulation_level": "hardware"
         }
     ]

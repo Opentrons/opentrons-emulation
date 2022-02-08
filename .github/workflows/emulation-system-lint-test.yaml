@@ -36,20 +36,17 @@ jobs:
 
       - name: "Setup Env"
         run: |
-            sudo apt-get update
-            sudo apt-get install -y --no-install-recommends libsystemd-dev
-            pip install pipenv==2021.5.29
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libsystemd-dev
+          pip install pipenv==2021.5.29
 
       - name: "Setup Project"
-        working-directory: emulation_system
         run: make setup
 
       - name: "Lint"
-        working-directory: emulation_system
         run: make lint
 
       - name: "Test"
-        working-directory: emulation_system
         run: make test
 
       - name: 'Upload Coverage Report'
