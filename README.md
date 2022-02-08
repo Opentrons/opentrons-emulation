@@ -73,7 +73,7 @@ systems with the same configuration.
 #### Example:
 
 You are testing 2 different versions of Heater-Shaker firmware. So you want 2 systems, each with an OT2 and a
-Heater-Shaker with ids `otie` and `twitchy` respectively. The first system can have a `system-unique-id` of
+Heater-Shaker, with ids `otie` and `twitchy` respectively. The first system can have a `system-unique-id` of
 `system-1` and the second system can be `system-2`. The ids of system 1 will be `system-1-otie` and `system-1-twitchy`.
 The ids of system 2 will be `system-2-otie` and `system-2-twitchy`.
 
@@ -81,9 +81,26 @@ Because of the `system-unique-id` the emulator names do not clash.
 
 ### `hardware`
 
+**Description:** A string value specifying which hardware to create.
+
+**Acceptable Values:** `ot2`, `ot3`, `heater-shaker-module`, `thermocycler-module`, `temperature-module`,
+`magnetic-module`
+
 ### `source-type`
 
+**Description:** A string value specifying where to pull source code from to build the emulator. You can either pull
+committed code from Github, or bind in your own local code.
+
+**Acceptable Values:** `remote` `local`
+
 ### `source-location`
+
+**Description:** A string value specifying where the system should look for the source code based on the `source-type`.
+
+If you are using `remote` type, you can either specify `latest` to pull the latest committed version from the master
+branch, or specify a full commit sha to pull.
+
+If you are using `local` type, specify a path to the source on your system.
 
 ### `emulation-level`
 
