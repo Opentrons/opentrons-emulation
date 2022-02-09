@@ -187,7 +187,8 @@ Hardware Emulation replaces the hardware with a software model and the firmware 
 
 **Supported Emulation Levels By Hardware:**
 
-Below is a table with the available levels for each piece of hardware.
+The various emulators in this repository support different levels of emulation based on their architecture. Below is a
+table with the supported levels for each emulator.
 
 | Hardware                 | Firmware Emulation | Hardware Emulation         |
 |--------------------------|--------------------|----------------------------|
