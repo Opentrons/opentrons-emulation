@@ -3,6 +3,7 @@
 Opentrons has various software emulations of their hardware. This repository defines a framework to dynamically connect
 all these emulators together into systems.
 
+- [What is an Emulator?](#what-is-an-emulator-)
 - [Supported Hardware](#supported-hardware)
 - [Required Software](#required-software)
 - [Initial Configuration](#initial-configuration)
@@ -26,6 +27,14 @@ all these emulators together into systems.
             - [Available Pipette Models:](#available-pipette-models-)
         + [Heater-Shaker and Thermocycler Refresh Communication Mode](#heater-shaker-and-thermocycler-refresh-communication-mode)
         + [Temperature Model for Thermocycler and Temperature Modules](#temperature-model-for-thermocycler-and-temperature-modules)
+
+## What is an Emulator?
+
+The simplest description is an emulator is a software model that stands in for a piece of hardware.
+
+In practice, this software model should behave and respond the same way as the hardware it is standing in for. The
+software that is connected to the emulator should not know the difference between an emulator and the actual hardware.
+It should interact with the emulator in exactly the same manner that it interacts with the hardware.
 
 ## Supported Hardware
 
