@@ -69,6 +69,7 @@ Install the following software:
 
 1. Docker
     1. [Mac Instructions](https://docs.docker.com/desktop/mac/install/)
+        1. Make sure that you have rosetta installed if you are running on an M1 Mac, `softwareupdate --install-rosetta`
     2. [Linux Instructions](https://docs.docker.com/engine/install/#server)
 2. Docker-Compose
     1. Mac Instructions: Installed when you install Docker
