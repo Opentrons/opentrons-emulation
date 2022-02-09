@@ -36,6 +36,19 @@ In practice, this software model should behave and respond the same way as the h
 software that is connected to the emulator should not know the difference between an emulator and the actual hardware.
 It should interact with the emulator in exactly the same manner that it interacts with the hardware.
 
+## How do the Opentrons Emulators work?
+
+The Opentrons emulators are implemented in one of two ways: by emulating at the firmware level or the hardware level.
+
+Firmware Emulation replaces the firmware with a software model and the drivers interact with the model. Note that at
+this level, the hardware is also theoretically emulated as well.
+
+Hardware Emulation replaces the hardware itself with a software model and the firmware interacts with the model.
+
+Each piece of hardware you emulate in your system will require you to specify whether you are using `firmware` level
+emulation or `hardware` level emulation. See [emulation-level](#emulation-level) for a mapping of hardware to emulation
+level.
+
 ## Supported Hardware
 
 The following hardware is supported:
@@ -183,12 +196,7 @@ If you are using `local` type, specify a path to the source on your system.
 
 ### emulation-level
 
-**Description:** Emulation level is the point in tech stack that is abstracted away by a software model. There are 2
-types of emulation levels: `Firmware Emulation` and `Hardware Emulation`.
-
-Firmware Emulation replaces the firmware with a software model and the drivers interact with the model.
-
-Hardware Emulation replaces the hardware with a software model and the firmware interacts with the model.
+**Description:** A string value specifiying which emulation level should be used.
 
 **Acceptable Values:** `firmware` `hardware`
 
