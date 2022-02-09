@@ -114,8 +114,6 @@ Use `em-build-amd64` if you are on an Intel based processor.
 
 Use `em-build-arm64` if you are on a Mac M1 processor.
 
-TODO: Note arm builds are currently not working
-
 **Example:** `make em-build-amd64 file_path=${PWD}/samples/yaml/ot2.yaml`
 
 #### Running System
