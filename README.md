@@ -38,6 +38,9 @@ The following hardware is supported:
 - Magnetic Module
 - Heater Shaker Module
 
+**Note: Since we are building from source code the hardware is whatever version the source is. Generally, this means the
+latest version. Unless you load a really old version, but no guarantees that a super old version will actually work.**
+
 ## Required Software
 
 Install the following software:
