@@ -181,7 +181,6 @@ Hardware Emulation replaces the hardware with a software model and the firmware 
 **Acceptable Values:** `firmware` `hardware`
 
 ![](./README_RESOURCES/emulation-level-illustration.svg "emulation-level-illustration")
-![](./README_RESOURCES/hardware-level-illustration.svg "hardware-level-illustration")
 
 **Supported Emulation Levels By Hardware:**
 
