@@ -15,12 +15,6 @@ if [ "$COMMAND" != "build" ] && [ "$COMMAND" != "run" ]; then
   exit 1
 fi
 
-build_ot3_simulator() {
-  cd /ot3-firmware && \
-  cmake --preset host-gcc10 && \
-  cmake --build ./build-host --target $1
-}
-
 build_module_simulator() {
   cd /opentrons-modules && \
   cmake --preset=stm32-host-gcc10 . && \
@@ -50,17 +44,11 @@ case $FULL_COMMAND in
     (cd /opentrons/robot-server && python3 setup.py bdist_wheel -d /dist/)
     pip install /dist/*
     ;;
-  build-ot3-pipettes-hardware)
-    build_ot3_simulator "pipettes-simulator"
-    ;;
-  build-ot3-head-hardware)
-    build_ot3_simulator "head-simulator"
-    ;;
-  build-ot3-gantry-x-hardware)
-    build_ot3_simulator "gantry-x-simulator"
-    ;;
-  build-ot3-gantry-y-hardware)
-    build_ot3_simulator "gantry-y-simulator"
+
+  build-common-ot3-firmware)
+    cd /ot3-firmware && \
+    cmake --preset host-gcc10 && \
+    cmake --build --preset=simulators
     ;;
 
   run-heater-shaker-hardware)
