@@ -69,6 +69,7 @@ Install the following software:
 
 1. Docker
     1. [Mac Instructions](https://docs.docker.com/desktop/mac/install/)
+        1. Make sure that you have rosetta installed if you are running on an M1 Mac, `softwareupdate --install-rosetta`
     2. [Linux Instructions](https://docs.docker.com/engine/install/#server)
 2. Docker-Compose
     1. Mac Instructions: Installed when you install Docker
@@ -113,8 +114,6 @@ under the following conditions:
 Use `em-build-amd64` if you are on an Intel based processor.
 
 Use `em-build-arm64` if you are on a Mac M1 processor.
-
-TODO: Note arm builds are currently not working
 
 **Example:** `make em-build-amd64 file_path=${PWD}/samples/yaml/ot2.yaml`
 
