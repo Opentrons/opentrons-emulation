@@ -48,7 +48,5 @@ class OT3InputModel(RobotInputModel):
     hardware_specific_attributes: OT3Attributes = Field(
         alias="hardware-specific-attributes", default=OT3Attributes()
     )
-    emulation_level: Literal[
-        EmulationLevels.HARDWARE
-    ] = Field(alias="emulation-level")
+    emulation_level: Literal[EmulationLevels.HARDWARE] = Field(alias="emulation-level")
     bound_port: int = Field(alias="bound-port", default=31950)
