@@ -31,11 +31,11 @@ class OT3Attributes(HardwareSpecificAttributes):
 class OT3SourceRepositories(SourceRepositories):
     """Source repositories for OT3."""
 
-    firmware_repo_name: OpentronsRepository = OpentronsRepository.OPENTRONS
+    firmware_repo_name: Literal[None] = None
     # This is the monorepo because we are specifying where the robot server
     # should get it's source code. Not the hardware emulators, those are hardcoded
     # to ot3-firmware
-    hardware_repo_name: OpentronsRepository = OpentronsRepository.OPENTRONS
+    hardware_repo_name: OpentronsRepository = OpentronsRepository.OT3_FIRMWARE
 
 
 class OT3InputModel(RobotInputModel):
@@ -49,6 +49,6 @@ class OT3InputModel(RobotInputModel):
         alias="hardware-specific-attributes", default=OT3Attributes()
     )
     emulation_level: Literal[
-        EmulationLevels.FIRMWARE, EmulationLevels.HARDWARE
+        EmulationLevels.HARDWARE
     ] = Field(alias="emulation-level")
     bound_port: int = Field(alias="bound-port", default=31950)

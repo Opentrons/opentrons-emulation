@@ -114,7 +114,7 @@ class HardwareModel(BaseModel):
             entrypoint_mount = FileMount(
                 name=ENTRYPOINT_MOUNT_NAME,
                 type=MountTypes.FILE,
-                source_path=ENTRYPOINT_FILE_LOCATION,
+                source_path=pathlib.Path(ENTRYPOINT_FILE_LOCATION),
                 mount_path="/entrypoint.sh",
             )
             self.mounts.extend([source_code_mount, entrypoint_mount])
