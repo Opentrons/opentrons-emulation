@@ -25,6 +25,7 @@ from emulation_system.compose_file_creator.errors import (
     MountNotFoundError,
     NoMountsDefinedError,
 )
+from emulation_system.consts import ENTRYPOINT_FILE_LOCATION
 from .hardware_specific_attributes import (
     HardwareSpecificAttributes,
 )
@@ -34,6 +35,7 @@ from emulation_system.compose_file_creator.output.compose_file_model import (
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DirectoryMount,
+    ENTRYPOINT_MOUNT_NAME,
     EmulationLevels,
     FileMount,
     Mount,
@@ -88,14 +90,19 @@ class HardwareModel(BaseModel):
     def _add_source_bind_mount(self) -> None:
         """If running a local type image add the mount to the mounts attribute."""
         if self.source_type == SourceType.LOCAL:
-            self.mounts.append(
-                DirectoryMount(
-                    name=SOURCE_CODE_MOUNT_NAME,
-                    type=MountTypes.DIRECTORY,
-                    source_path=pathlib.Path(self.source_location),
-                    mount_path=f"/{self.get_source_repo()}",
-                )
+            source_code_mount = DirectoryMount(
+                name=SOURCE_CODE_MOUNT_NAME,
+                type=MountTypes.DIRECTORY,
+                source_path=pathlib.Path(self.source_location),
+                mount_path=f"/{self.get_source_repo()}",
             )
+            entrypoint_mount = FileMount(
+                name=ENTRYPOINT_MOUNT_NAME,
+                type=MountTypes.FILE,
+                source_path=ENTRYPOINT_FILE_LOCATION,
+                mount_path="/entrypoint.sh"
+            )
+            self.mounts.extend([source_code_mount, entrypoint_mount])
 
     @validator("source_location")
     def check_source_location(cls, v: str, values: Dict[str, Any]) -> str:
