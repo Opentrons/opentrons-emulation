@@ -112,7 +112,7 @@ class Mount(BaseModel):
     mount_path: str = Field(..., alias="mount-path")
     source_path: Union[DirectoryPath, FilePath] = Field(..., alias="source-path")
 
-    def __eq__(self, other: "Mount") -> bool:
+    def is_duplicate(self, other: "Mount") -> bool:
         """Compare everything except name."""
         return all(
             [

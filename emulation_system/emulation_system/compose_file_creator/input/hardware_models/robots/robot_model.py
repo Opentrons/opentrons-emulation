@@ -54,7 +54,10 @@ class RobotInputModel(HardwareModel):
                 source_path=pathlib.Path(self.robot_server_source_location),
                 mount_path=f"/{service_mount_path}",
             )
-            if robot_server_mount not in self.mounts:
+            mount_does_not_exist = not any(
+                [robot_server_mount.is_duplicate(mount) for mount in self.mounts]
+            )
+            if mount_does_not_exist:
                 self.mounts.append(robot_server_mount)
 
     def get_port_binding_string(self) -> str:
