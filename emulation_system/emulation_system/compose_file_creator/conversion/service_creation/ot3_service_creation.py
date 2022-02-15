@@ -95,7 +95,8 @@ def create_ot3_services(
 
         mounts: Optional[List[Union[str, Volume1]]] = None
         if ot3.source_type == SourceType.LOCAL:
-            mounts = [get_entrypoint_mount_string()] + ot3.get_mount_strings()
+            mounts = [get_entrypoint_mount_string()]
+            mounts.extend(ot3.get_mount_strings())
 
         ot3_services.append(
             Service(

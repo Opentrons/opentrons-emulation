@@ -31,7 +31,6 @@ from emulation_system.opentrons_emulation_configuration import (
 )
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
-    OT3_ID,
     SMOOTHIE_ID,
 )
 from tests.compose_file_creator.conversion_logic.conftest import partial_string_in_mount
