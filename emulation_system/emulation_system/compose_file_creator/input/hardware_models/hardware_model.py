@@ -85,7 +85,7 @@ class HardwareModel(BaseModel):
         """Methods to always run after initialization."""
         # Note that at this point, any extra-mounts defined in the configuration
         # file, exist in the mounts list.
-        self.mounts + self._get_source_code_mount()
+        self.mounts.extend(self._get_source_code_mount())
 
     @staticmethod
     def validate_source_location(key: str, v: str, values: Dict[str, Any]) -> str:
