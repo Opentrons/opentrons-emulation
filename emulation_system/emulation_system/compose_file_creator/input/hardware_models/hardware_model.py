@@ -4,19 +4,9 @@ from __future__ import annotations
 import os
 import pathlib
 import re
-from typing import (
-    Any,
-    Dict,
-    List,
-    Optional,
-    Union,
-)
+from typing import Any, Dict, List, Optional, Union
 
-from pydantic import (
-    BaseModel,
-    Field,
-    validator,
-)
+from pydantic import BaseModel, Field, validator
 
 from emulation_system.compose_file_creator.errors import (
     EmulationLevelNotSupportedError,
@@ -25,28 +15,25 @@ from emulation_system.compose_file_creator.errors import (
     MountNotFoundError,
     NoMountsDefinedError,
 )
-from .hardware_specific_attributes import (
-    HardwareSpecificAttributes,
-)
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
     Service,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
+    RESTRICTED_MOUNT_NAMES,
+    SOURCE_CODE_MOUNT_NAME,
     DirectoryMount,
     EmulationLevels,
     FileMount,
     Mount,
     MountTypes,
     OpentronsRepository,
-    RESTRICTED_MOUNT_NAMES,
-    SOURCE_CODE_MOUNT_NAME,
     SourceRepositories,
     SourceType,
 )
-from emulation_system.compose_file_creator.settings.images import (
-    get_image_name,
-)
+from emulation_system.compose_file_creator.settings.images import get_image_name
+
+from .hardware_specific_attributes import HardwareSpecificAttributes
 
 COMMIT_SHA_REGEX = r"^[0-9a-f]{40}"
 

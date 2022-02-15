@@ -1,10 +1,5 @@
 """Tests for converting input file to DockerComposeFile."""
-from typing import (
-    Any,
-    Dict,
-    List,
-    cast,
-)
+from typing import Any, Dict, List, cast
 
 import pytest
 
@@ -19,9 +14,7 @@ from emulation_system.compose_file_creator.output.compose_file_model import (
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DEFAULT_NETWORK_NAME,
 )
-from emulation_system.consts import (
-    DOCKERFILE_DIR_LOCATION,
-)
+from emulation_system.consts import DOCKERFILE_DIR_LOCATION
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
@@ -38,7 +31,6 @@ from tests.compose_file_creator.conversion_logic.conftest import (
     CONTAINER_NAME_TO_IMAGE,
     SERVICE_NAMES,
 )
-
 
 # TODO: Add following tests:
 #   - CAN network is created on OT3 breakout

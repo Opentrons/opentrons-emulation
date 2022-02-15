@@ -1,21 +1,15 @@
 """Tests for Temperature Module."""
-from typing import (
-    Any,
-    Dict,
-)
+from typing import Any, Dict
 
 import pytest
-from pydantic import (
-    ValidationError,
-    parse_obj_as,
-)
+from pydantic import ValidationError, parse_obj_as
 
+from emulation_system.compose_file_creator.input.hardware_models import (
+    TemperatureModuleInputModel,
+)
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     Hardware,
     OpentronsRepository,
-)
-from emulation_system.compose_file_creator.input.hardware_models import (
-    TemperatureModuleInputModel,
 )
 from tests.compose_file_creator.conftest import (
     TEMPERATURE_MODULE_EMULATION_LEVEL,

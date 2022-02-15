@@ -5,23 +5,14 @@ from typing import List
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
-from .shared_functions import (
-    generate_container_name,
-    get_build_args,
-    get_mount_strings,
-    get_service_build,
-)
-from ..intermediate_types import RequiredNetworks
-from ...errors import (
-    HardwareDoesNotExistError,
-    IncorrectHardwareError,
-)
+
+from ...errors import HardwareDoesNotExistError, IncorrectHardwareError
 from ...input.configuration_file import SystemConfigurationModel
 from ...output.compose_file_model import Service
 from ...settings.config_file_settings import (
     Hardware,
-    OT3Hardware,
     OpentronsRepository,
+    OT3Hardware,
     SourceType,
 )
 from ...settings.images import (
@@ -30,6 +21,13 @@ from ...settings.images import (
     OT3GantryYImages,
     OT3HeadImages,
     OT3PipettesImages,
+)
+from ..intermediate_types import RequiredNetworks
+from .shared_functions import (
+    generate_container_name,
+    get_build_args,
+    get_mount_strings,
+    get_service_build,
 )
 
 

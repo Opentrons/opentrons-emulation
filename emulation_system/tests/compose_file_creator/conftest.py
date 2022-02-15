@@ -1,9 +1,6 @@
 """Conftest for compose_file_creator package."""
 import pathlib
-from typing import (
-    Any,
-    Dict,
-)
+from typing import Any, Dict
 
 import py
 import pytest

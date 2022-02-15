@@ -1,12 +1,5 @@
 """Function useful to multiple service creation modules."""
-from typing import (
-    Any,
-    Dict,
-    List,
-    Optional,
-    Union,
-    cast,
-)
+from typing import Any, Dict, List, Optional, Union, cast
 
 from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,

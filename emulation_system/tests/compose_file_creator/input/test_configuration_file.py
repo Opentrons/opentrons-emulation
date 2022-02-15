@@ -3,10 +3,7 @@
 Note: Do not need to test matching module names because module names cannot be the same
 by definition of dict.
 """
-from typing import (
-    Any,
-    Dict,
-)
+from typing import Any, Dict
 
 import pytest
 from pydantic import ValidationError
@@ -30,9 +27,9 @@ from tests.compose_file_creator.conftest import (
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,
     OT2_ID,
+    SYSTEM_UNIQUE_ID,
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
-    SYSTEM_UNIQUE_ID,
 )
 
 

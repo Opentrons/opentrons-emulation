@@ -17,6 +17,7 @@ flake8-docstrings = "~=1.6.0"
 flake8-noqa = "~=1.1.0"
 black = "==21.7b0"
 pyyaml = "6.0"
+isort = "5.10.1"
 
 [requires]
 python_version = "3.7"

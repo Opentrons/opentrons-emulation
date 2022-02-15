@@ -1,8 +1,6 @@
 """One-stop shop for all errors."""
 
-from typing import (
-    Set,
-)
+from typing import Set
 
 from emulation_system.compose_file_creator.settings.config_file_settings import Hardware
 

@@ -1,9 +1,5 @@
 """Model and attributes for Magnetic Module."""
-from typing import (
-    ClassVar,
-    List,
-    Optional,
-)
+from typing import ClassVar, List, Optional
 
 from pydantic import Field
 from typing_extensions import Literal

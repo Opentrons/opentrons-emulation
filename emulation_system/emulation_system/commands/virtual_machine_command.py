@@ -6,14 +6,9 @@ import argparse
 import os
 from dataclasses import dataclass
 from enum import Enum
-from typing import (
-    List,
-)
+from typing import List
 
-from pydantic import (
-    BaseModel,
-    parse_obj_as,
-)
+from pydantic import BaseModel, parse_obj_as
 
 from emulation_system.consts import ROOT_DIR
 from emulation_system.opentrons_emulation_configuration import (

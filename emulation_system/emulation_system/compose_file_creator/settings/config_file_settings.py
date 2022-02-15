@@ -1,16 +1,8 @@
 """Defines all settings and constants for config file."""
 from enum import Enum
-from typing import (
-    Optional,
-    Union,
-)
+from typing import Optional, Union
 
-from pydantic import (
-    BaseModel,
-    DirectoryPath,
-    Field,
-    FilePath,
-)
+from pydantic import BaseModel, DirectoryPath, Field, FilePath
 from typing_extensions import Literal
 
 ROOM_TEMPERATURE: float = 23.0

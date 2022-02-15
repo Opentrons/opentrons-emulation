@@ -1,5 +1,6 @@
 """Used for determining whether system is running inside of vagrant or not."""
 from __future__ import annotations
+
 import getpass
 import os.path
 

@@ -1,10 +1,5 @@
 """Conftest for conversion logic."""
-from typing import (
-    Any,
-    Dict,
-    List,
-    cast,
-)
+from typing import Any, Dict, List, cast
 
 import py
 import pytest

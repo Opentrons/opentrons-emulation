@@ -1,9 +1,5 @@
 """Functions for converting from SystemConfigurationModel to RuntimeComposeFileModel."""
-from typing import (
-    Any,
-    Dict,
-    cast,
-)
+from typing import Any, Dict, cast
 
 from pydantic import parse_obj_as
 
@@ -16,9 +12,7 @@ from emulation_system.compose_file_creator.conversion.service_creator import (
 from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    Network,
-)
+from emulation_system.compose_file_creator.output.compose_file_model import Network
 from emulation_system.compose_file_creator.output.runtime_compose_file_model import (
     RuntimeComposeFileModel,
 )
