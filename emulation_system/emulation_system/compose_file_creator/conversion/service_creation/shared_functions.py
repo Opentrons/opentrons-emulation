@@ -62,6 +62,16 @@ def get_mount_strings(container: Containers) -> Optional[List[Union[str, Volume1
     )
 
 
+def get_entrypoint_mount_string() -> str:
+    """Return bind mount string to entrypoint.sh."""
+    return FileMount(
+        name=ENTRYPOINT_MOUNT_NAME,
+        type=MountTypes.FILE,
+        source_path=pathlib.Path(ENTRYPOINT_FILE_LOCATION),
+        mount_path="/entrypoint.sh",
+    ).get_bind_mount_string()
+
+
 def get_build_args(
     source_repo: OpentronsRepository,
     source_location: str,
