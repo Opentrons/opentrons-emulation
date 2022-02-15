@@ -206,6 +206,8 @@ def ot2_default(opentrons_dir: str) -> Dict[str, Any]:
         "emulation-level": OT2_EMULATION_LEVEL,
         "source-type": OT2_SOURCE_TYPE,
         "source-location": opentrons_dir,
+        "robot-server-source-type": "remote",
+        "robot-server-source-location": "latest",
         "exposed-port": 5000,
         "hardware-specific-attributes": {},
     }
@@ -220,6 +222,8 @@ def ot3_default(opentrons_dir: str) -> Dict[str, Any]:
         "emulation-level": OT3_EMULATION_LEVEL,
         "source-type": OT3_SOURCE_TYPE,
         "source-location": opentrons_dir,
+        "robot-server-source-type": "remote",
+        "robot-server-source-location": "latest",
         "exposed-port": 5000,
         "hardware-specific-attributes": {},
     }

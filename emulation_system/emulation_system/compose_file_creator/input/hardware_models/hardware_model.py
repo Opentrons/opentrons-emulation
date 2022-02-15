@@ -25,15 +25,13 @@ from emulation_system.compose_file_creator.errors import (
     MountNotFoundError,
     NoMountsDefinedError,
 )
-from .hardware_specific_attributes import (
-    HardwareSpecificAttributes,
-)
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
     Service,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DirectoryMount,
+    ENTRYPOINT_MOUNT_NAME,
     EmulationLevels,
     FileMount,
     Mount,
@@ -46,6 +44,10 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
 )
 from emulation_system.compose_file_creator.settings.images import (
     get_image_name,
+)
+from emulation_system.consts import ENTRYPOINT_FILE_LOCATION
+from .hardware_specific_attributes import (
+    HardwareSpecificAttributes,
 )
 
 COMMIT_SHA_REGEX = r"^[0-9a-f]{40}"
@@ -83,24 +85,12 @@ class HardwareModel(BaseModel):
 
     def _post_init(self) -> None:
         """Methods to always run after initialization."""
-        self._add_source_bind_mount()
+        self.add_source_bind_mount()
 
-    def _add_source_bind_mount(self) -> None:
-        """If running a local type image add the mount to the mounts attribute."""
-        if self.source_type == SourceType.LOCAL:
-            self.mounts.append(
-                DirectoryMount(
-                    name=SOURCE_CODE_MOUNT_NAME,
-                    type=MountTypes.DIRECTORY,
-                    source_path=pathlib.Path(self.source_location),
-                    mount_path=f"/{self.get_source_repo()}",
-                )
-            )
-
-    @validator("source_location")
-    def check_source_location(cls, v: str, values: Dict[str, Any]) -> str:
+    @staticmethod
+    def validate_source_location(key: str, v: str, values: Dict[str, Any]) -> str:
         """If source type is local, confirms directory path specified exists."""
-        if values["source_type"] == SourceType.LOCAL:
+        if values[key] == SourceType.LOCAL:
             if not os.path.isdir(v):
                 raise LocalSourceDoesNotExistError(v)
         else:
@@ -111,6 +101,28 @@ class HardwareModel(BaseModel):
             ):
                 raise InvalidRemoteSourceError(v)
         return v
+
+    def add_source_bind_mount(self) -> None:
+        """If running a local type image add the mount to the mounts attribute."""
+        if self.source_type == SourceType.LOCAL:
+            source_code_mount = DirectoryMount(
+                name=SOURCE_CODE_MOUNT_NAME,
+                type=MountTypes.DIRECTORY,
+                source_path=pathlib.Path(self.source_location),
+                mount_path=f"/{self.get_source_repo()}",
+            )
+            entrypoint_mount = FileMount(
+                name=ENTRYPOINT_MOUNT_NAME,
+                type=MountTypes.FILE,
+                source_path=pathlib.Path(ENTRYPOINT_FILE_LOCATION),
+                mount_path="/entrypoint.sh",
+            )
+            self.mounts.extend([source_code_mount, entrypoint_mount])
+
+    @validator("source_location")
+    def check_source_location(cls, v: str, values: Dict[str, Any]) -> str:
+        """If source type is local, confirms directory path specified exists."""
+        return cls.validate_source_location("source_type", v, values)
 
     @validator("mounts", pre=True, each_item=True)
     def check_for_restricted_names(cls, v: Dict[str, str]) -> Dict[str, str]:

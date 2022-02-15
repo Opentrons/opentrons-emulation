@@ -143,3 +143,9 @@ def with_system_unique_id_services(
         Dict[str, Service],
         convert_from_obj(with_system_unique_id, get_test_conf()).services,
     )
+
+
+def partial_string_in_mount(string: str, service: Service) -> bool:
+    """Check if the partial string exists in any of the Service's mounts."""
+    assert service.volumes is not None
+    return any([string in volume for volume in service.volumes])
