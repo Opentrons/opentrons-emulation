@@ -5,10 +5,7 @@ Tests for checking env variables, such as pipettes for smoothie, are in
 test_environment_variables.py
 """
 
-from typing import (
-    Any,
-    Dict,
-)
+from typing import Any, Dict
 
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
@@ -29,11 +26,7 @@ from emulation_system.compose_file_creator.settings.images import (
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
-from tests.compose_file_creator.conftest import (
-    EMULATOR_PROXY_ID,
-    OT3_ID,
-    SMOOTHIE_ID,
-)
+from tests.compose_file_creator.conftest import EMULATOR_PROXY_ID, OT3_ID, SMOOTHIE_ID
 
 
 @pytest.mark.parametrize(

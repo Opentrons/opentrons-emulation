@@ -1,6 +1,6 @@
 """Intermediate types that will be used for composing RuntimeComposeModel."""
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import Dict, List
 
 from emulation_system.compose_file_creator.output.compose_file_model import Service
 

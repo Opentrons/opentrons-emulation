@@ -1,8 +1,5 @@
 """Tests for Thermocycler module."""
-from typing import (
-    Any,
-    Dict,
-)
+from typing import Any, Dict
 
 from pydantic import parse_obj_as
 

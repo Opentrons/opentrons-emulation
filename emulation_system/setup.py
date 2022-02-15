@@ -1,10 +1,11 @@
 # Inspired by:
 # https://hynek.me/articles/sharing-your-labor-of-love-pypi-quick-and-dirty/
-import sys
 import codecs
 import os
 import os.path
-from setuptools import setup, find_packages
+import sys
+
+from setuptools import find_packages, setup
 
 # make stdout blocking since Travis sets it to nonblocking
 if os.name == "posix":

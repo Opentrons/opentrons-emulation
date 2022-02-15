@@ -1,14 +1,8 @@
 """Tests for heater-shaker module."""
-from typing import (
-    Any,
-    Dict,
-)
+from typing import Any, Dict
 
 import pytest
-from pydantic import (
-    ValidationError,
-    parse_obj_as,
-)
+from pydantic import ValidationError, parse_obj_as
 
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,

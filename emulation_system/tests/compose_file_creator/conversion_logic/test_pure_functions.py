@@ -1,8 +1,6 @@
 """Tests for conversion pure functions."""
 
-from typing import (
-    Optional,
-)
+from typing import Optional
 
 import pytest
 
@@ -10,7 +8,6 @@ from emulation_system.compose_file_creator.conversion.service_creation.shared_fu
     get_build_args,
     get_service_build,
 )
-
 from emulation_system.compose_file_creator.output.compose_file_model import (
     BuildItem,
     ListOrDict,

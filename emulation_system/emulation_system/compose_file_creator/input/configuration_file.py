@@ -2,13 +2,7 @@
 from __future__ import annotations
 
 from collections import Counter
-from typing import (
-    Dict,
-    List,
-    Mapping,
-    Optional,
-    cast,
-)
+from typing import Dict, List, Mapping, Optional, cast
 
 from pydantic import (
     BaseModel,

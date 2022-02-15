@@ -1,8 +1,5 @@
 """Tests related to bind mounts."""
-from typing import (
-    Dict,
-    List,
-)
+from typing import Dict, List
 
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]

@@ -1,7 +1,5 @@
 """Adds functions to generated compose_file_model."""
-from typing import (
-    Any,
-)
+from typing import Any
 
 import yaml
 

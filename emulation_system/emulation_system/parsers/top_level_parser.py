@@ -1,6 +1,7 @@
 """Top-level parser for emulation cli."""
 import argparse
 import sys
+
 from emulation_system.executable import Executable
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,

@@ -1,12 +1,7 @@
 """Tests related to environment variables on services."""
 
 import json
-from typing import (
-    Any,
-    Dict,
-    Type,
-    cast,
-)
+from typing import Any, Dict, Type, cast
 
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]

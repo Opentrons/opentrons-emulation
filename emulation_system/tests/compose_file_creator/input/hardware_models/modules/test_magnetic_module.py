@@ -1,11 +1,9 @@
 """Tests for Magenetic Module."""
-from typing import Dict, Any
+from typing import Any, Dict
 
 import pytest
-from pydantic import (
-    ValidationError,
-    parse_obj_as,
-)
+from pydantic import ValidationError, parse_obj_as
+
 from emulation_system.compose_file_creator.input.hardware_models import (
     MagneticModuleInputModel,
 )
@@ -14,9 +12,9 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     OpentronsRepository,
 )
 from tests.compose_file_creator.conftest import (
+    MAGNETIC_MODULE_EMULATION_LEVEL,
     MAGNETIC_MODULE_ID,
     MAGNETIC_MODULE_SOURCE_TYPE,
-    MAGNETIC_MODULE_EMULATION_LEVEL,
 )
 
 

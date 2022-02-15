@@ -1,9 +1,7 @@
 """Parser for virtual-machine sub-command."""
 import argparse
 
-from emulation_system.commands.virtual_machine_command import (
-    VirtualMachineCommand,
-)
+from emulation_system.commands.virtual_machine_command import VirtualMachineCommand
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )

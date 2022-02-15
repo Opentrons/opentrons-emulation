@@ -2,25 +2,17 @@
 import contextlib
 import io
 import json
-from typing import (
-    Any,
-    Dict,
-    Generator,
-)
-from unittest.mock import (
-    DEFAULT,
-    Mock,
-    patch,
-)
+from typing import Any, Dict, Generator
+from unittest.mock import DEFAULT, Mock, patch
 
 import pytest
 import yaml
 
 from emulation_system.commands.emulation_system_command import (
-    EmulationSystemCommand,
-    InvalidFileExtensionException,
     STDIN_NAME,
     STDOUT_NAME,
+    EmulationSystemCommand,
+    InvalidFileExtensionException,
 )
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,

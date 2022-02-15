@@ -1,9 +1,6 @@
 """Tests related to depends_on property of services."""
 
-from typing import (
-    Any,
-    Dict,
-)
+from typing import Any, Dict
 
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]

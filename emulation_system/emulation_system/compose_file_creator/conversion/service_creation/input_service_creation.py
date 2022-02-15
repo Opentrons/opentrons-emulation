@@ -1,12 +1,6 @@
 """Pure functions related to creating Service objects from definitions in input file."""
 
-from typing import (
-    Any,
-    Dict,
-    List,
-    Optional,
-    Union,
-)
+from typing import Any, Dict, List, Optional, Union
 
 from emulation_system.compose_file_creator.conversion.intermediate_types import (
     RequiredNetworks,
@@ -25,20 +19,21 @@ from emulation_system.compose_file_creator.output.compose_file_model import (
     Port,
     Service,
 )
+from emulation_system.compose_file_creator.settings.config_file_settings import (
+    EmulationLevels,
+    SourceType,
+)
 from emulation_system.compose_file_creator.settings.custom_types import Containers
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
+
 from .shared_functions import (
     generate_container_name,
     get_build_args,
     get_mount_strings,
     get_service_build,
     get_service_image,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    EmulationLevels,
-    SourceType,
 )
 
 
