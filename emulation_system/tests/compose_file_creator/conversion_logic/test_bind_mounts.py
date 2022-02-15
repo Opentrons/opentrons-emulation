@@ -2,7 +2,6 @@
 from typing import Dict, List
 
 import pytest
-from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system.compose_file_creator.output.compose_file_model import Service
 from tests.compose_file_creator.conftest import (
@@ -12,7 +11,6 @@ from tests.compose_file_creator.conftest import (
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
 )
-from tests.compose_file_creator.conversion_logic.conftest import EXTRA_MOUNT_PATH
 
 
 @pytest.mark.parametrize("service_name", [HEATER_SHAKER_MODULE_ID])
@@ -24,32 +22,32 @@ def test_service_without_bind_mounts(
 
 
 @pytest.mark.parametrize(
-    "service_name,expected_source_path,expected_mount_path",
+    "service_name,expected_mounts",
     [
         [
             OT2_ID,
-            lazy_fixture("extra_mounts_and_opentrons"),
-            [EXTRA_MOUNT_PATH, "/opentrons"],
+            ["opentrons:/opentrons", "entrypoint.sh:/entrypoint.sh"],
         ],
         # Thermocycler should be bound to /opentrons-modules because it is using
         # hardware level emulation
         [
             THERMOCYCLER_MODULE_ID,
-            lazy_fixture("modules_dir_in_list"),
-            ["/opentrons-modules"],
+            ["opentrons-modules:/opentrons-modules", "entrypoint.sh:/entrypoint.sh"],
         ],
-        [MAGNETIC_MODULE_ID, lazy_fixture("opentrons_dir_in_list"), ["/opentrons"]],
-        [TEMPERATURE_MODULE_ID, lazy_fixture("opentrons_dir_in_list"), ["/opentrons"]],
+        [MAGNETIC_MODULE_ID, ["opentrons:/opentrons", "entrypoint.sh:/entrypoint.sh"]],
+        [
+            TEMPERATURE_MODULE_ID,
+            ["opentrons:/opentrons", "entrypoint.sh:/entrypoint.sh"],
+        ],
     ],
 )
 def test_service_with_bind_mounts(
     service_name: str,
-    expected_source_path: List[str],
-    expected_mount_path: List[str],
+    expected_mounts: List[str],
     robot_with_mount_and_modules_services: Dict[str, Service],
 ) -> None:
     """Verify services without volumes don't have volumes."""
-    assert robot_with_mount_and_modules_services[service_name].volumes == [
-        f"{expected_source_path[i]}:{expected_mount_path[i]}"
-        for i, _ in enumerate(expected_source_path)
-    ]
+    volumes = robot_with_mount_and_modules_services[service_name].volumes
+    assert volumes is not None
+    for mount in expected_mounts:
+        assert any([mount in volume for volume in volumes])

@@ -263,7 +263,7 @@ FROM opentrons-modules-source as thermocycler-builder
 ENV OPENTRONS_HARDWARE "thermocycler-hardware"
 RUN /entrypoint.sh build
 
-FROM opentrons-source as firmware-builder
+FROM opentrons-source as python-emulator-builder
 ENV OPENTRONS_HARDWARE "common-firmware"
 RUN /entrypoint.sh build
 
@@ -280,7 +280,7 @@ RUN /entrypoint.sh build
 
 FROM python-base as firmware-common
 RUN mkdir /dist
-COPY --from=firmware-builder /dist/* /dist/
+COPY --from=python-emulator-builder /dist/* /dist/
 RUN pip install /dist/*
 
 ##############################################################

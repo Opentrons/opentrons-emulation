@@ -10,7 +10,13 @@ ROOM_TEMPERATURE: float = 23.0
 DEFAULT_DOCKER_COMPOSE_VERSION = "3.8"
 DEFAULT_NETWORK_NAME = "local-network"
 SOURCE_CODE_MOUNT_NAME = "SOURCE_CODE"
-RESTRICTED_MOUNT_NAMES = [SOURCE_CODE_MOUNT_NAME]
+ROBOT_SERVER_MOUNT_NAME = "ROBOT_SERVER_SOURCE_CODE"
+ENTRYPOINT_MOUNT_NAME = "ENTRYPOINT"
+RESTRICTED_MOUNT_NAMES = [
+    SOURCE_CODE_MOUNT_NAME,
+    ROBOT_SERVER_MOUNT_NAME,
+    ENTRYPOINT_MOUNT_NAME,
+]
 
 
 class Hardware(str, Enum):
@@ -97,6 +103,16 @@ class Mount(BaseModel):
     type: str
     mount_path: str = Field(..., alias="mount-path")
     source_path: Union[DirectoryPath, FilePath] = Field(..., alias="source-path")
+
+    def is_duplicate(self, other: "Mount") -> bool:
+        """Compare everything except name."""
+        return all(
+            [
+                self.type == other.type,
+                self.mount_path == other.mount_path,
+                self.source_path == other.source_path,
+            ]
+        )
 
     class Config:
         """Config class used by pydantic."""
