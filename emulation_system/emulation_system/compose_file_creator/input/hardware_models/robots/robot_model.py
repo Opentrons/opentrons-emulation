@@ -7,6 +7,7 @@ import pathlib
 from typing import (
     Any,
     Dict,
+    List,
 )
 
 from pydantic import (
@@ -41,24 +42,23 @@ class RobotInputModel(HardwareModel):
         """If source type is local, confirms directory path specified exists."""
         return cls.validate_source_location("robot_server_source_type", v, values)
 
-    def add_source_bind_mount(self) -> None:
-        """If running a local type image add the mount to the mounts attribute."""
-        super().add_source_bind_mount()
+    def get_robot_server_mount_strings(self) -> List[str]:
+        """Get mount string for a robot server, if source-type is local."""
         service_mount_path = os.path.basename(
             os.path.normpath(self.robot_server_source_location)
         )
-        if self.robot_server_source_type == SourceType.LOCAL:
-            robot_server_mount = DirectoryMount(
-                name=ROBOT_SERVER_MOUNT_NAME,
-                type=MountTypes.DIRECTORY,
-                source_path=pathlib.Path(self.robot_server_source_location),
-                mount_path=f"/{service_mount_path}",
-            )
-            mount_does_not_exist = not any(
-                [robot_server_mount.is_duplicate(mount) for mount in self.mounts]
-            )
-            if mount_does_not_exist:
-                self.mounts.append(robot_server_mount)
+        return (
+            [
+                DirectoryMount(
+                    name=ROBOT_SERVER_MOUNT_NAME,
+                    type=MountTypes.DIRECTORY,
+                    source_path=pathlib.Path(self.robot_server_source_location),
+                    mount_path=f"/{service_mount_path}",
+                ).get_bind_mount_string()
+            ]
+            if self.robot_server_source_type == SourceType.LOCAL
+            else []
+        )
 
     def get_port_binding_string(self) -> str:
         """Get port binding string for Docker Compose file."""
