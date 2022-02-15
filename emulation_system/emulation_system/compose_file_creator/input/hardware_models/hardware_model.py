@@ -23,7 +23,6 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     RESTRICTED_MOUNT_NAMES,
     SOURCE_CODE_MOUNT_NAME,
     DirectoryMount,
-    ENTRYPOINT_MOUNT_NAME,
     EmulationLevels,
     FileMount,
     Mount,
@@ -35,7 +34,6 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
 from emulation_system.compose_file_creator.settings.images import (
     get_image_name,
 )
-from emulation_system.consts import ENTRYPOINT_FILE_LOCATION
 from .hardware_specific_attributes import (
     HardwareSpecificAttributes,
 )
@@ -77,7 +75,9 @@ class HardwareModel(BaseModel):
 
     def _post_init(self) -> None:
         """Methods to always run after initialization."""
-        self.add_source_bind_mount()
+        # Note that at this point, any extra-mounts defined in the configuration
+        # file, exist in the mounts list.
+        self.mounts.extend(self._get_source_code_mount())
 
     @staticmethod
     def validate_source_location(key: str, v: str, values: Dict[str, Any]) -> str:
@@ -94,22 +94,20 @@ class HardwareModel(BaseModel):
                 raise InvalidRemoteSourceError(v)
         return v
 
-    def add_source_bind_mount(self) -> None:
+    def _get_source_code_mount(self) -> List[DirectoryMount]:
         """If running a local type image add the mount to the mounts attribute."""
-        if self.source_type == SourceType.LOCAL:
-            source_code_mount = DirectoryMount(
-                name=SOURCE_CODE_MOUNT_NAME,
-                type=MountTypes.DIRECTORY,
-                source_path=pathlib.Path(self.source_location),
-                mount_path=f"/{self.get_source_repo()}",
-            )
-            entrypoint_mount = FileMount(
-                name=ENTRYPOINT_MOUNT_NAME,
-                type=MountTypes.FILE,
-                source_path=pathlib.Path(ENTRYPOINT_FILE_LOCATION),
-                mount_path="/entrypoint.sh",
-            )
-            self.mounts.extend([source_code_mount, entrypoint_mount])
+        return (
+            [
+                DirectoryMount(
+                    name=SOURCE_CODE_MOUNT_NAME,
+                    type=MountTypes.DIRECTORY,
+                    source_path=pathlib.Path(self.source_location),
+                    mount_path=f"/{self.get_source_repo()}",
+                )
+            ]
+            if self.source_type == SourceType.LOCAL
+            else []
+        )
 
     @validator("source_location")
     def check_source_location(cls, v: str, values: Dict[str, Any]) -> str:

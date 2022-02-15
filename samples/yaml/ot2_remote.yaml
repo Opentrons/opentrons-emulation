@@ -4,5 +4,7 @@ robot:
   hardware: "ot2"
   source-type: "remote"
   source-location: "latest"
+  robot-server-source-type: "remote"
+  robot-server-source-location: "latest"
   emulation-level: "firmware"
   exposed-port: 31950

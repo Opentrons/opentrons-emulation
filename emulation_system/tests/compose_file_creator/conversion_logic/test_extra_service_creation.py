@@ -26,7 +26,11 @@ from emulation_system.compose_file_creator.settings.images import (
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
-from tests.compose_file_creator.conftest import EMULATOR_PROXY_ID, OT3_ID, SMOOTHIE_ID
+from tests.compose_file_creator.conftest import (
+    EMULATOR_PROXY_ID,
+    SMOOTHIE_ID,
+)
+from tests.compose_file_creator.conversion_logic.conftest import partial_string_in_mount
 
 
 @pytest.mark.parametrize(
@@ -129,5 +133,5 @@ def test_local_ot3_services_created(
     service = services[container_name]
     assert service.image == expected_image_name
 
-    ot3 = services[OT3_ID]
-    assert service.volumes == ot3.volumes
+    partial_string_in_mount("entrypoint.sh:/entrypoint.sh", service)
+    partial_string_in_mount("ot3-firmware:/ot3-firmware", service)
