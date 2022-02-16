@@ -70,24 +70,14 @@ class HardwareModel(BaseModel):
 
     def _post_init(self) -> None:
         """Methods to always run after initialization."""
-        self._add_source_bind_mount()
+        # Note that at this point, any extra-mounts defined in the configuration
+        # file, exist in the mounts list.
+        self.mounts.extend(self._get_source_code_mount())
 
-    def _add_source_bind_mount(self) -> None:
-        """If running a local type image add the mount to the mounts attribute."""
-        if self.source_type == SourceType.LOCAL:
-            self.mounts.append(
-                DirectoryMount(
-                    name=SOURCE_CODE_MOUNT_NAME,
-                    type=MountTypes.DIRECTORY,
-                    source_path=pathlib.Path(self.source_location),
-                    mount_path=f"/{self.get_source_repo()}",
-                )
-            )
-
-    @validator("source_location")
-    def check_source_location(cls, v: str, values: Dict[str, Any]) -> str:
+    @staticmethod
+    def validate_source_location(key: str, v: str, values: Dict[str, Any]) -> str:
         """If source type is local, confirms directory path specified exists."""
-        if values["source_type"] == SourceType.LOCAL:
+        if values[key] == SourceType.LOCAL:
             if not os.path.isdir(v):
                 raise LocalSourceDoesNotExistError(v)
         else:
@@ -98,6 +88,26 @@ class HardwareModel(BaseModel):
             ):
                 raise InvalidRemoteSourceError(v)
         return v
+
+    def _get_source_code_mount(self) -> List[DirectoryMount]:
+        """If running a local type image add the mount to the mounts attribute."""
+        return (
+            [
+                DirectoryMount(
+                    name=SOURCE_CODE_MOUNT_NAME,
+                    type=MountTypes.DIRECTORY,
+                    source_path=pathlib.Path(self.source_location),
+                    mount_path=f"/{self.get_source_repo()}",
+                )
+            ]
+            if self.source_type == SourceType.LOCAL
+            else []
+        )
+
+    @validator("source_location")
+    def check_source_location(cls, v: str, values: Dict[str, Any]) -> str:
+        """If source type is local, confirms directory path specified exists."""
+        return cls.validate_source_location("source_type", v, values)
 
     @validator("mounts", pre=True, each_item=True)
     def check_for_restricted_names(cls, v: Dict[str, str]) -> Dict[str, str]:

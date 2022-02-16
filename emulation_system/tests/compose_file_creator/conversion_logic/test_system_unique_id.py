@@ -1,6 +1,6 @@
 """Tests related to system-unique-id property."""
 
-from typing import Any, Dict
+from typing import Any, Dict, cast
 
 import pytest
 
@@ -25,6 +25,18 @@ from tests.compose_file_creator.conftest import (
     THERMOCYCLER_MODULE_ID,
 )
 from tests.compose_file_creator.conversion_logic.conftest import SERVICE_NAMES
+
+
+@pytest.fixture
+def with_system_unique_id_services(
+    with_system_unique_id: Dict[str, Any],
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> Dict[str, Service]:
+    """Get services from with_system_unique_id."""
+    return cast(
+        Dict[str, Service],
+        convert_from_obj(with_system_unique_id, testing_global_em_config).services,
+    )
 
 
 def test_service_keys_with_system_unique_id(

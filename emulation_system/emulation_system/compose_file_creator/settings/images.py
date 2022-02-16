@@ -1,5 +1,5 @@
 """Mapping for getting image names for hardware."""
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel
 from typing_extensions import Literal
@@ -19,6 +19,19 @@ class Images(BaseModel):
     local_hardware_image_name: Optional[str]
     remote_firmware_image_name: Optional[str]
     remote_hardware_image_name: Optional[str]
+
+    def get_image_names(self) -> List[str]:
+        """Get list of image names for image."""
+        return [
+            image_name
+            for image_name in [
+                self.local_firmware_image_name,
+                self.local_hardware_image_name,
+                self.remote_firmware_image_name,
+                self.remote_hardware_image_name,
+            ]
+            if image_name is not None
+        ]
 
 
 class HeaterShakerModuleImages(Images):

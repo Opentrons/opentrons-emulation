@@ -32,6 +32,13 @@ from tests.compose_file_creator.conversion_logic.conftest import (
     SERVICE_NAMES,
 )
 
+
+@pytest.fixture
+def version_only() -> Dict[str, Any]:
+    """Input file with only a compose-file-version specified."""
+    return {"compose-file-version": "4.0"}
+
+
 # TODO: Add following tests:
 #   - CAN network is created on OT3 breakout
 

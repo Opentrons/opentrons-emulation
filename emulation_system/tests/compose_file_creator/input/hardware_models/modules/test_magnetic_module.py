@@ -8,6 +8,7 @@ from emulation_system.compose_file_creator.input.hardware_models import (
     MagneticModuleInputModel,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
+    EmulationLevels,
     Hardware,
     OpentronsRepository,
 )
@@ -16,6 +17,15 @@ from tests.compose_file_creator.conftest import (
     MAGNETIC_MODULE_ID,
     MAGNETIC_MODULE_SOURCE_TYPE,
 )
+
+
+@pytest.fixture
+def magnetic_module_bad_emulation_level(
+    magnetic_module_default: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Return magnetic module configuration with an invalid emulation level."""
+    magnetic_module_default["emulation-level"] = EmulationLevels.HARDWARE.value
+    return magnetic_module_default
 
 
 def test_default_magnetic_module(magnetic_module_default: Dict[str, Any]) -> None:

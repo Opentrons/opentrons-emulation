@@ -4,6 +4,7 @@ Opentrons has various software emulations of their hardware. This repository def
 all these emulators together into systems.
 
 - [What is an Emulator?](#what-is-an-emulator-)
+- [How do the Opentrons Emulators work?](#how-do-the-opentrons-emulators-work-)
 - [Supported Hardware](#supported-hardware)
 - [Required Software](#required-software)
 - [Initial Configuration](#initial-configuration)
@@ -20,6 +21,8 @@ all these emulators together into systems.
     * [hardware](#hardware)
     * [source-type](#source-type)
     * [source-location](#source-location)
+    * [robot-server-source-type](#robot-server-source-type)
+    * [robot-server-source-location](#robot-server-source-location)
     * [emulation-level](#emulation-level)
     * [exposed-port](#exposed-port)
     * [hardware-specific-attributes](#hardware-specific-attributes)
@@ -187,6 +190,28 @@ committed code from Github, or bind in your own local code.
 ### source-location
 
 **Description:** A string value specifying where the system should look for the source code based on the `source-type`.
+
+If you are using `remote` type, you can either specify `latest` to pull the latest committed version from the master
+branch, or specify a full commit sha to pull.
+
+If you are using `local` type, specify a path to the source on your system.
+
+When creating an `ot2` type robot this setting determines what source code the `smoothie` emulator will use. The
+`opentrons` repo should be specified.
+
+When creating an `ot2` type robot this setting determines what source code the `ot3-firmware` emulators will use. The
+`ot3-firmware` should be specified.
+
+### robot-server-source-type
+
+**Description:** Same as `source-type` but specifies what the robot server will be using for source.
+
+**Acceptable Values:** `remote` `local`
+
+### robot-server-source-location
+
+**Description:** Same as `source-location` but specifies what the system should look for source code for the
+robot-server
 
 If you are using `remote` type, you can either specify `latest` to pull the latest committed version from the master
 branch, or specify a full commit sha to pull.

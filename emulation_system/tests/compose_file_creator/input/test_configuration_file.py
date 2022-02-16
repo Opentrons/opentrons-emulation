@@ -3,6 +3,7 @@
 Note: Do not need to test matching module names because module names cannot be the same
 by definition of dict.
 """
+import pathlib
 from typing import Any, Dict
 
 import pytest
@@ -56,13 +57,6 @@ def invalid_ot2_name(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
 
 
 @pytest.fixture
-def ot2_with_invalid_mounts(ot2_with_mounts: Dict) -> Dict:
-    """Configuration with an invalid mount name."""
-    ot2_with_mounts["robot"][OT2_ID]["extra-mounts"][0]["name"] = "data-dog"
-    return ot2_with_mounts
-
-
-@pytest.fixture
 def version_defined(ot2_and_modules: Dict[str, Any]) -> Dict[str, Any]:
     """Structure of SystemConfigurationModel with robot, modules, and version."""
     ot2_and_modules["compose-file-version"] = "3.7"
@@ -105,14 +99,37 @@ def with_invalid_system_unique_id(ot2_and_modules: Dict[str, Any]) -> Dict[str, 
     return ot2_and_modules
 
 
+@pytest.fixture
+def ot2_with_mounts(tmp_path: pathlib.Path, ot2_default: Dict) -> Dict:
+    """Configuration of a robot with extra bind mounts."""
+    datadog_dir = tmp_path / "Datadog"
+    datadog_dir.mkdir()
+    datadog_file = datadog_dir / "log.txt"
+    datadog_file.write_text("test")
+
+    log_dir = tmp_path / "Log"
+    log_dir.mkdir()
+
+    ot2_default["robot"][OT2_ID]["extra-mounts"] = [
+        {
+            "name": "DATADOG",
+            "source-path": str(datadog_file),
+            "mount-path": "/datadog/log.txt",
+            "type": "file",
+        },
+        {
+            "name": "LOG_FILES",
+            "source-path": str(log_dir),
+            "mount-path": "/var/log/opentrons/",
+            "type": "directory",
+        },
+    ]
+    return ot2_default
+
+
 def create_system_configuration(obj: Dict) -> SystemConfigurationModel:
     """Creates SystemConfigurationModel object."""
     return SystemConfigurationModel.from_dict(obj)
-
-
-def create_system_configuration_from_file(path: str) -> SystemConfigurationModel:
-    """Creates SystemConfigurationModel object from config file."""
-    return SystemConfigurationModel.from_file(path)
 
 
 @pytest.mark.parametrize(

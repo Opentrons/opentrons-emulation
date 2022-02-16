@@ -15,6 +15,7 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     OT3Hardware,
+    SourceType,
 )
 from emulation_system.compose_file_creator.settings.images import (
     OT3GantryXImages,
@@ -26,7 +27,16 @@ from emulation_system.compose_file_creator.settings.images import (
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
-from tests.compose_file_creator.conftest import EMULATOR_PROXY_ID, OT3_ID, SMOOTHIE_ID
+from tests.compose_file_creator.conftest import EMULATOR_PROXY_ID, SMOOTHIE_ID
+from tests.compose_file_creator.conversion_logic.conftest import partial_string_in_mount
+
+
+@pytest.fixture
+def ot2_only_with_remote_source_type(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
+    """An OT2 with remote source-type."""
+    ot2_default["source-type"] = SourceType.REMOTE
+    ot2_default["source-location"] = "latest"
+    return {"robot": ot2_default}
 
 
 @pytest.mark.parametrize(
@@ -129,5 +139,5 @@ def test_local_ot3_services_created(
     service = services[container_name]
     assert service.image == expected_image_name
 
-    ot3 = services[OT3_ID]
-    assert service.volumes == ot3.volumes
+    partial_string_in_mount("entrypoint.sh:/entrypoint.sh", service)
+    partial_string_in_mount("ot3-firmware:/ot3-firmware", service)

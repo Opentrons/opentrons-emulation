@@ -1,5 +1,5 @@
 """Adds functions to generated compose_file_model."""
-from typing import Any
+from typing import Any, List, Optional, Type
 
 import yaml
 
@@ -7,7 +7,23 @@ import yaml
 # the top of compose_file_model. This causes mypy to think that ComposeSpecification
 # and Service do not exist when they actually do.
 from emulation_system.compose_file_creator.output.compose_file_model import (  # type: ignore[attr-defined] # noqa: E501
+    BuildItem,
     ComposeSpecification,
+    Service,
+)
+from emulation_system.compose_file_creator.settings.images import (
+    EmulatorProxyImages,
+    HeaterShakerModuleImages,
+    Images,
+    MagneticModuleImages,
+    OT3GantryXImages,
+    OT3GantryYImages,
+    OT3HeadImages,
+    OT3PipettesImages,
+    RobotServerImages,
+    SmoothieImages,
+    TemperatureModuleImages,
+    ThermocyclerModuleImages,
 )
 
 
@@ -26,6 +42,101 @@ class RuntimeComposeFileModel(ComposeSpecification):
         """Initialize ComposeSpecification."""
         super().__init__(**data)
 
+    def _search_for_services(
+        self, class_to_search_for: Type[Images], service_type_name: str
+    ) -> Optional[List[Service]]:
+        service_list = []
+        assert self.services is not None
+        for service in self.services.values():
+            service_build = service.build
+            assert isinstance(service_build, BuildItem)
+            if service_build.target in class_to_search_for().get_image_names():
+                service_list.append(service)
+
+        return service_list if len(service_list) > 0 else None
+
     def to_yaml(self) -> str:
         """Convert pydantic model to yaml."""
         return yaml.dump(self.dict(exclude_none=True), default_flow_style=False)
+
+    @property
+    def robot_server(self) -> Optional[Service]:
+        """Returns robot server service if one exists."""
+        service_list = self._search_for_services(RobotServerImages, "Robot Server")
+        return service_list[0] if service_list is not None else None
+
+    @property
+    def emulator_proxy(self) -> Optional[Service]:
+        """Returns emulator proxy service if one exists."""
+        service_list = self._search_for_services(EmulatorProxyImages, "Emulator Proxy")
+        return service_list[0] if service_list is not None else None
+
+    @property
+    def smoothie_emulator(self) -> Optional[Service]:
+        """Returns smoothie emulator service if one exists."""
+        service_list = self._search_for_services(SmoothieImages, "Smoothie")
+        return service_list[0] if service_list is not None else None
+
+    @property
+    def heater_shaker_module_emulators(self) -> Optional[List[Service]]:
+        """Return any Heater-Shaker Module services if one exists."""
+        return self._search_for_services(
+            HeaterShakerModuleImages, "Heater-Shaker Module"
+        )
+
+    @property
+    def ot3_pipette_emulator(self) -> Optional[Service]:
+        """Returns OT3 Pipette service if one exists."""
+        service_list = self._search_for_services(OT3PipettesImages, "OT3 Pipette")
+        return service_list[0] if service_list is not None else None
+
+    @property
+    def ot3_head_emulator(self) -> Optional[Service]:
+        """Returns OT3 Head service if one exists."""
+        service_list = self._search_for_services(OT3HeadImages, "OT3 Head")
+        return service_list[0] if service_list is not None else None
+
+    @property
+    def ot3_gantry_x_emulator(self) -> Optional[Service]:
+        """Returns OT3 Gantry X service if one exists."""
+        service_list = self._search_for_services(OT3GantryXImages, "OT3 Gantry X")
+        return service_list[0] if service_list is not None else None
+
+    @property
+    def ot3_gantry_y_emulator(self) -> Optional[Service]:
+        """Returns OT3 Gantry Y service if one exists."""
+        service_list = self._search_for_services(OT3GantryYImages, "OT3 Gantry Y")
+        return service_list[0] if service_list is not None else None
+
+    @property
+    def ot3_emulators(self) -> Optional[List[Service]]:
+        """Return list of OT3 service if they exist."""
+        emulator_list = [
+            prop
+            for prop in
+            [
+                self.ot3_head_emulator,
+                self.ot3_pipette_emulator,
+                self.ot3_gantry_x_emulator,
+                self.ot3_gantry_y_emulator
+            ]
+            if prop is not None
+        ]
+        return emulator_list if len(emulator_list) > 0 else None
+
+    @property
+    def thermocycler_module_emulators(self) -> Optional[List[Service]]:
+        """Return any Thermocycler Module services if one exists."""
+        return self._search_for_services(
+            ThermocyclerModuleImages, "Thermocycler Module"
+        )
+
+    @property
+    def magnetic_module_emulators(self) -> Optional[List[Service]]:
+        """Return Magnetic Module service if one exists."""
+        return self._search_for_services(MagneticModuleImages, "Magnetic Module")
+
+    @property
+    def temperature_module_emulators(self) -> Optional[List[Service]]:
+        """Return any Temperature Module services if one exists."""
+        return self._search_for_services(TemperatureModuleImages, "Temperature Module")
