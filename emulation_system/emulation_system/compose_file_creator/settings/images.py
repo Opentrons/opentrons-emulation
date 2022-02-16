@@ -26,10 +26,14 @@ class Images(BaseModel):
     def get_image_names(self) -> List[str]:
         """Get list of image names for image."""
         return [
-            self.local_firmware_image_name,
-            self.local_hardware_image_name,
-            self.remote_firmware_image_name,
-            self.remote_hardware_image_name,
+            image_name
+            for image_name in [
+                self.local_firmware_image_name,
+                self.local_hardware_image_name,
+                self.remote_firmware_image_name,
+                self.remote_hardware_image_name,
+            ]
+            if image_name is not None
         ]
 
 

@@ -12,6 +12,7 @@ import yaml
 # the top of compose_file_model. This causes mypy to think that ComposeSpecification
 # and Service do not exist when they actually do.
 from emulation_system.compose_file_creator.output.compose_file_model import (  # type: ignore[attr-defined] # noqa: E501
+    BuildItem,
     ComposeSpecification,
     Service,
 )
@@ -49,11 +50,14 @@ class RuntimeComposeFileModel(ComposeSpecification):
     def _search_for_services(
         self, class_to_search_for: Type[Images], service_type_name: str
     ) -> Optional[List[Service]]:
-        service_list = [
-            service
-            for service in self.services.values()
-            if service.build.target in class_to_search_for().get_image_names()
-        ]
+        service_list = []
+        assert self.services is not None
+        for service in self.services.values():
+            service_build = service.build
+            assert isinstance(service_build, BuildItem)
+            if service_build.target in class_to_search_for().get_image_names():
+                service_list.append(service)
+
         return service_list if len(service_list) > 0 else None
 
     def to_yaml(self) -> str:
@@ -64,22 +68,19 @@ class RuntimeComposeFileModel(ComposeSpecification):
     def robot_server(self) -> Optional[Service]:
         """Returns robot server service if one exists."""
         service_list = self._search_for_services(RobotServerImages, "Robot Server")
-        if service_list is not None:
-            return service_list[0]
+        return service_list[0] if service_list is not None else None
 
     @property
     def emulator_proxy(self) -> Optional[Service]:
         """Returns emulator proxy service if one exists."""
         service_list = self._search_for_services(EmulatorProxyImages, "Emulator Proxy")
-        if service_list is not None:
-            return service_list[0]
+        return service_list[0] if service_list is not None else None
 
     @property
     def smoothie_emulator(self) -> Optional[Service]:
         """Returns smoothie emulator service if one exists."""
         service_list = self._search_for_services(SmoothieImages, "Smoothie")
-        if service_list is not None:
-            return service_list[0]
+        return service_list[0] if service_list is not None else None
 
     @property
     def heater_shaker_module_emulators(self) -> Optional[List[Service]]:
@@ -92,29 +93,25 @@ class RuntimeComposeFileModel(ComposeSpecification):
     def ot3_pipette_emulator(self) -> Optional[Service]:
         """Returns OT3 Pipette service if one exists."""
         service_list = self._search_for_services(OT3PipettesImages, "OT3 Pipette")
-        if service_list is not None:
-            return service_list[0]
+        return service_list[0] if service_list is not None else None
 
     @property
     def ot3_head_emulator(self) -> Optional[Service]:
         """Returns OT3 Head service if one exists."""
         service_list = self._search_for_services(OT3HeadImages, "OT3 Head")
-        if service_list is not None:
-            return service_list[0]
+        return service_list[0] if service_list is not None else None
 
     @property
     def ot3_gantry_x_emulator(self) -> Optional[Service]:
         """Returns OT3 Gantry X service if one exists."""
         service_list = self._search_for_services(OT3GantryXImages, "OT3 Gantry X")
-        if service_list is not None:
-            return service_list[0]
+        return service_list[0] if service_list is not None else None
 
     @property
     def ot3_gantry_y_emulator(self) -> Optional[Service]:
         """Returns OT3 Gantry Y service if one exists."""
         service_list = self._search_for_services(OT3GantryYImages, "OT3 Gantry Y")
-        if service_list is not None:
-            return service_list[0]
+        return service_list[0] if service_list is not None else None
 
     @property
     def ot3_emulators(self) -> Optional[List[Service]]:
