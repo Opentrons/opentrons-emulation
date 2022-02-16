@@ -97,3 +97,12 @@ class RepoDoesNotExistError(Exception):
 
     def __init__(self, repo_name: str) -> None:
         super().__init__(f'Repo "{repo_name}" does not exist.')
+
+
+class ServiceDoesNotExistError(Exception):
+    """Exception thrown when Robot Server does not exist."""
+
+    def __init__(self, service_name: str) -> None:
+        super().__init__(
+            f"You do not have a {service_name} in your generated configuration."
+        )
