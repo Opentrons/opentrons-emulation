@@ -1,30 +1,14 @@
 """Logic for creating OT3 emulated hardware services."""
 from dataclasses import dataclass
-from typing import (
-    List,
-    Optional,
-    Union,
-)
+from typing import List, Optional, Union
 
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
-from .shared_functions import (
-    generate_container_name,
-    get_build_args,
-    get_entrypoint_mount_string,
-    get_service_build,
-)
-from ..intermediate_types import RequiredNetworks
-from ...errors import (
-    HardwareDoesNotExistError,
-    IncorrectHardwareError,
-)
+
+from ...errors import HardwareDoesNotExistError, IncorrectHardwareError
 from ...input.configuration_file import SystemConfigurationModel
-from ...output.compose_file_model import (
-    Service,
-    Volume1,
-)
+from ...output.compose_file_model import Service, Volume1
 from ...settings.config_file_settings import (
     Hardware,
     OpentronsRepository,
@@ -42,7 +26,7 @@ from ..intermediate_types import RequiredNetworks
 from .shared_functions import (
     generate_container_name,
     get_build_args,
-    get_mount_strings,
+    get_entrypoint_mount_string,
     get_service_build,
 )
 

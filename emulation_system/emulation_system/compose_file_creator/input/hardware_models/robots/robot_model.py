@@ -4,24 +4,17 @@ Used to group all robots together and distinguish them from modules.
 """
 import os.path
 import pathlib
-from typing import (
-    Any,
-    Dict,
-    List,
-)
+from typing import Any, Dict, List
 
-from pydantic import (
-    Field,
-    validator,
-)
+from pydantic import Field, validator
 
 from emulation_system.compose_file_creator.input.hardware_models.hardware_model import (
     HardwareModel,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
+    ROBOT_SERVER_MOUNT_NAME,
     DirectoryMount,
     MountTypes,
-    ROBOT_SERVER_MOUNT_NAME,
     SourceType,
 )
 from emulation_system.compose_file_creator.settings.images import get_image_name

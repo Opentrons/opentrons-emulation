@@ -1,13 +1,6 @@
 """Function useful to multiple service creation modules."""
 import pathlib
-from typing import (
-    Any,
-    Dict,
-    List,
-    Optional,
-    Union,
-    cast,
-)
+from typing import Any, Dict, List, Optional, Union, cast
 
 from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
@@ -25,10 +18,7 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     OpentronsRepository,
 )
 from emulation_system.compose_file_creator.settings.custom_types import Containers
-from emulation_system.consts import (
-    DOCKERFILE_DIR_LOCATION,
-    ENTRYPOINT_FILE_LOCATION,
-)
+from emulation_system.consts import DOCKERFILE_DIR_LOCATION, ENTRYPOINT_FILE_LOCATION
 
 REPO_TO_BUILD_ARG_MAPPING = {
     OpentronsRepository.OPENTRONS: "OPENTRONS_SOURCE_DOWNLOAD_LOCATION",

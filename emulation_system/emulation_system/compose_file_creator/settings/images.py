@@ -1,8 +1,5 @@
 """Mapping for getting image names for hardware."""
-from typing import (
-    List,
-    Optional,
-)
+from typing import List, Optional
 
 from pydantic import BaseModel
 from typing_extensions import Literal

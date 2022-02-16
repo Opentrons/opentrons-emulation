@@ -1,10 +1,6 @@
 """Tests related to system-unique-id property."""
 
-from typing import (
-    Any,
-    Dict,
-    cast,
-)
+from typing import Any, Dict, cast
 
 import pytest
 

@@ -31,12 +31,7 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     SourceRepositories,
     SourceType,
 )
-from emulation_system.compose_file_creator.settings.images import (
-    get_image_name,
-)
-from .hardware_specific_attributes import (
-    HardwareSpecificAttributes,
-)
+from emulation_system.compose_file_creator.settings.images import get_image_name
 
 from .hardware_specific_attributes import HardwareSpecificAttributes
 

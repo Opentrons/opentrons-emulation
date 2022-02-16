@@ -4,10 +4,7 @@ Note: Do not need to test matching module names because module names cannot be t
 by definition of dict.
 """
 import pathlib
-from typing import (
-    Any,
-    Dict,
-)
+from typing import Any, Dict
 
 import pytest
 from pydantic import ValidationError

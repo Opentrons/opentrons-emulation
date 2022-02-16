@@ -1,9 +1,5 @@
 """Tests related to bind mounts."""
-from typing import (
-    Any,
-    Dict,
-    List,
-)
+from typing import Any, Dict, List
 
 import py
 import pytest

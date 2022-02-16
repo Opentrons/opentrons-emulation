@@ -1,10 +1,5 @@
 """Adds functions to generated compose_file_model."""
-from typing import (
-    Any,
-    List,
-    Optional,
-    Type,
-)
+from typing import Any, List, Optional, Type
 
 import yaml
 

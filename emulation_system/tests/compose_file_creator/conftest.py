@@ -1,8 +1,5 @@
 """Conftest for compose_file_creator package."""
-from typing import (
-    Any,
-    Dict,
-)
+from typing import Any, Dict
 
 import py
 import pytest

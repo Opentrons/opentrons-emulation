@@ -1,11 +1,7 @@
 """Pure functions related to the creation of the smoothie Service."""
 
 import json
-from typing import (
-    List,
-    Optional,
-    Union,
-)
+from typing import List, Optional, Union
 
 from emulation_system.compose_file_creator.conversion.intermediate_types import (
     RequiredNetworks,
@@ -31,18 +27,11 @@ from emulation_system.compose_file_creator.settings.images import SmoothieImages
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
-from .shared_functions import (
-    generate_container_name,
-    get_build_args,
-    get_entrypoint_mount_string,
-    get_service_build,
-    get_service_image,
-)
 
 from .shared_functions import (
     generate_container_name,
     get_build_args,
-    get_mount_strings,
+    get_entrypoint_mount_string,
     get_service_build,
     get_service_image,
 )
