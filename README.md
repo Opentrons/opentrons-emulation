@@ -193,6 +193,28 @@ branch, or specify a full commit sha to pull.
 
 If you are using `local` type, specify a path to the source on your system.
 
+When creating an `ot2` type robot this setting determines what source code the `smoothie` emulator will use. The
+`opentrons` repo should be specified.
+
+When creating an `ot2` type robot this setting determines what source code the `ot3-firmware` emulators will use. The
+`ot3-firmware` should be specified.
+
+### robot-server-source-type
+
+**Description:** Same as `source-type` but specifies what the robot server will be using for source.
+
+**Acceptable Values:** `remote` `local`
+
+### robot-server-source-location
+
+**Description:** Same as `source-location` but specifies what the system should look for source code for the
+robot-server
+
+If you are using `remote` type, you can either specify `latest` to pull the latest committed version from the master
+branch, or specify a full commit sha to pull.
+
+If you are using `local` type, specify a path to the source on your system.
+
 ### emulation-level
 
 **Description:** A string value specifiying which emulation level should be used.
