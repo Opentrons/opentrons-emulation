@@ -17,6 +17,9 @@ from emulation_system.compose_file_creator.input.hardware_models import (
     ThermocyclerModuleInputModel,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import Service
+from emulation_system.compose_file_creator.settings.config_file_settings import (
+    EmulationLevels,
+)
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
@@ -32,15 +35,39 @@ from tests.compose_file_creator.conftest import (
 )
 
 
+@pytest.fixture
+def ot2_only_services(
+    ot2_only: Dict[str, Any],
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> Dict[str, Service]:
+    """Structure of SystemConfigurationModel with OT-2 only."""
+    return cast(
+        Dict[str, Service],
+        convert_from_obj(ot2_only, testing_global_em_config).services,
+    )
+
+
+@pytest.fixture
+def thermocycler_module_firmware_emulation_level(
+    thermocycler_module_default: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Return heater-shaker configuration with an invalid emulation level."""
+    thermocycler_module_default["emulation-level"] = EmulationLevels.FIRMWARE.value
+    return thermocycler_module_default
+
+
 @pytest.mark.parametrize(
-    "config", [lazy_fixture("robot_with_mount_and_modules"), lazy_fixture("ot2_only")]
+    "services",
+    [
+        lazy_fixture("robot_with_mount_and_modules_services"),
+        lazy_fixture("ot2_only_services"),
+    ],
 )
 def test_robot_server_emulator_proxy_env_vars_added(
-    config: Dict[str, Any],
+    services: Dict[str, Service],
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm env vars are set correctly."""
-    services = convert_from_obj(config, testing_global_em_config).services
     assert services is not None
     env = services[OT2_ID].environment
     assert env is not None

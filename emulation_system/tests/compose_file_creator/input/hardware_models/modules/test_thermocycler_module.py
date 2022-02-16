@@ -1,6 +1,7 @@
 """Tests for Thermocycler module."""
 from typing import Any, Dict
 
+import pytest
 from pydantic import parse_obj_as
 
 from emulation_system.compose_file_creator.input.hardware_models import (
@@ -16,6 +17,32 @@ from tests.compose_file_creator.conftest import (
     THERMOCYCLER_MODULE_ID,
     THERMOCYCLER_MODULE_SOURCE_TYPE,
 )
+
+
+@pytest.fixture
+def thermocycler_module_set_lid_temp(
+    thermocycler_module_default: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Thermocycler Module with user-specified lid temperature."""
+    thermocycler_module_default["hardware-specific-attributes"]["lid-temperature"] = {
+        "degrees-per-tick": 5.0,
+        "starting": 20.0,
+    }
+    return thermocycler_module_default
+
+
+@pytest.fixture
+def thermocycler_module_set_plate_temp(
+    thermocycler_module_set_lid_temp: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Thermocycler Module with default lid and plate temperature."""
+    thermocycler_module_set_lid_temp["hardware-specific-attributes"][
+        "plate-temperature"
+    ] = {
+        "degrees-per-tick": 4.5,
+        "starting": 25.6,
+    }
+    return thermocycler_module_set_lid_temp
 
 
 def test_default_thermocycler(thermocycler_module_default: Dict[str, Any]) -> None:

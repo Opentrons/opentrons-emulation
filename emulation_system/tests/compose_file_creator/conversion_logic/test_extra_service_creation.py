@@ -15,6 +15,7 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     OT3Hardware,
+    SourceType,
 )
 from emulation_system.compose_file_creator.settings.images import (
     OT3GantryXImages,
@@ -31,6 +32,14 @@ from tests.compose_file_creator.conftest import (
     SMOOTHIE_ID,
 )
 from tests.compose_file_creator.conversion_logic.conftest import partial_string_in_mount
+
+
+@pytest.fixture
+def ot2_only_with_remote_source_type(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
+    """An OT2 with remote source-type."""
+    ot2_default["source-type"] = SourceType.REMOTE
+    ot2_default["source-location"] = "latest"
+    return {"robot": ot2_default}
 
 
 @pytest.mark.parametrize(
