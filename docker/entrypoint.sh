@@ -37,14 +37,6 @@ case $FULL_COMMAND in
     build_module_simulator "thermocycler-refresh-simulator"
     ;;
 
-  build-thermocycler-firmware|build-magdeck-firmware|build-tempdeck-firmware|build-emulator-proxy|build-robot-server|build-common-firmware|build-smoothie)
-    (cd /opentrons/shared-data/python && python3 setup.py bdist_wheel -d /dist/)
-    (cd /opentrons/api && python3 setup.py bdist_wheel -d /dist/)
-    (cd /opentrons/notify-server && python3 setup.py bdist_wheel -d /dist/)
-    (cd /opentrons/robot-server && python3 setup.py bdist_wheel -d /dist/)
-    pip install /dist/*
-    ;;
-
   build-common-ot3-firmware)
     cd /ot3-firmware && \
     cmake --preset host-gcc10 && \
@@ -74,6 +66,7 @@ case $FULL_COMMAND in
   # Firmware Level
 
   build-thermocycler-firmware|build-magdeck-firmware|build-tempdeck-firmware|build-emulator-proxy|build-robot-server|build-common-firmware)
+    rm -rf /usr/local/lib/python3.8/dist-packages/*
     (cd /opentrons/shared-data/python && python3 setup.py bdist_wheel -d /dist/)
     (cd /opentrons/api && python3 setup.py bdist_wheel -d /dist/)
     (cd /opentrons/notify-server && python3 setup.py bdist_wheel -d /dist/)
@@ -91,7 +84,7 @@ case $FULL_COMMAND in
     bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_module_emulator magdeck $OTHER_ARGS"
     ;;
   run-robot-server)
-    bash -c "uvicorn "robot_server:app" --host 0.0.0.0 --port 31950 --ws wsproto --reload"
+    bash -c "uvicorn "robot_server:app" --host 0.0.0.0 --port 31950 --ws wsproto"
     ;;
   run-emulator-proxy)
     python3 -m opentrons.hardware_control.emulation.app
