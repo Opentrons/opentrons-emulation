@@ -4,6 +4,7 @@ Opentrons has various software emulations of their hardware. This repository def
 all these emulators together into systems.
 
 - [What is an Emulator?](#what-is-an-emulator-)
+- [How do the Opentrons Emulators work?](#how-do-the-opentrons-emulators-work-)
 - [Supported Hardware](#supported-hardware)
 - [Required Software](#required-software)
 - [Initial Configuration](#initial-configuration)
@@ -20,6 +21,8 @@ all these emulators together into systems.
     * [hardware](#hardware)
     * [source-type](#source-type)
     * [source-location](#source-location)
+    * [robot-server-source-type](#robot-server-source-type)
+    * [robot-server-source-location](#robot-server-source-location)
     * [emulation-level](#emulation-level)
     * [exposed-port](#exposed-port)
     * [hardware-specific-attributes](#hardware-specific-attributes)
