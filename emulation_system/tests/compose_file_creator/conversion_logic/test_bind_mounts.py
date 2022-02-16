@@ -102,6 +102,62 @@ def ot3_remote_source_remote_robot(
     return convert_from_obj({"robot": ot3_default}, testing_global_em_config)
 
 
+@pytest.fixture
+def ot2_local_source_local_robot(
+    ot2_default: Dict[str, Any],
+    opentrons_dir: str,
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> RuntimeComposeFileModel:
+    """Get OT3 configured for local source and local robot source."""
+    ot2_default["source-type"] = SourceType.LOCAL
+    ot2_default["source-location"] = opentrons_dir
+    ot2_default["robot-server-source-type"] = SourceType.LOCAL
+    ot2_default["robot-server-source-location"] = opentrons_dir
+    return convert_from_obj({"robot": ot2_default}, testing_global_em_config)
+
+
+@pytest.fixture
+def ot2_local_source_remote_robot(
+    ot2_default: Dict[str, Any],
+    opentrons_dir: str,
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> RuntimeComposeFileModel:
+    """Get OT3 configured for local source and local robot source."""
+    ot2_default["source-type"] = SourceType.LOCAL
+    ot2_default["source-location"] = opentrons_dir
+    ot2_default["robot-server-source-type"] = SourceType.REMOTE
+    ot2_default["robot-server-source-location"] = "latest"
+    return convert_from_obj({"robot": ot2_default}, testing_global_em_config)
+
+
+@pytest.fixture
+def ot2_remote_source_local_robot(
+    ot2_default: Dict[str, Any],
+    opentrons_dir: str,
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> RuntimeComposeFileModel:
+    """Get OT3 configured for local source and local robot source."""
+    ot2_default["source-type"] = SourceType.REMOTE
+    ot2_default["source-location"] = "latest"
+    ot2_default["robot-server-source-type"] = SourceType.LOCAL
+    ot2_default["robot-server-source-location"] = opentrons_dir
+    return convert_from_obj({"robot": ot2_default}, testing_global_em_config)
+
+
+@pytest.fixture
+def ot2_remote_source_remote_robot(
+    ot2_default: Dict[str, Any],
+    opentrons_dir: str,
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> RuntimeComposeFileModel:
+    """Get OT3 configured for local source and local robot source."""
+    ot2_default["source-type"] = SourceType.REMOTE
+    ot2_default["source-location"] = "latest"
+    ot2_default["robot-server-source-type"] = SourceType.REMOTE
+    ot2_default["robot-server-source-location"] = "latest"
+    return convert_from_obj({"robot": ot2_default}, testing_global_em_config)
+
+
 @pytest.mark.parametrize("service_name", [HEATER_SHAKER_MODULE_ID])
 def test_service_without_bind_mounts(
     service_name: str, robot_with_mount_and_modules_services: Dict[str, Service]
@@ -145,6 +201,8 @@ def test_service_with_bind_mounts(
 @pytest.mark.parametrize(
     "config",
     [
+        lazy_fixture("ot2_local_source_local_robot"),
+        lazy_fixture("ot2_remote_source_local_robot"),
         lazy_fixture("ot3_local_source_local_robot"),
         lazy_fixture("ot3_remote_source_local_robot"),
     ],
@@ -166,6 +224,8 @@ def test_robot_server_with_local_mounts(config: RuntimeComposeFileModel) -> None
 @pytest.mark.parametrize(
     "config",
     [
+        lazy_fixture("ot2_local_source_remote_robot"),
+        lazy_fixture("ot2_remote_source_remote_robot"),
         lazy_fixture("ot3_local_source_remote_robot"),
         lazy_fixture("ot3_remote_source_remote_robot"),
     ],
@@ -209,3 +269,36 @@ def test_ot3_firmware_services_with_remote_mounts(
     assert config.ot3_emulators is not None
     for emulator in config.ot3_emulators:
         assert emulator.volumes is None
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        lazy_fixture("ot2_local_source_remote_robot"),
+        lazy_fixture("ot2_local_source_local_robot"),
+    ],
+)
+def test_ot2_firmware_services_with_local_mounts(
+    config: RuntimeComposeFileModel,
+) -> None:
+    """Confirm monorepo and entrypoint.sh are mounted to smoothie emulator."""
+    assert config.smoothie_emulator is not None
+    assert partial_string_in_mount("opentrons:/opentrons", config.smoothie_emulator)
+    assert partial_string_in_mount(
+        "entrypoint.sh:/entrypoint.sh", config.smoothie_emulator
+    )
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        lazy_fixture("ot2_remote_source_remote_robot"),
+        lazy_fixture("ot2_remote_source_local_robot"),
+    ],
+)
+def test_ot2_firmware_services_with_remote_mounts(
+    config: RuntimeComposeFileModel,
+) -> None:
+    """Confirm nothing is mounted to smoothie emulator."""
+    assert config.smoothie_emulator is not None
+    assert config.smoothie_emulator.volumes is None
