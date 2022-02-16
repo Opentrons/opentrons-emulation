@@ -11,6 +11,7 @@ from pydantic import (
 )
 
 from emulation_system.compose_file_creator.settings.config_file_settings import (
+    EmulationLevels,
     Hardware,
     OpentronsRepository,
 )
@@ -22,6 +23,27 @@ from tests.compose_file_creator.conftest import (
     TEMPERATURE_MODULE_ID,
     TEMPERATURE_MODULE_SOURCE_TYPE,
 )
+
+
+@pytest.fixture
+def temperature_module_set_temp(
+    temperature_module_default: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Temperature module with user-specified temperature settings."""
+    temperature_module_default["hardware-specific-attributes"]["temperature"] = {
+        "degrees-per-tick": 5.0,
+        "starting": 20.0,
+    }
+    return temperature_module_default
+
+
+@pytest.fixture
+def temperature_module_bad_emulation_level(
+    temperature_module_default: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Return temperature module configuration with an invalid emulation level."""
+    temperature_module_default["emulation-level"] = EmulationLevels.HARDWARE.value
+    return temperature_module_default
 
 
 def test_default_temperature_module(temperature_module_default: Dict[str, Any]) -> None:

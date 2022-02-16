@@ -9,17 +9,12 @@ from emulation_system.opentrons_emulation_configuration import (
 )
 
 
-def get_test_configuration_file_path() -> str:
-    """Returns path to test file."""
-    return os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "test_configuration.json"
-    )
-
-
 def get_test_conf() -> OpentronsEmulationConfiguration:
     """Returns configuration settings from test config file."""
     return OpentronsEmulationConfiguration.from_file_path(
-        get_test_configuration_file_path()
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "test_configuration.json"
+        )
     )
 
 

@@ -14,6 +14,7 @@ from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
+    EmulationLevels,
     Hardware,
     HeaterShakerModes,
     OpentronsRepository,
@@ -23,6 +24,26 @@ from tests.compose_file_creator.conftest import (
     HEATER_SHAKER_MODULE_ID,
     HEATER_SHAKER_MODULE_SOURCE_TYPE,
 )
+
+
+@pytest.fixture
+def heater_shaker_module_bad_emulation_level(
+    heater_shaker_module_default: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Return heater-shaker configuration with an invalid emulation level."""
+    heater_shaker_module_default["emulation-level"] = EmulationLevels.FIRMWARE.value
+    return heater_shaker_module_default
+
+
+@pytest.fixture
+def heater_shaker_module_use_stdin(
+    heater_shaker_module_default: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Heater-shaker dictionary with mode set to stdin."""
+    heater_shaker_module_default["hardware_specific_attributes"] = {
+        "mode": HeaterShakerModes.STDIN
+    }
+    return heater_shaker_module_default
 
 
 def test_default_heater_shaker(heater_shaker_module_default: Dict[str, Any]) -> None:

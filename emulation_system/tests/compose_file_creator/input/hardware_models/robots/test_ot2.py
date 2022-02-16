@@ -12,6 +12,7 @@ from pydantic import (
 
 from emulation_system.compose_file_creator.input.hardware_models import OT2InputModel
 from emulation_system.compose_file_creator.settings.config_file_settings import (
+    EmulationLevels,
     Hardware,
     OpentronsRepository,
 )
@@ -20,6 +21,33 @@ from tests.compose_file_creator.conftest import (
     OT2_ID,
     OT2_SOURCE_TYPE,
 )
+
+
+@pytest.fixture
+def ot2_with_overridden_bound_port(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
+    """OT-2 with overridden bound-port."""
+    ot2_default["bound-port"] = 2500
+    return ot2_default
+
+
+@pytest.fixture
+def ot2_bad_emulation_level(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
+    """Return magnetic module configuration with an invalid emulation level."""
+    ot2_default["emulation-level"] = EmulationLevels.HARDWARE.value
+    return ot2_default
+
+
+@pytest.fixture
+def ot2_with_pipettes(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
+    """OT-2 using user-specified pipettes."""
+    ot2_default["hardware-specific-attributes"]["left-pipette"] = {}
+    ot2_default["hardware-specific-attributes"]["left-pipette"]["model"] = "test_1"
+    ot2_default["hardware-specific-attributes"]["left-pipette"]["id"] = "test_1_id"
+
+    ot2_default["hardware-specific-attributes"]["right-pipette"] = {}
+    ot2_default["hardware-specific-attributes"]["right-pipette"]["model"] = "test_2"
+    ot2_default["hardware-specific-attributes"]["right-pipette"]["id"] = "test_2_id"
+    return ot2_default
 
 
 def test_default_ot2(ot2_default: Dict[str, Any]) -> None:
