@@ -67,9 +67,12 @@ jobs:
 
       - name: "Build Configuration File"
         run: cp configuration_sample.json configuration.json
+        working-directory: ./opentrons-emulation
 
       - name: "Setup Project"
         run: make setup
+        working-directory: ./opentrons-emulation
 
       - name: "Test All Samples"
         run: make test-samples
+        working-directory: ./opentrons-emulation
