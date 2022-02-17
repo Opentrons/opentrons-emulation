@@ -1,11 +1,4 @@
 {
-    "global-settings": {
-        "default-folder-paths": {
-            "opentrons": "/home/opentrons",
-            "ot3-firmware": "/home/ot3-firmware",
-            "modules": "/home/opentrons-modules"
-        }
-    },
     "emulation-settings": {
         "source-download-locations": {
             "heads": {
@@ -19,11 +12,5 @@
                 "modules": "https://github.com/Opentrons/opentrons-modules/archive/{{commit-sha}}.zip"
             }
         }
-    },
-    "virtual-machine-settings": {
-        "vm-memory": 4096,
-        "vm-cpus": 2,
-        "num-socket-can-networks": 1
-    },
-    "aws-ecr-settings": {}
+    }
 }
