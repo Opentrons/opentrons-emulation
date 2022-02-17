@@ -9,7 +9,6 @@ on:
     paths:
       - 'emulation_system/**'
       - 'samples/**'
-      - 'opentrons-emulation'
     tags-ignore:
       - '*'
   pull_request:
@@ -50,9 +49,6 @@ jobs:
         with:
           repository: Opentrons/opentrons-modules
           path: opentrons-modules
-
-      - name: "What do I look like"
-        run: ls -l
 
       - name: "Setup Python"
         uses: 'actions/setup-python@v2'
