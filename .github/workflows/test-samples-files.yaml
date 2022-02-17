@@ -47,6 +47,9 @@ jobs:
         with:
           repository: Opentrons/opentrons-modules
 
+      - name: "What do I look like"
+        run: ls -l
+
       - name: "Setup Python"
         uses: 'actions/setup-python@v2'
         with:
