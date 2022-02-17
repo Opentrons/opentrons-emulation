@@ -80,3 +80,7 @@ format:
 .PHONY: test
 test:
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) test
+
+.PHONY: test-samples
+test-samples:
+	./scripts/test_samples.sh
