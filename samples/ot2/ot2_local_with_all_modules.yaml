@@ -18,7 +18,7 @@ robot:
   source-type: remote
   source-location: latest
   robot-server-source-type: local
-  robot-server-source-location: /home/repos/opentrons
+  robot-server-source-location: /home/runner/work/opentrons-emulation/opentrons-emulation/opentrons
   emulation-level: firmware
   exposed-port: 31950
 modules:
