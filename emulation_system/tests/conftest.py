@@ -18,13 +18,6 @@ def get_test_conf() -> OpentronsEmulationConfiguration:
     )
 
 
-def get_default_folder_path(name: str) -> str:
-    """Gets default folder path from test config file."""
-    return get_test_conf().global_settings.default_folder_paths.__getattribute__(
-        name.replace("-", "_")
-    )
-
-
 def get_source_download_locations() -> SourceDownloadLocations:
     """Get source download locations from test config file."""
     return get_test_conf().emulation_settings.source_download_locations
@@ -43,10 +36,6 @@ def get_commit(name: str) -> str:
         name.replace("-", "_")
     )
 
-
-TEST_CONF_OPENTRONS_PATH = get_default_folder_path("opentrons")
-TEST_CONF_FIRMWARE_PATH = get_default_folder_path("ot3-firmware")
-TEST_CONF_MODULES_PATH = get_default_folder_path("modules")
 
 TEST_CONF_OPENTRONS_HEAD = get_head("opentrons")
 TEST_CONF_FIRMWARE_HEAD = get_head("ot3-firmware")
