@@ -1,7 +1,6 @@
 EMULATION_SYSTEM_DIR := emulation_system
 
 SUB = {SUB}
-VAGRANT_CMD := (cd ./emulation_system && pipenv run python main.py vm) && (cd vagrant && vagrant{SUB})
 
 EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} -)
 COMPOSE_BUILD_COMMAND := docker buildx bake --file tmp-compose.yaml
@@ -9,26 +8,6 @@ COMPOSE_RUN_COMMAND := docker-compose -f - up -d
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
 COMPOSE_LOGS_COMMAND := docker-compose -f - logs -f
-
-.PHONY: vm-create
-vm-create:
-	$(eval CMD := up)
-	$(subst $(SUB), $(CMD), $(VAGRANT_CMD))
-
-.PHONY: vm-remove
-vm-remove:
-	$(eval CMD := destroy --force)
-	$(subst $(SUB), $(CMD), $(VAGRANT_CMD))
-
-.PHONY: vm-ssh
-vm-ssh:
-	$(eval CMD := ssh default)
-	$(subst $(SUB), $(CMD), $(VAGRANT_CMD))
-
-.PHONY: vm-setup
-vm-setup:
-	$(eval CMD := ssh default -c '(cd opentrons-emulation/emulation_system && make setup)')
-	$(subst $(SUB), $(CMD), $(VAGRANT_CMD))
 
 .PHONY: em-build-amd64
 em-build-amd64:
