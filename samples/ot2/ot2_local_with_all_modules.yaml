@@ -1,3 +1,16 @@
+######################
+# System Description #
+######################
+
+# This system builds an OT2 and 1 of each module.
+
+########################
+# Required Source Code #
+########################
+
+# You are required to supply source code paths for `robot-server-source-location`
+# `robot-server-source-location` supplies source code for the robot-server
+
 system-unique-id: ot2-with-all-modules
 robot:
   id: otie
