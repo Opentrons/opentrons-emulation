@@ -30,27 +30,6 @@ jobs:
         with:
           node-version: '12'
 
-      - name: "Make `repos` Directory"
-        run: mkdir --parents /home/repos
-
-      - name: "Checkout Monorepo"
-        uses: actions/checkout@v2
-        with:
-          repository: Opentrons/opentrons
-          path: /home/opentrons
-
-      - name: "Checkout ot3-firmware"
-        uses: actions/checkout@v2
-        with:
-          repository: Opentrons/ot3-firmware
-          path: /home/ot3-firmware
-
-      - name: "Checkout opentrons-modules"
-        uses: actions/checkout@v2
-        with:
-          repository: Opentrons/opentrons-modules
-          path: /home/opentrons-modules
-
       - name: "Setup Python"
         uses: 'actions/setup-python@v2'
         with:
