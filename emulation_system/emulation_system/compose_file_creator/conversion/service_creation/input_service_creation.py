@@ -1,12 +1,6 @@
 """Pure functions related to creating Service objects from definitions in input file."""
 
-from typing import (
-    Any,
-    Dict,
-    List,
-    Optional,
-    Union,
-)
+from typing import Any, Dict, List, Optional, Union
 
 from emulation_system.compose_file_creator.conversion.intermediate_types import (
     RequiredNetworks,
@@ -33,6 +27,7 @@ from emulation_system.compose_file_creator.settings.custom_types import Containe
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
+
 from .shared_functions import (
     generate_container_name,
     get_build_args,
@@ -91,8 +86,8 @@ def _get_env_vars(
     temp_vars: Dict[str, Any] = {}
 
     if (
-            issubclass(container.__class__, RobotInputModel)
-            and emulator_proxy_name is not None
+        issubclass(container.__class__, RobotInputModel)
+        and emulator_proxy_name is not None
     ):
         temp_vars["OT_EMULATOR_module_server"] = f'{{"host": "{emulator_proxy_name}"}}'
 
@@ -127,13 +122,13 @@ def configure_input_service(
     build_args = None
     source_location = None
     if (
-            issubclass(container.__class__, RobotInputModel)
-            and container.robot_server_source_type == SourceType.REMOTE
+        issubclass(container.__class__, RobotInputModel)
+        and container.robot_server_source_type == SourceType.REMOTE
     ):
         source_location = container.robot_server_source_location
     elif (
-            not issubclass(container.__class__, RobotInputModel)
-            and container.source_type == SourceType.REMOTE
+        not issubclass(container.__class__, RobotInputModel)
+        and container.source_type == SourceType.REMOTE
     ):
         source_location = container.source_location
 
