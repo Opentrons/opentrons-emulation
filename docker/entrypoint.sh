@@ -44,23 +44,23 @@ case $FULL_COMMAND in
     ;;
 
   run-heater-shaker-hardware)
-    bash -c "/opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator $OTHER_ARGS"
+    bash -c "/heater-shaker-simulator $OTHER_ARGS"
     ;;
   run-thermocycler-hardware)
-    bash -c "/opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator $OTHER_ARGS"
+    bash -c "/thermocycler-refresh-simulator $OTHER_ARGS"
     ;;
 
   run-ot3-pipettes-hardware)
-    /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator
+    /pipettes-simulator
     ;;
   run-ot3-head-hardware)
-    /ot3-firmware/build-host/head/simulator/head-simulator
+    /head-simulator
     ;;
   run-ot3-gantry-x-hardware)
-    /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator
+    /gantry-x-simulator
     ;;
   run-ot3-gantry-y-hardware)
-    /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator
+    /gantry-y-simulator
     ;;
 
   # Firmware Level
