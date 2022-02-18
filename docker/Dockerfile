@@ -166,6 +166,8 @@ ENV OPENTRONS_HARDWARE "robot-server"
 FROM python-base as smoothie-local
 ENV OPENTRONS_HARDWARE "smoothie"
 
+FROM python-base as can-server-local
+ENV OPENTRONS_HARDWARE "can-server"
 
 
 
@@ -369,5 +371,10 @@ ENTRYPOINT ["/entrypoint.sh", "run"]
 
 FROM firmware-common as smoothie-remote
 ENV OPENTRONS_HARDWARE "smoothie"
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM firmware-common as can-server-remote
+ENV OPENTRONS_HARDWARE "can-server"
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]

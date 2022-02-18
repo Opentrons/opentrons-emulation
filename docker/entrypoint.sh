@@ -65,12 +65,13 @@ case $FULL_COMMAND in
 
   # Firmware Level
 
-  build-thermocycler-firmware|build-magdeck-firmware|build-tempdeck-firmware|build-emulator-proxy|build-robot-server|build-common-firmware)
+  build-thermocycler-firmware|build-magdeck-firmware|build-tempdeck-firmware|build-emulator-proxy|build-robot-server|build-common-firmware|build-smoothie|build-can-server)
     rm -rf /usr/local/lib/python3.8/dist-packages/*
     (cd /opentrons/shared-data/python && python3 setup.py bdist_wheel -d /dist/)
     (cd /opentrons/api && python3 setup.py bdist_wheel -d /dist/)
     (cd /opentrons/notify-server && python3 setup.py bdist_wheel -d /dist/)
     (cd /opentrons/robot-server && python3 setup.py bdist_wheel -d /dist/)
+    (cd /opentrons/hardware && python3 setup.py bdist_wheel -d /dist/)
     pip install /dist/*
     ;;
 
@@ -91,6 +92,9 @@ case $FULL_COMMAND in
     ;;
   run-smoothie)
     bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_smoothie"
+    ;;
+  run-can-server)
+    bash -c "python3 -m opentrons_hardware.scripts.sim_socket_can"
     ;;
   *)
     echo "Command ${FULL_COMMAND} not found."
