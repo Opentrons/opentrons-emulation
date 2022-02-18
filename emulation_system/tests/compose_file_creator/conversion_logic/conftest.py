@@ -1,5 +1,11 @@
 """Conftest for conversion logic."""
-from typing import Any, Dict, cast
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+    cast,
+)
 
 import py
 import pytest
@@ -72,7 +78,7 @@ def robot_with_mount_and_modules_services(
     )
 
 
-def partial_string_in_mount(string: str, service: Service) -> bool:
+def partial_string_in_mount(string: str, volumes: Optional[List[str]]) -> bool:
     """Check if the partial string exists in any of the Service's mounts."""
-    assert service.volumes is not None
-    return any([string in volume for volume in service.volumes])
+    assert volumes is not None
+    return any([string in volume for volume in volumes])
