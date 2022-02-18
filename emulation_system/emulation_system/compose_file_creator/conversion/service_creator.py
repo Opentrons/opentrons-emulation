@@ -66,6 +66,7 @@ def create_services(
                 container,
                 emulator_proxy_name,
                 smoothie_name,
+                can_server_service_name,
                 config_model,
                 required_networks,
                 global_settings,

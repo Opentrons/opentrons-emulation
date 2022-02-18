@@ -1,6 +1,12 @@
 """Pure functions related to creating Service objects from definitions in input file."""
 
-from typing import Any, Dict, List, Optional, Union
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+    Union,
+)
 
 from emulation_system.compose_file_creator.conversion.intermediate_types import (
     RequiredNetworks,
@@ -27,7 +33,6 @@ from emulation_system.compose_file_creator.settings.custom_types import Containe
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
-
 from .shared_functions import (
     generate_container_name,
     get_build_args,
@@ -81,12 +86,13 @@ def _get_env_vars(
     container: Containers,
     emulator_proxy_name: Optional[str],
     smoothie_name: Optional[str],
+    can_server_service_name: Optional[str],
 ) -> ListOrDict:
     temp_vars: Dict[str, Any] = {}
 
     if (
-        issubclass(container.__class__, RobotInputModel)
-        and emulator_proxy_name is not None
+            issubclass(container.__class__, RobotInputModel)
+            and emulator_proxy_name is not None
     ):
         temp_vars["OT_EMULATOR_module_server"] = f'{{"host": "{emulator_proxy_name}"}}'
 
@@ -97,6 +103,9 @@ def _get_env_vars(
 
     if issubclass(container.__class__, OT3InputModel):
         temp_vars["OT_API_FF_enableOT3HardwareController"] = True
+        temp_vars["OT3_CAN_DRIVER_interface"] = "opentrons_sock"
+        temp_vars["OT3_CAN_DRIVER_host"] = can_server_service_name
+        temp_vars["OT3_CAN_DRIVER_port"] = 9898
 
     if issubclass(container.__class__, ModuleInputModel):
         temp_vars.update(container.get_serial_number_env_var())
@@ -109,6 +118,7 @@ def configure_input_service(
     container: Containers,
     emulator_proxy_name: Optional[str],
     smoothie_name: Optional[str],
+    can_server_service_name: Optional[str],
     config_model: SystemConfigurationModel,
     required_networks: RequiredNetworks,
     global_settings: OpentronsEmulationConfiguration,
@@ -135,6 +145,7 @@ def configure_input_service(
             global_settings.get_repo_commit(repo),
             global_settings.get_repo_head(repo),
         )
+
     service = Service(
         container_name=generate_container_name(container.id, config_model),
         image=get_service_image(container.get_image_name()),
@@ -147,6 +158,8 @@ def configure_input_service(
         ),
         ports=_get_port_bindings(container),
         command=_get_command(container, emulator_proxy_name),
-        environment=_get_env_vars(container, emulator_proxy_name, smoothie_name),
+        environment=_get_env_vars(
+            container, emulator_proxy_name, smoothie_name, can_server_service_name
+        ),
     )
     return service
