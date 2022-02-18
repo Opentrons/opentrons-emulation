@@ -131,7 +131,7 @@ def configure_input_service(
         repo = container.get_source_repo()
         build_args = get_build_args(
             repo,
-            container.source_location,
+            source_location,
             global_settings.get_repo_commit(repo),
             global_settings.get_repo_head(repo),
         )
