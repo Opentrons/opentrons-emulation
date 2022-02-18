@@ -91,13 +91,16 @@ class HardwareModel(BaseModel):
 
     def _get_source_code_mount(self) -> List[DirectoryMount]:
         """If running a local type image add the mount to the mounts attribute."""
+        service_mount_path = os.path.basename(
+            os.path.normpath(self.source_location)
+        )
         return (
             [
                 DirectoryMount(
                     name=SOURCE_CODE_MOUNT_NAME,
                     type=MountTypes.DIRECTORY,
                     source_path=pathlib.Path(self.source_location),
-                    mount_path=f"/{self.get_source_repo()}",
+                    mount_path=f"/{service_mount_path}",
                 )
             ]
             if self.source_type == SourceType.LOCAL
