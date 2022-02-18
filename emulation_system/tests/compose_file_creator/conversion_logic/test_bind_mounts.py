@@ -1,5 +1,11 @@
 """Tests related to bind mounts."""
-from typing import Any, Dict, List
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+)
 
 import py
 import pytest
@@ -29,6 +35,36 @@ from tests.compose_file_creator.conversion_logic.conftest import partial_string_
 
 
 @pytest.fixture
+def set_source_type_params(
+    testing_global_em_config: OpentronsEmulationConfiguration
+) -> Callable:
+    def _set_source_type_params(
+        robot_dict: Dict[str, Any],
+        source_type: SourceType,
+        source_location: str,
+        robot_server_source_type: SourceType,
+        robot_server_source_location: str,
+        can_server_source_type: Optional[SourceType],
+        can_server_source_location: Optional[str]
+    ) -> RuntimeComposeFileModel:
+        robot_dict["source-type"] = source_type
+        robot_dict["source-location"] = source_location
+        robot_dict["robot-server-source-type"] = robot_server_source_type
+        robot_dict["robot-server-source-location"] = robot_server_source_location
+
+        if (
+                can_server_source_type is not None
+                and can_server_source_location is not None
+        ):
+            robot_dict["can-server-source-type"] = can_server_source_type
+            robot_dict["can-server-source-location"] = can_server_source_location
+
+        return convert_from_obj({"robot": robot_dict}, testing_global_em_config)
+
+    return _set_source_type_params
+
+
+@pytest.fixture
 def ot3_firmware_dir(tmpdir: py.path.local) -> str:
     """Get path to temporary opentrons-modules directory.
 
@@ -39,119 +75,220 @@ def ot3_firmware_dir(tmpdir: py.path.local) -> str:
 
 
 @pytest.fixture
-def ot3_local_source_local_robot(
+def ot3_local_source_local_robot_remote_can(
     ot3_default: Dict[str, Any],
     opentrons_dir: str,
     ot3_firmware_dir: str,
-    testing_global_em_config: OpentronsEmulationConfiguration,
+    set_source_type_params: Callable
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
-    ot3_default["source-type"] = SourceType.LOCAL
-    ot3_default["source-location"] = ot3_firmware_dir
-    ot3_default["robot-server-source-type"] = SourceType.LOCAL
-    ot3_default["robot-server-source-location"] = opentrons_dir
-    return convert_from_obj({"robot": ot3_default}, testing_global_em_config)
+    return set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.LOCAL,
+        source_location=ot3_firmware_dir,
+        robot_server_source_type=SourceType.LOCAL,
+        robot_server_source_location=opentrons_dir,
+        can_server_source_type="remote",
+        can_server_source_location="latest"
+    )
 
 
 @pytest.fixture
-def ot3_local_source_remote_robot(
+def ot3_local_source_remote_robot_remote_can(
     ot3_default: Dict[str, Any],
-    opentrons_dir: str,
     ot3_firmware_dir: str,
-    testing_global_em_config: OpentronsEmulationConfiguration,
+    set_source_type_params: Callable
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
-    ot3_default["source-type"] = SourceType.LOCAL
-    ot3_default["source-location"] = ot3_firmware_dir
-    ot3_default["robot-server-source-type"] = SourceType.REMOTE
-    ot3_default["robot-server-source-location"] = "latest"
-    return convert_from_obj({"robot": ot3_default}, testing_global_em_config)
+    return set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.LOCAL,
+        source_location=ot3_firmware_dir,
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location="latest",
+        can_server_source_type="remote",
+        can_server_source_location="latest"
+    )
 
 
 @pytest.fixture
-def ot3_remote_source_local_robot(
+def ot3_remote_source_local_robot_remote_can(
     ot3_default: Dict[str, Any],
     opentrons_dir: str,
-    ot3_firmware_dir: str,
-    testing_global_em_config: OpentronsEmulationConfiguration,
+    set_source_type_params: Callable
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
-    ot3_default["source-type"] = SourceType.REMOTE
-    ot3_default["source-location"] = "latest"
-    ot3_default["robot-server-source-type"] = SourceType.LOCAL
-    ot3_default["robot-server-source-location"] = opentrons_dir
-    return convert_from_obj({"robot": ot3_default}, testing_global_em_config)
+    return set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.REMOTE,
+        source_location="latest",
+        robot_server_source_type=SourceType.LOCAL,
+        robot_server_source_location=opentrons_dir,
+        can_server_source_type="remote",
+        can_server_source_location="latest"
+    )
 
 
 @pytest.fixture
-def ot3_remote_source_remote_robot(
+def ot3_remote_source_remote_robot_remote_can(
+    ot3_default: Dict[str, Any],
+    set_source_type_params: Callable
+) -> RuntimeComposeFileModel:
+    """Get OT3 configured for local source and local robot source."""
+    return set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.REMOTE,
+        source_location="latest",
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location="latest",
+        can_server_source_type="remote",
+        can_server_source_location="latest"
+    )
+
+
+@pytest.fixture
+def ot3_local_source_local_robot_local_can(
     ot3_default: Dict[str, Any],
     opentrons_dir: str,
     ot3_firmware_dir: str,
-    testing_global_em_config: OpentronsEmulationConfiguration,
+    set_source_type_params: Callable
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
-    ot3_default["source-type"] = SourceType.REMOTE
-    ot3_default["source-location"] = "latest"
-    ot3_default["robot-server-source-type"] = SourceType.REMOTE
-    ot3_default["robot-server-source-location"] = "latest"
-    return convert_from_obj({"robot": ot3_default}, testing_global_em_config)
+    return set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.LOCAL,
+        source_location=ot3_firmware_dir,
+        robot_server_source_type=SourceType.LOCAL,
+        robot_server_source_location=opentrons_dir,
+        can_server_source_type=SourceType.LOCAL,
+        can_server_source_location=opentrons_dir
+    )
+
+
+@pytest.fixture
+def ot3_local_source_remote_robot_local_can(
+    ot3_default: Dict[str, Any],
+    opentrons_dir: str,
+    ot3_firmware_dir: str,
+    set_source_type_params: Callable
+) -> RuntimeComposeFileModel:
+    """Get OT3 configured for local source and local robot source."""
+    return set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.LOCAL,
+        source_location=ot3_firmware_dir,
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location="latest",
+        can_server_source_type=SourceType.LOCAL,
+        can_server_source_location=opentrons_dir
+    )
+
+
+@pytest.fixture
+def ot3_remote_source_local_robot_local_can(
+    ot3_default: Dict[str, Any],
+    opentrons_dir: str,
+    set_source_type_params: Callable
+) -> RuntimeComposeFileModel:
+    """Get OT3 configured for local source and local robot source."""
+    return set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.REMOTE,
+        source_location="latest",
+        robot_server_source_type=SourceType.LOCAL,
+        robot_server_source_location=opentrons_dir,
+        can_server_source_type=SourceType.LOCAL,
+        can_server_source_location=opentrons_dir
+    )
+
+
+@pytest.fixture
+def ot3_remote_source_remote_robot_local_can(
+    ot3_default: Dict[str, Any],
+    opentrons_dir: str,
+    set_source_type_params: Callable
+) -> RuntimeComposeFileModel:
+    """Get OT3 configured for local source and local robot source."""
+    return set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.REMOTE,
+        source_location="latest",
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location="latest",
+        can_server_source_type=SourceType.LOCAL,
+        can_server_source_location=opentrons_dir
+    )
 
 
 @pytest.fixture
 def ot2_local_source_local_robot(
     ot2_default: Dict[str, Any],
     opentrons_dir: str,
-    testing_global_em_config: OpentronsEmulationConfiguration,
+    set_source_type_params: Callable
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
-    ot2_default["source-type"] = SourceType.LOCAL
-    ot2_default["source-location"] = opentrons_dir
-    ot2_default["robot-server-source-type"] = SourceType.LOCAL
-    ot2_default["robot-server-source-location"] = opentrons_dir
-    return convert_from_obj({"robot": ot2_default}, testing_global_em_config)
+    return set_source_type_params(
+        robot_dict=ot2_default,
+        source_type=SourceType.LOCAL,
+        source_location=opentrons_dir,
+        robot_server_source_type=SourceType.LOCAL,
+        robot_server_source_location=opentrons_dir,
+        can_server_source_type=None,
+        can_server_source_location=None
+    )
 
 
 @pytest.fixture
 def ot2_local_source_remote_robot(
     ot2_default: Dict[str, Any],
     opentrons_dir: str,
-    testing_global_em_config: OpentronsEmulationConfiguration,
+    set_source_type_params: Callable
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
-    ot2_default["source-type"] = SourceType.LOCAL
-    ot2_default["source-location"] = opentrons_dir
-    ot2_default["robot-server-source-type"] = SourceType.REMOTE
-    ot2_default["robot-server-source-location"] = "latest"
-    return convert_from_obj({"robot": ot2_default}, testing_global_em_config)
+    return set_source_type_params(
+        robot_dict=ot2_default,
+        source_type=SourceType.LOCAL,
+        source_location=opentrons_dir,
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location="latest",
+        can_server_source_type=None,
+        can_server_source_location=None
+    )
 
 
 @pytest.fixture
 def ot2_remote_source_local_robot(
     ot2_default: Dict[str, Any],
     opentrons_dir: str,
-    testing_global_em_config: OpentronsEmulationConfiguration,
+    set_source_type_params: Callable
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
-    ot2_default["source-type"] = SourceType.REMOTE
-    ot2_default["source-location"] = "latest"
-    ot2_default["robot-server-source-type"] = SourceType.LOCAL
-    ot2_default["robot-server-source-location"] = opentrons_dir
-    return convert_from_obj({"robot": ot2_default}, testing_global_em_config)
+    return set_source_type_params(
+        robot_dict=ot2_default,
+        source_type=SourceType.REMOTE,
+        source_location="latest",
+        robot_server_source_type=SourceType.LOCAL,
+        robot_server_source_location=opentrons_dir,
+        can_server_source_type=None,
+        can_server_source_location=None
+    )
 
 
 @pytest.fixture
 def ot2_remote_source_remote_robot(
     ot2_default: Dict[str, Any],
-    opentrons_dir: str,
-    testing_global_em_config: OpentronsEmulationConfiguration,
+    set_source_type_params: Callable
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
-    ot2_default["source-type"] = SourceType.REMOTE
-    ot2_default["source-location"] = "latest"
-    ot2_default["robot-server-source-type"] = SourceType.REMOTE
-    ot2_default["robot-server-source-location"] = "latest"
-    return convert_from_obj({"robot": ot2_default}, testing_global_em_config)
+    return set_source_type_params(
+        robot_dict=ot2_default,
+        source_type=SourceType.REMOTE,
+        source_location="latest",
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location="latest",
+        can_server_source_type=None,
+        can_server_source_location=None
+    )
 
 
 @pytest.mark.parametrize("service_name", [HEATER_SHAKER_MODULE_ID])
@@ -199,8 +336,10 @@ def test_service_with_bind_mounts(
     [
         lazy_fixture("ot2_local_source_local_robot"),
         lazy_fixture("ot2_remote_source_local_robot"),
-        lazy_fixture("ot3_local_source_local_robot"),
-        lazy_fixture("ot3_remote_source_local_robot"),
+        lazy_fixture("ot3_local_source_local_robot_remote_can"),
+        lazy_fixture("ot3_remote_source_local_robot_remote_can"),
+        lazy_fixture("ot3_local_source_local_robot_local_can"),
+        lazy_fixture("ot3_remote_source_local_robot_local_can"),
     ],
 )
 def test_robot_server_with_local_mounts(config: RuntimeComposeFileModel) -> None:
@@ -210,11 +349,15 @@ def test_robot_server_with_local_mounts(config: RuntimeComposeFileModel) -> None
     mounted in is the source specified in robot-server-source-location. Also make
     sure that entrypoint.sh is bound in.
     """
+    print(config)
     robot_server = config.robot_server
     assert robot_server is not None
-    assert partial_string_in_mount("opentrons:/opentrons", robot_server)
-    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", robot_server)
-    assert not partial_string_in_mount("ot3-firmware:/ot3-firmware", robot_server)
+    assert partial_string_in_mount("opentrons:/opentrons", robot_server.volumes)
+    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", robot_server.volumes)
+    assert not partial_string_in_mount(
+        "ot3-firmware:/ot3-firmware",
+        robot_server.volumes
+    )
 
 
 @pytest.mark.parametrize(
@@ -222,8 +365,10 @@ def test_robot_server_with_local_mounts(config: RuntimeComposeFileModel) -> None
     [
         lazy_fixture("ot2_local_source_remote_robot"),
         lazy_fixture("ot2_remote_source_remote_robot"),
-        lazy_fixture("ot3_local_source_remote_robot"),
-        lazy_fixture("ot3_remote_source_remote_robot"),
+        lazy_fixture("ot3_local_source_remote_robot_remote_can"),
+        lazy_fixture("ot3_remote_source_remote_robot_remote_can"),
+        lazy_fixture("ot3_local_source_remote_robot_local_can"),
+        lazy_fixture("ot3_remote_source_remote_robot_local_can"),
     ],
 )
 def test_robot_server_with_remote_mounts(config: RuntimeComposeFileModel) -> None:
@@ -236,8 +381,10 @@ def test_robot_server_with_remote_mounts(config: RuntimeComposeFileModel) -> Non
 @pytest.mark.parametrize(
     "config",
     [
-        lazy_fixture("ot3_local_source_remote_robot"),
-        lazy_fixture("ot3_local_source_local_robot"),
+        lazy_fixture("ot3_local_source_remote_robot_remote_can"),
+        lazy_fixture("ot3_local_source_local_robot_remote_can"),
+        lazy_fixture("ot3_local_source_remote_robot_local_can"),
+        lazy_fixture("ot3_local_source_local_robot_local_can"),
     ],
 )
 def test_ot3_firmware_services_with_local_mounts(
@@ -246,16 +393,18 @@ def test_ot3_firmware_services_with_local_mounts(
     """Confirm ot3 firmware and entrypoint.sh are mounted to OT3 services."""
     assert config.ot3_emulators is not None
     for emulator in config.ot3_emulators:
-        assert not partial_string_in_mount("opentrons:/opentrons", emulator)
-        assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", emulator)
-        assert partial_string_in_mount("ot3-firmware:/ot3-firmware", emulator)
+        assert len(emulator.volumes) == 2
+        assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", emulator.volumes)
+        assert partial_string_in_mount("ot3-firmware:/ot3-firmware", emulator.volumes)
 
 
 @pytest.mark.parametrize(
     "config",
     [
-        lazy_fixture("ot3_remote_source_remote_robot"),
-        lazy_fixture("ot3_remote_source_local_robot"),
+        lazy_fixture("ot3_remote_source_remote_robot_remote_can"),
+        lazy_fixture("ot3_remote_source_local_robot_remote_can"),
+        lazy_fixture("ot3_remote_source_remote_robot_local_can"),
+        lazy_fixture("ot3_remote_source_local_robot_local_can"),
     ],
 )
 def test_ot3_firmware_services_with_remote_mounts(
@@ -270,6 +419,39 @@ def test_ot3_firmware_services_with_remote_mounts(
 @pytest.mark.parametrize(
     "config",
     [
+        lazy_fixture("ot3_local_source_local_robot_remote_can"),
+        lazy_fixture("ot3_local_source_remote_robot_remote_can"),
+        lazy_fixture("ot3_remote_source_local_robot_remote_can"),
+        lazy_fixture("ot3_remote_source_remote_robot_remote_can"),
+    ],
+)
+def test_can_server_with_remote_mounts(config: RuntimeComposeFileModel) -> None:
+    """Confirm nothing is mounted to CAN server when can-server-source-type is remote."""  # noqa: E501
+    can_server = config.can_server
+    assert can_server is not None
+    assert can_server.volumes is None
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        lazy_fixture("ot3_local_source_local_robot_local_can"),
+        lazy_fixture("ot3_local_source_remote_robot_local_can"),
+        lazy_fixture("ot3_remote_source_local_robot_local_can"),
+        lazy_fixture("ot3_remote_source_remote_robot_local_can"),
+    ],
+)
+def test_can_server_with_local_mounts(config: RuntimeComposeFileModel) -> None:
+    """Confirm monorepo mounted to CAN server when can-server-source-type is local."""  # noqa: E501
+    can_server = config.can_server
+    assert can_server is not None
+    assert partial_string_in_mount("opentrons:/opentrons", can_server.volumes)
+    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", can_server.volumes)
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
         lazy_fixture("ot2_local_source_remote_robot"),
         lazy_fixture("ot2_local_source_local_robot"),
     ],
@@ -279,17 +461,18 @@ def test_ot2_firmware_services_with_local_mounts(
 ) -> None:
     """Confirm monorepo and entrypoint.sh are mounted to smoothie emulator."""
     assert config.smoothie_emulator is not None
-    assert partial_string_in_mount("opentrons:/opentrons", config.smoothie_emulator)
-    assert partial_string_in_mount(
-        "entrypoint.sh:/entrypoint.sh", config.smoothie_emulator
-    )
+    volumes = config.smoothie_emulator.volumes
+    assert volumes is not None
+    assert len(volumes) == 2
+    assert partial_string_in_mount("opentrons:/opentrons", volumes)
+    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", volumes)
 
 
 @pytest.mark.parametrize(
     "config",
     [
-        lazy_fixture("ot2_remote_source_remote_robot"),
         lazy_fixture("ot2_remote_source_local_robot"),
+        lazy_fixture("ot2_remote_source_remote_robot"),
     ],
 )
 def test_ot2_firmware_services_with_remote_mounts(
