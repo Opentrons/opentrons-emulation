@@ -1,5 +1,5 @@
 # This workflow runs test and lint on branch pushes that touch the
-# notify-server project or its dependencies
+# emulation-system project
 
 name: 'emulation-system Lint & Test'
 
@@ -29,7 +29,6 @@ jobs:
         uses: 'actions/checkout@v2'
         with:
           node-version: '12'
-
       - name: "Setup Python"
         uses: 'actions/setup-python@v2'
         with:
