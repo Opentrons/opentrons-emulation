@@ -115,7 +115,19 @@ def configure_input_service(
 ) -> Service:
     """Configures services that are defined in input file."""
     build_args = None
-    if container.source_type == SourceType.REMOTE:
+    source_location = None
+    if (
+            issubclass(container.__class__, RobotInputModel)
+            and container.robot_server_source_type == SourceType.REMOTE
+    ):
+        source_location = container.robot_server_source_location
+    elif (
+            not issubclass(container.__class__, RobotInputModel)
+            and container.source_type == SourceType.REMOTE
+    ):
+        source_location = container.source_location
+
+    if source_location is not None:
         repo = container.get_source_repo()
         build_args = get_build_args(
             repo,
