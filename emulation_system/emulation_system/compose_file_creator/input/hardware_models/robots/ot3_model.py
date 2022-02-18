@@ -1,4 +1,8 @@
 """OT-3 Module and it's attributes."""
+import os
+import pathlib
+from typing import List
+
 from pydantic import Field
 from typing_extensions import Literal
 
@@ -9,11 +13,15 @@ from emulation_system.compose_file_creator.input.hardware_models.robots.robot_mo
     RobotInputModel,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
+    CAN_SERVER_MOUNT_NAME,
+    DirectoryMount,
     EmulationLevels,
     Hardware,
+    MountTypes,
     OpentronsRepository,
     PipetteSettings,
     SourceRepositories,
+    SourceType,
 )
 
 
@@ -45,8 +53,28 @@ class OT3InputModel(RobotInputModel):
     source_repos: OT3SourceRepositories = Field(
         default=OT3SourceRepositories(), const=True
     )
+    can_server_source_type: SourceType = Field(alias="can-server-source-type")
+    can_server_source_location: str = Field(alias="can-server-source-location")
+
     hardware_specific_attributes: OT3Attributes = Field(
         alias="hardware-specific-attributes", default=OT3Attributes()
     )
     emulation_level: Literal[EmulationLevels.HARDWARE] = Field(alias="emulation-level")
     bound_port: int = Field(alias="bound-port", default=31950)
+
+    def get_can_mount_strings(self) -> List[str]:
+        service_mount_path = os.path.basename(
+            os.path.normpath(self.can_server_source_location)
+        )
+        return (
+            [
+                DirectoryMount(
+                    name=CAN_SERVER_MOUNT_NAME,
+                    type=MountTypes.DIRECTORY,
+                    source_path=pathlib.Path(self.can_server_source_location),
+                    mount_path=f"/{service_mount_path}",
+                ).get_bind_mount_string()
+            ]
+            if self.can_server_source_type == SourceType.LOCAL
+            else []
+        )
