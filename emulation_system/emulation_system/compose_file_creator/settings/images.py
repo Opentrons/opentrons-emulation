@@ -133,6 +133,15 @@ class OT3GantryYImages(Images):
     remote_hardware_image_name: str = "ot3-gantry-y-hardware-remote"
 
 
+class CANServerImages(Images):
+    """Image names for CAN server."""
+
+    local_firmware_image_name: str = "can-server-local"
+    local_hardware_image_name: Literal[None] = None
+    remote_firmware_image_name: str = "can-server-remote"
+    remote_hardware_image_name: Literal[None] = None
+
+
 IMAGE_MAPPING = {
     Hardware.HEATER_SHAKER_MODULE.value: HeaterShakerModuleImages(),
     Hardware.MAGNETIC_MODULE.value: MagneticModuleImages(),
