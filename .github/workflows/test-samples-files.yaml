@@ -1,0 +1,74 @@
+# This workflow runs when a change is made to emulation-system or the sample files.
+# It runs all the sample files and ensure that they output a compose file
+
+name: 'Test Sample Files'
+
+on:
+  # Most of the time, we run on pull requests, which lets us handle external PRs
+  push:
+    paths:
+      - 'emulation_system/**'
+      - 'samples/**'
+    tags-ignore:
+      - '*'
+  pull_request:
+    paths:
+      - 'emulation_system/**'
+      - 'samples/**'
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  lint-test:
+    name: 'Run All Sample Files'
+    runs-on: 'ubuntu-18.04'
+    steps:
+      - name: "Checkout Repo"
+        uses: 'actions/checkout@v2'
+        with:
+          node-version: '12'
+          path: opentrons-emulation
+
+      - name: "Checkout Monorepo"
+        uses: actions/checkout@v2
+        with:
+          repository: Opentrons/opentrons
+          path: opentrons
+
+      - name: "Checkout ot3-firmware"
+        uses: actions/checkout@v2
+        with:
+          repository: Opentrons/ot3-firmware
+          path: ot3-firmware
+
+      - name: "Checkout opentrons-modules"
+        uses: actions/checkout@v2
+        with:
+          repository: Opentrons/opentrons-modules
+          path: opentrons-modules
+
+      - name: "Setup Python"
+        uses: 'actions/setup-python@v2'
+        with:
+          python-version: '3.7'
+
+      - name: "Setup Env"
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libsystemd-dev
+          pip install pipenv==2021.5.29
+
+      - name: "Build Configuration File"
+        run: cp configuration_sample.json configuration.json
+        working-directory: ./opentrons-emulation
+
+      - name: "Setup Project"
+        run: make setup
+        working-directory: ./opentrons-emulation
+
+      - name: "Test All Samples"
+        run: make test-samples
+        working-directory: ./opentrons-emulation

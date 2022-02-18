@@ -1,9 +1,23 @@
+######################
+# System Description #
+######################
+
+# This system builds an OT2 and 2 heaters-shakers
+
+########################
+# Required Source Code #
+########################
+
+# All source code is pulled from the latest version in Github
+
 system-unique-id: ot2-and-2-heater-shakers
 robot:
   id: otie
   hardware: ot2
   source-type: remote
   source-location: latest
+  robot-server-source-type: remote
+  robot-server-source-location: latest
   emulation-level: firmware
   exposed-port: 31950
 modules:

@@ -1,0 +1,22 @@
+######################
+# System Description #
+######################
+
+# This system builds a single OT3
+
+########################
+# Required Source Code #
+########################
+
+# All source code is pulled from the latest version in Github
+
+system-unique-id: ot3-only
+robot:
+  id: otie
+  hardware: ot3
+  source-type: remote
+  source-location: latest
+  robot-server-source-type: remote
+  robot-server-source-location: latest
+  emulation-level: hardware
+  exposed-port: 31950
