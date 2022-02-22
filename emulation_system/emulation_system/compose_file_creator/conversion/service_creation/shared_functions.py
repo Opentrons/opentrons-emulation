@@ -16,15 +16,10 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     FileMount,
     MountTypes,
     OpentronsRepository,
+    RepoToBuildArgMapping,
 )
 from emulation_system.compose_file_creator.settings.custom_types import Containers
 from emulation_system.consts import DOCKERFILE_DIR_LOCATION, ENTRYPOINT_FILE_LOCATION
-
-REPO_TO_BUILD_ARG_MAPPING = {
-    OpentronsRepository.OPENTRONS: "OPENTRONS_SOURCE_DOWNLOAD_LOCATION",
-    OpentronsRepository.OPENTRONS_MODULES: "MODULE_SOURCE_DOWNLOAD_LOCATION",
-    OpentronsRepository.OT3_FIRMWARE: "FIRMWARE_SOURCE_DOWNLOAD_LOCATION",
-}
 
 
 def generate_container_name(
@@ -81,7 +76,7 @@ def get_build_args(
     head: str,
 ) -> ListOrDict:
     """Get build arguments for service."""
-    env_var_to_use = REPO_TO_BUILD_ARG_MAPPING[source_repo]
+    env_var_to_use = RepoToBuildArgMapping[source_repo.name]
     value = (
         head
         if source_location == "latest"

@@ -84,6 +84,14 @@ class OpentronsRepository(str, Enum):
     OPENTRONS_MODULES = "opentrons-modules"
 
 
+class RepoToBuildArgMapping(str, Enum):
+    """Build arg to use for specifying source download location."""
+
+    OPENTRONS = "OPENTRONS_SOURCE_DOWNLOAD_LOCATION"
+    OT3_FIRMWARE = "FIRMWARE_SOURCE_DOWNLOAD_LOCATION"
+    OPENTRONS_MODULES = "MODULE_SOURCE_DOWNLOAD_LOCATION"
+
+
 class SourceRepositories(BaseModel):
     """Stores names of source code repos for each piece of hardware."""
 

@@ -1,5 +1,9 @@
 """Pure functions related to creating emulator-proxy service."""
-from typing import List, Optional, Union
+from typing import (
+    List,
+    Optional,
+    Union,
+)
 
 from emulation_system.compose_file_creator.conversion.intermediate_types import (
     RequiredNetworks,
@@ -27,14 +31,16 @@ from emulation_system.compose_file_creator.settings.images import CANServerImage
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
-
-from ...errors import HardwareDoesNotExistError, IncorrectHardwareError
 from .shared_functions import (
     generate_container_name,
     get_build_args,
     get_entrypoint_mount_string,
     get_service_build,
     get_service_image,
+)
+from ...errors import (
+    HardwareDoesNotExistError,
+    IncorrectHardwareError,
 )
 
 MODULE_TYPES = [
@@ -51,7 +57,8 @@ def _create_emulator_proxy_env_vars() -> ListOrDict:
         __root__={
             env_var_name: env_var_value
             for module in MODULE_TYPES
-            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()  # type: ignore [attr-defined] # noqa: E501
+            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()
+            # type: ignore [attr-defined] # noqa: E501
         }
     )
 
@@ -86,18 +93,21 @@ def create_can_server_service(
         mounts = [get_entrypoint_mount_string()]
         mounts.extend(ot3.get_can_mount_strings())
 
-    return Service(
-        container_name=can_server_name,
-        image=get_service_image(image),
-        build=get_service_build(
-            image,
-            get_build_args(
+    build_args = (
+        get_build_args(
                 repo,
                 "latest",
                 global_settings.get_repo_commit(repo),
                 global_settings.get_repo_head(repo),
-            ),
-        ),
+        )
+        if ot3.can_server_source_type == SourceType.REMOTE
+        else None
+    )
+
+    return Service(
+        container_name=can_server_name,
+        image=get_service_image(image),
+        build=get_service_build(image, build_args),
         tty=True,
         networks=required_networks.networks,
         volumes=mounts,
