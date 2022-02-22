@@ -1,5 +1,5 @@
 """Conftest for conversion logic."""
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, Dict, List, Optional, Union, cast
 
 import py
 import pytest
@@ -7,7 +7,10 @@ import pytest
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import Service
+from emulation_system.compose_file_creator.output.compose_file_model import (
+    Service,
+    Volume1,
+)
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     MountTypes,
 )
@@ -72,7 +75,9 @@ def robot_with_mount_and_modules_services(
     )
 
 
-def partial_string_in_mount(string: str, volumes: Optional[List[str]]) -> bool:
+def partial_string_in_mount(
+    string: str, volumes: Optional[List[Union[str, Volume1]]]
+) -> bool:
     """Check if the partial string exists in any of the Service's mounts."""
     assert volumes is not None
     return any([string in volume for volume in volumes])

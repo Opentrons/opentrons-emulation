@@ -51,8 +51,7 @@ def _create_emulator_proxy_env_vars() -> ListOrDict:
         __root__={
             env_var_name: env_var_value
             for module in MODULE_TYPES
-            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()
-            # type: ignore [attr-defined] # noqa: E501
+            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()  # type: ignore [attr-defined] # noqa: E501
         }
     )
 

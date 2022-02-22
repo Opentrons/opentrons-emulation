@@ -3,7 +3,6 @@ from typing import Any, Callable, Dict, Optional
 
 import py
 import pytest
-from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
@@ -24,6 +23,8 @@ from tests.compose_file_creator.conversion_logic.conftest import partial_string_
 def set_source_type_params(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> Callable:
+    """Create a runnable fixture that builds a RuntimeComposeFileModel."""
+
     def _set_source_type_params(
         robot_dict: Dict[str, Any],
         source_type: SourceType,
@@ -171,6 +172,7 @@ def test_ot3_remote_everything(ot3_remote_everything: RuntimeComposeFileModel) -
 
     assert robot_server.volumes is None
     assert can_server.volumes is None
+    assert ot3_remote_everything.ot3_emulators is not None
     for emulator in ot3_remote_everything.ot3_emulators:
         assert emulator.volumes is None
 
@@ -187,7 +189,9 @@ def test_ot3_local_source(ot3_local_source: RuntimeComposeFileModel) -> None:
 
     assert robot_server.volumes is None
     assert can_server.volumes is None
+    assert ot3_local_source.ot3_emulators is not None
     for emulator in ot3_local_source.ot3_emulators:
+        assert emulator.volumes is not None
         assert len(emulator.volumes) == 2
         assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", emulator.volumes)
         assert partial_string_in_mount("ot3-firmware:/ot3-firmware", emulator.volumes)
@@ -206,7 +210,9 @@ def test_ot3_local_can_server(ot3_local_can: RuntimeComposeFileModel) -> None:
     assert robot_server.volumes is None
     assert partial_string_in_mount("opentrons:/opentrons", can_server.volumes)
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", can_server.volumes)
+    assert can_server.volumes is not None
     assert len(can_server.volumes) == 2
+    assert ot3_local_can.ot3_emulators is not None
     for emulator in ot3_local_can.ot3_emulators:
         assert emulator.volumes is None
 
@@ -220,11 +226,12 @@ def test_ot3_local_robot_server(ot3_local_robot: RuntimeComposeFileModel) -> Non
     assert robot_server is not None
     assert can_server is not None
     assert emulators is not None
-
+    assert robot_server.volumes is not None
     assert partial_string_in_mount("opentrons:/opentrons", robot_server.volumes)
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", robot_server.volumes)
     assert len(robot_server.volumes) == 2
     assert can_server.volumes is None
+    assert ot3_local_robot.ot3_emulators is not None
     for emulator in ot3_local_robot.ot3_emulators:
         assert emulator.volumes is None
 
@@ -236,7 +243,7 @@ def test_ot2_local_robot_server(ot2_local_robot: RuntimeComposeFileModel) -> Non
 
     assert robot_server is not None
     assert smoothie is not None
-
+    assert robot_server.volumes is not None
     assert partial_string_in_mount("opentrons:/opentrons", robot_server.volumes)
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", robot_server.volumes)
     assert len(robot_server.volumes) == 2
@@ -250,7 +257,7 @@ def test_ot2_local_source(ot2_local_source: RuntimeComposeFileModel) -> None:
 
     assert robot_server is not None
     assert smoothie is not None
-
+    assert smoothie.volumes is not None
     assert partial_string_in_mount("opentrons:/opentrons", smoothie.volumes)
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", smoothie.volumes)
     assert len(smoothie.volumes) == 2

@@ -15,6 +15,7 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     ROBOT_SERVER_MOUNT_NAME,
     DirectoryMount,
     MountTypes,
+    OpentronsRepository,
     SourceType,
 )
 from emulation_system.compose_file_creator.settings.images import get_image_name
@@ -63,3 +64,7 @@ class RobotInputModel(HardwareModel):
         return get_image_name(
             self.hardware, self.robot_server_source_type, self.emulation_level
         )
+
+    def get_source_repo(self) -> OpentronsRepository:
+        """Override get_source_repo for robot-server."""
+        return OpentronsRepository.OPENTRONS

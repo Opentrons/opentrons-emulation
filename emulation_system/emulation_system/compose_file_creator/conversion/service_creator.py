@@ -50,6 +50,7 @@ def create_services(
             config_model, required_networks, global_settings
         )
         can_server_service_name = can_server_service.container_name
+        assert can_server_service_name is not None
         ot3_services = create_ot3_services(
             config_model, required_networks, global_settings, can_server_service_name
         )

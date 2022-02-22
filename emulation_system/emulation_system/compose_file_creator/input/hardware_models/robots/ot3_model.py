@@ -63,6 +63,7 @@ class OT3InputModel(RobotInputModel):
     bound_port: int = Field(alias="bound-port", default=31950)
 
     def get_can_mount_strings(self) -> List[str]:
+        """Get mount strings for can service."""
         service_mount_path = os.path.basename(
             os.path.normpath(self.can_server_source_location)
         )
