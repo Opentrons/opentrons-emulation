@@ -15,6 +15,8 @@ extend-ignore =
     ANN102,
     # who wants an __init__ method docstring? You are creating the object
     D107,
+    # I want to be able to end the first line with a dang comma
+    D415,
 
 # configure flake8-docstrings
 # https://pypi.org/project/flake8-docstrings/
