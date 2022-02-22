@@ -139,5 +139,5 @@ def test_local_ot3_services_created(
     service = services[container_name]
     assert service.image == expected_image_name
 
-    partial_string_in_mount("entrypoint.sh:/entrypoint.sh", service)
-    partial_string_in_mount("ot3-firmware:/ot3-firmware", service)
+    partial_string_in_mount("entrypoint.sh:/entrypoint.sh", service.volumes)
+    partial_string_in_mount("ot3-firmware:/ot3-firmware", service.volumes)

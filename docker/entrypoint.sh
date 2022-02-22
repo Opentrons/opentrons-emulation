@@ -44,33 +44,34 @@ case $FULL_COMMAND in
     ;;
 
   run-heater-shaker-hardware)
-    bash -c "/opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator $OTHER_ARGS"
+    bash -c "/heater-shaker-simulator $OTHER_ARGS"
     ;;
   run-thermocycler-hardware)
-    bash -c "/opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator $OTHER_ARGS"
+    bash -c "/thermocycler-refresh-simulator $OTHER_ARGS"
     ;;
 
   run-ot3-pipettes-hardware)
-    /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator
+    /pipettes-simulator
     ;;
   run-ot3-head-hardware)
-    /ot3-firmware/build-host/head/simulator/head-simulator
+    /head-simulator
     ;;
   run-ot3-gantry-x-hardware)
-    /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator
+    /gantry-x-simulator
     ;;
   run-ot3-gantry-y-hardware)
-    /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator
+    /gantry-y-simulator
     ;;
 
   # Firmware Level
 
-  build-thermocycler-firmware|build-magdeck-firmware|build-tempdeck-firmware|build-emulator-proxy|build-robot-server|build-common-firmware)
+  build-thermocycler-firmware|build-magdeck-firmware|build-tempdeck-firmware|build-emulator-proxy|build-robot-server|build-common-firmware|build-smoothie|build-can-server)
     rm -rf /usr/local/lib/python3.8/dist-packages/*
     (cd /opentrons/shared-data/python && python3 setup.py bdist_wheel -d /dist/)
     (cd /opentrons/api && python3 setup.py bdist_wheel -d /dist/)
     (cd /opentrons/notify-server && python3 setup.py bdist_wheel -d /dist/)
     (cd /opentrons/robot-server && python3 setup.py bdist_wheel -d /dist/)
+    (cd /opentrons/hardware && python3 setup.py bdist_wheel -d /dist/)
     pip install /dist/*
     ;;
 
@@ -91,6 +92,9 @@ case $FULL_COMMAND in
     ;;
   run-smoothie)
     bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_smoothie"
+    ;;
+  run-can-server)
+    bash -c "python3 -m opentrons_hardware.scripts.sim_socket_can"
     ;;
   *)
     echo "Command ${FULL_COMMAND} not found."

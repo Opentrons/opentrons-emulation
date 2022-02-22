@@ -12,6 +12,7 @@ from emulation_system.compose_file_creator.output.compose_file_model import (  #
     Service,
 )
 from emulation_system.compose_file_creator.settings.images import (
+    CANServerImages,
     EmulatorProxyImages,
     HeaterShakerModuleImages,
     Images,
@@ -106,6 +107,12 @@ class RuntimeComposeFileModel(ComposeSpecification):
     def ot3_gantry_y_emulator(self) -> Optional[Service]:
         """Returns OT3 Gantry Y service if one exists."""
         service_list = self._search_for_services(OT3GantryYImages, "OT3 Gantry Y")
+        return service_list[0] if service_list is not None else None
+
+    @property
+    def can_server(self) -> Optional[Service]:
+        """Returns CAN server service if one exists."""
+        service_list = self._search_for_services(CANServerImages, "CAn Server")
         return service_list[0] if service_list is not None else None
 
     @property

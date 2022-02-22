@@ -166,6 +166,9 @@ ENV OPENTRONS_HARDWARE "robot-server"
 FROM python-base as smoothie-local
 ENV OPENTRONS_HARDWARE "smoothie"
 
+FROM python-base as can-server-local
+ENV OPENTRONS_HARDWARE "can-server"
+
 
 
 
@@ -301,37 +304,37 @@ RUN pip install /dist/*
 
 FROM ubuntu-base as ot3-pipettes-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-pipettes-hardware"
-COPY --from=ot3-firmware-builder /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator
+COPY --from=ot3-firmware-builder /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator /pipettes-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
 FROM ubuntu-base as ot3-head-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-head-hardware"
-COPY --from=ot3-firmware-builder /ot3-firmware/build-host/head/simulator/head-simulator /ot3-firmware/build-host/head/simulator/head-simulator
+COPY --from=ot3-firmware-builder /ot3-firmware/build-host/head/simulator/head-simulator /head-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
 FROM ubuntu-base as ot3-gantry-x-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-gantry-x-hardware"
-COPY --from=ot3-firmware-builder /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator
+COPY --from=ot3-firmware-builder /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /gantry-x-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
 FROM ubuntu-base as ot3-gantry-y-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-gantry-y-hardware"
-COPY --from=ot3-firmware-builder /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator
+COPY --from=ot3-firmware-builder /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /gantry-y-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
 FROM ubuntu-base as heater-shaker-hardware-remote
 ENV OPENTRONS_HARDWARE "heater-shaker-hardware"
-COPY --from=heater-shaker-builder /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator
+COPY --from=heater-shaker-builder /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /heater-shaker-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
 FROM ubuntu-base as thermocycler-hardware-remote
 ENV OPENTRONS_HARDWARE "thermocycler-hardware"
-COPY --from=thermocycler-builder /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator
+COPY --from=thermocycler-builder /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator /thermocycler-refresh-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
@@ -369,5 +372,10 @@ ENTRYPOINT ["/entrypoint.sh", "run"]
 
 FROM firmware-common as smoothie-remote
 ENV OPENTRONS_HARDWARE "smoothie"
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM firmware-common as can-server-remote
+ENV OPENTRONS_HARDWARE "can-server"
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]

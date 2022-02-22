@@ -4,7 +4,7 @@ from typing import Dict, Optional
 
 import pytest
 from pydantic import ValidationError, parse_obj_as
-from pytest_lazyfixture import lazy_fixture  # type: ignore
+from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system.compose_file_creator.errors import InvalidRemoteSourceError
 from emulation_system.compose_file_creator.input.hardware_models import (

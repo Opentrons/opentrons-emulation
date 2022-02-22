@@ -8,7 +8,7 @@ from emulation_system.opentrons_emulation_configuration import (
 
 from ...errors import HardwareDoesNotExistError, IncorrectHardwareError
 from ...input.configuration_file import SystemConfigurationModel
-from ...output.compose_file_model import Service, Volume1
+from ...output.compose_file_model import ListOrDict, Service, Volume1
 from ...settings.config_file_settings import (
     Hardware,
     OpentronsRepository,
@@ -51,6 +51,7 @@ def create_ot3_services(
     config_model: SystemConfigurationModel,
     required_networks: RequiredNetworks,
     global_settings: OpentronsEmulationConfiguration,
+    can_server_name: str,
 ) -> List[Service]:
     """Create emulated OT3 hardware services."""
     ot3 = config_model.robot
@@ -76,7 +77,7 @@ def create_ot3_services(
         build_args = (
             get_build_args(
                 repo,
-                "latest",
+                ot3.source_location,
                 global_settings.get_repo_commit(repo),
                 global_settings.get_repo_head(repo),
             )
@@ -88,7 +89,7 @@ def create_ot3_services(
         if ot3.source_type == SourceType.LOCAL:
             mounts = [get_entrypoint_mount_string()]
             mounts.extend(ot3.get_mount_strings())
-
+        env = ListOrDict(__root__={"CAN_SERVER_HOST": can_server_name})
         ot3_services.append(
             Service(
                 container_name=container_name,
@@ -97,6 +98,7 @@ def create_ot3_services(
                 networks=required_networks.networks,
                 volumes=mounts,
                 tty=True,
+                environment=env,
             )
         )
     return ot3_services

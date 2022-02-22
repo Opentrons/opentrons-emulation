@@ -4,7 +4,7 @@ SUB = {SUB}
 
 EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} -)
 COMPOSE_BUILD_COMMAND := docker buildx bake --file tmp-compose.yaml
-COMPOSE_RUN_COMMAND := docker-compose -f - up -d
+COMPOSE_RUN_COMMAND := docker-compose -f - up
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
 COMPOSE_LOGS_COMMAND := docker-compose -f - logs -f
@@ -31,6 +31,12 @@ em-build-arm64:
 em-run:
 	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
 	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_RUN_COMMAND)
+
+
+.PHONY: em-run-detached
+em-run-detached:
+	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
+	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_RUN_COMMAND) -d
 
 
 .PHONY: em-remove

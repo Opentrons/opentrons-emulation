@@ -69,7 +69,7 @@ def create_smoothie_service(
     build_args = (
         get_build_args(
             repo,
-            "latest",
+            ot2.source_location,
             global_settings.get_repo_commit(repo),
             global_settings.get_repo_head(repo),
         )
@@ -86,16 +86,7 @@ def create_smoothie_service(
         image=get_service_image(image),
         build=get_service_build(image, build_args),
         networks=required_networks.networks,
-        # Using ot2 mount strings here. This will add the constraint that robot-server
-        # and smoothie use same source code. Going to leave this for now until it
-        # becomes a problem.
         volumes=mounts,
         tty=True,
         environment=converted_env,
-        # Intentionally not specifying command. Smoothie uses a separate executable
-        # from the other firmware emulations. This executable is hardcoded to be run
-        # when running a smoothie type container. See run-smoothie inside entrypoint.sh
-        command=None,
-        # No ports needed for smoothie
-        ports=None,
     )
