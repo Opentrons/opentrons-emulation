@@ -89,7 +89,7 @@ def create_can_server_service(
     build_args = (
         get_build_args(
             repo,
-            "latest",
+            ot3.can_server_source_location,
             global_settings.get_repo_commit(repo),
             global_settings.get_repo_head(repo),
         )

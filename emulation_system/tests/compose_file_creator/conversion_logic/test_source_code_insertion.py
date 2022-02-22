@@ -1,8 +1,9 @@
-"""Tests related to bind mounts."""
+"""Test everything around inserting source code into containers."""
 from typing import Any, Callable, Dict, Optional, cast
 
 import py
 import pytest
+from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
@@ -23,6 +24,8 @@ from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
 from tests.compose_file_creator.conversion_logic.conftest import partial_string_in_mount
+
+FAKE_COMMIT_ID = "ca82a6dff817ec66f44342007202690a93763949"
 
 
 def get_source_code_build_args(service: Service) -> Dict[str, str]:
@@ -85,7 +88,7 @@ def ot3_firmware_dir(tmpdir: py.path.local) -> str:
 
 
 @pytest.fixture
-def ot3_remote_everything(
+def ot3_remote_everything_latest(
     ot3_default: Dict[str, Any], set_source_type_params: Callable
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
@@ -97,6 +100,22 @@ def ot3_remote_everything(
         robot_server_source_location="latest",
         can_server_source_type=SourceType.REMOTE,
         can_server_source_location="latest",
+    )
+
+
+@pytest.fixture
+def ot3_remote_everything_commit_id(
+    ot3_default: Dict[str, Any], set_source_type_params: Callable
+) -> RuntimeComposeFileModel:
+    """Get OT3 configured for local source and local robot source."""
+    return set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.REMOTE,
+        source_location=FAKE_COMMIT_ID,
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location=FAKE_COMMIT_ID,
+        can_server_source_type=SourceType.REMOTE,
+        can_server_source_location=FAKE_COMMIT_ID,
     )
 
 
@@ -152,7 +171,7 @@ def ot3_local_can(
 
 
 @pytest.fixture
-def ot2_remote_everything(
+def ot2_remote_everything_latest(
     ot2_default: Dict[str, Any], set_source_type_params: Callable
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
@@ -162,6 +181,22 @@ def ot2_remote_everything(
         source_location="latest",
         robot_server_source_type=SourceType.REMOTE,
         robot_server_source_location="latest",
+        can_server_source_type=None,
+        can_server_source_location=None,
+    )
+
+
+@pytest.fixture
+def ot2_remote_everything_commit_id(
+    ot2_default: Dict[str, Any], set_source_type_params: Callable
+) -> RuntimeComposeFileModel:
+    """Get OT3 configured for local source and local robot source."""
+    return set_source_type_params(
+        robot_dict=ot2_default,
+        source_type=SourceType.REMOTE,
+        source_location=FAKE_COMMIT_ID,
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location=FAKE_COMMIT_ID,
         can_server_source_type=None,
         can_server_source_location=None,
     )
@@ -201,27 +236,52 @@ def ot2_local_robot(
 
 @pytest.fixture
 def opentrons_head(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
-    """Return head of opentrons repo from test config file."""
+    """Return head url of opentrons repo from test config file."""
     return testing_global_em_config.get_repo_head(OpentronsRepository.OPENTRONS)
 
 
 @pytest.fixture
 def ot3_firmware_head(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
-    """Return head of ot3-firmware repo from test config file."""
+    """Return head url of ot3-firmware repo from test config file."""
     return testing_global_em_config.get_repo_head(OpentronsRepository.OT3_FIRMWARE)
 
 
+@pytest.fixture
+def opentrons_commit(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
+    """Return commit url of opentrons repo from test config file."""
+    return testing_global_em_config.get_repo_commit(
+        OpentronsRepository.OPENTRONS
+    ).replace("{{commit-sha}}", FAKE_COMMIT_ID)
+
+
+@pytest.fixture
+def ot3_firmware_commit(
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> str:
+    """Return commit url of ot3-firmware repo from test config file."""
+    return testing_global_em_config.get_repo_commit(
+        OpentronsRepository.OT3_FIRMWARE
+    ).replace("{{commit-sha}}", FAKE_COMMIT_ID)
+
+
+@pytest.mark.parametrize(
+    "compose_file_model",
+    [
+        lazy_fixture("ot3_remote_everything_latest"),
+        lazy_fixture("ot3_remote_everything_commit_id"),
+    ],
+)
 def test_ot3_remote_everything_mounts(
-    ot3_remote_everything: RuntimeComposeFileModel,
+    compose_file_model: RuntimeComposeFileModel,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Test mounts when all source-types are remote.
 
     Confirm that when all source-types are remote, nothing is mounted to any container.
     """
-    robot_server = ot3_remote_everything.robot_server
-    can_server = ot3_remote_everything.can_server
-    emulators = ot3_remote_everything.ot3_emulators
+    robot_server = compose_file_model.robot_server
+    can_server = compose_file_model.can_server
+    emulators = compose_file_model.ot3_emulators
 
     assert robot_server is not None
     assert can_server is not None
@@ -234,18 +294,18 @@ def test_ot3_remote_everything_mounts(
         assert emulator.volumes is None
 
 
-def test_ot3_remote_everything_build_args(
-    ot3_remote_everything: RuntimeComposeFileModel,
+def test_ot3_remote_everything_latest_build_args(
+    ot3_remote_everything_latest: RuntimeComposeFileModel,
     opentrons_head: str,
     ot3_firmware_head: str,
 ) -> None:
-    """Test build args when all source-types are remote.
+    """Test build args when all source-types are remote latest.
 
     Confirm that all build args are using the head of their individual repos.
     """
-    robot_server = ot3_remote_everything.robot_server
-    can_server = ot3_remote_everything.can_server
-    emulators = ot3_remote_everything.ot3_emulators
+    robot_server = ot3_remote_everything_latest.robot_server
+    can_server = ot3_remote_everything_latest.can_server
+    emulators = ot3_remote_everything_latest.ot3_emulators
 
     assert robot_server is not None
     assert can_server is not None
@@ -266,6 +326,42 @@ def test_ot3_remote_everything_build_args(
         assert RepoToBuildArgMapping.OT3_FIRMWARE in emulator_build_args
         assert (
             emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
+        )
+
+
+def test_ot3_remote_everything_commit_id_build_args(
+    ot3_remote_everything_commit_id: RuntimeComposeFileModel,
+    opentrons_commit: str,
+    ot3_firmware_commit: str,
+) -> None:
+    """Test build args when all source-types are remote commit id.
+
+    Confirm that all build args are using the head of their individual repos.
+    """
+    robot_server = ot3_remote_everything_commit_id.robot_server
+    can_server = ot3_remote_everything_commit_id.can_server
+    emulators = ot3_remote_everything_commit_id.ot3_emulators
+
+    assert robot_server is not None
+    assert can_server is not None
+    assert emulators is not None
+
+    robot_server_build_args = get_source_code_build_args(robot_server)
+    can_server_build_args = get_source_code_build_args(can_server)
+
+    assert RepoToBuildArgMapping.OPENTRONS in robot_server_build_args
+    assert robot_server_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_commit
+
+    assert RepoToBuildArgMapping.OPENTRONS in can_server_build_args
+    assert can_server_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_commit
+
+    for emulator in emulators:
+        emulator_build_args = get_source_code_build_args(emulator)
+        assert emulator_build_args is not None
+        assert RepoToBuildArgMapping.OT3_FIRMWARE in emulator_build_args
+        assert (
+            emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE]
+            == ot3_firmware_commit
         )
 
 
@@ -447,15 +543,22 @@ def test_ot3_local_robot_server_build_args(
         )
 
 
+@pytest.mark.parametrize(
+    "compose_file_model",
+    [
+        lazy_fixture("ot2_remote_everything_latest"),
+        lazy_fixture("ot2_remote_everything_commit_id"),
+    ],
+)
 def test_ot2_remote_everything_mounts(
-    ot2_remote_everything: RuntimeComposeFileModel,
+    compose_file_model: RuntimeComposeFileModel,
 ) -> None:
     """Test mounts when all source-types are remote.
 
     Confirm that smoothie and robot server have no mounts.
     """
-    robot_server = ot2_remote_everything.robot_server
-    smoothie = ot2_remote_everything.smoothie_emulator
+    robot_server = compose_file_model.robot_server
+    smoothie = compose_file_model.smoothie_emulator
 
     assert robot_server is not None
     assert smoothie is not None
@@ -464,15 +567,15 @@ def test_ot2_remote_everything_mounts(
     assert smoothie.volumes is None
 
 
-def test_ot2_remote_everything_build_args(
-    ot2_remote_everything: RuntimeComposeFileModel, opentrons_head: str
+def test_ot2_remote_everything_latest_build_args(
+    ot2_remote_everything_latest: RuntimeComposeFileModel, opentrons_head: str
 ) -> None:
-    """Test build arguments when all source-types are remote.
+    """Test build arguments when all source-types are remote latest.
 
     Confirm that smoothie and robot server are both looking for the opentrons repo head.
     """
-    robot_server = ot2_remote_everything.robot_server
-    smoothie = ot2_remote_everything.smoothie_emulator
+    robot_server = ot2_remote_everything_latest.robot_server
+    smoothie = ot2_remote_everything_latest.smoothie_emulator
 
     assert robot_server is not None
     assert smoothie is not None
@@ -483,6 +586,28 @@ def test_ot2_remote_everything_build_args(
     smoothie_build_args = get_source_code_build_args(smoothie)
     assert smoothie_build_args is not None
     assert smoothie_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
+
+
+def test_ot2_remote_everything_commit_id_build_args(
+    ot2_remote_everything_commit_id: RuntimeComposeFileModel, opentrons_commit: str
+) -> None:
+    """Test build arguments when all source-types are remote commit id.
+
+    Confirm that smoothie and robot server are both looking for the opentrons repo head.
+    """
+    robot_server = ot2_remote_everything_commit_id.robot_server
+    smoothie = ot2_remote_everything_commit_id.smoothie_emulator
+
+    assert robot_server is not None
+    assert smoothie is not None
+
+    robot_server_build_args = get_source_code_build_args(robot_server)
+    assert robot_server_build_args is not None
+    assert robot_server_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_commit
+
+    smoothie_build_args = get_source_code_build_args(smoothie)
+    assert smoothie_build_args is not None
+    assert smoothie_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_commit
 
 
 def test_ot2_local_robot_server_mounts(
