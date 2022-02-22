@@ -8,7 +8,6 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
     convert_from_obj,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import (
-    BuildItem,
     Service,
     Volume1,
 )
@@ -82,12 +81,3 @@ def partial_string_in_mount(
     """Check if the partial string exists in any of the Service's mounts."""
     assert volumes is not None
     return any([string in volume for volume in volumes])
-
-
-def get_source_code_build_args(service: Service) -> Dict[str, str]:
-    """Get build args for service."""
-    build = service.build
-    assert build is not None
-    assert isinstance(build, BuildItem)
-    assert build.args is not None
-    return cast(Dict[str, str], build.args.__root__)

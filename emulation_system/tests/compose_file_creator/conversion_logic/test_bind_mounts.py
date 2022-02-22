@@ -1,16 +1,15 @@
 """Tests related to bind mounts."""
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Optional,
-)
+from typing import Any, Callable, Dict, Optional, cast
 
 import py
 import pytest
 
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
+)
+from emulation_system.compose_file_creator.output.compose_file_model import (
+    BuildItem,
+    Service,
 )
 from emulation_system.compose_file_creator.output.runtime_compose_file_model import (
     RuntimeComposeFileModel,
@@ -23,10 +22,24 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
-from tests.compose_file_creator.conversion_logic.conftest import (
-    get_source_code_build_args,
-    partial_string_in_mount,
-)
+from tests.compose_file_creator.conversion_logic.conftest import partial_string_in_mount
+
+
+def get_source_code_build_args(service: Service) -> Dict[str, str]:
+    """Get build args for service."""
+    build = service.build
+    assert build is not None
+    assert isinstance(build, BuildItem)
+    assert build.args is not None
+    return cast(Dict[str, str], build.args.__root__)
+
+
+def build_args_are_none(service: Service) -> bool:
+    """Whether or not build args are None. With annoying typing stuff."""
+    build = service.build
+    assert build is not None
+    assert isinstance(build, BuildItem)
+    return build.args is None
 
 
 @pytest.fixture
@@ -50,8 +63,8 @@ def set_source_type_params(
         robot_dict["robot-server-source-location"] = robot_server_source_location
 
         if (
-                can_server_source_type is not None
-                and can_server_source_location is not None
+            can_server_source_type is not None
+            and can_server_source_location is not None
         ):
             robot_dict["can-server-source-type"] = can_server_source_type
             robot_dict["can-server-source-location"] = can_server_source_location
@@ -140,8 +153,7 @@ def ot3_local_can(
 
 @pytest.fixture
 def ot2_remote_everything(
-    ot2_default: Dict[str, Any],
-    set_source_type_params: Callable
+    ot2_default: Dict[str, Any], set_source_type_params: Callable
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
     return set_source_type_params(
@@ -253,8 +265,7 @@ def test_ot3_remote_everything_build_args(
         assert emulator_build_args is not None
         assert RepoToBuildArgMapping.OT3_FIRMWARE in emulator_build_args
         assert (
-                emulator_build_args[
-                    RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
+            emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
         )
 
 
@@ -311,7 +322,7 @@ def test_ot3_local_source_build_args(
     assert can_server_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
 
     for emulator in emulators:
-        assert emulator.build.args is None
+        assert build_args_are_none(emulator)
 
 
 def test_ot3_local_can_server_mounts(ot3_local_can: RuntimeComposeFileModel) -> None:
@@ -341,9 +352,7 @@ def test_ot3_local_can_server_mounts(ot3_local_can: RuntimeComposeFileModel) -> 
 
 
 def test_ot3_local_can_server_build_args(
-    ot3_local_can: RuntimeComposeFileModel,
-    opentrons_head: str,
-    ot3_firmware_head: str
+    ot3_local_can: RuntimeComposeFileModel, opentrons_head: str, ot3_firmware_head: str
 ) -> None:
     """Test build arguments when can-server-source-type is set to local.
 
@@ -364,20 +373,19 @@ def test_ot3_local_can_server_build_args(
     assert RepoToBuildArgMapping.OPENTRONS in robot_server_build_args
     assert robot_server_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
 
-    assert can_server.build.args is None
+    assert build_args_are_none(can_server)
 
     for emulator in emulators:
         emulator_build_args = get_source_code_build_args(emulator)
         assert emulator_build_args is not None
         assert RepoToBuildArgMapping.OT3_FIRMWARE in emulator_build_args
         assert (
-                emulator_build_args[
-                    RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
+            emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
         )
 
 
 def test_ot3_local_robot_server_mounts(
-    ot3_local_robot: RuntimeComposeFileModel
+    ot3_local_robot: RuntimeComposeFileModel,
 ) -> None:
     """Test mounts when robot-server-source-type is set to local.
 
@@ -407,7 +415,7 @@ def test_ot3_local_robot_server_mounts(
 def test_ot3_local_robot_server_build_args(
     ot3_local_robot: RuntimeComposeFileModel,
     opentrons_head: str,
-    ot3_firmware_head: str
+    ot3_firmware_head: str,
 ) -> None:
     """Test build arguments when robot-server-source-type is set to local.
 
@@ -425,7 +433,7 @@ def test_ot3_local_robot_server_build_args(
 
     can_server_build_args = get_source_code_build_args(can_server)
 
-    assert robot_server.build.args is None
+    assert build_args_are_none(robot_server)
 
     assert RepoToBuildArgMapping.OPENTRONS in can_server_build_args
     assert can_server_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
@@ -435,13 +443,12 @@ def test_ot3_local_robot_server_build_args(
         assert emulator_build_args is not None
         assert RepoToBuildArgMapping.OT3_FIRMWARE in emulator_build_args
         assert (
-                emulator_build_args[
-                    RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
+            emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
         )
 
 
 def test_ot2_remote_everything_mounts(
-    ot2_remote_everything: RuntimeComposeFileModel
+    ot2_remote_everything: RuntimeComposeFileModel,
 ) -> None:
     """Test mounts when all source-types are remote.
 
@@ -458,8 +465,7 @@ def test_ot2_remote_everything_mounts(
 
 
 def test_ot2_remote_everything_build_args(
-    ot2_remote_everything: RuntimeComposeFileModel,
-    opentrons_head: str
+    ot2_remote_everything: RuntimeComposeFileModel, opentrons_head: str
 ) -> None:
     """Test build arguments when all source-types are remote.
 
@@ -480,7 +486,7 @@ def test_ot2_remote_everything_build_args(
 
 
 def test_ot2_local_robot_server_mounts(
-    ot2_local_robot: RuntimeComposeFileModel
+    ot2_local_robot: RuntimeComposeFileModel,
 ) -> None:
     """Test mounts when robot-server-source-type is set to local.
 
@@ -502,8 +508,7 @@ def test_ot2_local_robot_server_mounts(
 
 
 def test_ot2_local_robot_server_build_args(
-    ot2_local_robot: RuntimeComposeFileModel,
-    opentrons_head: str
+    ot2_local_robot: RuntimeComposeFileModel, opentrons_head: str
 ) -> None:
     """Test build-args when robot-server-source-type is set to local.
 
@@ -513,7 +518,10 @@ def test_ot2_local_robot_server_build_args(
     robot_server = ot2_local_robot.robot_server
     smoothie = ot2_local_robot.smoothie_emulator
 
-    assert robot_server.build.args is None
+    assert robot_server is not None
+    assert smoothie is not None
+
+    assert build_args_are_none(robot_server)
 
     smoothie_build_args = get_source_code_build_args(smoothie)
     assert smoothie_build_args is not None
@@ -541,8 +549,7 @@ def test_ot2_local_source_mounts(ot2_local_source: RuntimeComposeFileModel) -> N
 
 
 def test_ot2_local_source_build_args(
-    ot2_local_source: RuntimeComposeFileModel,
-    opentrons_head: str
+    ot2_local_source: RuntimeComposeFileModel, opentrons_head: str
 ) -> None:
     """Test build arguments when source-type is set to local.
 
@@ -562,4 +569,4 @@ def test_ot2_local_source_build_args(
     assert robot_server_build_args is not None
     assert robot_server_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
 
-    assert smoothie.build.args is None
+    assert build_args_are_none(smoothie)
