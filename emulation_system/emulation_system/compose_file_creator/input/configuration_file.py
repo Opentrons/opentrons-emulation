@@ -128,6 +128,18 @@ class SystemConfigurationModel(BaseModel):
         """Return hardware model by container id."""
         return self.containers[container_id]
 
+    @property
+    def is_remote(self) -> bool:
+        """Checks if all modules are robots are remote."""
+        robot_is_remote = self.robot.is_remote if self.robot_exists else True
+        modules_are_remote = (
+            all(module.is_remote for module in self.modules)
+            if self.modules_exist
+            else True
+        )
+
+        return robot_is_remote and modules_are_remote
+
     @classmethod
     def from_file(cls, file_path: str) -> SystemConfigurationModel:
         """Parse from file."""

@@ -184,3 +184,8 @@ class HardwareModel(BaseModel):
     ) -> Optional[List[str]]:
         """Get command for module when it is being emulated at hardware level."""
         return None
+
+    @property
+    def is_remote(self) -> bool:
+        """Check if all source-types are remote."""
+        return self.source_type == SourceType.REMOTE
