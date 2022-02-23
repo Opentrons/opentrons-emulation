@@ -131,10 +131,10 @@ class SystemConfigurationModel(BaseModel):
     @property
     def is_remote(self) -> bool:
         """Checks if all modules are robots are remote."""
-        robot_is_remote = self.robot.is_remote if self.robot_exists else True
+        robot_is_remote = self.robot.is_remote if self.robot is not None else True
         modules_are_remote = (
             all(module.is_remote for module in self.modules)
-            if self.modules_exist
+            if self.modules is not None and len(self.modules) > 0
             else True
         )
 

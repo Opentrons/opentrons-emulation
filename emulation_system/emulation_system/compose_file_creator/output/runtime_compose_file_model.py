@@ -60,7 +60,10 @@ class RuntimeComposeFileModel(ComposeSpecification):
 
     def to_yaml(self) -> str:
         """Convert pydantic model to yaml."""
-        return yaml.dump(self.dict(exclude={"is_remote"}, exclude_none=True), default_flow_style=False)
+        return yaml.dump(
+            self.dict(exclude={"is_remote"}, exclude_none=True),
+            default_flow_style=False
+        )
 
     @property
     def robot_server(self) -> Optional[Service]:
