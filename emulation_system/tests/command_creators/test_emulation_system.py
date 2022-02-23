@@ -83,7 +83,7 @@ def mocked_em_system(
 ) -> EmulationSystemCommand:
     """Get a mocked EmulationSystemCommand."""
     mock = Mock(spec=io.TextIOWrapper)
-    return EmulationSystemCommand(mock, mock, testing_global_em_config)
+    return EmulationSystemCommand(mock, mock, False, testing_global_em_config)
 
 
 def test_json_stdin(mocked_em_system: EmulationSystemCommand) -> None:

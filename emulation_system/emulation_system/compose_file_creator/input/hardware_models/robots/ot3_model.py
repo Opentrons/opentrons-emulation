@@ -79,3 +79,8 @@ class OT3InputModel(RobotInputModel):
             if self.can_server_source_type == SourceType.LOCAL
             else []
         )
+
+    @property
+    def is_remote(self) -> bool:
+        """Check if all source-types are remote."""
+        return super().is_remote and self.can_server_source_type == SourceType.REMOTE

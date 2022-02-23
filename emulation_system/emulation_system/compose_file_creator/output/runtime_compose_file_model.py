@@ -39,6 +39,8 @@ yaml.add_representer(type(None), represent_none)
 class RuntimeComposeFileModel(ComposeSpecification):
     """Class to add functionality to generated ComposeSpecification model."""
 
+    is_remote: bool
+
     def __init__(self, **data: Any) -> None:
         """Initialize ComposeSpecification."""
         super().__init__(**data)
@@ -58,7 +60,10 @@ class RuntimeComposeFileModel(ComposeSpecification):
 
     def to_yaml(self) -> str:
         """Convert pydantic model to yaml."""
-        return yaml.dump(self.dict(exclude_none=True), default_flow_style=False)
+        return yaml.dump(
+            self.dict(exclude={"is_remote"}, exclude_none=True),
+            default_flow_style=False
+        )
 
     @property
     def robot_server(self) -> Optional[Service]:

@@ -68,3 +68,8 @@ class RobotInputModel(HardwareModel):
     def get_source_repo(self) -> OpentronsRepository:
         """Override get_source_repo for robot-server."""
         return OpentronsRepository.OPENTRONS
+
+    @property
+    def is_remote(self) -> bool:
+        """Check if all source-types are remote."""
+        return super().is_remote and self.robot_server_source_type == SourceType.REMOTE

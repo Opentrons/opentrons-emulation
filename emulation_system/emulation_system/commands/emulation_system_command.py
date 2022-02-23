@@ -12,6 +12,7 @@ import yaml
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
+from emulation_system.compose_file_creator.errors import NotRemoteOnlyError
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
@@ -30,6 +31,7 @@ class EmulationSystemCommand:
 
     input_path: io.TextIOWrapper
     output_path: io.TextIOWrapper
+    remote_only: bool
     settings: OpentronsEmulationConfiguration
 
     @classmethod
@@ -38,7 +40,10 @@ class EmulationSystemCommand:
     ) -> EmulationSystemCommand:
         """Construct EmulationSystemCommand from CLI input."""
         return cls(
-            input_path=args.input_path, output_path=args.output_path, settings=settings
+            input_path=args.input_path,
+            output_path=args.output_path,
+            remote_only=args.remote_only,
+            settings=settings,
         )
 
     def execute(self) -> None:
@@ -52,4 +57,8 @@ class EmulationSystemCommand:
         stdin_content = self.input_path.read().strip()
         parsed_content = yaml.safe_load(stdin_content)
         converted_object = convert_from_obj(parsed_content, self.settings)
+
+        if self.remote_only and not converted_object.is_remote:
+            raise NotRemoteOnlyError
+
         self.output_path.write(converted_object.to_yaml())

@@ -695,3 +695,32 @@ def test_ot2_local_source_build_args(
     assert robot_server_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
 
     assert build_args_are_none(smoothie)
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        lazy_fixture("ot3_remote_everything_latest"),
+        lazy_fixture("ot3_remote_everything_commit_id"),
+        lazy_fixture("ot2_remote_everything_latest"),
+        lazy_fixture("ot2_remote_everything_commit_id"),
+    ],
+)
+def test_is_remote(config: RuntimeComposeFileModel) -> None:
+    """Confirm that when all source-types are remote, is_remote is True."""
+    assert config.is_remote
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        lazy_fixture("ot3_local_robot"),
+        lazy_fixture("ot3_local_source"),
+        lazy_fixture("ot3_local_can"),
+        lazy_fixture("ot2_local_source"),
+        lazy_fixture("ot2_local_robot"),
+    ],
+)
+def test_is_not_remote(config: RuntimeComposeFileModel) -> None:
+    """Confirm that when all source-types are not remote, is_remote is False."""
+    assert not config.is_remote

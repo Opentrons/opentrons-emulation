@@ -41,3 +41,7 @@ class EmulationSystemParser(AbstractParser):
             type=argparse.FileType("w"),
             help='Output path write compose file to. Specify "-" to write to stdout.',
         )
+
+        subparser.add_argument(
+            "--remote-only", action="store_true", help="Allow only remote source-types"
+        )
