@@ -16,8 +16,8 @@ em-build-amd64:
 	# PR: https://github.com/docker/buildx/milestone/11
 	# Ticket: https://github.com/docker/buildx/pull/864
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND)
-	rm tmp-compose.yaml
+	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND)
+	@rm tmp-compose.yaml
 
 .PHONY: em-build-arm64
 em-build-arm64:
@@ -25,44 +25,44 @@ em-build-arm64:
 	# PR: https://github.com/docker/buildx/milestone/11
 	# Ticket: https://github.com/docker/buildx/pull/864
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND) --set *.platform=linux/x86_64
-	rm tmp-compose.yaml
+	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND) --set *.platform=linux/x86_64
+	@rm tmp-compose.yaml
 
 .PHONY: em-run
 em-run:
 	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
-	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_RUN_COMMAND)
+	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_RUN_COMMAND)
 
 
 .PHONY: em-run-detached
 em-run-detached:
 	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
-	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_RUN_COMMAND) -d
+	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_RUN_COMMAND) -d
 
 
 .PHONY: em-remove
 em-remove:
 	$(if $(file_path),@echo "Removing system from $(file_path)",$(error file_path variable required))
-	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_KILL_COMMAND)
-	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_REMOVE_COMMAND)
+	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_KILL_COMMAND)
+	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_REMOVE_COMMAND)
 
 
 .PHONY: em-logs
 em-logs:
 	$(if $(file_path),@echo "Printing logs from $(file_path)",$(error file_path variable required))
-	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_LOGS_COMMAND)
+	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_LOGS_COMMAND)
 
 
 .PHONY: generate-compose-file
 generate-compose-file:
 	$(if $(file_path),,$(error file_path variable required))
-	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD))
+	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD))
 
 
 .PHONY: check-remote-only
 check-remote-only:
 	$(if $(file_path),,$(error file_path variable required))
-	$(subst $(SUB), $(file_path), $(REMOTE_ONLY_EMULATION_SYSTEM_CMD)) > /dev/null
+	@$(subst $(SUB), $(file_path), $(REMOTE_ONLY_EMULATION_SYSTEM_CMD)) > /dev/null
 	@echo "All services are remote"
 
 
@@ -97,4 +97,4 @@ test:
 
 .PHONY: test-samples
 test-samples:
-	./scripts/test_samples.sh
+	@./scripts/test_samples.sh
