@@ -104,3 +104,12 @@ class ServiceDoesNotExistError(Exception):
         super().__init__(
             f"You do not have a {service_name} in your generated configuration."
         )
+
+
+class NotRemoteOnlyError(Exception):
+    """Exception thrown when not any robot or module is not of remote source-type."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            'Not all source-type parameters for passed system are "remote".'
+        )
