@@ -3,6 +3,7 @@ EMULATION_SYSTEM_DIR := emulation_system
 SUB = {SUB}
 
 EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} -)
+REMOTE_ONLY_EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} - --remote-only)
 COMPOSE_BUILD_COMMAND := docker buildx bake --file tmp-compose.yaml
 COMPOSE_RUN_COMMAND := docker-compose -f - up
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
@@ -56,6 +57,13 @@ em-logs:
 generate-compose-file:
 	$(if $(file_path),,$(error file_path variable required))
 	$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD))
+
+
+.PHONY: check-remote-only
+check-remote-only:
+	$(if $(file_path),,$(error file_path variable required))
+	$(subst $(SUB), $(file_path), $(REMOTE_ONLY_EMULATION_SYSTEM_CMD)) > /dev/null
+	@echo "All services are remote"
 
 
 .PHONY: setup
