@@ -218,6 +218,25 @@ branch, or specify a full commit sha to pull.
 
 If you are using `local` type, specify a path to the source on your system.
 
+Any commit IDs or local bindings should be to the [monorepo](https://github.com/Opentrons/opentrons)
+
+### can-server-source-type
+
+**Description:** Same as `source-type` but specifies what the can server will be using for source.
+
+**Acceptable Values:** `remote` `local`
+
+### can-server-source-location
+
+**Description:** Same as `source-location` but specifies what the system should look for source code for the can-server
+
+If you are using `remote` type, you can either specify `latest` to pull the latest committed version from the master
+branch, or specify a full commit sha to pull.
+
+If you are using `local` type, specify a path to the source on your system.
+
+Any commit IDs or local bindings should be to the [monorepo](https://github.com/Opentrons/opentrons)
+
 ### emulation-level
 
 **Description:** A string value specifiying which emulation level should be used.
