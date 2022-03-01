@@ -1,0 +1,48 @@
+name: 'Setup Python Inner'
+description: 'Install Python 3.7 and pipenv'
+author: Derek Maggio
+inputs:
+  input-file:
+    description: 'YAML or JSON system configuration'
+    required: true
+  python-version:
+    description: 'Version of python to install'
+    required: true
+  cache-break:
+    description: 'Specify a value here to break cache'
+    required: false
+    default: "default"
+runs:
+  using: "composite"
+  steps:
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Cache Dependencies
+      uses: actions/cache@v2
+      with:
+        path: "~/.local/share/virtualenvs/**"
+        key: ${{ runner.os }}-python-${{ inputs.python-version }}-pipenv-${{ hashFiles('./emulation_system/Pipfile.lock') }}-${{ inputs.cache-break }}
+
+    - name: Install pipenv
+      run: pip install pipenv
+      shell: bash
+
+    - name: Setup repo
+      run: make setup
+      shell: bash
+
+    - name: Get configuration.json
+      run: cp configuration_ci.json configuration.json
+      shell: bash
+
+    - name: Build
+      run: make em-build-amd64 file_path=${{ inputs.input-file }}
+      shell: bash
+
+    - name: Run
+      run: make em-run-detached file_path=${{ inputs.input-file }}
+      shell: bash

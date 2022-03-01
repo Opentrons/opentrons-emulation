@@ -3,12 +3,22 @@ EMULATION_SYSTEM_DIR := emulation_system
 SUB = {SUB}
 
 EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} -)
+EMULATION_SYSTEM_CMD_STDIN := (cd ./emulation_system && pipenv run python main.py emulation-system - -)
 REMOTE_ONLY_EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} - --remote-only)
+REMOTE_ONLY_EMULATION_SYSTEM_CMD_STDIN := (cd ./emulation_system && pipenv run python main.py emulation-system - - --remote-only)
 COMPOSE_BUILD_COMMAND := docker buildx bake --file tmp-compose.yaml
 COMPOSE_RUN_COMMAND := docker-compose -f - up
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
 COMPOSE_LOGS_COMMAND := docker-compose -f - logs -f
+
+.PHONY: em-build-amd64-stdin
+em-build-amd64-stdin:
+	# TODO: Remove tmp file creation when Buildx 0.8.0 is released.
+	# PR: https://github.com/docker/buildx/milestone/11
+	# Ticket: https://github.com/docker/buildx/pull/864
+	$(EMULATION_SYSTEM_CMD_STDIN) > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND)
+	@rm tmp-compose.yaml
 
 .PHONY: em-build-amd64
 em-build-amd64:
@@ -56,13 +66,23 @@ em-logs:
 .PHONY: generate-compose-file
 generate-compose-file:
 	$(if $(file_path),,$(error file_path variable required))
-	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD))
+
+
+.PHONY: generate-compose-file-stdin
+generate-compose-file-stdin:
+	$(EMULATION_SYSTEM_CMD_STDIN)
 
 
 .PHONY: check-remote-only
 check-remote-only:
 	$(if $(file_path),,$(error file_path variable required))
 	@$(subst $(SUB), $(file_path), $(REMOTE_ONLY_EMULATION_SYSTEM_CMD)) > /dev/null
+	@echo "All services are remote"
+
+.PHONY: check-remote-only-stdin
+check-remote-only-stdin:
+	@echo "CHECKING IF FILE IS REMOTE ONLY"
+	@$(subst $(SUB), $(file_path), $(REMOTE_ONLY_EMULATION_SYSTEM_CMD_STDIN)) > /dev/null
 	@echo "All services are remote"
 
 
