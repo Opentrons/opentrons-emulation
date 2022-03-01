@@ -39,6 +39,10 @@ runs:
       run: cp configuration_ci.json configuration.json
       shell: bash
 
+    - name: Validate Configuration File is Remote Only
+      run: make check-remote-only file_path=${{ inputs.input-file }}
+      shell: bash
+
     - name: Build
       run: make em-build-amd64 file_path=${{ inputs.input-file }}
       shell: bash
