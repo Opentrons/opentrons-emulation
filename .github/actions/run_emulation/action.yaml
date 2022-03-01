@@ -1,5 +1,9 @@
-name: 'Setup Python Inner'
-description: 'Install Python 3.7 and pipenv'
+name: 'Run Emulation'
+description: |
+  Run emulated robot based off of passed input-file parameter.
+  The file located at input-file must be the format described in https://github.com/Opentrons/opentrons-emulation/blob/main/README.md.
+  See https://github.com/Opentrons/opentrons-emulation/tree/main/samples for examples
+
 author: Derek Maggio
 inputs:
   input-file:
@@ -7,7 +11,8 @@ inputs:
     required: true
   python-version:
     description: 'Version of python to install'
-    required: true
+    required: false
+    default: "3.7"
   cache-break:
     description: 'Specify a value here to break cache'
     required: false
@@ -15,27 +20,24 @@ inputs:
 runs:
   using: "composite"
   steps:
-
     - name: Setup Python
       uses: actions/setup-python@v2
       with:
         python-version: ${{ inputs.python-version }}
 
-    - name: Cache Dependencies
+    - name: Cache Python Dependencies
       uses: actions/cache@v2
       with:
         path: "~/.local/share/virtualenvs/**"
         key: ${{ runner.os }}-python-${{ inputs.python-version }}-pipenv-${{ hashFiles('./emulation_system/Pipfile.lock') }}-${{ inputs.cache-break }}
 
-    - name: Install pipenv
-      run: pip install pipenv
-      shell: bash
-
     - name: Setup repo
-      run: make setup
+      run: |
+        pip install pipenv
+        make setup
       shell: bash
 
-    - name: Get configuration.json
+    - name: Create configuration.json
       run: cp configuration_ci.json configuration.json
       shell: bash
 
@@ -43,10 +45,10 @@ runs:
       run: make check-remote-only file_path=${{ inputs.input-file }}
       shell: bash
 
-    - name: Build
+    - name: Build Emulation Docker Images
       run: make em-build-amd64 file_path=${{ inputs.input-file }}
       shell: bash
 
-    - name: Run
+    - name: Run Emulation Docker System
       run: make em-run-detached file_path=${{ inputs.input-file }}
       shell: bash

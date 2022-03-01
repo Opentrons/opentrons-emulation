@@ -18,9 +18,8 @@ jobs:
         uses: ./.github/actions/run_emulation
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
-          python-version: 3.7
 
-      - name: Give it some time
+      - name: Give it some time to start up
         run: sleep 10s
 
       - name: Test Emulation

@@ -8,6 +8,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Run
+    - name: Remove Emulation Docker System
       run: make em-remove file_path=${{ inputs.input-file }}
       shell: bash
