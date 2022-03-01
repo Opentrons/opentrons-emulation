@@ -56,6 +56,7 @@ em-logs:
 .PHONY: generate-compose-file
 generate-compose-file:
 	$(if $(file_path),,$(error file_path variable required))
+	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD))
 
 .PHONY: check-remote-only
 check-remote-only:
