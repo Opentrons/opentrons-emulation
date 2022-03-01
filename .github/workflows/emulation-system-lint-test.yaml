@@ -9,6 +9,7 @@ on:
     paths:
       - 'emulation_system/**'
       - 'opentrons-emulation'
+      - '.github/workflows/emulation-system-lint-test.yaml'
     tags-ignore:
       - '*'
   pull_request:
@@ -29,19 +30,22 @@ jobs:
         uses: 'actions/checkout@v2'
         with:
           node-version: '12'
+
       - name: "Setup Python"
         uses: 'actions/setup-python@v2'
         with:
           python-version: '3.7'
 
-      - name: "Setup Env"
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libsystemd-dev
-          pip install pipenv==2021.5.29
+      - name: Cache Python Dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.local/share/virtualenvs/**"
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('./emulation_system/Pipfile.lock') }}-${{ inputs.cache-break }}
 
       - name: "Setup Project"
-        run: make setup
+        run: |
+        pip install pipenv
+        make setup
 
       - name: "Lint"
         run: make lint
