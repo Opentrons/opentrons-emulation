@@ -44,8 +44,8 @@ jobs:
 
       - name: "Setup Project"
         run: |
-        pip install pipenv
-        make setup
+          pip install pipenv
+          make setup
 
       - name: "Lint"
         run: make lint
