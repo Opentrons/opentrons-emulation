@@ -58,13 +58,11 @@ generate-compose-file:
 	$(if $(file_path),,$(error file_path variable required))
 	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD))
 
-
 .PHONY: check-remote-only
 check-remote-only:
 	$(if $(file_path),,$(error file_path variable required))
 	@$(subst $(SUB), $(file_path), $(REMOTE_ONLY_EMULATION_SYSTEM_CMD)) > /dev/null
 	@echo "All services are remote"
-
 
 .PHONY: setup
 setup:

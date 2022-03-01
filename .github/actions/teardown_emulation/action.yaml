@@ -1,0 +1,13 @@
+name: 'Teardown Emulation'
+description: 'Bring down docker container emulation'
+author: Derek Maggio
+inputs:
+  input-file:
+    description: 'YAML or JSON system configuration'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Remove Emulation Docker System
+      run: make em-remove file_path=${{ inputs.input-file }}
+      shell: bash
