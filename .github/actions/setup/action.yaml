@@ -38,14 +38,6 @@ runs:
       run: cp configuration_ci.json configuration.json
       shell: bash
 
-    - name: Where am I?
-      run: pwd
-      shell: bash
-
-    - name: What is in here?
-      run: ls -l
-      shell: bash
-
     - name: Validate Configuration File is Remote Only
       run: make check-remote-only file_path=${{ inputs.input-file }}
       shell: bash

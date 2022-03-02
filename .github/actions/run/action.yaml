@@ -13,14 +13,6 @@ runs:
   using: "composite"
   steps:
 
-    - name: Where am I?
-      run: pwd
-      shell: bash
-
-    - name: What is in here?
-      run: ls -l
-      shell: bash
-
     - name: Run Emulation Docker System
       run: make em-run-detached file_path=${{ inputs.input-file }}
       shell: bash
