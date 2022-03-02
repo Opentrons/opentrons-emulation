@@ -24,8 +24,8 @@ From the root of the repo run `make em-run-detached file_path=${PWD}/samples/tea
 
 ### Build and Start Robot Server
 
-Run `docker exec -it ot2-with-all-modules-otie bash -c "/entrypoint.sh build && /entrypoint.sh run"` to build and start
-your dev server.
+Run `docker exec -it cpx-ot2-ot2 bash -c "/entrypoint.sh build && /entrypoint.sh run"` to build and start your dev
+server.
 
 *Note: This step is necessary because we bound our monorepo code into the robot-server emulator. It is up to*
 *the user to execute the build and run of any containers they have their local source bound into.*
@@ -44,8 +44,8 @@ to `BOOOOOOP`.
 
 ### Rebuild and Run
 
-Run `docker exec -it ot2-with-all-modules-otie bash -c "/entrypoint.sh build && /entrypoint.sh run"` to rebuild and
-restart your dev server.
+Run `docker exec -it cpx-ot2-ot2 bash -c "/entrypoint.sh build && /entrypoint.sh run"` to rebuild and restart your dev
+server.
 
 ### Verify Changes Took Effect
 
