@@ -1,0 +1,20 @@
+name: 'Setup Emulation (Break Cache)'
+description: |
+  Install all dependencies and build docker images. Do not use caching.
+  The file located at input-file must be the format described in https://github.com/Opentrons/opentrons-emulation/blob/main/README.md.
+  See https://github.com/Opentrons/opentrons-emulation/tree/main/samples for examples
+
+author: Derek Maggio
+inputs:
+  input-file:
+    description: 'YAML or JSON system configuration'
+    required: true
+runs:
+  using: "composite"
+  steps:
+
+    - name: Setup Emulation (Break Cache)
+      uses: ./.github/actions/setup
+      with:
+        input-file: ${PWD}/samples/${{ matrix.file }}
+        break-cache: $(date +%s%3N)

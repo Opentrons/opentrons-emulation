@@ -3,7 +3,7 @@
 on: [ pull_request, push ]
 
 jobs:
-  ot3-emulator-sanity-check:
+  opentrons-emulation-sanity-check:
     strategy:
       matrix:
         file: [
@@ -11,15 +11,25 @@ jobs:
           'ot3/ot3_remote.yaml',
         ]
     runs-on: "ubuntu-18.04"
-    name: OT-3 Emulation Sanity Check (${{ matrix.file }})
+    name: Opentrons Emulation Sanity Check (${{ matrix.file }})
     steps:
+
       - name: Checkout opentrons-emulation
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          ref: "break-out-actions"
 
       - name: Setup Emulation
-        uses: ./.github/actions/run_emulation
+        uses: Opentrons/opentrons-emulation@break-out-actions
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
+          command: setup
+
+      - name: Run Emulation
+        uses: Opentrons/opentrons-emulation@break-out-actions
+        with:
+          input-file: ${PWD}/samples/${{ matrix.file }}
+          command: run
 
       - name: Give it some time to start up
         run: sleep 10s
@@ -28,6 +38,7 @@ jobs:
         run: "curl --request GET --header 'opentrons-version: *' http://localhost:31950/modules"
 
       - name: Teardown Emulation
-        uses: ./.github/actions/teardown_emulation
+        uses: Opentrons/opentrons-emulation@break-out-actions
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
+          command: teardown
