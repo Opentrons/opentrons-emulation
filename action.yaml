@@ -1,0 +1,44 @@
+name: Opentrons Emulation
+description: Run commands from opentrons-emulation repo
+author: Derek Maggio
+inputs:
+  input-file:
+    description: 'YAML or JSON system configuration'
+    required: true
+  command:
+    description: 'Command to run'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Validate Command
+      if: ${{ !contains(fromJson('["setup", "setup-break-cache", "run", "teardown"]'), inputs.command)}}
+      run:
+        exit 1
+      shell: bash
+
+    - name: Run Command
+      if: inputs.command == 'run'
+      uses: ./.github/actions/run
+      with:
+        input-file: ${{ inputs.input-file }}
+
+    - name: Setup Command
+      if: inputs.command == 'setup'
+      uses: ./.github/actions/setup
+      with:
+        input-file: ${{ inputs.input-file }}
+
+
+    - name: Setup Command (Break Cache)
+      if: inputs.command == 'setup-break-cache'
+      uses: ./.github/actions/setup-break-cache
+      with:
+        input-file: ${{ inputs.input-file }}
+
+
+    - name: Teardown Command
+      if: inputs.command == 'teardown'
+      uses: ./.github/actions/teardown
+      with:
+        input-file: ${{ inputs.input-file }}

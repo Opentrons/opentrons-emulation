@@ -1,6 +1,6 @@
-name: 'Run Emulation'
+name: 'Setup Emulation'
 description: |
-  Run emulated robot based off of passed input-file parameter.
+  Install all dependencies and build docker images
   The file located at input-file must be the format described in https://github.com/Opentrons/opentrons-emulation/blob/main/README.md.
   See https://github.com/Opentrons/opentrons-emulation/tree/main/samples for examples
 
@@ -9,10 +9,6 @@ inputs:
   input-file:
     description: 'YAML or JSON system configuration'
     required: true
-  python-version:
-    description: 'Version of python to install'
-    required: false
-    default: "3.10"
   cache-break:
     description: 'Specify a value here to break cache'
     required: false
@@ -20,16 +16,17 @@ inputs:
 runs:
   using: "composite"
   steps:
+
     - name: Setup Python
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ inputs.python-version }}
+        python-version: "3.10"
 
     - name: Cache Python Dependencies
       uses: actions/cache@v2
       with:
         path: "~/.local/share/virtualenvs/**"
-        key: ${{ runner.os }}-python-${{ inputs.python-version }}-pipenv-${{ hashFiles('./emulation_system/Pipfile.lock') }}-${{ inputs.cache-break }}
+        key: ${{ runner.os }}-pipenv-${{ hashFiles('./emulation_system/Pipfile.lock') }}-${{ inputs.cache-break }}
 
     - name: Setup repo
       run: |
@@ -41,14 +38,18 @@ runs:
       run: cp configuration_ci.json configuration.json
       shell: bash
 
+    - name: Where am I?
+      run: pwd
+      shell: bash
+
+    - name: What is in here?
+      run: ls -l
+      shell: bash
+
     - name: Validate Configuration File is Remote Only
       run: make check-remote-only file_path=${{ inputs.input-file }}
       shell: bash
 
     - name: Build Emulation Docker Images
       run: make em-build-amd64 file_path=${{ inputs.input-file }}
-      shell: bash
-
-    - name: Run Emulation Docker System
-      run: make em-run-detached file_path=${{ inputs.input-file }}
       shell: bash

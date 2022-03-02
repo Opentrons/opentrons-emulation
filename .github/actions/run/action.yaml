@@ -1,0 +1,26 @@
+name: 'Run Emulation'
+description: |
+  Run emulated robot based off of passed input-file parameter.
+  The file located at input-file must be the format described in https://github.com/Opentrons/opentrons-emulation/blob/main/README.md.
+  See https://github.com/Opentrons/opentrons-emulation/tree/main/samples for examples
+
+author: Derek Maggio
+inputs:
+  input-file:
+    description: 'YAML or JSON system configuration'
+    required: true
+runs:
+  using: "composite"
+  steps:
+
+    - name: Where am I?
+      run: pwd
+      shell: bash
+
+    - name: What is in here?
+      run: ls -l
+      shell: bash
+
+    - name: Run Emulation Docker System
+      run: make em-run-detached file_path=${{ inputs.input-file }}
+      shell: bash
