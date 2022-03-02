@@ -1,3 +1,5 @@
+# Workflow to verify that repo's custom actions are working correctly.
+
 on: [ pull_request, push ]
 
 jobs:

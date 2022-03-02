@@ -1,5 +1,5 @@
 # This workflow runs when a change is made to emulation-system or the sample files.
-# It runs all the sample files and ensure that they output a compose file
+# It runs all the sample files and ensure that they output a compose file.
 
 name: 'Test Sample Files'
 
@@ -9,12 +9,15 @@ on:
     paths:
       - 'emulation_system/**'
       - 'samples/**'
+      - '.github/workflows/test-samples-files.yaml'
     tags-ignore:
       - '*'
+
   pull_request:
     paths:
       - 'emulation_system/**'
       - 'samples/**'
+      - '.github/workflows/test-samples-files.yaml'
   workflow_dispatch:
 
 defaults:
@@ -53,20 +56,16 @@ jobs:
       - name: "Setup Python"
         uses: 'actions/setup-python@v2'
         with:
-          python-version: '3.7'
+          python-version: '3.10'
 
-      - name: "Setup Env"
+      - name: "Setup Project"
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libsystemd-dev
-          pip install pipenv==2021.5.29
+          pip install pipenv
+          make setup
+        working-directory: ./opentrons-emulation
 
       - name: "Build Configuration File"
         run: cp configuration_sample.json configuration.json
-        working-directory: ./opentrons-emulation
-
-      - name: "Setup Project"
-        run: make setup
         working-directory: ./opentrons-emulation
 
       - name: "Test All Samples"
