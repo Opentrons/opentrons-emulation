@@ -1,5 +1,5 @@
 # This workflow runs when a change is made to emulation-system or the sample files.
-# It runs all the sample files and ensure that they output a compose file
+# It runs all the sample files and ensure that they output a compose file.
 
 name: 'Test Sample Files'
 

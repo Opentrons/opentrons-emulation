@@ -1,5 +1,5 @@
 # This workflow runs test and lint on branch pushes that touch the
-# emulation-system project
+# emulation-system project.
 
 name: 'emulation-system Lint & Test'
 
