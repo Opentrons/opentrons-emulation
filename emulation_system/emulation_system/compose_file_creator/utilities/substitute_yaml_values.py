@@ -50,7 +50,8 @@ class YamlSubstitution:
 def parse_to_subs(args: str) -> List[Substitution]:
     """Parse passed json to a list of Substitution classes."""
     try:
-        parsed_json = json.loads(args)
+        # Stripping literal \n here because it sometimes gets added by Github Actions
+        parsed_json = json.loads(args.replace("\\n", ""))
     except json.decoder.JSONDecodeError:
         raise Exception("Error parsing json passed to subs arg.")
     except Exception:

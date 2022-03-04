@@ -1,17 +1,22 @@
-name: 'YAML Sub'
-description: Utility to substitute values in YAML file
+name: 'Setup Emulation (Python Only)'
+description: |
+  Install all dependencies
+  The file located at input-file must be the format described in https://github.com/Opentrons/opentrons-emulation/blob/main/README.md.
+  See https://github.com/Opentrons/opentrons-emulation/tree/main/samples for examples
 
 author: Derek Maggio
 inputs:
   input-file:
     description: 'YAML or JSON system configuration'
     required: true
-  substitutions:
-    description: 'TEST'
-    required: true
+  cache-break:
+    description: 'Specify a value here to break cache'
+    required: false
+    default: "default"
 runs:
   using: "composite"
   steps:
+
     - name: Setup Python
       uses: actions/setup-python@v2
       with:
@@ -27,9 +32,4 @@ runs:
       run: |
         pip install pipenv
         make setup
-      shell: bash
-
-    - name: Substitute YAML
-      run: pipenv run python -m emulation_system.compose_file_creator.utilities.substitute_yaml_values ${{ inputs.input-file }} ${{ toJSON(inputs.substitutions) }}
-      working-directory: ./emulation_system
       shell: bash

@@ -17,22 +17,11 @@ runs:
   using: "composite"
   steps:
 
-    - name: Setup Python
-      uses: actions/setup-python@v2
+    - name: Setup Emulation
+      uses: ./.github/actions/setup-python-only
       with:
-        python-version: "3.10"
-
-    - name: Cache Python Dependencies
-      uses: actions/cache@v2
-      with:
-        path: "~/.local/share/virtualenvs/**"
-        key: ${{ runner.os }}-pipenv-${{ hashFiles('./emulation_system/Pipfile.lock') }}-${{ inputs.cache-break }}
-
-    - name: Setup repo
-      run: |
-        pip install pipenv
-        make setup
-      shell: bash
+        cache-break: ${{ inputs.cache-break }}
+        input-file: ${PWD}/samples/${{ inputs.input-file }}
 
     - name: Create configuration.json
       run: cp configuration_ci.json configuration.json
