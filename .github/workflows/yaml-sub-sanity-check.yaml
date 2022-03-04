@@ -7,7 +7,6 @@ jobs:
     runs-on: "ubuntu-18.04"
     name: YAML Substitution Sanity Check
     steps:
-
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
