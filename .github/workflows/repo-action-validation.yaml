@@ -17,16 +17,16 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "break-out-actions"
+          ref: "main"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@break-out-actions
+        uses: Opentrons/opentrons-emulation@main
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           command: setup
 
       - name: Run Emulation
-        uses: Opentrons/opentrons-emulation@break-out-actions
+        uses: Opentrons/opentrons-emulation@main
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           command: run
@@ -38,7 +38,7 @@ jobs:
         run: "curl --request GET --header 'opentrons-version: *' http://localhost:31950/modules"
 
       - name: Teardown Emulation
-        uses: Opentrons/opentrons-emulation@break-out-actions
+        uses: Opentrons/opentrons-emulation@main
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           command: teardown
