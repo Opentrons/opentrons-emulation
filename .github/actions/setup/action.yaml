@@ -17,7 +17,7 @@ runs:
   using: "composite"
   steps:
 
-    - name: Setup Emulation
+    - name: Setup Emulation (Python Only)
       uses: ./.github/actions/setup-python-only
       with:
         cache-break: ${{ inputs.cache-break }}
