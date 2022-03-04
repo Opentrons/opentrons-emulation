@@ -61,4 +61,4 @@ runs:
       uses: ./.github/actions/yaml-sub
       with:
         input-file: ${{ inputs.input-file }}
-        substitutions: ${{ inputs.subs }}
+        substitutions: ${{ inputs.substitutions }}
