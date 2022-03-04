@@ -1,0 +1,36 @@
+# Workflow to verify that yaml-substitution are working correctly.
+
+on: [ pull_request, push ]
+
+jobs:
+  yaml-sub-sanity-check:
+    strategy:
+      matrix:
+        file: [
+          'ot3/ot3_remote.yaml',
+        ]
+        subs: [
+          [ "ot3-only-otie", "source_location", "48038c4d189536a0862a2c20ed832dc34bd1c8b2" ]
+        ]
+    runs-on: "ubuntu-18.04"
+    name: YAML Substitution Sanity Check (${{ matrix.file }})
+    steps:
+
+      - name: Checkout opentrons-emulation
+        uses: actions/checkout@v3
+        with:
+          ref: "main"
+
+      - name: Setup Emulation
+        uses: Opentrons/opentrons-emulation@main
+        with:
+          command: setup
+          input-file: ${PWD}/samples/${{ matrix.file }}
+
+
+      - name: YAML Substitution
+        uses: Opentrons/opentrons-emulation@main
+        with:
+          command: yaml-sub
+          subs: toJson(${{ matrix.subs }})
+          input-file: ${PWD}/samples/${{ matrix.file }}

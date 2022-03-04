@@ -5,6 +5,11 @@ inputs:
   input-file:
     description: 'YAML or JSON system configuration'
     required: true
+  subs:
+    description: |
+    List of lists containing substitutions you want to make to the file.
+    In the format of [[service_name, property_to_replace, replacement_value], ...]
+    required: false
   command:
     description: 'Command to run'
     required: true
@@ -12,7 +17,7 @@ runs:
   using: "composite"
   steps:
     - name: Validate Command
-      if: ${{ !contains(fromJson('["setup", "setup-break-cache", "run", "teardown"]'), inputs.command)}}
+      if: ${{ !contains(fromJson('["setup", "setup-break-cache", "run", "teardown", "yaml-sub"]'), inputs.command)}}
       run:
         exit 1
       shell: bash
@@ -42,3 +47,11 @@ runs:
       uses: ./.github/actions/teardown
       with:
         input-file: ${{ inputs.input-file }}
+
+
+    - name: YAML Sub
+      if: inputs.command == 'yaml-sub'
+      uses: ./.github/actions/yaml-sub
+      with:
+        input-file: ${{ inputs.input-file }}
+        subs: ${{ inputs.subs }}
