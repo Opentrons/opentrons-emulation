@@ -40,7 +40,7 @@ class OT2InputModel(RobotInputModel):
 
     hardware: Literal[Hardware.OT2]
     source_repos: OT2SourceRepositories = Field(
-        default=OT2SourceRepositories(), const=True
+        default=OT2SourceRepositories(), const=True, exclude=True
     )
     hardware_specific_attributes: OT2Attributes = Field(
         alias="hardware-specific-attributes", default=OT2Attributes()

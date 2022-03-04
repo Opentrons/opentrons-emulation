@@ -51,7 +51,7 @@ class OT3InputModel(RobotInputModel):
 
     hardware: Literal[Hardware.OT3]
     source_repos: OT3SourceRepositories = Field(
-        default=OT3SourceRepositories(), const=True
+        default=OT3SourceRepositories(), const=True, exclude=True
     )
     can_server_source_type: SourceType = Field(alias="can-server-source-type")
     can_server_source_location: str = Field(alias="can-server-source-location")

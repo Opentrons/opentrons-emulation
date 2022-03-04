@@ -49,7 +49,7 @@ class MagneticModuleInputModel(ModuleInputModel):
 
     hardware: Literal[Hardware.MAGNETIC_MODULE]
     source_repos: MagneticModuleSourceRepositories = Field(
-        default=MagneticModuleSourceRepositories(), const=True
+        default=MagneticModuleSourceRepositories(), const=True, exclude=True
     )
     hardware_specific_attributes: MagneticModuleAttributes = Field(
         alias="hardware-specific-attributes", default=MagneticModuleAttributes()

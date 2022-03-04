@@ -55,7 +55,7 @@ class ThermocyclerModuleInputModel(ModuleInputModel):
 
     hardware: Literal[Hardware.THERMOCYCLER_MODULE]
     source_repos: ThermocyclerModuleSourceRepositories = Field(
-        default=ThermocyclerModuleSourceRepositories(), const=True
+        default=ThermocyclerModuleSourceRepositories(), const=True, exclude=True
     )
     hardware_specific_attributes: ThermocyclerModuleAttributes = Field(
         alias="hardware-specific-attributes", default=ThermocyclerModuleAttributes()

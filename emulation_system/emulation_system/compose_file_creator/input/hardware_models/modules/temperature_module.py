@@ -50,7 +50,7 @@ class TemperatureModuleInputModel(ModuleInputModel):
 
     hardware: Literal[Hardware.TEMPERATURE_MODULE]
     source_repos: TemperatureModuleSourceRepositories = Field(
-        default=TemperatureModuleSourceRepositories(), const=True
+        default=TemperatureModuleSourceRepositories(), const=True, exclude=True
     )
     hardware_specific_attributes: TemperatureModuleAttributes = Field(
         alias="hardware-specific-attributes", default=TemperatureModuleAttributes()

@@ -25,6 +25,9 @@ class HeaterShakerModuleAttributes(HardwareSpecificAttributes):
 
     mode: HeaterShakerModes = HeaterShakerModes.SOCKET
 
+    class Config:  # noqa: D106
+        use_enum_values = True
+
 
 class HeaterShakerModuleSourceRepositories(SourceRepositories):
     """Source repositories for Heater-Shaker."""
@@ -46,7 +49,7 @@ class HeaterShakerModuleInputModel(ModuleInputModel):
 
     hardware: Literal[Hardware.HEATER_SHAKER_MODULE]
     source_repos: HeaterShakerModuleSourceRepositories = Field(
-        default=HeaterShakerModuleSourceRepositories(), const=True
+        default=HeaterShakerModuleSourceRepositories(), const=True, exclude=True
     )
     hardware_specific_attributes: HeaterShakerModuleAttributes = Field(
         alias="hardware-specific-attributes", default=HeaterShakerModuleAttributes()
