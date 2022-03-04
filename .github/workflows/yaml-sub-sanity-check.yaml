@@ -13,7 +13,7 @@ jobs:
           ref: "yaml-sub"
 
       - name: YAML Substitution
-        uses: ./.github/actions/yaml-sub
+        uses: Opentrons/opentrons-emulation@yaml-sub
         with:
           command: yaml-sub
           substitutions: >-

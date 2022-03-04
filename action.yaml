@@ -5,10 +5,10 @@ inputs:
   input-file:
     description: 'YAML or JSON system configuration'
     required: true
-  substitution:
+  substitutions:
     description: |
-    List of lists containing substitutions you want to make to the file.
-    In the format of [[service_name, property_to_replace, replacement_value], ...]
+      List of lists containing substitutions you want to make to the file.
+      In the format of [[service_name, property_to_replace, replacement_value], ...]
     required: false
   command:
     description: 'Command to run'
@@ -61,4 +61,4 @@ runs:
       uses: ./.github/actions/yaml-sub
       with:
         input-file: ${{ inputs.input-file }}
-#        substitution: ${{ inputs.subs }}
+        substitutions: ${{ inputs.subs }}
