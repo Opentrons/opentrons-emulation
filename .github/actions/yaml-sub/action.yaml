@@ -7,7 +7,9 @@ inputs:
     description: 'YAML or JSON system configuration'
     required: true
   substitutions:
-    description: 'TEST'
+    description: |
+      List of lists containing substitutions you want to make to the file.
+      In the format of [[service_name, property_to_replace, replacement_value], ...]
     required: true
 runs:
   using: "composite"
