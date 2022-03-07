@@ -18,7 +18,6 @@ jobs:
           command: yaml-sub
           substitutions: >-
             [
-              ["otie", "source-location", "48038c4d189536a0862a2c20ed832dc34bd1c8b2"],
               ["otie", "exposed-port", "5000"]
             ]
           input-file: ${{ github.workspace }}/samples/ot3/ot3_remote.yaml
