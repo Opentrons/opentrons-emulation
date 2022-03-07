@@ -1,0 +1,26 @@
+name: 'YAML Sub'
+description: Utility to substitute values in YAML file
+
+author: Derek Maggio
+inputs:
+  input-file:
+    description: 'YAML or JSON system configuration'
+    required: true
+  substitutions:
+    description: |
+      List of lists containing substitutions you want to make to the file.
+      In the format of [[service_name, property_to_replace, replacement_value], ...]
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Emulation
+      uses: ./.github/actions/setup-python-only
+      with:
+        cache-break: ${{ inputs.cache-break }}
+        input-file: ${PWD}/samples/${{ inputs.input-file }}
+
+    - name: Substitute YAML
+      run: pipenv run python -m emulation_system.compose_file_creator.utilities.substitute_yaml_values ${{ inputs.input-file }} ${{ toJSON(inputs.substitutions) }}
+      working-directory: ./emulation_system
+      shell: bash
