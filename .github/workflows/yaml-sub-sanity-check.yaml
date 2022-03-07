@@ -10,10 +10,10 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "main"
+          ref: "working-with-other-repos"
 
       - name: YAML Substitution
-        uses: Opentrons/opentrons-emulation@main
+        uses: Opentrons/opentrons-emulation@working-with-other-repos
         with:
           command: yaml-sub
           substitutions: >-
@@ -21,3 +21,7 @@ jobs:
               ["otie", "exposed-port", "5000"]
             ]
           input-file: ${{ github.workspace }}/samples/ot3/ot3_remote.yaml
+          output-file-location: ${{ github.workspace }}/output.yaml
+
+      - name: See file
+        run: cat ${{ github.workspace }}/output.yaml

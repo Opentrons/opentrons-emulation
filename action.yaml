@@ -10,9 +10,13 @@ inputs:
       List of lists containing substitutions you want to make to the file.
       In the format of [[service_name, property_to_replace, replacement_value], ...]
     required: false
+  output-file-location:
+    description: Location of output file
+    required: false
   command:
     description: 'Command to run'
     required: true
+
 runs:
   using: "composite"
   steps:
@@ -61,4 +65,5 @@ runs:
       uses: ./.github/actions/yaml-sub
       with:
         input-file: ${{ inputs.input-file }}
+        output-file-location: ${{ inputs.output-file-location }}
         substitutions: ${{ inputs.substitutions }}
