@@ -22,6 +22,10 @@ build_module_simulator() {
 }
 
 kill_process() {
+  if [[ "$COMMAND" != "stop" ]]; then
+    echo "Cannot run kill_process outside of the stop command."
+    exit 1
+  fi
   pkill -9 -f $1
 }
 
