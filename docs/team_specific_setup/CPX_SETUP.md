@@ -16,7 +16,7 @@ a path to your mono repo.
 
 From the root of the repo run `make em-build-amd64 file_path=${PWD}/samples/team_specific_setups/cpx_ot2.yaml`.
 
-This will take forever for the intial build, probably around 10 minutes.
+This will take forever for the initial build, probably around 10 minutes.
 
 ### Run Emulation
 
@@ -24,7 +24,7 @@ From the root of the repo run `make em-run-detached file_path=${PWD}/samples/tea
 
 ### Build and Start Robot Server
 
-Run `docker exec -it cpx-ot2-ot2 bash -c "/entrypoint.sh build && /entrypoint.sh run"` to build and start your dev
+Run `make em-local-rebuild file_path=${PWD}/samples/team_specific_setups/cpx_ot2.yaml` to build and start your dev
 server.
 
 *Note: This step is necessary because we bound our monorepo code into the robot-server emulator. It is up to*
@@ -32,8 +32,13 @@ server.
 
 ### Make Sure Emulation is Actually Working
 
-Hit localhost:31950/modules in postman. It should return to you a setup with heater-shaker, thermocycler, temperature,
-and magnetic modules.
+Run the following command:
+
+```shell
+curl -s --location --request GET 'http://localhost:31950/modules' --header 'opentrons-version: *' | json_pp -json_opt pretty,canonical
+```
+
+It should return to you a setup with heater-shaker, thermocycler, temperature, and magnetic modules.
 
 ### Change Something on the Robot Server
 
@@ -44,9 +49,16 @@ to `BOOOOOOP`.
 
 ### Rebuild and Run
 
-Run `docker exec -it cpx-ot2-ot2 bash -c "/entrypoint.sh build && /entrypoint.sh run"` to rebuild and restart your dev
+Run `make em-local-rebuild file_path=${PWD}/samples/team_specific_setups/cpx_ot2.yaml` to rebuild and restart your dev
 server.
 
 ### Verify Changes Took Effect
 
-Hit localhost:31950/modules in postman again. Make sure the displayName value changed.
+Run the following command again:
+
+```shell
+curl -s --location --request GET 'http://localhost:31950/modules' --header 'opentrons-version: *' | json_pp -json_opt pretty,canonical
+```
+
+It should return to you a setup with heater-shaker, thermocycler, temperature, and magnetic modules. Make sure the
+displayName value changed.

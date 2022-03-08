@@ -53,7 +53,7 @@ em-logs:
 	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_LOGS_COMMAND)
 
 .PHONY: em-local-rebuild
-em-list:
+em-local-rebuild:
 	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | ./scripts/rebuild_and_run_local_containers.sh
 
 
