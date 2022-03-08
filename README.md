@@ -78,6 +78,8 @@ Install the following software:
     1. Mac Instructions: Installed when you install Docker
     2. [Linux Instructions](https://docs.docker.com/compose/install/)
 3. [Install Python 3](https://www.python.org/downloads/)
+    1. I use [pyenv](https://github.com/pyenv/pyenv)
+4. [Pipenv Installed Globally](https://pipenv.pypa.io/en/latest/install/#installing-pipenv)
 
 ## Initial Configuration
 
