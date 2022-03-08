@@ -6,11 +6,15 @@ inputs:
   input-file:
     description: 'YAML or JSON system configuration'
     required: true
+  output-file-location:
+    description: Location of output file
+    required: true
   substitutions:
     description: |
       List of lists containing substitutions you want to make to the file.
       In the format of [[service_name, property_to_replace, replacement_value], ...]
     required: true
+
 runs:
   using: "composite"
   steps:
@@ -21,6 +25,6 @@ runs:
         input-file: ${PWD}/samples/${{ inputs.input-file }}
 
     - name: Substitute YAML
-      run: pipenv run python -m emulation_system.compose_file_creator.utilities.substitute_yaml_values ${{ inputs.input-file }} ${{ toJSON(inputs.substitutions) }}
+      run: pipenv run python -m emulation_system.compose_file_creator.utilities.substitute_yaml_values ${{ inputs.input-file }} ${{ toJSON(inputs.substitutions) }} > ${{ inputs.output-file-location }}
       working-directory: ./emulation_system
       shell: bash
