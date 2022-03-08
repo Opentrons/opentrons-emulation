@@ -26,7 +26,7 @@ kill_process() {
     echo "Cannot run kill_process outside of the stop command."
     exit 1
   fi
-  pkill -9 -f $1
+  pkill -9 -f ${1:?error, must pass parameter to kill_process}
 }
 
 # OPENTRONS_HARDWARE is an env variable that is passed to every container
