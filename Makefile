@@ -52,7 +52,7 @@ em-logs:
 	$(if $(file_path),@echo "Printing logs from $(file_path)",$(error file_path variable required))
 	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_LOGS_COMMAND)
 
-.PHONY: em-list
+.PHONY: em-local-rebuild
 em-list:
 	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | ./scripts/rebuild_and_run_local_containers.sh
 
