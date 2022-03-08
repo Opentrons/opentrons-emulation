@@ -17,10 +17,10 @@ robot:
   id: otie
   hardware: ot3
   source-type: local
-  source-location: /home/derek-maggio/Documents/repos/ot3-firmware
+  source-location: /home/runner/work/opentrons-emulation/opentrons-emulation/ot3-firmware
   robot-server-source-type: local
-  robot-server-source-location: /home/derek-maggio/Documents/repos/opentrons
+  robot-server-source-location: /home/runner/work/opentrons-emulation/opentrons-emulation/opentrons
   can-server-source-type: local
-  can-server-source-location: /home/derek-maggio/Documents/repos/opentrons
+  can-server-source-location: /home/runner/work/opentrons-emulation/opentrons-emulation/opentrons
   emulation-level: hardware
   exposed-port: 31950
