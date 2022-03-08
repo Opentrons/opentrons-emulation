@@ -8,8 +8,8 @@ fi
 
 COMMAND=$1
 
-if [ "$COMMAND" != "build" ] && [ "$COMMAND" != "run" ]; then
-  echo "Valid commands are \"build\" and \"run\""
+if [ "$COMMAND" != "build" ] && [ "$COMMAND" != "run" ] && [ "$COMMAND" != "stop" ]; then
+  echo "Valid commands are \"build\", \"run\", and \"stop\""
   echo "You passed $COMMAND"
   echo "Usage: $(basename "${BASH_SOURCE[0]}") <command>"
   exit 1
@@ -19,6 +19,14 @@ build_module_simulator() {
   cd /opentrons-modules && \
   cmake --preset=stm32-host-gcc10 . && \
   cmake --build ./build-stm32-host --target $1
+}
+
+kill_process() {
+  if [[ "$COMMAND" != "stop" ]]; then
+    echo "Cannot run kill_process outside of the stop command."
+    exit 1
+  fi
+  pkill -9 -f $1
 }
 
 # OPENTRONS_HARDWARE is an env variable that is passed to every container
@@ -32,15 +40,21 @@ case $FULL_COMMAND in
 
   build-heater-shaker-hardware)
     build_module_simulator "heater-shaker-simulator"
+    mv /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /heater-shaker-simulator
     ;;
   build-thermocycler-hardware)
     build_module_simulator "thermocycler-refresh-simulator"
+    mv /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator /thermocycler-refresh-simulator
     ;;
 
-  build-common-ot3-firmware)
+  build-common-ot3-firmware|build-ot3-gantry-x-hardware|build-ot3-gantry-y-hardware|build-ot3-head-hardware|build-ot3-pipettes-hardware)
     cd /ot3-firmware && \
     cmake --preset host-gcc10 && \
     cmake --build --preset=simulators
+    mv /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator /pipettes-simulator
+    mv /ot3-firmware/build-host/head/simulator/head-simulator /head-simulator
+    mv /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /gantry-x-simulator
+    mv /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /gantry-y-simulator
     ;;
 
   run-heater-shaker-hardware)
@@ -61,6 +75,10 @@ case $FULL_COMMAND in
     ;;
   run-ot3-gantry-y-hardware)
     /gantry-y-simulator
+    ;;
+
+  stop-ot3-gantry-y-hardware|stop-heater-shaker-hardware|stop-thermocycler-hardware|stop-ot3-pipettes-hardware|stop-ot3-head-hardware|stop-ot3-gantry-x-hardware)
+    kill_process $OPENTRONS_HARDWARE
     ;;
 
   # Firmware Level
@@ -96,6 +114,23 @@ case $FULL_COMMAND in
   run-can-server)
     bash -c "python3 -m opentrons_hardware.scripts.sim_socket_can"
     ;;
+
+  stop-thermocycler-firmware|stop-tempdeck-firmware|stop-magdeck-firmware)
+    kill_process opentrons.hardware_control.emulation.scripts.run_module_emulator
+    ;;
+  stop-emulator-proxy)
+    kill_process opentrons.hardware_control.emulation.app
+    ;;
+  stop-robot-server)
+    kill_process /usr/local/bin/uvicorn
+    ;;
+  stop-smoothie)
+    kill_process opentrons.hardware_control.emulation.script
+    ;;
+  stop-can-server)
+    kill_process opentrons_hardware.script
+    ;;
+
   *)
     echo "Command ${FULL_COMMAND} not found."
     exit 2
