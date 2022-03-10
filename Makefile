@@ -54,7 +54,19 @@ em-logs:
 
 .PHONY: em-local-rebuild
 em-local-rebuild:
-	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | ./scripts/rebuild_and_run_local_containers.sh
+	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | ./scripts/rebuild_and_run_local_containers.sh loud
+
+.PHONY: em-local-rebuild-quiet
+em-local-rebuild-quiet:
+	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | ./scripts/rebuild_and_run_local_containers.sh quiet
+
+.PHONY: em-local-rebuild-firmware-only
+em-local-rebuild-firmware-only:
+	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | ./scripts/rebuild_and_run_local_containers.sh loud firmware
+
+.PHONY: em-local-rebuild-firmware-only-quiet
+em-local-rebuild-firmware-only-quiet:
+	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | ./scripts/rebuild_and_run_local_containers.sh quiet firmware
 
 
 .PHONY: generate-compose-file
