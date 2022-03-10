@@ -54,6 +54,16 @@ def get_mount_strings(container: Containers) -> Optional[List[Union[str, Volume1
     )
     if len(mount_strings) > 0:
         mount_strings.append(get_entrypoint_mount_string())
+        if container.get_source_repo() == OpentronsRepository.OPENTRONS:
+            add_opentrons_named_volumes(cast(List[Union[str, Volume1]], mount_strings))
+        elif container.get_source_repo() == OpentronsRepository.OPENTRONS_MODULES:
+            add_opentrons_modules_named_volumes(
+                cast(List[Union[str, Volume1]], mount_strings)
+            )
+        elif container.get_source_repo() == OpentronsRepository.OT3_FIRMWARE:
+            add_ot3_firmware_named_volumes(
+                cast(List[Union[str, Volume1]], mount_strings)
+            )
         return cast(List[Union[str, Volume1]], mount_strings)
     else:
         return None
@@ -84,3 +94,48 @@ def get_build_args(
     )
     arg_dict: Dict[str, Any] = {env_var_to_use: value}
     return ListOrDict(__root__=arg_dict)
+
+
+def _add_named_volumes(
+    mount_list: List[Union[str, Volume1]],
+    directory_to_search_for: str,
+    build_dirs: List[str],
+) -> None:
+    """Adds named volumes for build files."""
+    for mount in mount_list:
+        if directory_to_search_for in mount:
+            mount_list.extend(build_dirs)
+            break
+
+
+def add_ot3_firmware_named_volumes(mount_list: List[Union[str, Volume1]]) -> None:
+    """Add ot3 firmware named volumes."""
+    _add_named_volumes(
+        mount_list,
+        "/ot3-firmware",
+        [
+            "ot3-firmware-build-host:/ot3-firmware/build-host",
+            "ot3-firmware-stm32-tools:/ot3-firmware/stm32-tools",
+        ],
+    )
+
+
+def add_opentrons_named_volumes(mount_list: List[Union[str, Volume1]]) -> None:
+    """Add opentrons named volumes."""
+    _add_named_volumes(
+        mount_list,
+        "/opentrons",
+        ["opentrons-python-dist:/dist"],
+    )
+
+
+def add_opentrons_modules_named_volumes(mount_list: List[Union[str, Volume1]]) -> None:
+    """Add opentrons-modules named volumes."""
+    _add_named_volumes(
+        mount_list,
+        "/opentrons-modules",
+        [
+            "opentrons-modules-build-stm32-host:/opentrons-modules-/build-stm32-host",
+            "opentrons-modules-stm32-tools:/opentrons-modules-/stm32-tools",
+        ],
+    )

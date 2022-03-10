@@ -30,6 +30,7 @@ from emulation_system.opentrons_emulation_configuration import (
 
 from ...errors import HardwareDoesNotExistError, IncorrectHardwareError
 from .shared_functions import (
+    add_opentrons_named_volumes,
     generate_container_name,
     get_build_args,
     get_entrypoint_mount_string,
@@ -85,6 +86,7 @@ def create_can_server_service(
     if ot3.can_server_source_type == SourceType.LOCAL:
         mounts = [get_entrypoint_mount_string()]
         mounts.extend(ot3.get_can_mount_strings())
+        add_opentrons_named_volumes(mounts)
 
     build_args = (
         get_build_args(
