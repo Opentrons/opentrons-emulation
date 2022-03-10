@@ -24,6 +24,7 @@ from ...settings.images import (
 )
 from ..intermediate_types import RequiredNetworks
 from .shared_functions import (
+    add_ot3_firmware_named_volumes,
     generate_container_name,
     get_build_args,
     get_entrypoint_mount_string,
@@ -89,6 +90,7 @@ def create_ot3_services(
         if ot3.source_type == SourceType.LOCAL:
             mounts = [get_entrypoint_mount_string()]
             mounts.extend(ot3.get_mount_strings())
+            add_ot3_firmware_named_volumes(mounts)
         env = ListOrDict(__root__={"CAN_SERVER_HOST": can_server_name})
         ot3_services.append(
             Service(

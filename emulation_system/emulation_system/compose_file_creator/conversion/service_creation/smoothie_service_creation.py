@@ -29,6 +29,7 @@ from emulation_system.opentrons_emulation_configuration import (
 )
 
 from .shared_functions import (
+    add_opentrons_named_volumes,
     generate_container_name,
     get_build_args,
     get_entrypoint_mount_string,
@@ -80,6 +81,7 @@ def create_smoothie_service(
     if ot2.source_type == SourceType.LOCAL:
         mounts = [get_entrypoint_mount_string()]
         mounts.extend(ot2.get_mount_strings())
+        add_opentrons_named_volumes(mounts)
 
     return Service(
         container_name=smoothie_name,
