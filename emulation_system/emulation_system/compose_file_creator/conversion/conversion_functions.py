@@ -1,5 +1,10 @@
 """Functions for converting from SystemConfigurationModel to RuntimeComposeFileModel."""
-from typing import Any, Dict, cast
+from typing import (
+    Any,
+    Dict,
+    List,
+    cast,
+)
 
 from pydantic import parse_obj_as
 
@@ -12,7 +17,11 @@ from emulation_system.compose_file_creator.conversion.service_creator import (
 from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import Network
+from emulation_system.compose_file_creator.output.compose_file_model import (
+    Network,
+    Service,
+    Volume,
+)
 from emulation_system.compose_file_creator.output.runtime_compose_file_model import (
     RuntimeComposeFileModel,
 )
@@ -41,6 +50,19 @@ def _get_required_networks(
     return RequiredNetworks(required_networks)
 
 
+def get_top_level_volumes(service_list: List[Service]) -> Dict[str, Volume]:
+    mount_list = set()
+    for service in service_list:
+        if service.volumes is not None:
+            mount_list.update(list(service.volumes))
+
+    return {
+        mount[:mount.find(':')]: Volume()
+        for mount in mount_list
+        if not mount.startswith("/")
+    }
+
+
 def _convert(
     config_model: SystemConfigurationModel,
     global_settings: OpentronsEmulationConfiguration,
@@ -55,6 +77,7 @@ def _convert(
         networks={
             network_name: Network() for network_name in required_networks.networks
         },
+        volumes=get_top_level_volumes(list(services.services.values()))
     )
 
 
