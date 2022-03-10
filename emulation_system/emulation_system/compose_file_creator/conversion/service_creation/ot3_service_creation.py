@@ -8,6 +8,7 @@ from emulation_system.opentrons_emulation_configuration import (
 
 from ...errors import HardwareDoesNotExistError, IncorrectHardwareError
 from ...input.configuration_file import SystemConfigurationModel
+from ...input.hardware_models import OT3InputModel
 from ...output.compose_file_model import ListOrDict, Service, Volume1
 from ...settings.config_file_settings import (
     Hardware,
@@ -45,6 +46,16 @@ SERVICES_TO_CREATE = [
     ServiceInfo(OT3GantryXImages(), OT3Hardware.GANTRY_X),
     ServiceInfo(OT3GantryYImages(), OT3Hardware.GANTRY_Y),
 ]
+
+
+def add_named_volumes(
+    ot3: OT3InputModel, mount_list: List[Union[str, Volume1]]
+) -> None:
+    """Adds named volumes for build files."""
+    for mount in ot3.mounts:
+        if mount.mount_path == "/ot3-firmware":
+            mount_list.append("build-host:/ot3-firmware/build-host/")
+            mount_list.append("stm32-tools:/ot3-firmware/stm32-tools/")
 
 
 def create_ot3_services(
@@ -89,6 +100,7 @@ def create_ot3_services(
         if ot3.source_type == SourceType.LOCAL:
             mounts = [get_entrypoint_mount_string()]
             mounts.extend(ot3.get_mount_strings())
+            add_named_volumes(ot3, mounts)
         env = ListOrDict(__root__={"CAN_SERVER_HOST": can_server_name})
         ot3_services.append(
             Service(

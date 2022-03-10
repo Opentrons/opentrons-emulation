@@ -385,9 +385,15 @@ def test_ot3_local_source_mounts(ot3_local_source: RuntimeComposeFileModel) -> N
 
     for emulator in emulators:
         assert emulator.volumes is not None
-        assert len(emulator.volumes) == 2
+        assert len(emulator.volumes) == 4
         assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", emulator.volumes)
         assert partial_string_in_mount("ot3-firmware:/ot3-firmware", emulator.volumes)
+        assert partial_string_in_mount(
+            "stm32-tools:/ot3-firmware/stm32-tools", emulator.volumes
+        )
+        assert partial_string_in_mount(
+            "build-host:/ot3-firmware/build-host", emulator.volumes
+        )
 
 
 def test_ot3_local_source_build_args(
