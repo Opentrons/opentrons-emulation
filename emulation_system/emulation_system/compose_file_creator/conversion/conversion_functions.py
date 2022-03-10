@@ -1,10 +1,5 @@
 """Functions for converting from SystemConfigurationModel to RuntimeComposeFileModel."""
-from typing import (
-    Any,
-    Dict,
-    List,
-    cast,
-)
+from typing import Any, Dict, List, Optional, cast
 
 from pydantic import parse_obj_as
 
@@ -50,17 +45,22 @@ def _get_required_networks(
     return RequiredNetworks(required_networks)
 
 
-def get_top_level_volumes(service_list: List[Service]) -> Dict[str, Volume]:
+def get_top_level_volumes(service_list: List[Service]) -> Optional[Dict[str, Volume]]:
+    """Get top level volumes dict."""
     mount_list = set()
     for service in service_list:
         if service.volumes is not None:
             mount_list.update(list(service.volumes))
-
-    return {
-        mount[:mount.find(':')]: Volume()
-        for mount in mount_list
-        if not mount.startswith("/")
-    }
+    if len(mount_list) > 0:
+        volume_dict = {}
+        for mount in mount_list:
+            mount = cast(str, mount)
+            if not mount.startswith("/"):
+                mount_name = mount[: mount.find(":")]
+                volume_dict[mount_name] = Volume()
+        return volume_dict
+    else:
+        return None
 
 
 def _convert(
@@ -77,7 +77,7 @@ def _convert(
         networks={
             network_name: Network() for network_name in required_networks.networks
         },
-        volumes=get_top_level_volumes(list(services.services.values()))
+        volumes=get_top_level_volumes(list(services.services.values())),
     )
 
 
