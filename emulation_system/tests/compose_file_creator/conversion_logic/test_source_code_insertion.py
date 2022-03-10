@@ -914,11 +914,11 @@ def test_heater_shaker_hardware_local_mounts(
         "entrypoint.sh:/entrypoint.sh", heater_shaker.volumes
     )
     assert partial_string_in_mount(
-        "opentrons-modules-build-stm32-host:/opentrons-modules-/build-stm32-host",
+        "opentrons-modules-build-stm32-host:/opentrons-modules/build-stm32-host",
         heater_shaker.volumes,
     )
     assert partial_string_in_mount(
-        "opentrons-modules-stm32-tools:/opentrons-modules-/stm32-tools",
+        "opentrons-modules-stm32-tools:/opentrons-modules/stm32-tools",
         heater_shaker.volumes,
     )
 
@@ -951,11 +951,11 @@ def test_thermocycler_module_hardware_local_mounts(
         "entrypoint.sh:/entrypoint.sh", thermocycler_module.volumes
     )
     assert partial_string_in_mount(
-        "opentrons-modules-build-stm32-host:/opentrons-modules-/build-stm32-host",
+        "opentrons-modules-build-stm32-host:/opentrons-modules/build-stm32-host",
         thermocycler_module.volumes,
     )
     assert partial_string_in_mount(
-        "opentrons-modules-stm32-tools:/opentrons-modules-/stm32-tools",
+        "opentrons-modules-stm32-tools:/opentrons-modules/stm32-tools",
         thermocycler_module.volumes,
     )
 

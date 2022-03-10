@@ -135,7 +135,7 @@ def add_opentrons_modules_named_volumes(mount_list: List[Union[str, Volume1]]) -
         mount_list,
         "/opentrons-modules",
         [
-            "opentrons-modules-build-stm32-host:/opentrons-modules-/build-stm32-host",
-            "opentrons-modules-stm32-tools:/opentrons-modules-/stm32-tools",
+            "opentrons-modules-build-stm32-host:/opentrons-modules/build-stm32-host",
+            "opentrons-modules-stm32-tools:/opentrons-modules/stm32-tools",
         ],
     )
