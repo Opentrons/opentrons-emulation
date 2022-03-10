@@ -16,6 +16,7 @@ from emulation_system.compose_file_creator.output.runtime_compose_file_model imp
     RuntimeComposeFileModel,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
+    EmulationLevels,
     OpentronsRepository,
     RepoToBuildArgMapping,
     SourceType,
@@ -46,12 +47,12 @@ def build_args_are_none(service: Service) -> bool:
 
 
 @pytest.fixture
-def set_source_type_params(
+def robot_set_source_type_params(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> Callable:
     """Create a runnable fixture that builds a RuntimeComposeFileModel."""
 
-    def _set_source_type_params(
+    def robot_set_source_type_params(
         robot_dict: Dict[str, Any],
         source_type: SourceType,
         source_location: str,
@@ -74,7 +75,28 @@ def set_source_type_params(
 
         return convert_from_obj({"robot": robot_dict}, testing_global_em_config)
 
-    return _set_source_type_params
+    return robot_set_source_type_params
+
+
+@pytest.fixture
+def module_set_source_type_params(
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> Callable:
+    """Create a runnable fixture that builds a RuntimeComposeFileModel."""
+
+    def module_set_source_type_params(
+        module_dict: Dict[str, Any],
+        source_type: SourceType,
+        source_location: str,
+        emulation_level: EmulationLevels,
+    ) -> RuntimeComposeFileModel:
+        module_dict["source-type"] = source_type
+        module_dict["source-location"] = source_location
+        module_dict["emulation-level"] = emulation_level
+
+        return convert_from_obj({"modules": [module_dict]}, testing_global_em_config)
+
+    return module_set_source_type_params
 
 
 @pytest.fixture
@@ -89,10 +111,10 @@ def ot3_firmware_dir(tmpdir: py.path.local) -> str:
 
 @pytest.fixture
 def ot3_remote_everything_latest(
-    ot3_default: Dict[str, Any], set_source_type_params: Callable
+    ot3_default: Dict[str, Any], robot_set_source_type_params: Callable
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
-    return set_source_type_params(
+    return robot_set_source_type_params(
         robot_dict=ot3_default,
         source_type=SourceType.REMOTE,
         source_location="latest",
@@ -105,10 +127,10 @@ def ot3_remote_everything_latest(
 
 @pytest.fixture
 def ot3_remote_everything_commit_id(
-    ot3_default: Dict[str, Any], set_source_type_params: Callable
+    ot3_default: Dict[str, Any], robot_set_source_type_params: Callable
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
-    return set_source_type_params(
+    return robot_set_source_type_params(
         robot_dict=ot3_default,
         source_type=SourceType.REMOTE,
         source_location=FAKE_COMMIT_ID,
@@ -121,10 +143,12 @@ def ot3_remote_everything_commit_id(
 
 @pytest.fixture
 def ot3_local_robot(
-    ot3_default: Dict[str, Any], opentrons_dir: str, set_source_type_params: Callable
+    ot3_default: Dict[str, Any],
+    opentrons_dir: str,
+    robot_set_source_type_params: Callable,
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
-    return set_source_type_params(
+    return robot_set_source_type_params(
         robot_dict=ot3_default,
         source_type=SourceType.REMOTE,
         source_location="latest",
@@ -140,10 +164,10 @@ def ot3_local_source(
     ot3_default: Dict[str, Any],
     opentrons_dir: str,
     ot3_firmware_dir: str,
-    set_source_type_params: Callable,
+    robot_set_source_type_params: Callable,
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
-    return set_source_type_params(
+    return robot_set_source_type_params(
         robot_dict=ot3_default,
         source_type=SourceType.LOCAL,
         source_location=ot3_firmware_dir,
@@ -156,10 +180,12 @@ def ot3_local_source(
 
 @pytest.fixture
 def ot3_local_can(
-    ot3_default: Dict[str, Any], opentrons_dir: str, set_source_type_params: Callable
+    ot3_default: Dict[str, Any],
+    opentrons_dir: str,
+    robot_set_source_type_params: Callable,
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
-    return set_source_type_params(
+    return robot_set_source_type_params(
         robot_dict=ot3_default,
         source_type=SourceType.REMOTE,
         source_location="latest",
@@ -172,10 +198,10 @@ def ot3_local_can(
 
 @pytest.fixture
 def ot2_remote_everything_latest(
-    ot2_default: Dict[str, Any], set_source_type_params: Callable
+    ot2_default: Dict[str, Any], robot_set_source_type_params: Callable
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
-    return set_source_type_params(
+    return robot_set_source_type_params(
         robot_dict=ot2_default,
         source_type=SourceType.REMOTE,
         source_location="latest",
@@ -188,10 +214,10 @@ def ot2_remote_everything_latest(
 
 @pytest.fixture
 def ot2_remote_everything_commit_id(
-    ot2_default: Dict[str, Any], set_source_type_params: Callable
+    ot2_default: Dict[str, Any], robot_set_source_type_params: Callable
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
-    return set_source_type_params(
+    return robot_set_source_type_params(
         robot_dict=ot2_default,
         source_type=SourceType.REMOTE,
         source_location=FAKE_COMMIT_ID,
@@ -204,10 +230,12 @@ def ot2_remote_everything_commit_id(
 
 @pytest.fixture
 def ot2_local_source(
-    ot2_default: Dict[str, Any], opentrons_dir: str, set_source_type_params: Callable
+    ot2_default: Dict[str, Any],
+    opentrons_dir: str,
+    robot_set_source_type_params: Callable,
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
-    return set_source_type_params(
+    return robot_set_source_type_params(
         robot_dict=ot2_default,
         source_type=SourceType.LOCAL,
         source_location=opentrons_dir,
@@ -220,10 +248,12 @@ def ot2_local_source(
 
 @pytest.fixture
 def ot2_local_robot(
-    ot2_default: Dict[str, Any], opentrons_dir: str, set_source_type_params: Callable
+    ot2_default: Dict[str, Any],
+    opentrons_dir: str,
+    robot_set_source_type_params: Callable,
 ) -> RuntimeComposeFileModel:
     """Get OT3 configured for local source and local robot source."""
-    return set_source_type_params(
+    return robot_set_source_type_params(
         robot_dict=ot2_default,
         source_type=SourceType.REMOTE,
         source_location="latest",
@@ -231,6 +261,156 @@ def ot2_local_robot(
         robot_server_source_location=opentrons_dir,
         can_server_source_type=None,
         can_server_source_location=None,
+    )
+
+
+@pytest.fixture
+def heater_shaker_module_hardware_local(
+    heater_shaker_module_default: Dict[str, Any],
+    opentrons_modules_dir: str,
+    module_set_source_type_params: Callable,
+) -> RuntimeComposeFileModel:
+    """Get Heater Shaker configuration for local source."""
+    return module_set_source_type_params(
+        module_dict=heater_shaker_module_default,
+        source_type="local",
+        source_location=opentrons_modules_dir,
+        emulation_level="hardware",
+    )
+
+
+@pytest.fixture
+def temperature_module_firmware_local(
+    temperature_module_default: Dict[str, Any],
+    opentrons_dir: str,
+    module_set_source_type_params: Callable,
+) -> RuntimeComposeFileModel:
+    """Get Heater Shaker configuration for local source."""
+    return module_set_source_type_params(
+        module_dict=temperature_module_default,
+        source_type="local",
+        source_location=opentrons_dir,
+        emulation_level="firmware",
+    )
+
+
+@pytest.fixture
+def magnetic_module_firmware_local(
+    magnetic_module_default: Dict[str, Any],
+    opentrons_dir: str,
+    module_set_source_type_params: Callable,
+) -> RuntimeComposeFileModel:
+    """Get Heater Shaker configuration for local source."""
+    return module_set_source_type_params(
+        module_dict=magnetic_module_default,
+        source_type="local",
+        source_location=opentrons_dir,
+        emulation_level="firmware",
+    )
+
+
+@pytest.fixture
+def thermocycler_module_firmware_local(
+    thermocycler_module_default: Dict[str, Any],
+    opentrons_dir: str,
+    module_set_source_type_params: Callable,
+) -> RuntimeComposeFileModel:
+    """Get Heater Shaker configuration for local source."""
+    return module_set_source_type_params(
+        module_dict=thermocycler_module_default,
+        source_type="local",
+        source_location=opentrons_dir,
+        emulation_level="firmware",
+    )
+
+
+@pytest.fixture
+def thermocycler_module_hardware_local(
+    thermocycler_module_default: Dict[str, Any],
+    opentrons_modules_dir: str,
+    module_set_source_type_params: Callable,
+) -> RuntimeComposeFileModel:
+    """Get Heater Shaker configuration for local source."""
+    return module_set_source_type_params(
+        module_dict=thermocycler_module_default,
+        source_type="local",
+        source_location=opentrons_modules_dir,
+        emulation_level="hardware",
+    )
+
+
+@pytest.fixture
+def heater_shaker_module_hardware_remote(
+    heater_shaker_module_default: Dict[str, Any],
+    opentrons_modules_dir: str,
+    module_set_source_type_params: Callable,
+) -> RuntimeComposeFileModel:
+    """Get Heater Shaker configuration for remote source."""
+    return module_set_source_type_params(
+        module_dict=heater_shaker_module_default,
+        source_type="remote",
+        source_location="latest",
+        emulation_level="hardware",
+    )
+
+
+@pytest.fixture
+def temperature_module_firmware_remote(
+    temperature_module_default: Dict[str, Any],
+    opentrons_dir: str,
+    module_set_source_type_params: Callable,
+) -> RuntimeComposeFileModel:
+    """Get Heater Shaker configuration for remote source."""
+    return module_set_source_type_params(
+        module_dict=temperature_module_default,
+        source_type="remote",
+        source_location="latest",
+        emulation_level="firmware",
+    )
+
+
+@pytest.fixture
+def magnetic_module_firmware_remote(
+    magnetic_module_default: Dict[str, Any],
+    opentrons_dir: str,
+    module_set_source_type_params: Callable,
+) -> RuntimeComposeFileModel:
+    """Get Heater Shaker configuration for remote source."""
+    return module_set_source_type_params(
+        module_dict=magnetic_module_default,
+        source_type="remote",
+        source_location="latest",
+        emulation_level="firmware",
+    )
+
+
+@pytest.fixture
+def thermocycler_module_firmware_remote(
+    thermocycler_module_default: Dict[str, Any],
+    opentrons_dir: str,
+    module_set_source_type_params: Callable,
+) -> RuntimeComposeFileModel:
+    """Get Heater Shaker configuration for remote source."""
+    return module_set_source_type_params(
+        module_dict=thermocycler_module_default,
+        source_type="remote",
+        source_location="latest",
+        emulation_level="firmware",
+    )
+
+
+@pytest.fixture
+def thermocycler_module_hardware_remote(
+    thermocycler_module_default: Dict[str, Any],
+    opentrons_modules_dir: str,
+    module_set_source_type_params: Callable,
+) -> RuntimeComposeFileModel:
+    """Get Heater Shaker configuration for remote source."""
+    return module_set_source_type_params(
+        module_dict=thermocycler_module_default,
+        source_type="remote",
+        source_location="latest",
+        emulation_level="hardware",
     )
 
 
@@ -442,11 +622,13 @@ def test_ot3_local_can_server_mounts(ot3_local_can: RuntimeComposeFileModel) -> 
     assert emulators is not None
 
     assert robot_server.volumes is None
+    assert can_server.volumes is not None
 
     assert partial_string_in_mount("opentrons:/opentrons", can_server.volumes)
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", can_server.volumes)
-    assert can_server.volumes is not None
-    assert len(can_server.volumes) == 2
+    assert partial_string_in_mount("opentrons-python-dist:/dist", can_server.volumes)
+
+    assert len(can_server.volumes) == 3
 
     assert ot3_local_can.ot3_emulators is not None
     for emulator in ot3_local_can.ot3_emulators:
@@ -505,7 +687,9 @@ def test_ot3_local_robot_server_mounts(
     assert robot_server.volumes is not None
     assert partial_string_in_mount("opentrons:/opentrons", robot_server.volumes)
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", robot_server.volumes)
-    assert len(robot_server.volumes) == 2
+    assert partial_string_in_mount("opentrons-python-dist:/dist", robot_server.volumes)
+
+    assert len(robot_server.volumes) == 3
 
     assert can_server.volumes is None
 
@@ -633,7 +817,8 @@ def test_ot2_local_robot_server_mounts(
     assert robot_server.volumes is not None
     assert partial_string_in_mount("opentrons:/opentrons", robot_server.volumes)
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", robot_server.volumes)
-    assert len(robot_server.volumes) == 2
+    assert partial_string_in_mount("opentrons-python-dist:/dist", robot_server.volumes)
+    assert len(robot_server.volumes) == 3
 
     assert smoothie.volumes is None
 
@@ -674,7 +859,9 @@ def test_ot2_local_source_mounts(ot2_local_source: RuntimeComposeFileModel) -> N
     assert smoothie.volumes is not None
     assert partial_string_in_mount("opentrons:/opentrons", smoothie.volumes)
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", smoothie.volumes)
-    assert len(smoothie.volumes) == 2
+    assert partial_string_in_mount("opentrons-python-dist:/dist", smoothie.volumes)
+
+    assert len(smoothie.volumes) == 3
 
     assert robot_server.volumes is None
 
@@ -701,6 +888,258 @@ def test_ot2_local_source_build_args(
     assert robot_server_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
 
     assert build_args_are_none(smoothie)
+
+
+def test_heater_shaker_hardware_local_mounts(
+    heater_shaker_module_hardware_local: RuntimeComposeFileModel,
+) -> None:
+    """Test mounts when source-type is set to local.
+
+    Confirm that heater shaker has opentrons-modules, entrypoint.sh mounted in.
+    Also confirm that named volumes: opentrons-modules-build-stm32-host and
+    opentrons-modules-stm32-tools exist and are bound to the correct location.
+    """
+    heater_shakers = heater_shaker_module_hardware_local.heater_shaker_module_emulators
+
+    assert heater_shakers is not None
+    assert len(heater_shakers) == 1
+
+    heater_shaker = heater_shakers[0]
+    assert heater_shaker.volumes is not None
+
+    assert partial_string_in_mount(
+        "opentrons-modules:/opentrons-modules", heater_shaker.volumes
+    )
+    assert partial_string_in_mount(
+        "entrypoint.sh:/entrypoint.sh", heater_shaker.volumes
+    )
+    assert partial_string_in_mount(
+        "opentrons-modules-build-stm32-host:/opentrons-modules-/build-stm32-host",
+        heater_shaker.volumes,
+    )
+    assert partial_string_in_mount(
+        "opentrons-modules-stm32-tools:/opentrons-modules-/stm32-tools",
+        heater_shaker.volumes,
+    )
+
+    assert len(heater_shaker.volumes) == 4
+
+
+def test_thermocycler_module_hardware_local_mounts(
+    thermocycler_module_hardware_local: RuntimeComposeFileModel,
+) -> None:
+    """Test mounts when source-type is set to local.
+
+    Confirm that thermoycler has opentrons-modules, entrypoint.sh mounted in.
+    Also confirm that named volumes: opentrons-modules-build-stm32-host and
+    opentrons-modules-stm32-tools exist and are bound to the correct location.
+    """
+    thermocycler_modules = (
+        thermocycler_module_hardware_local.thermocycler_module_emulators
+    )
+
+    assert thermocycler_modules is not None
+    assert len(thermocycler_modules) == 1
+
+    thermocycler_module = thermocycler_modules[0]
+    assert thermocycler_module.volumes is not None
+
+    assert partial_string_in_mount(
+        "opentrons-modules:/opentrons-modules", thermocycler_module.volumes
+    )
+    assert partial_string_in_mount(
+        "entrypoint.sh:/entrypoint.sh", thermocycler_module.volumes
+    )
+    assert partial_string_in_mount(
+        "opentrons-modules-build-stm32-host:/opentrons-modules-/build-stm32-host",
+        thermocycler_module.volumes,
+    )
+    assert partial_string_in_mount(
+        "opentrons-modules-stm32-tools:/opentrons-modules-/stm32-tools",
+        thermocycler_module.volumes,
+    )
+
+    assert len(thermocycler_module.volumes) == 4
+
+
+def test_temperature_module_firmware_local_mounts(
+    temperature_module_firmware_local: RuntimeComposeFileModel,
+) -> None:
+    """Test mounts when source-type is set to local.
+
+    Confirm that temperature module has opentrons, entrypoint.sh mounted in.
+    Also confirm that named volumes: opentrons-python-dist bound to the correct
+    location.
+    """
+    temperature_modules = temperature_module_firmware_local.temperature_module_emulators
+
+    assert temperature_modules is not None
+    assert len(temperature_modules) == 1
+
+    temperature_module = temperature_modules[0]
+    assert temperature_module.volumes is not None
+
+    assert partial_string_in_mount("opentrons:/opentrons", temperature_module.volumes)
+    assert partial_string_in_mount(
+        "entrypoint.sh:/entrypoint.sh", temperature_module.volumes
+    )
+    assert partial_string_in_mount(
+        "opentrons-python-dist:/dist", temperature_module.volumes
+    )
+
+    assert len(temperature_module.volumes) == 3
+
+
+def test_magnetic_module_firmware_local_mounts(
+    magnetic_module_firmware_local: RuntimeComposeFileModel,
+) -> None:
+    """Test mounts when source-type is set to local.
+
+    Confirm that magnetic module has opentrons, entrypoint.sh mounted in.
+    Also confirm that named volumes: opentrons-python-dist bound to the correct
+    location.
+    """
+    magnetic_modules = magnetic_module_firmware_local.magnetic_module_emulators
+
+    assert magnetic_modules is not None
+    assert len(magnetic_modules) == 1
+
+    magnetic_module = magnetic_modules[0]
+    assert magnetic_module.volumes is not None
+
+    assert partial_string_in_mount("opentrons:/opentrons", magnetic_module.volumes)
+    assert partial_string_in_mount(
+        "entrypoint.sh:/entrypoint.sh", magnetic_module.volumes
+    )
+    assert partial_string_in_mount(
+        "opentrons-python-dist:/dist", magnetic_module.volumes
+    )
+
+    assert len(magnetic_module.volumes) == 3
+
+
+def test_thermocycler_module_firmware_local_mounts(
+    thermocycler_module_firmware_local: RuntimeComposeFileModel,
+) -> None:
+    """Test mounts when source-type is set to local.
+
+    Confirm that thermocycler module has opentrons, entrypoint.sh mounted in.
+    Also confirm that named volumes: opentrons-python-dist bound to the correct
+    location.
+    """
+    thermocycler_modules = (
+        thermocycler_module_firmware_local.thermocycler_module_emulators
+    )
+
+    assert thermocycler_modules is not None
+    assert len(thermocycler_modules) == 1
+
+    thermocycler_module = thermocycler_modules[0]
+    assert thermocycler_module.volumes is not None
+
+    assert partial_string_in_mount("opentrons:/opentrons", thermocycler_module.volumes)
+    assert partial_string_in_mount(
+        "entrypoint.sh:/entrypoint.sh", thermocycler_module.volumes
+    )
+    assert partial_string_in_mount(
+        "opentrons-python-dist:/dist", thermocycler_module.volumes
+    )
+
+    assert len(thermocycler_module.volumes) == 3
+
+
+def test_heater_shaker_hardware_remote_mounts(
+    heater_shaker_module_hardware_remote: RuntimeComposeFileModel,
+) -> None:
+    """Test mounts when source-type is set to local.
+
+    Confirm that heater shaker has opentrons-modules, entrypoint.sh mounted in.
+    Also confirm that named volumes: opentrons-modules-build-stm32-host and
+    opentrons-modules-stm32-tools exist and are bound to the correct location.
+    """
+    heater_shakers = heater_shaker_module_hardware_remote.heater_shaker_module_emulators
+
+    assert heater_shakers is not None
+    assert len(heater_shakers) == 1
+
+    heater_shaker = heater_shakers[0]
+    assert heater_shaker.volumes is None
+
+
+def test_thermocycler_module_hardware_remote_mounts(
+    thermocycler_module_hardware_remote: RuntimeComposeFileModel,
+) -> None:
+    """Test mounts when source-type is set to remote.
+
+    Confirm that there are no mounts
+    """
+    thermocycler_modules = (
+        thermocycler_module_hardware_remote.thermocycler_module_emulators
+    )
+
+    assert thermocycler_modules is not None
+    assert len(thermocycler_modules) == 1
+
+    thermocycler_module = thermocycler_modules[0]
+    assert thermocycler_module.volumes is None
+
+
+def test_temperature_module_firmware_remote_mounts(
+    temperature_module_firmware_remote: RuntimeComposeFileModel,
+) -> None:
+    """Test mounts when source-type is set to local.
+
+    Confirm that temperature module has opentrons, entrypoint.sh mounted in.
+    Also confirm that named volumes: opentrons-python-dist bound to the correct
+    location.
+    """
+    temperature_modules = (
+        temperature_module_firmware_remote.temperature_module_emulators
+    )
+
+    assert temperature_modules is not None
+    assert len(temperature_modules) == 1
+
+    temperature_module = temperature_modules[0]
+    assert temperature_module.volumes is None
+
+
+def test_magnetic_module_firmware_remote_mounts(
+    magnetic_module_firmware_remote: RuntimeComposeFileModel,
+) -> None:
+    """Test mounts when source-type is set to local.
+
+    Confirm that magnetic module has opentrons, entrypoint.sh mounted in.
+    Also confirm that named volumes: opentrons-python-dist bound to the correct
+    location.
+    """
+    magnetic_modules = magnetic_module_firmware_remote.magnetic_module_emulators
+
+    assert magnetic_modules is not None
+    assert len(magnetic_modules) == 1
+
+    magnetic_module = magnetic_modules[0]
+    assert magnetic_module.volumes is None
+
+
+def test_thermocycler_module_firmware_remote_mounts(
+    thermocycler_module_firmware_remote: RuntimeComposeFileModel,
+) -> None:
+    """Test mounts when source-type is set to local.
+
+    Confirm that thermocycler module has opentrons, entrypoint.sh mounted in.
+    Also confirm that named volumes: opentrons-python-dist bound to the correct
+    location.
+    """
+    thermocycler_modules = (
+        thermocycler_module_firmware_remote.thermocycler_module_emulators
+    )
+
+    assert thermocycler_modules is not None
+    assert len(thermocycler_modules) == 1
+
+    thermocycler_module = thermocycler_modules[0]
+    assert thermocycler_module.volumes is None
 
 
 @pytest.mark.parametrize(
