@@ -28,6 +28,8 @@ The `Emulator Proxy` handles all connections to the Opentrons Modules using the 
 The `CAN Server` handles all connections to the OT3 Firmware using the CAN protocol.
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080'}}}%%
+
 flowchart LR
     robot_server{{Robot Server}} --CAN--- can_server[CAN Server]
     robot_server --- exposed_port[Exposed Port]
@@ -80,5 +82,5 @@ class cn secondarySubgraphStyle;
 
 classDef node fill:#006fff,color:#000000,stroke-width:0px;
 
-linkStyle default stroke:#000000,stroke-width:2px,color:white,background-color:black;
+linkStyle default stroke:#000000,stroke-width:2px,color:white;
 ```
