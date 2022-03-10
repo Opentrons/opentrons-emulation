@@ -4,37 +4,38 @@ Opentrons has various software emulations of their hardware. This repository def
 all these emulators together into systems.
 
 - [Opentrons Emulation](#opentrons-emulation)
-  - [What is an Emulator?](#what-is-an-emulator)
-  - [How do the Opentrons Emulators work?](#how-do-the-opentrons-emulators-work)
-  - [Supported Hardware](#supported-hardware)
-  - [Required Software](#required-software)
-  - [Initial Configuration](#initial-configuration)
-  - [Using Emulation](#using-emulation)
-    - [Emulation Commands](#emulation-commands)
-      - [Building System](#building-system)
-      - [Running System](#running-system)
-      - [Viewing System Logs](#viewing-system-logs)
-      - [Removing System](#removing-system)
-      - [Generate Compose File](#generate-compose-file)
-  - [Emulation Configuration File Key Definitions](#emulation-configuration-file-key-definitions)
-    - [id](#id)
-    - [system-unique-id](#system-unique-id)
-    - [hardware](#hardware)
-    - [source-type](#source-type)
-    - [source-location](#source-location)
-    - [robot-server-source-type](#robot-server-source-type)
-    - [robot-server-source-location](#robot-server-source-location)
-    - [can-server-source-type](#can-server-source-type)
-    - [can-server-source-location](#can-server-source-location)
-    - [emulation-level](#emulation-level)
-    - [exposed-port](#exposed-port)
-    - [hardware-specific-attributes](#hardware-specific-attributes)
-      - [Pipettes](#pipettes)
-        - [Available Pipette Models:](#available-pipette-models)
-      - [Heater-Shaker and Thermocycler Refresh Communication Mode](#heater-shaker-and-thermocycler-refresh-communication-mode)
-      - [Temperature Model for Thermocycler and Temperature Modules](#temperature-model-for-thermocycler-and-temperature-modules)
-  - [Setting Up for Local Development](#setting-up-for-local-development)
-    - [CPX Setup](#cpx-setup)
+    * [What is an Emulator?](#what-is-an-emulator-)
+    * [How do the Opentrons Emulators work?](#how-do-the-opentrons-emulators-work-)
+    * [Supported Hardware](#supported-hardware)
+    * [Required Software](#required-software)
+    * [Initial Configuration](#initial-configuration)
+    * [Using Emulation](#using-emulation)
+        + [Emulation Commands](#emulation-commands)
+            - [Building System](#building-system)
+            - [Running System](#running-system)
+            - [Viewing System Logs](#viewing-system-logs)
+            - [Removing System](#removing-system)
+            - [Generate Compose File](#generate-compose-file)
+    * [Emulation Configuration File Key Definitions](#emulation-configuration-file-key-definitions)
+        + [id](#id)
+        + [system-unique-id](#system-unique-id)
+        + [hardware](#hardware)
+        + [source-type](#source-type)
+        + [source-location](#source-location)
+        + [robot-server-source-type](#robot-server-source-type)
+        + [robot-server-source-location](#robot-server-source-location)
+        + [can-server-source-type](#can-server-source-type)
+        + [can-server-source-location](#can-server-source-location)
+        + [emulation-level](#emulation-level)
+        + [exposed-port](#exposed-port)
+        + [hardware-specific-attributes](#hardware-specific-attributes)
+            - [Pipettes](#pipettes)
+                * [Available Pipette Models:](#available-pipette-models-)
+            - [Heater-Shaker and Thermocycler Refresh Communication Mode](#heater-shaker-and-thermocycler-refresh-communication-mode)
+            - [Temperature Model for Thermocycler and Temperature Modules](#temperature-model-for-thermocycler-and-temperature-modules)
+    * [Setting Up for Local Development](#setting-up-for-local-development)
+        + [CPX Setup](#cpx-setup)
+    * [Architecture Diagrams](#architecture-diagrams)
 
 ## What is an Emulator?
 
@@ -84,14 +85,14 @@ Install the following software:
     2. [Linux Instructions](https://docs.docker.com/compose/install/)
 3. [Install Python 3](https://www.python.org/downloads/)
     1. use [pyenv](https://github.com/pyenv/pyenv)
-       1. 3.7.10 is needed for the Monorepo (as of 3/9/2022)
-       2. 3.10.2 is needed for this repo (as of 3/9/2022)
+        1. 3.7.10 is needed for the Monorepo (as of 3/9/2022)
+        2. 3.10.2 is needed for this repo (as of 3/9/2022)
 4. [Pipenv Installed Globally](https://pipenv.pypa.io/en/latest/install/#installing-pipenv)
 
 ## Initial Configuration
 
 1. In the root of the repository, create to `configuration.json` from `configuration_sample.json`
-   1. `cp configuration_sample.json configuration.json`
+    1. `cp configuration_sample.json configuration.json`
 2. You can leave everything default.
     1. TODO: `global-settings`, `virtual-machine-settings`, and `aws-ecr-settings` will be removed in future releases
 3. Run `make setup`
@@ -269,6 +270,7 @@ flowchart TB
   classDef software fill:#bbf,stroke:#f66,stroke-width:2px,color:#fff,stroke-dasharray: 5 5;
   class O,D software;
 ```
+
 **Supported Emulation Levels By Hardware:**
 
 The various emulators in this repository support different levels of emulation based on their architecture. Below is a
@@ -466,4 +468,8 @@ Example 2: Temperature Module with custom temperature model
 
 ### CPX Setup
 
-Go to [CPX_SETUP.md](https://github.com/Opentrons/opentrons-emulation/blob/main/CPX_SETUP.md)
+Go to [CPX_SETUP.md](https://github.com/Opentrons/opentrons-emulation/blob/main/docs/team_specific_setup/CPX_SETUP.md)
+
+## Architecture Diagrams
+
+Go to [ARCHITECTURE.md](https://github.com/Opentrons/opentrons-emulation/blob/main/docs/ARCHITECTURE.md)
