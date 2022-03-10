@@ -36,32 +36,39 @@ flowchart LR
     app[(Opentrons App)] --- exposed_port
     robot_server --"G-Code"--- emulator_proxy[Emulator Proxy]
 
-    subgraph dn[Docker Network]
+    subgraph hs[Host System]
+        direction RL
+        app
+        exposed_port
         
-        robot_server
-        can_server
-        head
-        gantry_x
-        gantry_y
-        pipettes
-        module_1
-        module_2
-        module_n
-        emulator_proxy
-        subgraph cn[CAN Network]
+        subgraph dn[Docker Network]
             robot_server
             can_server
             head
             gantry_x
             gantry_y
             pipettes
-                subgraph fc [Firmware Containers]
-                    head(head)
-                    gantry_x(gantry-x)
-                    gantry_y(gantry-y)
-                    pipettes(pipettes)
-                    
-                end
+            module_1
+            module_2
+            module_n
+            emulator_proxy
+            
+            subgraph cn[CAN Network]
+                robot_server
+                can_server
+                head
+                gantry_x
+                gantry_y
+                pipettes
+                
+                    subgraph fc [Firmware Containers]
+                        head(head)
+                        gantry_x(gantry-x)
+                        gantry_y(gantry-y)
+                        pipettes(pipettes)
+                        
+                    end
+            end
         end
     end
 
@@ -75,12 +82,13 @@ flowchart LR
     emulator_proxy --G-Code---- module_n(Module n)
 
 
-classDef primarySubgraphStyle fill:#6a9dff,stroke-width:0px,color:white,font-weight:bold;
-classDef secondarySubgraphStyle fill:#ffffff,stroke-width:0px,color:black,font-weight:bold;
-class dn,fc primarySubgraphStyle;
-class cn secondarySubgraphStyle;
+    classDef primarySubgraphStyle fill:#6a9dff,stroke-width:0px,color:white,font-weight:bold;
+    classDef secondarySubgraphStyle fill:#ffffff,stroke-width:0px,color:black,font-weight:bold;
+    class dn,fc primarySubgraphStyle;
+    class cn,hs secondarySubgraphStyle;
+    
+    classDef node fill:#006fff,color:#000000,stroke-width:0px;
+    
+    linkStyle default stroke:#000000,stroke-width:2px,color:white;
 
-classDef node fill:#006fff,color:#000000,stroke-width:0px;
-
-linkStyle default stroke:#000000,stroke-width:2px,color:white;
 ```
