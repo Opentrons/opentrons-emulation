@@ -84,8 +84,8 @@ flowchart LR
 
     classDef primarySubgraphStyle fill:#6a9dff,stroke-width:0px,color:white,font-weight:bold;
     classDef secondarySubgraphStyle fill:#ffffff,stroke-width:0px,color:black,font-weight:bold;
-    class dn,fc primarySubgraphStyle;
-    class cn,hs secondarySubgraphStyle;
+    class cn,hs primarySubgraphStyle;
+    class dn,fc secondarySubgraphStyle;
     
     classDef node fill:#006fff,color:#000000,stroke-width:0px;
     
