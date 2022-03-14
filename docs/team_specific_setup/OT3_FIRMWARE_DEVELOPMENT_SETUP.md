@@ -42,34 +42,44 @@ robot:
 
 ### Build Docker Images
 
-From the root of the repo run Intel
-`make em-build-amd64 file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml`
-M1
-`make em-build-arm64 file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml`
+From the root of the repo run
+
+```
+Intel: make build-amd64 file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
+Mac M1: make build-arm64 file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
+```
 
 > This may take 10 or more minutes on initial build.
 
 ### Run Emulation then Build and Start OT3 Firmware Emulators
 
-1. From the root of the repo run
-    1. `make em-run-detached file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml`
-    2. `make em-local-rebuild-firmware-only file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml`
+1. From the root of the repo run the following command to start the containers.
 
-> Note: This second step is necessary because we bound our source code into the emulators. It is up to the user to execute the build and run of any containers they have their local source bound into.*
+```shell
+make run-detached file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
+```
 
-> Note: We only built and ran the firmware emulators. This is intentional.
+2. Then run the following command to run builds inside containers with source code mounted into them.
+
+```shell
+make local-rebuild-all file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
+```
+
+> Note: This second step is necessary because we bound our source code into the emulators. It is up to the user to execute the build and run of any containers they have their local source bound into.
 
 ### Make Sure Emulation is Actually Working
 
 Run the following command:
 
 ```shell
-curl -s --location --request GET 'http://localhost:31950/modules' --header 'opentrons-version: *' | json_pp -json_opt pretty,canonical
+make can-comm file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
 ```
 
-It should return to you a setup with heater-shaker, thermocycler, temperature, and magnetic modules.
+This will run
+the [can_comm.py](https://github.com/Opentrons/opentrons/blob/edge/hardware/opentrons_hardware/scripts/can_comm.py)
+script. Run some commands to make sure communication is working correctly
 
-### Change Something on the Robot Server
+### Change Something in the Firmware
 
 Now we want to verify that we can cascade changes from our local monorepo to the emulated robot server.
 
@@ -78,8 +88,10 @@ to `BOOOOOOP`.
 
 ### Rebuild and Run
 
-Run `make em-local-rebuild file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml` to rebuild and
-restart your dev server.
+Run `make local-rebuild-firmware file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml` to rebuild
+and restart your dev server.
+
+> Note: We are only rebuilding firmware here because we only made changes to the firmware.
 
 ### Verify Changes Took Effect
 
