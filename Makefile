@@ -124,4 +124,4 @@ test:
 
 .PHONY: test-samples
 test-samples:
-	@./scripts/test_samples.sh
+	@./scripts/makefile/helper_scripts/test_samples.sh
