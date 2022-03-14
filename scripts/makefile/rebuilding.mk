@@ -10,7 +10,7 @@ local-exec-containers:
 		local-load-containers \
 		file_path="${file_path}" \
 		filter="${filter}" \
-		| xargs -I{} ./scripts/helper_scripts/rebuild_and_run_local_containers.sh ${cmd} ${verbosity} {}
+		| xargs -I{} ./scripts/makefile/helper_scripts/rebuild_and_run_local_containers.sh ${cmd} ${verbosity} {}
 
 
 .PHONY: local-generic-rebuild
