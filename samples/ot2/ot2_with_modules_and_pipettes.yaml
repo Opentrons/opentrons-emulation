@@ -1,0 +1,49 @@
+######################
+# System Description #
+######################
+
+# This system builds an OT2 with a v1 P10 single for the left pipette and a v2 p300 for the right pipette.
+# It has a thermocycler, magdeck, and tempdeck.
+
+########################
+# Required Source Code #
+########################
+
+# All source code is pulled from the latest version in Github
+
+system-unique-id: ot2-with-all-modules
+robot:
+  id: ot2
+  hardware: ot2
+  emulation-level: firmware
+  source-type: remote
+  source-location: latest
+  robot-server-source-type: remote
+  robot-server-source-location: latest
+  exposed-port: 31950
+  hardware-specific-attributes:
+    left-pipette:
+      model: p10_single_v1
+      id: 123
+    right-pipette:
+      model: p300_single_v2.1
+      id: 321
+
+modules:
+  - id: thermocycler
+    hardware: thermocycler-module
+    source-type: remote
+    source-location: latest
+    emulation_level: firmware
+
+  - id: magdeck
+    hardware: magnetic-module
+    source-type: remote
+    source-location: latest
+    emulation_level: firmware
+
+  - id: tempdeck
+    hardware: temperature-module
+    source-type: remote
+    source-location: latest
+    emulation_level: firmware
