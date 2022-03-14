@@ -5,6 +5,8 @@ python := $(pipenv) run python
 clean_cmd = $(SHX) rm -rf build dist .coverage coverage.xml '*.egg-info' '**/__pycache__' '**/*.pyc' '**/.mypy_cache'
 
 
+include ./scripts/makefile/rebuilding.mk
+
 EMULATION_SYSTEM_DIR := emulation_system
 
 SUB = {SUB}
@@ -17,64 +19,48 @@ COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
 COMPOSE_LOGS_COMMAND := docker-compose -f - logs -f
 
-.PHONY: em-build-amd64
-em-build-amd64:
+
+.PHONY: build-amd64
+build-amd64:
 	# TODO: Remove tmp file creation when Buildx 0.8.0 is released.
 	# PR: https://github.com/docker/buildx/milestone/11
 	# Ticket: https://github.com/docker/buildx/pull/864
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND)
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${file_path}  > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND)
 	@rm tmp-compose.yaml
 
-.PHONY: em-build-arm64
-em-build-arm64:
+.PHONY: build-arm64
+build-arm64:
 	# TODO: Remove tmp file creation when Buildx 0.8.0 is released.
 	# PR: https://github.com/docker/buildx/milestone/11
 	# Ticket: https://github.com/docker/buildx/pull/864
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND) --set *.platform=linux/x86_64
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${file_path} > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND) --set *.platform=linux/x86_64
 	@rm tmp-compose.yaml
 
-.PHONY: em-run
-em-run:
+.PHONY: run
+run:
 	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
-	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_RUN_COMMAND)
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${file_path} | $(COMPOSE_RUN_COMMAND)
 
 
-.PHONY: em-run-detached
-em-run-detached:
+.PHONY: run-detached
+run-detached:
 	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
-	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_RUN_COMMAND) -d
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${file_path} | $(COMPOSE_RUN_COMMAND) -d
 
 
-.PHONY: em-remove
-em-remove:
+.PHONY: remove
+remove:
 	$(if $(file_path),@echo "Removing system from $(file_path)",$(error file_path variable required))
-	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_KILL_COMMAND)
-	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_REMOVE_COMMAND)
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${file_path} | $(COMPOSE_KILL_COMMAND)
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${file_path}  | $(COMPOSE_REMOVE_COMMAND)
 
 
-.PHONY: em-logs
-em-logs:
+.PHONY: logs
+logs:
 	$(if $(file_path),@echo "Printing logs from $(file_path)",$(error file_path variable required))
-	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | $(COMPOSE_LOGS_COMMAND)
-
-.PHONY: em-local-rebuild
-em-local-rebuild:
-	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | ./scripts/rebuild_and_run_local_containers.sh loud
-
-.PHONY: em-local-rebuild-quiet
-em-local-rebuild-quiet:
-	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | ./scripts/rebuild_and_run_local_containers.sh quiet
-
-.PHONY: em-local-rebuild-firmware-only
-em-local-rebuild-firmware-only:
-	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | ./scripts/rebuild_and_run_local_containers.sh loud firmware
-
-.PHONY: em-local-rebuild-firmware-only-quiet
-em-local-rebuild-firmware-only-quiet:
-	@$(subst $(SUB), $(file_path), $(EMULATION_SYSTEM_CMD)) | ./scripts/rebuild_and_run_local_containers.sh quiet firmware
-
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${file_path}  | $(COMPOSE_LOGS_COMMAND)
 
 .PHONY: generate-compose-file
 generate-compose-file:
