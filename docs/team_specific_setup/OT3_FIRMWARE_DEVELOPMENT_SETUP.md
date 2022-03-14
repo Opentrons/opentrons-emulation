@@ -67,39 +67,43 @@ make local-rebuild-all file_path=${PWD}/samples/team_specific_setups/ot3_firmwar
 
 > Note: This second step is necessary because we bound our source code into the emulators. It is up to the user to execute the build and run of any containers they have their local source bound into.
 
+> Note: There is a quiet version of the command `local-rebuild-all-quiet`
+
 ### Make Sure Emulation is Actually Working
 
-Run the following command:
+1. Open 2 terminals
+2. Run CAN monitoring script in the first terminal
+
+```shell
+make can-mon file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
+```
+
+3. Run CAN communication script in the second terminal
 
 ```shell
 make can-comm file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
 ```
 
-This will run
-the [can_comm.py](https://github.com/Opentrons/opentrons/blob/edge/hardware/opentrons_hardware/scripts/can_comm.py)
-script. Run some commands to make sure communication is working correctly
+4. Select `device_info_request` then `broadcast`
+5. You should see output in the `can-mon` terminal
 
-### Change Something in the Firmware
+### Rebuilding Firmware Only Changes
 
-Now we want to verify that we can cascade changes from our local monorepo to the emulated robot server.
-
-Change `displayName` on get_modules in `/opentrons/robot-server/robot_server/service/legacy/routers/modules.py`
-to `BOOOOOOP`.
-
-### Rebuild and Run
-
-Run `make local-rebuild-firmware file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml` to rebuild
-and restart your dev server.
-
-> Note: We are only rebuilding firmware here because we only made changes to the firmware.
-
-### Verify Changes Took Effect
-
-Run the following command again:
+As you are developing, in `ot3-firmware`, if you only make changes to the firmware you only need to rebuild the
+firmware.
 
 ```shell
-curl -s --location --request GET 'http://localhost:31950/modules' --header 'opentrons-version: *' | json_pp -json_opt pretty,canonical
+make local-rebuild-firmware file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
 ```
 
-It should return to you a setup with heater-shaker, thermocycler, temperature, and magnetic modules. Make sure the
-displayName value changed.
+> Note: There is a quiet version of the command `local-rebuild-firmware-quiet`
+
+### Rebuilding All Changes
+
+As you are developing, if you need to rebuild all local containers run the following command.
+
+```shell
+make local-rebuild file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
+```
+
+> Note: There is a quiet version of the command `local-rebuild-quiet`
