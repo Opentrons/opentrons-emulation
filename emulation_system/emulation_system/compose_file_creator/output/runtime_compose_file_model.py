@@ -78,7 +78,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
         service_list = self.load_containers_by_filter(
             ContainerFilters.ROBOT_SERVER.filter_name
         )
-        return service_list[0] if service_list is not None else None
+        return service_list[0] if len(service_list) > 0 else None
 
     @property
     def emulator_proxy(self) -> Optional[Service]:
@@ -86,7 +86,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
         service_list = self.load_containers_by_filter(
             ContainerFilters.EMULATOR_PROXY.filter_name
         )
-        return service_list[0] if service_list is not None else None
+        return service_list[0] if len(service_list) > 0 else None
 
     @property
     def smoothie_emulator(self) -> Optional[Service]:
@@ -94,7 +94,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
         service_list = self.load_containers_by_filter(
             ContainerFilters.SMOOTHIE.filter_name
         )
-        return service_list[0] if service_list is not None else None
+        return service_list[0] if len(service_list) > 0 else None
 
     @property
     def heater_shaker_module_emulators(self) -> Optional[List[Service]]:
@@ -109,7 +109,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
         service_list = self.load_containers_by_filter(
             ContainerFilters.OT3_PIPETTES.filter_name
         )
-        return service_list[0] if service_list is not None else None
+        return service_list[0] if len(service_list) > 0 else None
 
     @property
     def ot3_head_emulator(self) -> Optional[Service]:
@@ -117,7 +117,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
         service_list = self.load_containers_by_filter(
             ContainerFilters.OT3_HEAD.filter_name
         )
-        return service_list[0] if service_list is not None else None
+        return service_list[0] if len(service_list) > 0 else None
 
     @property
     def ot3_gantry_x_emulator(self) -> Optional[Service]:
@@ -125,7 +125,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
         service_list = self.load_containers_by_filter(
             ContainerFilters.OT3_GANTRY_X.filter_name
         )
-        return service_list[0] if service_list is not None else None
+        return service_list[0] if len(service_list) > 0 else None
 
     @property
     def ot3_gantry_y_emulator(self) -> Optional[Service]:
@@ -133,7 +133,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
         service_list = self.load_containers_by_filter(
             ContainerFilters.OT3_GANTRY_Y.filter_name
         )
-        return service_list[0] if service_list is not None else None
+        return service_list[0] if len(service_list) > 0 else None
 
     @property
     def can_server(self) -> Optional[Service]:
@@ -141,7 +141,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
         service_list = self.load_containers_by_filter(
             ContainerFilters.CAN_SERVER.filter_name
         )
-        return service_list[0] if service_list is not None else None
+        return service_list[0] if len(service_list) > 0 else None
 
     @property
     def ot3_emulators(self) -> Optional[List[Service]]:
@@ -181,7 +181,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
         )
 
     def load_containers_by_filter(
-        self, container_filter: str
+        self, container_filter: str, local_only: bool = False
     ) -> List[Service]:
         """Get a list of services based on filter string."""
         inverse = False
@@ -190,7 +190,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
             container_filter = container_filter.replace("not-", "")
 
         images_to_load = ContainerFilters.load_by_filter_name(container_filter).images
-        containers = self._search_for_services(images_to_load, inverse, True)
+        containers = self._search_for_services(images_to_load, inverse, local_only)
 
         return (
             [container for container in containers]

@@ -51,6 +51,6 @@ class LoadContainersCommand:
         print(
             " ".join(
                 cast(str, container.container_name)
-                for container in system.load_containers_by_filter(self.filter)
+                for container in system.load_containers_by_filter(self.filter, True)
             )
         )
