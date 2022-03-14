@@ -130,3 +130,14 @@ can-comm:
 		file_path="${file_path}" \
 		filter="can-server" \
 		| xargs -o -I{} docker exec -it --workdir /opentrons/hardware {} python3 -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
+
+
+.PHONY: can-mon
+can-mon:
+	$(if $(file_path),,$(error file_path variable required))
+	@$(MAKE) \
+		--no-print-directory \
+		local-load-containers \
+		file_path="${file_path}" \
+		filter="can-server" \
+		| xargs -o -I{} docker exec -it --workdir /opentrons/hardware {} python3 -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
