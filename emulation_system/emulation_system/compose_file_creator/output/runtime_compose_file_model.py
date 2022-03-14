@@ -35,7 +35,10 @@ class RuntimeComposeFileModel(ComposeSpecification):
         super().__init__(**data)
 
     def _search_for_services(
-        self, images_to_search_for: List[Type[Images]], inverse: bool = False, only_local: bool = False
+        self,
+        images_to_search_for: List[Type[Images]],
+        inverse: bool = False,
+        only_local: bool = False
     ) -> Optional[List[Service]]:
         service_list = []
         assert self.services is not None
@@ -45,7 +48,11 @@ class RuntimeComposeFileModel(ComposeSpecification):
             image_names.extend(image().get_image_names())
 
         for service in self.services.values():
-            if only_local and "local" not in service.image:
+            if (
+                    only_local
+                    and service.image is not None
+                    and "local" not in service.image
+            ):
                 continue
             service_build = service.build
             assert isinstance(service_build, BuildItem)
