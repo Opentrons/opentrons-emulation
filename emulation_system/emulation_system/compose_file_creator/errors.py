@@ -1,6 +1,6 @@
 """One-stop shop for all errors."""
 
-from typing import Set
+from typing import List, Set
 
 from emulation_system.compose_file_creator.settings.config_file_settings import Hardware
 
@@ -112,4 +112,16 @@ class NotRemoteOnlyError(Exception):
     def __init__(self) -> None:
         super().__init__(
             'Not all source-type parameters for passed system are "remote".'
+        )
+
+
+class InvalidFilterError(Exception):
+    """Exception thrown when Robot Server does not exist."""
+
+    def __init__(self, filter_name: str, valid_filters: List[str]) -> None:
+        valid_names = "\n\t".join(valid_filters)
+        valid_not_names = "\n\tnot-".join(valid_filters)
+        super().__init__(
+            f'\n\nFilter name "{filter_name}" is invalid.\n'
+            f"Valid filter names are \n\t{valid_names}\n\n\tnot-{valid_not_names}\n"
         )
