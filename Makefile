@@ -108,6 +108,25 @@ format:
 test:
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) test
 
+
 .PHONY: test-samples
 test-samples:
 	@./scripts/makefile/helper_scripts/test_samples.sh
+
+
+.PHONY: local-load-containers
+local-load-containers:
+	$(if $(file_path),,$(error file_path variable required))
+	$(if $(filter),,$(error filter variable required))
+	@(cd ./emulation_system && pipenv run python main.py load-local-containers "${file_path}" "${filter}")
+
+
+.PHONY: can-comm
+can-comm:
+	$(if $(file_path),,$(error file_path variable required))
+	@$(MAKE) \
+		--no-print-directory \
+		local-load-containers \
+		file_path="${file_path}" \
+		filter="can-server" \
+		| xargs -o -I{} docker exec -it --workdir /opentrons/hardware {} python3 -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
