@@ -32,5 +32,5 @@ runs:
       shell: bash
 
     - name: Build Emulation Docker Images
-      run: make em-build-amd64 file_path=${{ inputs.input-file }}
+      run: make build-amd64 file_path=${{ inputs.input-file }}
       shell: bash

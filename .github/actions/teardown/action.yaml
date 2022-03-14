@@ -12,5 +12,5 @@ runs:
   using: "composite"
   steps:
     - name: Remove Emulation Docker System
-      run: make em-remove file_path=${{ inputs.input-file }}
+      run: make remove file_path=${{ inputs.input-file }}
       shell: bash
