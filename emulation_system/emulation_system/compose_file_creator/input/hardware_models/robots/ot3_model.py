@@ -28,12 +28,8 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
 class OT3Attributes(HardwareSpecificAttributes):
     """Attributes specific to OT3."""
 
-    left_pipette: PipetteSettings = Field(
-        alias="left-pipette", default=PipetteSettings()
-    )
-    right_pipette: PipetteSettings = Field(
-        alias="right-pipette", default=PipetteSettings()
-    )
+    left: PipetteSettings = Field(alias="left-pipette", default=PipetteSettings())
+    right: PipetteSettings = Field(alias="right-pipette", default=PipetteSettings())
 
 
 class OT3SourceRepositories(SourceRepositories):
