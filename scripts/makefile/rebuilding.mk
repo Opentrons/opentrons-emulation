@@ -79,23 +79,3 @@ local-rebuild-firmware-quiet:
 		file_path="${file_path}" \
 		filter="all" \
 		verbosity="quiet"
-
-.PHONY: local-rebuild-robot
-local-rebuild-robot:
-	$(if $(file_path),,$(error file_path variable required))
-	@$(MAKE) \
-		--no-print-directory \
-		local-generic-rebuild \
-		file_path="${file_path}" \
-		filter="robot-server" \
-		verbosity="loud"
-
-.PHONY: local-rebuild-robot-quiet
-local-rebuild-robot-quiet:
-	$(if $(file_path),,$(error file_path variable required))
-	@$(MAKE) \
-		--no-print-directory \
-		local-generic-rebuild \
-		file_path="${file_path}" \
-		filter="robot-server" \
-		verbosity="quiet"
