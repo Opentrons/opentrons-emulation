@@ -3,6 +3,8 @@ pipenv_envvars := $(and $(CI),PIPENV_IGNORE_VIRTUALENVS=1)
 pipenv := $(pipenv_envvars) $(OT_PYTHON) -m pipenv
 python := $(pipenv) run python
 clean_cmd = $(SHX) rm -rf build dist .coverage coverage.xml '*.egg-info' '**/__pycache__' '**/*.pyc' '**/.mypy_cache'
+SHX := npx shx
+pipenv_opts := --dev
 
 
 include ./scripts/makefile/rebuilding.mk
