@@ -16,12 +16,12 @@ Follow [these](https://github.com/Opentrons/opentrons-emulation/blob/main/README
 Go into `samples/team_specific_setups/ot3_firmware_development.yaml` and replace the following values with paths to the
 **_TOP_** level of your repos:
 
-* `robot.source-location` - Absolute path to your `ot3-firmware` repo.
-    * Example: `/home/derek-maggio/Documents/repos/ot3-firmware`
-* `robot.robot-server-source-location` - Absolute path to your `opentrons` repo.
-    * Example: `/home/derek-maggio/Documents/repos/opentrons`
-* `robot.can-server-source-location` - Absolute path to your `opentrons` repo.
-    * Example: `/home/derek-maggio/Documents/repos/opentrons`
+- `robot.source-location` - Absolute path to your `ot3-firmware` repo.
+  - Example: `/home/derek-maggio/Documents/repos/ot3-firmware`
+- `robot.robot-server-source-location` - Absolute path to your `opentrons` repo.
+  - Example: `/home/derek-maggio/Documents/repos/opentrons`
+- `robot.can-server-source-location` - Absolute path to your `opentrons` repo.
+  - Example: `/home/derek-maggio/Documents/repos/opentrons`
 
 Your configuration should look something like the following:
 
@@ -72,7 +72,7 @@ make local-rebuild-all file_path=${PWD}/samples/team_specific_setups/ot3_firmwar
 ### Make Sure Emulation is Actually Working
 
 1. Open 2 terminals
-2. Run CAN monitoring script in the first terminal
+1. Run CAN monitoring script in the first terminal
 
 ```shell
 make can-mon file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
@@ -85,7 +85,7 @@ make can-comm file_path=${PWD}/samples/team_specific_setups/ot3_firmware_develop
 ```
 
 4. Select `device_info_request` then `broadcast`
-5. You should see output in the `can-mon` terminal
+1. You should see output in the `can-mon` terminal
 
 ### Rebuilding Firmware Only Changes
 
