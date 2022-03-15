@@ -111,7 +111,7 @@ and remove systems.
 ### Emulation Commands
 
 The following emulation commands require a `file_path` argument with a path to a valid emulation configuration file. Can
-use environment variables like `PWD` for building paths. They are executed in the top-level directory of the repository.
+specify paths relative to `opentrons-emulation`. They are executed in the top-level directory of the repository.
 
 #### Building System
 
@@ -129,31 +129,31 @@ Use `build-amd64` if you are on an Intel based processor.
 
 Use `build-arm64` if you are on a Mac M1 processor.
 
-**Example:** `make build-amd64 file_path=${PWD}/samples/yaml/ot2.yaml`
+**Example:** `make build-amd64 file_path=./samples/yaml/ot2.yaml`
 
 #### Running System
 
 **Description:** Use this command to bring up an emulated system.
 
-**Command:** `make run file_path=${PWD}/samples/yaml/ot2.yaml`
+**Command:** `make run file_path=./samples/yaml/ot2.yaml`
 
 #### Viewing System Logs
 
 **Description:** Use this command view the logs of a running emulation system.
 
-**Command:** `make logs file_path=${PWD}/samples/yaml/ot2.yaml`
+**Command:** `make logs file_path=./samples/yaml/ot2.yaml`
 
 #### Removing System
 
 **Description:** Use this command to remove an emulated system.
 
-**Command:** `make remove file_path=${PWD}/samples/yaml/ot2.yaml`
+**Command:** `make remove file_path=./samples/yaml/ot2.yaml`
 
 #### Generate Compose File
 
 **Description:** Use this command to generate the Docker Compose file that the system runs under the hood.
 
-**Command:** `make generate-compose-file file_path=${PWD}/samples/yaml/ot2.yaml`
+**Command:** `make generate-compose-file file_path=./samples/yaml/ot2.yaml`
 
 ## Emulation Configuration File Key Definitions
 
