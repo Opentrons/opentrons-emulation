@@ -123,31 +123,31 @@ under the following conditions:
   branch of the source repo
 - If the underlying Dockerfile changes
 
-**Command:** `em-build-amd64` OR `em-build-arm64`
+**Command:** `build-amd64` OR `build-arm64`
 
-Use `em-build-amd64` if you are on an Intel based processor.
+Use `build-amd64` if you are on an Intel based processor.
 
-Use `em-build-arm64` if you are on a Mac M1 processor.
+Use `build-arm64` if you are on a Mac M1 processor.
 
-**Example:** `make em-build-amd64 file_path=${PWD}/samples/yaml/ot2.yaml`
+**Example:** `make build-amd64 file_path=${PWD}/samples/yaml/ot2.yaml`
 
 #### Running System
 
 **Description:** Use this command to bring up an emulated system.
 
-**Command:** `make em-run file_path=${PWD}/samples/yaml/ot2.yaml`
+**Command:** `make run file_path=${PWD}/samples/yaml/ot2.yaml`
 
 #### Viewing System Logs
 
 **Description:** Use this command view the logs of a running emulation system.
 
-**Command:** `make em-logs file_path=${PWD}/samples/yaml/ot2.yaml`
+**Command:** `make logs file_path=${PWD}/samples/yaml/ot2.yaml`
 
 #### Removing System
 
 **Description:** Use this command to remove an emulated system.
 
-**Command:** `make em-remove file_path=${PWD}/samples/yaml/ot2.yaml`
+**Command:** `make remove file_path=${PWD}/samples/yaml/ot2.yaml`
 
 #### Generate Compose File
 

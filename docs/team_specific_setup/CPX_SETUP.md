@@ -14,11 +14,10 @@ a path to your mono repo.
 
 ### Build Docker Images
 
-From the root of the repo run
-Intel
-`make em-build-amd64 file_path=${PWD}/samples/team_specific_setups/cpx_ot2.yaml`
+From the root of the repo run Intel
+`make build-amd64 file_path=${PWD}/samples/team_specific_setups/cpx_ot2.yaml`
 M1
-`make em-build-arm64 file_path=${PWD}/samples/team_specific_setups/cpx_ot2.yaml`
+`make build-arm64 file_path=${PWD}/samples/team_specific_setups/cpx_ot2.yaml`
 
 > This may take 10 or more minutes on initial build.
 
@@ -49,7 +48,7 @@ to `BOOOOOOP`.
 
 ### Rebuild and Run
 
-Run `make em-local-rebuild file_path=${PWD}/samples/team_specific_setups/cpx_ot2.yaml` to rebuild and restart your dev
+Run `make local-rebuild file_path=${PWD}/samples/team_specific_setups/cpx_ot2.yaml` to rebuild and restart your dev
 server.
 
 ### Verify Changes Took Effect

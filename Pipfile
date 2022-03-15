@@ -12,4 +12,4 @@ mdformat-frontmatter = "0.4.1"
 mdformat-footnote = "0.1.1"
 
 [requires]
-python_version = "3.10.2"
+python_version = "3.10"

@@ -14,5 +14,5 @@ runs:
   steps:
 
     - name: Run Emulation Docker System
-      run: make em-run-detached file_path=${{ inputs.input-file }}
+      run: make run-detached file_path=${{ inputs.input-file }}
       shell: bash
