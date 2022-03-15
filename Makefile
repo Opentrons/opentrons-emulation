@@ -1,3 +1,10 @@
+OT_PYTHON ?= python
+pipenv_envvars := $(and $(CI),PIPENV_IGNORE_VIRTUALENVS=1)
+pipenv := $(pipenv_envvars) $(OT_PYTHON) -m pipenv
+python := $(pipenv) run python
+clean_cmd = $(SHX) rm -rf build dist .coverage coverage.xml '*.egg-info' '**/__pycache__' '**/*.pyc' '**/.mypy_cache'
+
+
 EMULATION_SYSTEM_DIR := emulation_system
 
 SUB = {SUB}
@@ -82,26 +89,32 @@ check-remote-only:
 
 .PHONY: setup
 setup:
+	$(pipenv) sync $(pipenv_opts)
+	$(pipenv) run pip freeze
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) setup
 
 
 .PHONY: clean
 clean:
+	$(clean_cmd)
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) clean
 
 
 .PHONY: teardown
 teardown:
+	$(pipenv) --rm
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) teardown
 
 
 .PHONY: lint
 lint:
+	$(python) -m mdformat --check .
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) lint
 
 
 .PHONY: format
 format:
+	$(python) -m mdformat .
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) format
 
 

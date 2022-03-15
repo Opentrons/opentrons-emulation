@@ -24,11 +24,11 @@ M1
 
 ### Run Emulation then Build and Start Robot Server
 
-1. From the root of the repo run 
+1. From the root of the repo run
    1. `make em-run-detached file_path=${PWD}/samples/team_specific_setups/cpx_ot2.yaml`
-   2. `make em-local-rebuild file_path=${PWD}/samples/team_specific_setups/cpx_ot2.yaml`
+   1. `make em-local-rebuild file_path=${PWD}/samples/team_specific_setups/cpx_ot2.yaml`
 
-> Note: This second step is necessary because we bound our monorepo code into the robot-server emulator. It is up to the user to execute the build and run of any containers they have their local source bound into.*
+> Note: This second step is necessary because we bound our monorepo code into the robot-server emulator. It is up to the user to execute the build and run of any containers they have their local source bound into.\*
 
 ### Make Sure Emulation is Actually Working
 
