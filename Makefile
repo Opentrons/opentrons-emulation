@@ -21,6 +21,7 @@ COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
 COMPOSE_LOGS_COMMAND := docker-compose -f - logs -f
 
+abs_path := $(realpath ${file_path})
 
 .PHONY: build-amd64
 build-amd64:
@@ -28,7 +29,7 @@ build-amd64:
 	# PR: https://github.com/docker/buildx/milestone/11
 	# Ticket: https://github.com/docker/buildx/pull/864
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory generate-compose-file file_path=$(realpath ${file_path})  > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND)
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path}  > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND)
 	@rm tmp-compose.yaml
 
 .PHONY: build-arm64
@@ -37,42 +38,42 @@ build-arm64:
 	# PR: https://github.com/docker/buildx/milestone/11
 	# Ticket: https://github.com/docker/buildx/pull/864
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory generate-compose-file file_path=$(realpath ${file_path}) > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND) --set *.platform=linux/x86_64
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND) --set *.platform=linux/x86_64
 	@rm tmp-compose.yaml
 
 .PHONY: run
 run:
 	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory generate-compose-file file_path=$(realpath ${file_path}) | $(COMPOSE_RUN_COMMAND)
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_RUN_COMMAND)
 
 
 .PHONY: run-detached
 run-detached:
 	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory generate-compose-file file_path=$(realpath ${file_path}) | $(COMPOSE_RUN_COMMAND) -d
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_RUN_COMMAND) -d
 
 
 .PHONY: remove
 remove:
 	$(if $(file_path),@echo "Removing system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory generate-compose-file file_path=$(realpath ${file_path}) | $(COMPOSE_KILL_COMMAND)
-	@$(MAKE) --no-print-directory generate-compose-file file_path=$(realpath ${file_path})  | $(COMPOSE_REMOVE_COMMAND)
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_KILL_COMMAND)
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_REMOVE_COMMAND)
 
 
 .PHONY: logs
 logs:
 	$(if $(file_path),@echo "Printing logs from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory generate-compose-file file_path=$(realpath ${file_path})  | $(COMPOSE_LOGS_COMMAND)
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path}  | $(COMPOSE_LOGS_COMMAND)
 
 .PHONY: generate-compose-file
 generate-compose-file:
 	$(if $(file_path),,$(error file_path variable required))
-	@$(subst $(SUB), $(realpath $(realpath ${file_path})), $(EMULATION_SYSTEM_CMD))
+	@$(subst $(SUB), ${abs_path}, $(EMULATION_SYSTEM_CMD))
 
 .PHONY: check-remote-only
 check-remote-only:
 	$(if $(file_path),,$(error file_path variable required))
-	@$(subst $(SUB), $(realpath ${file_path}), $(REMOTE_ONLY_EMULATION_SYSTEM_CMD)) > /dev/null
+	@$(subst $(SUB), ${abs_path}, $(REMOTE_ONLY_EMULATION_SYSTEM_CMD)) > /dev/null
 	@echo "All services are remote"
 
 .PHONY: setup
@@ -120,7 +121,7 @@ test-samples:
 local-load-containers:
 	$(if $(file_path),,$(error file_path variable required))
 	$(if $(filter),,$(error filter variable required))
-	@(cd ./emulation_system && pipenv run python main.py load-local-containers "$(realpath ${file_path})" "${filter}")
+	@(cd ./emulation_system && pipenv run python main.py load-local-containers "${abs_path}" "${filter}")
 
 
 .PHONY: can-comm
@@ -129,7 +130,7 @@ can-comm:
 	@$(MAKE) \
 		--no-print-directory \
 		local-load-containers \
-		file_path="$(realpath ${file_path})" \
+		file_path="${abs_path}" \
 		filter="can-server" \
 		| xargs -o -I{} docker exec -it --workdir /opentrons/hardware {} python3 -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
 
@@ -137,9 +138,9 @@ can-comm:
 .PHONY: can-mon
 can-mon:
 	$(if $(file_path),,$(error file_path variable required))
-	$(MAKE) \
+	@$(MAKE) \
 		--no-print-directory \
 		local-load-containers \
-		file_path="$(realpath ${file_path})" \
+		file_path="${abs_path}" \
 		filter="can-server" \
 		| xargs -o -I{} docker exec -it --workdir /opentrons/hardware {} python3 -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
