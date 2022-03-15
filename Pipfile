@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+
+[dev-packages]
+l = "0.11.0"
+mdformat-gfm = "0.3.5"
+mdformat-frontmatter = "0.4.1"
+mdformat-footnote = "0.1.1"
+
+[requires]
+python_version = "3.7"

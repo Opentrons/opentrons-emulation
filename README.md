@@ -4,38 +4,38 @@ Opentrons has various software emulations of their hardware. This repository def
 all these emulators together into systems.
 
 - [Opentrons Emulation](#opentrons-emulation)
-    * [What is an Emulator?](#what-is-an-emulator-)
-    * [How do the Opentrons Emulators work?](#how-do-the-opentrons-emulators-work-)
-    * [Supported Hardware](#supported-hardware)
-    * [Required Software](#required-software)
-    * [Initial Configuration](#initial-configuration)
-    * [Using Emulation](#using-emulation)
-        + [Emulation Commands](#emulation-commands)
-            - [Building System](#building-system)
-            - [Running System](#running-system)
-            - [Viewing System Logs](#viewing-system-logs)
-            - [Removing System](#removing-system)
-            - [Generate Compose File](#generate-compose-file)
-    * [Emulation Configuration File Key Definitions](#emulation-configuration-file-key-definitions)
-        + [id](#id)
-        + [system-unique-id](#system-unique-id)
-        + [hardware](#hardware)
-        + [source-type](#source-type)
-        + [source-location](#source-location)
-        + [robot-server-source-type](#robot-server-source-type)
-        + [robot-server-source-location](#robot-server-source-location)
-        + [can-server-source-type](#can-server-source-type)
-        + [can-server-source-location](#can-server-source-location)
-        + [emulation-level](#emulation-level)
-        + [exposed-port](#exposed-port)
-        + [hardware-specific-attributes](#hardware-specific-attributes)
-            - [Pipettes](#pipettes)
-                * [Available Pipette Models:](#available-pipette-models-)
-            - [Heater-Shaker and Thermocycler Refresh Communication Mode](#heater-shaker-and-thermocycler-refresh-communication-mode)
-            - [Temperature Model for Thermocycler and Temperature Modules](#temperature-model-for-thermocycler-and-temperature-modules)
-    * [Setting Up for Local Development](#setting-up-for-local-development)
-        + [CPX Setup](#cpx-setup)
-    * [Architecture Diagrams](#architecture-diagrams)
+  - [What is an Emulator?](#what-is-an-emulator-)
+  - [How do the Opentrons Emulators work?](#how-do-the-opentrons-emulators-work-)
+  - [Supported Hardware](#supported-hardware)
+  - [Required Software](#required-software)
+  - [Initial Configuration](#initial-configuration)
+  - [Using Emulation](#using-emulation)
+    - [Emulation Commands](#emulation-commands)
+      - [Building System](#building-system)
+      - [Running System](#running-system)
+      - [Viewing System Logs](#viewing-system-logs)
+      - [Removing System](#removing-system)
+      - [Generate Compose File](#generate-compose-file)
+  - [Emulation Configuration File Key Definitions](#emulation-configuration-file-key-definitions)
+    - [id](#id)
+    - [system-unique-id](#system-unique-id)
+    - [hardware](#hardware)
+    - [source-type](#source-type)
+    - [source-location](#source-location)
+    - [robot-server-source-type](#robot-server-source-type)
+    - [robot-server-source-location](#robot-server-source-location)
+    - [can-server-source-type](#can-server-source-type)
+    - [can-server-source-location](#can-server-source-location)
+    - [emulation-level](#emulation-level)
+    - [exposed-port](#exposed-port)
+    - [hardware-specific-attributes](#hardware-specific-attributes)
+      - [Pipettes](#pipettes)
+        - [Available Pipette Models:](#available-pipette-models-)
+      - [Heater-Shaker and Thermocycler Refresh Communication Mode](#heater-shaker-and-thermocycler-refresh-communication-mode)
+      - [Temperature Model for Thermocycler and Temperature Modules](#temperature-model-for-thermocycler-and-temperature-modules)
+  - [Setting Up for Local Development](#setting-up-for-local-development)
+    - [CPX Setup](#cpx-setup)
+  - [Architecture Diagrams](#architecture-diagrams)
 
 ## What is an Emulator?
 
@@ -77,25 +77,25 @@ latest version. Unless you load a really old version, but no guarantees that a s
 Install the following software:
 
 1. Docker
-    1. [Mac Instructions](https://docs.docker.com/desktop/mac/install/)
-        1. Make sure that you have rosetta installed if you are running on an M1 Mac, `softwareupdate --install-rosetta`
-    2. [Linux Instructions](https://docs.docker.com/engine/install/#server)
-2. Docker-Compose
-    1. Mac Instructions: Installed when you install Docker
-    2. [Linux Instructions](https://docs.docker.com/compose/install/)
-3. [Install Python 3](https://www.python.org/downloads/)
-    1. use [pyenv](https://github.com/pyenv/pyenv)
-        1. 3.7.10 is needed for the Monorepo (as of 3/9/2022)
-        2. 3.10.2 is needed for this repo (as of 3/9/2022)
-4. [Pipenv Installed Globally](https://pipenv.pypa.io/en/latest/install/#installing-pipenv)
+   1. [Mac Instructions](https://docs.docker.com/desktop/mac/install/)
+      1. Make sure that you have rosetta installed if you are running on an M1 Mac, `softwareupdate --install-rosetta`
+   1. [Linux Instructions](https://docs.docker.com/engine/install/#server)
+1. Docker-Compose
+   1. Mac Instructions: Installed when you install Docker
+   1. [Linux Instructions](https://docs.docker.com/compose/install/)
+1. [Install Python 3](https://www.python.org/downloads/)
+   1. use [pyenv](https://github.com/pyenv/pyenv)
+      1. 3.7.10 is needed for the Monorepo (as of 3/9/2022)
+      1. 3.10.2 is needed for this repo (as of 3/9/2022)
+1. [Pipenv Installed Globally](https://pipenv.pypa.io/en/latest/install/#installing-pipenv)
 
 ## Initial Configuration
 
 1. In the root of the repository, create to `configuration.json` from `configuration_sample.json`
-    1. `cp configuration_sample.json configuration.json`
-2. You can leave everything default.
-    1. TODO: `global-settings`, `virtual-machine-settings`, and `aws-ecr-settings` will be removed in future releases
-3. Run `make setup`
+   1. `cp configuration_sample.json configuration.json`
+1. You can leave everything default.
+   1. TODO: `global-settings`, `virtual-machine-settings`, and `aws-ecr-settings` will be removed in future releases
+1. Run `make setup`
 
 ## Using Emulation
 
@@ -277,7 +277,7 @@ The various emulators in this repository support different levels of emulation b
 table with the supported levels for each emulator.
 
 | Hardware                 | Firmware Emulation | Hardware Emulation         |
-|--------------------------|--------------------|----------------------------|
+| ------------------------ | ------------------ | -------------------------- |
 | **OT2**                  | Yes                | No                         |
 | **OT3**                  | No                 | Yes                        |
 | **Heater-Shaker Module** | No                 | Yes                        |
@@ -328,7 +328,7 @@ Example: An OT2 with a P1000 Single and P300 Multi
 }
 ```
 
-----
+______________________________________________________________________
 
 ##### Available Pipette Models:
 
@@ -352,7 +352,7 @@ Example: An OT2 with a P1000 Single and P300 Multi
 **P300 Multi V1:**
 `p300_multi_v1` `p300_multi_v1.3` `p300_multi_v1.4` `p300_multi_v1.5`
 
-----
+______________________________________________________________________
 
 **Version 2 Pipette Models**
 
@@ -374,14 +374,14 @@ Example: An OT2 with a P1000 Single and P300 Multi
 **P1000 Single V2:**
 `p1000_single_v2.0` `p1000_single_v2.1` `p1000_single_v2.2`
 
-----
+______________________________________________________________________
 
 **Version 3 Pipette Models**
 
 **P1000 Single V3:**
 `p20_single_v3.0` `p300_single_v3.0` `p1000_single_v3.0`
 
-----
+______________________________________________________________________
 
 #### Heater-Shaker and Thermocycler Refresh Communication Mode
 
