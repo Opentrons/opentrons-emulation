@@ -1,3 +1,5 @@
+abs_path := $(realpath ${file_path})
+
 
 .PHONY: local-exec-containers
 local-exec-containers:
@@ -8,7 +10,7 @@ local-exec-containers:
 	@$(MAKE) \
 		--no-print-directory \
 		local-load-containers \
-		file_path="${file_path}" \
+		file_path="${abs_path}" \
 		filter="${filter}" \
 		| xargs -I{} ./scripts/makefile/helper_scripts/rebuild_and_run_local_containers.sh ${cmd} ${verbosity} {}
 
@@ -21,21 +23,21 @@ local-generic-rebuild:
 	@$(MAKE) \
 		--no-print-directory \
 		local-exec-containers \
-		file_path="${file_path}" \
+		file_path="${abs_path}" \
 		filter="${filter}" \
 		cmd="stop" \
 		verbosity="${verbosity}"
 	@$(MAKE) \
 		--no-print-directory \
 		local-exec-containers \
-		file_path="${file_path}" \
+		file_path="${abs_path}" \
 		filter="${filter}" \
 		cmd="build" \
 		verbosity="${verbosity}"
 	@$(MAKE) \
 		--no-print-directory \
 		local-exec-containers \
-		file_path="${file_path}" \
+		file_path="${abs_path}" \
 		filter="${filter}" \
 		cmd="run" \
 		verbosity="${verbosity}"
@@ -46,7 +48,7 @@ local-rebuild-all:
 	@$(MAKE) \
 		--no-print-directory \
 		local-generic-rebuild \
-		file_path="${file_path}" \
+		file_path="${abs_path}" \
 		filter="all" \
 		verbosity="loud"
 
@@ -56,7 +58,7 @@ local-rebuild-all-quiet:
 	@$(MAKE) \
 		--no-print-directory \
 		local-generic-rebuild \
-		file_path="${file_path}" \
+		file_path="${abs_path}" \
 		filter="all" \
 		verbosity="quiet"
 
@@ -66,7 +68,7 @@ local-rebuild-firmware:
 	@$(MAKE) \
 		--no-print-directory \
 		local-generic-rebuild \
-		file_path="${file_path}" \
+		file_path="${abs_path}" \
 		filter="firmware" \
 		verbosity="loud"
 
@@ -76,6 +78,6 @@ local-rebuild-firmware-quiet:
 	@$(MAKE) \
 		--no-print-directory \
 		local-generic-rebuild \
-		file_path="${file_path}" \
+		file_path="${abs_path}" \
 		filter="all" \
 		verbosity="quiet"

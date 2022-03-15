@@ -45,8 +45,8 @@ robot:
 From the root of the repo run
 
 ```
-Intel: make build-amd64 file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
-Mac M1: make build-arm64 file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
+Intel: make build-amd64 file_path=./samples/team_specific_setups/ot3_firmware_development.yaml
+Mac M1: make build-arm64 file_path=./samples/team_specific_setups/ot3_firmware_development.yaml
 ```
 
 > This may take 10 or more minutes on initial build.
@@ -56,13 +56,13 @@ Mac M1: make build-arm64 file_path=${PWD}/samples/team_specific_setups/ot3_firmw
 1. From the root of the repo run the following command to start the containers.
 
 ```shell
-make run-detached file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
+make run-detached file_path=./samples/team_specific_setups/ot3_firmware_development.yaml
 ```
 
 2. Then run the following command to run builds inside containers with source code mounted into them.
 
 ```shell
-make local-rebuild-all file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
+make local-rebuild-all file_path=./samples/team_specific_setups/ot3_firmware_development.yaml
 ```
 
 > Note: This second step is necessary because we bound our source code into the emulators. It is up to the user to execute the build and run of any containers they have their local source bound into.
@@ -75,13 +75,13 @@ make local-rebuild-all file_path=${PWD}/samples/team_specific_setups/ot3_firmwar
 1. Run CAN monitoring script in the first terminal
 
 ```shell
-make can-mon file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
+make can-mon file_path=./samples/team_specific_setups/ot3_firmware_development.yaml
 ```
 
 3. Run CAN communication script in the second terminal
 
 ```shell
-make can-comm file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
+make can-comm file_path=./samples/team_specific_setups/ot3_firmware_development.yaml
 ```
 
 4. Select `device_info_request` then `broadcast`
@@ -93,7 +93,7 @@ As you are developing, in `ot3-firmware`, if you only make changes to the firmwa
 firmware.
 
 ```shell
-make local-rebuild-firmware file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
+make local-rebuild-firmware file_path=./samples/team_specific_setups/ot3_firmware_development.yaml
 ```
 
 > Note: There is a quiet version of the command `local-rebuild-firmware-quiet`
@@ -103,7 +103,7 @@ make local-rebuild-firmware file_path=${PWD}/samples/team_specific_setups/ot3_fi
 As you are developing, if you need to rebuild all local containers run the following command.
 
 ```shell
-make local-rebuild file_path=${PWD}/samples/team_specific_setups/ot3_firmware_development.yaml
+make local-rebuild file_path=./samples/team_specific_setups/ot3_firmware_development.yaml
 ```
 
 > Note: There is a quiet version of the command `local-rebuild-quiet`
