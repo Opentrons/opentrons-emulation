@@ -1,17 +1,18 @@
 # Docker Architecture
 
 - [Docker Architecture](#docker-architecture)
-    - [Emulation Architecture](#emulation-architecture)
-        - [Exposed Port](#exposed-port)
-        - [Robot Server](#robot-server)
-        - [Modules](#modules)
-            - [Emulator Proxy](#emulator-proxy)
-        - [Robot Emulators](#robot-emulators)
-            - [OT2 Robot Emulator](#ot2-robot-emulator)
-            - [OT3 Robot Emulator](#ot3-robot-emulator)
-        - [Full System Diagrams](#full-system-diagrams)
-            - [OT2](#ot2)
-            - [OT3](#ot3)
+  - [Emulation Architecture](#emulation-architecture)
+    - [Exposed Port](#exposed-port)
+    - [Robot Server](#robot-server)
+    - [Modules](#modules)
+      - [Emulator Proxy](#emulator-proxy)
+    - [Robot Emulators](#robot-emulators)
+      - [OT2 Robot Emulator](#ot2-robot-emulator)
+      - [OT3 Robot Emulator](#ot3-robot-emulator)
+    - [Full System Diagrams](#full-system-diagrams)
+      - [OT2](#ot2)
+      - [OT3](#ot3)
+  - [Build Artifact Architecture](#build-artifact-architecture)
 
 This document will start by detailing how `opentrons-emulation` is architected using Docker from a high-level. As it
 goes further on, it will attempt to clarify some of the more complicated aspects of the Docker architecture.
