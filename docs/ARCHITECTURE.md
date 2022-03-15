@@ -1,5 +1,18 @@
 # Docker Architecture
 
+- [Docker Architecture](#docker-architecture)
+    - [Emulation Architecture](#emulation-architecture)
+        - [Exposed Port](#exposed-port)
+        - [Robot Server](#robot-server)
+        - [Modules](#modules)
+            - [Emulator Proxy](#emulator-proxy)
+        - [Robot Emulators](#robot-emulators)
+            - [OT2 Robot Emulator](#ot2-robot-emulator)
+            - [OT3 Robot Emulator](#ot3-robot-emulator)
+        - [Full System Diagrams](#full-system-diagrams)
+            - [OT2](#ot2)
+            - [OT3](#ot3)
+
 This document will start by detailing how `opentrons-emulation` is architected using Docker from a high-level. As it
 goes further on, it will attempt to clarify some of the more complicated aspects of the Docker architecture.
 
@@ -11,7 +24,7 @@ At the highest level an emulated system can be broken up into 4 distinct pieces:
 all the emulated `Modules`, and a `Robot Emulator`.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080', 'background':'#ffffff'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080'}}}%%
 
 flowchart TD
     subgraph hl[High Level]
@@ -27,7 +40,7 @@ flowchart TD
     class hl primarySubgraphStyle;
 
     
-    classDef node fill:#006fff,color:#000000,stroke-width:0px;
+    classDef node fill:#006fff,color:#ffffff,stroke-width:0px;
     
     linkStyle default stroke:#000000,stroke-width:2px,color:white;
 ```
@@ -58,7 +71,7 @@ The Robot Server connects to the modules through the Emulator Proxy.
 The Emulator Proxy handles all communication from the modules and sends it on to the Robot Server.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080', 'background':'#ffffff'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080'}}}%%
 
 flowchart TD
     subgraph hl[ ]
@@ -78,7 +91,7 @@ flowchart TD
        
     classDef primarySubgraphStyle fill:#6a9dff,stroke-width:0px,color:white,font-weight:bold;
     classDef secondarySubgraphStyle fill:#ffffff,stroke-width:0px,color:black,font-weight:bold;
-    classDef node fill:#006fff,color:#000000,stroke-width:0px;
+    classDef node fill:#006fff,color:#ffffff,stroke-width:0px;
     classDef disabled fill:#808080,color:#a3a3a3;
     linkStyle default stroke:#000000,stroke-width:2px,color:white;
     linkStyle 7 stroke:#808080,stroke-width:2px,color:a3a3a3;
@@ -100,7 +113,7 @@ respectively.
 The OT2 Robot Emulator is a single container running a `Smoothie` Emulator and communicates using the G-Code protocol.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080', 'background':'#ffffff'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080'}}}%%
 
 flowchart TD
     subgraph hl[ ]
@@ -115,7 +128,7 @@ flowchart TD
        
     classDef primarySubgraphStyle fill:#6a9dff,stroke-width:0px,color:white,font-weight:bold;
     classDef secondarySubgraphStyle fill:#ffffff,stroke-width:0px,color:black,font-weight:bold;
-    classDef node fill:#006fff,color:#000000,stroke-width:0px;
+    classDef node fill:#006fff,color:#ffffff,stroke-width:0px;
     classDef disabled fill:#808080,color:#a3a3a3;
     linkStyle default stroke:#000000,stroke-width:2px,color:white;
     linkStyle 2 stroke:#808080,stroke-width:2px,color:a3a3a3;
@@ -132,7 +145,7 @@ Currently, they consist of: `head`, `gantry-x`, `gantry-y`, and `pipettetes`. Be
 containers sits the `CAN Server`. The CAN Server handles dispatching of messages to and from the firmware containers.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080', 'background':'#ffffff'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080'}}}%%
 
 flowchart TD
     subgraph hl[ ]
@@ -159,7 +172,7 @@ flowchart TD
        
     classDef primarySubgraphStyle fill:#6a9dff,stroke-width:0px,color:white,font-weight:bold;
     classDef secondarySubgraphStyle fill:#ffffff,stroke-width:0px,color:black,font-weight:bold;
-    classDef node fill:#006fff,color:#000000,stroke-width:0px;
+    classDef node fill:#006fff,color:#ffffff,stroke-width:0px;
     classDef disabled fill:#808080,color:#a3a3a3;
     linkStyle default stroke:#000000,stroke-width:2px,color:white;
     
@@ -169,15 +182,15 @@ flowchart TD
     class modules,exposed_port disabled;
 ```
 
-## Full System Diagrams
+### Full System Diagrams
 
 The below diagrams are the fully exploded diagrams showing all the containers and connections in an OT2 and OT3 emulated
 system.
 
-### OT2
+#### OT2
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080', 'background':'#ffffff'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080'}}}%%
 
 flowchart TD
     robot_server{{Robot Server}} --G-Code--- smoothie[Smoothie]
@@ -210,16 +223,16 @@ flowchart TD
     class cn,hs primarySubgraphStyle;
     class dn,fc secondarySubgraphStyle;
     
-    classDef node fill:#006fff,color:#000000,stroke-width:0px;
+    classDef node fill:#006fff,color:#ffffff,stroke-width:0px;
     
     linkStyle default stroke:#000000,stroke-width:2px,color:white;
 
 ```
 
-### OT3
+#### OT3
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080', 'background':'#ffffff'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080'}}}%%
 
 flowchart LR
     robot_server{{Robot Server}} --CAN--- can_server[CAN Server]
@@ -278,8 +291,69 @@ flowchart LR
     class cn,hs primarySubgraphStyle;
     class dn,fc secondarySubgraphStyle;
     
-    classDef node fill:#006fff,color:#000000,stroke-width:0px;
+    classDef node fill:#006fff,color:#ffffff,stroke-width:0px;
     
     linkStyle default stroke:#000000,stroke-width:2px,color:white;
+
+```
+
+## Build Artifact Architecture
+
+Given a container with source code mounted into it. You will have to run a build to generate the necessary build
+artifacts to run emulation. But issues present themselves when building the artifacts in the container.
+
+Issue 1: You override your any local build artifacts you have
+
+Issue 2: Your build dependencies are different if you run on an OS other than Linux
+
+Solution: Bind in local source code to containers, but maintain build artifacts separately.
+
+The way to implement the solution is to create [Docker Volumes](https://docs.docker.com/storage/volumes/) for each build
+artifact directory. This solves the above issue and also provides another benefit. The volumes can be shared between
+containers. This means that subsequent builds will use the already cached artifacts, shortening build time
+significantly.
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080'}}}%%
+
+flowchart TB
+
+subgraph system [ ]
+
+
+    subgraph container_1[Container]
+        subgraph container_1_source[Bound Source]
+            container_1_mounted_vol_1([Build Artifacts 1])
+            container_1_mounted_vol_2([Build Artifacts 2])
+        end
+    end
+
+    subgraph host[Host]
+        local_source[Local Source]
+        vol_1([Build Artifacts 1])
+        vol_2([Build Artifacts 2])
+    end
+
+end
+
+local_source <--"/ot3-firmware"--> container_1_source
+vol_1 <--"/ot3-firmware/build-host"--> container_1_mounted_vol_1
+vol_2 <--"/ot3-firmware/stm32-tools"--> container_1_mounted_vol_2
+
+classDef system fill:#dbdbdb,stroke-width:0px,color:black,font-weight:bold;
+class system system;
+
+classDef primary fill:#6a9dff,stroke-width:0px,color:white,font-weight:bold;
+class host,container_1,container_2,formatting primary;
+
+classDef source fill:#ffffff,stroke-width:0px,color:black;
+class container_1_source,container_2_source,local_source source;
+
+classDef build_artifact fill:#006fff,color:#ffffff,stroke-width:0px;
+class container_1_mounted_vol_2,container_1_mounted_vol_1,vol_1,vol_2 build_artifact;
+
+linkStyle default stroke:#000000,stroke-width:2px;
+
+
 
 ```
