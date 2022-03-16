@@ -23,23 +23,13 @@ COMPOSE_LOGS_COMMAND := docker-compose -f - logs -f
 
 abs_path := $(realpath ${file_path})
 
-.PHONY: build-amd64
-build-amd64:
-	# TODO: Remove tmp file creation when Buildx 0.8.0 is released.
-	# PR: https://github.com/docker/buildx/milestone/11
-	# Ticket: https://github.com/docker/buildx/pull/864
-	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path}  > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND)
-	@rm tmp-compose.yaml
 
-.PHONY: build-arm64
-build-arm64:
-	# TODO: Remove tmp file creation when Buildx 0.8.0 is released.
-	# PR: https://github.com/docker/buildx/milestone/11
-	# Ticket: https://github.com/docker/buildx/pull/864
+.PHONY: build
+build:
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} > tmp-compose.yaml && $(COMPOSE_BUILD_COMMAND) --set *.platform=linux/x86_64
-	@rm tmp-compose.yaml
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
+	./scripts/makefile/helper_scripts/build.sh ~/tmp-compose.yaml
+	@rm ~/tmp-compose.yaml
 
 .PHONY: run
 run:

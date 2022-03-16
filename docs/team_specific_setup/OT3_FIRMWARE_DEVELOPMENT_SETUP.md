@@ -45,8 +45,7 @@ robot:
 From the root of the repo run
 
 ```
-Intel: make build-amd64 file_path=./samples/team_specific_setups/ot3_firmware_development.yaml
-Mac M1: make build-arm64 file_path=./samples/team_specific_setups/ot3_firmware_development.yaml
+make build file_path=./samples/team_specific_setups/ot3_firmware_development.yaml
 ```
 
 > This may take 10 or more minutes on initial build.

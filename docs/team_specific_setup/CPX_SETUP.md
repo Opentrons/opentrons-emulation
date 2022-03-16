@@ -14,18 +14,16 @@ a path to your mono repo.
 
 ### Build Docker Images
 
-From the root of the repo run Intel
-`make build-amd64 file_path=./samples/team_specific_setups/cpx_ot2.yaml`
-M1
-`make build-arm64 file_path=./samples/team_specific_setups/cpx_ot2.yaml`
+From the root of the repo run
+`make build file_path=./samples/team_specific_setups/cpx_ot2.yaml`
 
 > This may take 10 or more minutes on initial build.
 
 ### Run Emulation then Build and Start Robot Server
 
 1. From the root of the repo run
-   1. `make em-run-detached file_path=./samples/team_specific_setups/cpx_ot2.yaml`
-   1. `make em-local-rebuild file_path=./samples/team_specific_setups/cpx_ot2.yaml`
+   1. `make run-detached file_path=./samples/team_specific_setups/cpx_ot2.yaml`
+   1. `make local-rebuild file_path=./samples/team_specific_setups/cpx_ot2.yaml`
 
 > Note: This second step is necessary because we bound our monorepo code into the robot-server emulator. It is up to the user to execute the build and run of any containers they have their local source bound into.\*
 

@@ -123,13 +123,11 @@ under the following conditions:
   branch of the source repo
 - If the underlying Dockerfile changes
 
-**Command:** `build-amd64` OR `build-arm64`
+**Command:** `build`
 
-Use `build-amd64` if you are on an Intel based processor.
+**Example:** `make build file_path=./samples/yaml/ot2.yaml`
 
-Use `build-arm64` if you are on a Mac M1 processor.
-
-**Example:** `make build-amd64 file_path=./samples/yaml/ot2.yaml`
+> Note: This repository supports building against `x86_64` and `arm64` type processors
 
 #### Running System
 
