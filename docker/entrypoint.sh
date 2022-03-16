@@ -15,10 +15,15 @@ if [ "$COMMAND" != "build" ] && [ "$COMMAND" != "run" ] && [ "$COMMAND" != "stop
   exit 1
 fi
 
+build_ot3_firmware_simulators()
+  (cd /ot3-firmware && cmake --preset host-gcc10 && cmake --build --preset=simulators)
+
 build_module_simulator() {
-  cd /opentrons-modules && \
-  cmake --preset=stm32-host-gcc10 . && \
-  cmake --build ./build-stm32-host --target $1
+  (cd /opentrons-modules && cmake --preset=stm32-host-gcc10 . && cmake --build ./build-stm32-host --target $1)
+}
+
+build_ot3_firmware_single_simulator() {
+  (cd /ot3-firmware && cmake --preset host-gcc10 && cmake --build ./build-host --target $1)
 }
 
 kill_process() {
@@ -47,14 +52,35 @@ case $FULL_COMMAND in
     mv /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator /thermocycler-refresh-simulator
     ;;
 
-  build-common-ot3-firmware|build-ot3-gantry-x-hardware|build-ot3-gantry-y-hardware|build-ot3-head-hardware|build-ot3-pipettes-hardware)
-    cd /ot3-firmware && \
-    cmake --preset host-gcc10 && \
-    cmake --build --preset=simulators
+  # Will only use this for remote builds when we can control everything being built at once and then picking
+  # and choosing which executeable is sent to which container
+  build-common-ot3-firmware)
+    build_ot3_firmware_simulators
     mv /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator /pipettes-simulator
     mv /ot3-firmware/build-host/head/simulator/head-simulator /head-simulator
     mv /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /gantry-x-simulator
     mv /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /gantry-y-simulator
+    ;;
+
+  # When doing a build for a single piece of firmware we want to not build all simulators at once.
+  build-ot3-gantry-x-hardware)
+    build_ot3_firmware_single_simulator "gantry-x-simulator"
+    mv /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /gantry-x-simulator
+    ;;
+
+  build-ot3-gantry-y-hardware)
+    build_ot3_firmware_single_simulator "gantry-y-simulator"
+    mv /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /gantry-y-simulator
+    ;;
+
+  build-ot3-head-hardware)
+    build_ot3_firmware_single_simulator "head-simulator"
+    mv /ot3-firmware/build-host/head/simulator/head-simulator /head-simulator
+    ;;
+
+  build-ot3-pipettes-hardware)
+    build_ot3_firmware_single_simulator "pipettes-simulator"
+    mv /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator /pipettes-simulator
     ;;
 
   run-heater-shaker-hardware)

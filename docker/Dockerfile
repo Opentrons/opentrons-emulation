@@ -140,6 +140,13 @@ ENV OPENTRONS_HARDWARE "heater-shaker-hardware"
 FROM local-cpp-base as thermocycler-hardware-local
 ENV OPENTRONS_HARDWARE "thermocycler-hardware"
 
+# Do not use common-ot3-firmware as value for OPENTRONS_HARDWARE
+# What will happen is the first container to finish building will move all the executables to their new file location
+# and the rest of the containers will not be able to find them
+
+# Instead specify the individual piece of firware as the hardware. This will cause only the container to only build
+# and move firmware for itself. Eliminating the issue of them clobbering each other
+
 FROM local-cpp-base as ot3-pipettes-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-pipettes-hardware"
 
