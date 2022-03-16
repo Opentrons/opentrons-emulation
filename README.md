@@ -4,38 +4,38 @@ Opentrons has various software emulations of their hardware. This repository def
 all these emulators together into systems.
 
 - [Opentrons Emulation](#opentrons-emulation)
-  - [What is an Emulator?](#what-is-an-emulator-)
-  - [How do the Opentrons Emulators work?](#how-do-the-opentrons-emulators-work-)
-  - [Supported Hardware](#supported-hardware)
-  - [Required Software](#required-software)
-  - [Initial Configuration](#initial-configuration)
-  - [Using Emulation](#using-emulation)
-    - [Emulation Commands](#emulation-commands)
-      - [Building System](#building-system)
-      - [Running System](#running-system)
-      - [Viewing System Logs](#viewing-system-logs)
-      - [Removing System](#removing-system)
-      - [Generate Compose File](#generate-compose-file)
-  - [Emulation Configuration File Key Definitions](#emulation-configuration-file-key-definitions)
-    - [id](#id)
-    - [system-unique-id](#system-unique-id)
-    - [hardware](#hardware)
-    - [source-type](#source-type)
-    - [source-location](#source-location)
-    - [robot-server-source-type](#robot-server-source-type)
-    - [robot-server-source-location](#robot-server-source-location)
-    - [can-server-source-type](#can-server-source-type)
-    - [can-server-source-location](#can-server-source-location)
-    - [emulation-level](#emulation-level)
-    - [exposed-port](#exposed-port)
-    - [hardware-specific-attributes](#hardware-specific-attributes)
-      - [Pipettes](#pipettes)
-        - [Available Pipette Models:](#available-pipette-models-)
-      - [Heater-Shaker and Thermocycler Refresh Communication Mode](#heater-shaker-and-thermocycler-refresh-communication-mode)
-      - [Temperature Model for Thermocycler and Temperature Modules](#temperature-model-for-thermocycler-and-temperature-modules)
-  - [Setting Up for Local Development](#setting-up-for-local-development)
-    - [CPX Setup](#cpx-setup)
-  - [Architecture Diagrams](#architecture-diagrams)
+    - [What is an Emulator?](#what-is-an-emulator-)
+    - [How do the Opentrons Emulators work?](#how-do-the-opentrons-emulators-work-)
+    - [Supported Hardware](#supported-hardware)
+    - [Required Software](#required-software)
+    - [Initial Configuration](#initial-configuration)
+    - [Using Emulation](#using-emulation)
+        - [Emulation Commands](#emulation-commands)
+            - [Building System](#building-system)
+            - [Running System](#running-system)
+            - [Viewing System Logs](#viewing-system-logs)
+            - [Removing System](#removing-system)
+            - [Generate Compose File](#generate-compose-file)
+    - [Emulation Configuration File Key Definitions](#emulation-configuration-file-key-definitions)
+        - [id](#id)
+        - [system-unique-id](#system-unique-id)
+        - [hardware](#hardware)
+        - [source-type](#source-type)
+        - [source-location](#source-location)
+        - [robot-server-source-type](#robot-server-source-type)
+        - [robot-server-source-location](#robot-server-source-location)
+        - [can-server-source-type](#can-server-source-type)
+        - [can-server-source-location](#can-server-source-location)
+        - [emulation-level](#emulation-level)
+        - [exposed-port](#exposed-port)
+        - [hardware-specific-attributes](#hardware-specific-attributes)
+            - [Pipettes](#pipettes)
+                - [Available Pipette Models:](#available-pipette-models-)
+            - [Heater-Shaker and Thermocycler Refresh Communication Mode](#heater-shaker-and-thermocycler-refresh-communication-mode)
+            - [Temperature Model for Thermocycler and Temperature Modules](#temperature-model-for-thermocycler-and-temperature-modules)
+    - [Setting Up for Local Development](#setting-up-for-local-development)
+        - [CPX Setup](#cpx-setup)
+    - [Architecture Diagrams](#architecture-diagrams)
 
 ## What is an Emulator?
 
@@ -77,12 +77,12 @@ latest version. Unless you load a really old version, but no guarantees that a s
 Install the following software:
 
 1. Docker
-   1. [Mac Instructions](https://docs.docker.com/desktop/mac/install/)
-      1. Make sure that you have rosetta installed if you are running on an M1 Mac, `softwareupdate --install-rosetta`
-   1. [Linux Instructions](https://docs.docker.com/engine/install/#server)
+    1. [Mac Instructions](https://docs.docker.com/desktop/mac/install/)
+        1. Make sure that you have rosetta installed if you are running on an M1 Mac, `softwareupdate --install-rosetta`
+    1. [Linux Instructions](https://docs.docker.com/engine/install/#server)
 1. Docker-Compose
-   1. Mac Instructions: Installed when you install Docker
-   1. [Linux Instructions](https://docs.docker.com/compose/install/)
+    1. Mac Instructions: Installed when you install Docker
+    1. [Linux Instructions](https://docs.docker.com/compose/install/)
 1. [Install Python 3.10](https://www.python.org/downloads/)
    2\. use [pyenv](https://github.com/pyenv/pyenv)
 
@@ -92,33 +92,33 @@ Install the following software:
 **Setup (Mac)**
 
 1. Navigate to [pyenv docs](https://github.com/pyenv/pyenv)
-   1. [Install pyenv using brew](https://github.com/pyenv/pyenv#homebrew-in-macos)
-   1. Go to [Basic Github Checkout](https://github.com/pyenv/pyenv#basic-github-checkout) in the pyenv README
-   1. Go to Step 2 `Configure your shell's enviornment for Pyenv`
-   1. Scroll down to `For Zsh:` section.
-   1. Run the `MacOS, if Pyenv is installed with Homebrew` instructions
-   1. Restart your terminal
-   1. Install [Python Build Dependencies](https://github.com/pyenv/pyenv/wiki#suggested-build-environment)
-   1. Pyenv is now ready to use
+    1. [Install pyenv using brew](https://github.com/pyenv/pyenv#homebrew-in-macos)
+    1. Go to [Basic Github Checkout](https://github.com/pyenv/pyenv#basic-github-checkout) in the pyenv README
+    1. Go to Step 2 `Configure your shell's enviornment for Pyenv`
+    1. Scroll down to `For Zsh:` section.
+    1. Run the `MacOS, if Pyenv is installed with Homebrew` instructions
+    1. Restart your terminal
+    1. Install [Python Build Dependencies](https://github.com/pyenv/pyenv/wiki#suggested-build-environment)
+    1. Pyenv is now ready to use
 
 **Setup (Linux)**
 
 1. Navigate to [pyenv docs](https://github.com/pyenv/pyenv)
-   1. Follow instructions for [Basic Github Checkout](https://github.com/pyenv/pyenv#basic-github-checkout) in the
-      pyenv README
-      1. In step 2, follow `For Bash` instructions
-   1. Restart your terminal
-   1. Install [Python Build Dependencies](https://github.com/pyenv/pyenv/wiki#suggested-build-environment)
-   1. Pyenv is now ready to use
+    1. Follow instructions for [Basic Github Checkout](https://github.com/pyenv/pyenv#basic-github-checkout) in the
+       pyenv README
+        1. In step 2, follow `For Bash` instructions
+    1. Restart your terminal
+    1. Install [Python Build Dependencies](https://github.com/pyenv/pyenv/wiki#suggested-build-environment)
+    1. Pyenv is now ready to use
 
 **Installing Python**
 
 1. Run `pyenv install --list` to get a list of all available Python versions.
-   1. Choose the latest 3.10 version. For the purpose of this document we will say the latest version is `3.10.2`
-   1. Run `pyenv install 3.10.2` to install Python
-   1. Run `pyenv global 3.10.2`  to set the system version to 3.10.2
-   1. Verify that you are running the correct Python version by running `pyenv version`
-      1. It should say `3.10.2` (set by /something/something/something/pyenv/version)
+    1. Choose the latest 3.10 version. For the purpose of this document we will say the latest version is `3.10.2`
+    1. Run `pyenv install 3.10.2` to install Python
+    1. Run `pyenv global 3.10.2`  to set the system version to 3.10.2
+    1. Verify that you are running the correct Python version by running `pyenv version`
+        1. It should say `3.10.2` (set by /something/something/something/pyenv/version)
 
 **Troubleshooting**
 
@@ -137,15 +137,15 @@ You need to update pyenv. Follow [these](https://github.com/pyenv/pyenv#upgradin
 </details>
 
 4. [Pipenv Installed Globally](https://pipenv.pypa.io/en/latest/install/#installing-pipenv)
-   1. Run `python -m ensurepip --upgrade` to install pip
-   1. Run `pip install pipenv` to install pipenv
+    1. Run `python -m ensurepip --upgrade` to install pip
+    1. Run `pip install pipenv` to install pipenv
 
 ## Initial Configuration
 
 1. In the root of the repository, create to `configuration.json` from `configuration_sample.json`
-   1. `cp configuration_sample.json configuration.json`
+    1. `cp configuration_sample.json configuration.json`
 1. You can leave everything default.
-   1. TODO: `global-settings`, `virtual-machine-settings`, and `aws-ecr-settings` will be removed in future releases
+    1. TODO: `global-settings`, `virtual-machine-settings`, and `aws-ecr-settings` will be removed in future releases
 1. Run `make setup`
 
 ## Using Emulation
@@ -518,6 +518,16 @@ Example 2: Temperature Module with custom temperature model
 ### CPX Setup
 
 Go to [CPX_SETUP.md](https://github.com/Opentrons/opentrons-emulation/blob/main/docs/team_specific_setup/CPX_SETUP.md)
+
+### OT3 Firmware Development Setup
+
+Go
+to [OT3_FIRMWARE_DEVELOPMENT_SETUP.md](https://github.com/Opentrons/opentrons-emulation/blob/main/docs/team_specific_setup/OT3_FIRMWARE_DEVELOPMENT_SETUP.md)
+
+### Apps and UI Setup
+
+Go
+to [APPS_AND_UI_SETUP.md](https://github.com/Opentrons/opentrons-emulation/blob/main/docs/team_specific_setup/APPS_AND_UI_SETUP.md)
 
 ## Architecture Diagrams
 
