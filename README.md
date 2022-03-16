@@ -83,11 +83,62 @@ Install the following software:
 1. Docker-Compose
    1. Mac Instructions: Installed when you install Docker
    1. [Linux Instructions](https://docs.docker.com/compose/install/)
-1. [Install Python 3](https://www.python.org/downloads/)
-   1. use [pyenv](https://github.com/pyenv/pyenv)
-      1. 3.7.10 is needed for the Monorepo (as of 3/9/2022)
-      1. 3.10.2 is needed for this repo (as of 3/9/2022)
-1. [Pipenv Installed Globally](https://pipenv.pypa.io/en/latest/install/#installing-pipenv)
+1. [Install Python 3.10](https://www.python.org/downloads/)
+   2\. use [pyenv](https://github.com/pyenv/pyenv)
+
+<details>
+   <summary>Pyenv Detailed Instructions</summary>
+
+**Setup (Mac)**
+
+1. Navigate to [pyenv docs](https://github.com/pyenv/pyenv)
+   1. [Install pyenv using brew](https://github.com/pyenv/pyenv#homebrew-in-macos)
+   1. Go to [Basic Github Checkout](https://github.com/pyenv/pyenv#basic-github-checkout) in the pyenv README
+   1. Go to Step 2 `Configure your shell's enviornment for Pyenv`
+   1. Scroll down to `For Zsh:` section.
+   1. Run the `MacOS, if Pyenv is installed with Homebrew` instructions
+   1. Restart your terminal
+   1. Install [Python Build Dependencies](https://github.com/pyenv/pyenv/wiki#suggested-build-environment)
+   1. Pyenv is now ready to use
+
+**Setup (Linux)**
+
+1. Navigate to [pyenv docs](https://github.com/pyenv/pyenv)
+   1. Follow instructions for [Basic Github Checkout](https://github.com/pyenv/pyenv#basic-github-checkout) in the
+      pyenv README
+      1. In step 2, follow `For Bash` instructions
+   1. Restart your terminal
+   1. Install [Python Build Dependencies](https://github.com/pyenv/pyenv/wiki#suggested-build-environment)
+   1. Pyenv is now ready to use
+
+**Installing Python**
+
+1. Run `pyenv install --list` to get a list of all available Python versions.
+   1. Choose the latest 3.10 version. For the purpose of this document we will say the latest version is `3.10.2`
+   1. Run `pyenv install 3.10.2` to install Python
+   1. Run `pyenv global 3.10.2`  to set the system version to 3.10.2
+   1. Verify that you are running the correct Python version by running `pyenv version`
+      1. It should say `3.10.2` (set by /something/something/something/pyenv/version)
+
+**Troubleshooting**
+
+_Problem_
+
+When trying to run `pyenv install 3.10.x` you get
+
+```bash
+✘ Failed... Something went wrong... python-build: definition not found: 3.10.2
+```
+
+_Soulution_
+
+You need to update pyenv. Follow [these](https://github.com/pyenv/pyenv#upgrading) instructions. Then try again.
+
+</details>
+
+4. [Pipenv Installed Globally](https://pipenv.pypa.io/en/latest/install/#installing-pipenv)
+   1. Run `python -m ensurepip --upgrade` to install pip
+   1. Run `pip install pipenv` to install pipenv
 
 ## Initial Configuration
 
