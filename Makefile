@@ -49,11 +49,30 @@ remove:
 	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_KILL_COMMAND)
 	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_REMOVE_COMMAND)
 
+.PHONY: remove-build-run
+remove-build-run:
+	$(if $(file_path),@echo "Removing system from $(file_path)",$(error file_path variable required))
+	@$(MAKE) --no-print-directory remove file_path=${abs_path}
+	@$(MAKE) --no-print-directory build file_path=${abs_path}
+	@$(MAKE) --no-print-directory run file_path=${abs_path}
+
+.PHONY: remove-build-run-detached
+remove-build-run-detached:
+	$(if $(file_path),@echo "Removing system from $(file_path)",$(error file_path variable required))
+	@$(MAKE) --no-print-directory remove file_path=${abs_path}
+	@$(MAKE) --no-print-directory build file_path=${abs_path}
+	@$(MAKE) --no-print-directory run-detached file_path=${abs_path}
+
 
 .PHONY: logs
 logs:
 	$(if $(file_path),@echo "Printing logs from $(file_path)",$(error file_path variable required))
 	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path}  | $(COMPOSE_LOGS_COMMAND)
+
+.PHONY: logs-follow
+logs-follow:
+	$(if $(file_path),@echo "Printing logs from $(file_path)",$(error file_path variable required))
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path}  | $(COMPOSE_LOGS_COMMAND) --tail 100
 
 .PHONY: generate-compose-file
 generate-compose-file:
@@ -107,11 +126,17 @@ test-samples:
 	@./scripts/makefile/helper_scripts/test_samples.sh
 
 
+.PHONY: load-containers
+load-containers:
+	$(if $(file_path),,$(error file_path variable required))
+	$(if $(filter),,$(error filter variable required))
+	@(cd ./emulation_system && pipenv run python main.py load-containers "${abs_path}" "${filter}")
+
 .PHONY: local-load-containers
 local-load-containers:
 	$(if $(file_path),,$(error file_path variable required))
 	$(if $(filter),,$(error filter variable required))
-	@(cd ./emulation_system && pipenv run python main.py load-local-containers "${abs_path}" "${filter}")
+	@(cd ./emulation_system && pipenv run python main.py load-containers --local-only "${abs_path}" "${filter}")
 
 
 .PHONY: can-comm
@@ -119,10 +144,10 @@ can-comm:
 	$(if $(file_path),,$(error file_path variable required))
 	@$(MAKE) \
 		--no-print-directory \
-		local-load-containers \
+		load-containers \
 		file_path="${abs_path}" \
 		filter="can-server" \
-		| xargs -o -I{} docker exec -it --workdir /opentrons/hardware {} python3 -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
+		| xargs -o -I{} docker exec -it {} python3 -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
 
 
 .PHONY: can-mon
@@ -130,7 +155,7 @@ can-mon:
 	$(if $(file_path),,$(error file_path variable required))
 	@$(MAKE) \
 		--no-print-directory \
-		local-load-containers \
+		load-containers \
 		file_path="${abs_path}" \
 		filter="can-server" \
-		| xargs -o -I{} docker exec -it --workdir /opentrons/hardware {} python3 -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
+		| xargs -o -I{} docker exec -it {} python3 -m opentrons_hardware.scripts.can_mon --interface opentrons_sock

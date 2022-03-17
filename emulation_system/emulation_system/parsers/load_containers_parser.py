@@ -18,13 +18,19 @@ class LoadContainersParser(AbstractParser):
     ) -> None:
         """Build parser for "load-containers" command."""
         subparser = parser.add_parser(  # type: ignore
-            "load-local-containers",
+            "load-containers",
             aliases=["lc"],
             formatter_class=get_formatter(),
             help="Load Containers",
         )
 
         subparser.set_defaults(func=LoadContainersCommand.from_cli_input)
+
+        subparser.add_argument(
+            "--local-only",
+            action="store_true",
+            help="Filter to apply.",
+        )
 
         subparser.add_argument(
             "input_path",
