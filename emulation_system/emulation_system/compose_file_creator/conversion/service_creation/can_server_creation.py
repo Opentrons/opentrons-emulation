@@ -106,5 +106,5 @@ def create_can_server_service(
         tty=True,
         networks=required_networks.networks,
         volumes=mounts,
-        ports=ot3.get_can_server_bound_port()
+        ports=ot3.get_can_server_bound_port(),
     )

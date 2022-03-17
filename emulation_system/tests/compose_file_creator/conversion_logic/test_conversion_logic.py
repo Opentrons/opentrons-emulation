@@ -133,7 +133,7 @@ def test_robot_port(robot_with_mount_and_modules_services: Dict[str, Any]) -> No
 
 def test_can_server_port_exposed(
     ot3_default: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration
+    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that when can-server-exposed-port is specified, ports are added to the can-server"""  # noqa: E501
     ot3_default["can-server-exposed-port"] = 9898
@@ -147,8 +147,7 @@ def test_can_server_port_exposed(
 
 
 def test_can_server_port_not_exposed(
-    ot3_only: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration
+    ot3_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
 ) -> None:
     """Confirm that when can-server-exposed-port is not specified, ports are not added to the can-server"""  # noqa: E501
     runtime_compose_file_model = convert_from_obj(ot3_only, testing_global_em_config)

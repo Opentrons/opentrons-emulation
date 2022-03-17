@@ -1,12 +1,7 @@
 """OT-3 Module and it's attributes."""
 import os
 import pathlib
-from typing import (
-    List,
-    Optional,
-    Union,
-    cast,
-)
+from typing import List, Optional, Union, cast
 
 from pydantic import Field
 from typing_extensions import Literal
@@ -88,8 +83,8 @@ class OT3InputModel(RobotInputModel):
         """Get can server port string."""
         return (
             cast(
-                 List[Union[float, str, Port]],
-                 [f"{self.can_server_exposed_port}:{self.can_server_bound_port}"]
+                List[Union[float, str, Port]],
+                [f"{self.can_server_exposed_port}:{self.can_server_bound_port}"],
             )
             if self.can_server_exposed_port is not None
             else None
