@@ -28,6 +28,7 @@ class LoadContainersCommand:
 
     input_path: io.TextIOWrapper
     filter: str
+    local_only: bool
     settings: OpentronsEmulationConfiguration
 
     @classmethod
@@ -35,7 +36,12 @@ class LoadContainersCommand:
         cls, args: argparse.Namespace, settings: OpentronsEmulationConfiguration
     ) -> LoadContainersCommand:
         """Construct EmulationSystemCommand from CLI input."""
-        return cls(input_path=args.input_path, filter=args.filter, settings=settings)
+        return cls(
+            input_path=args.input_path,
+            filter=args.filter,
+            local_only=args.local_only,
+            settings=settings,
+        )
 
     def execute(self) -> None:
         """Parse input file, apply filter, and print container names."""
@@ -51,6 +57,8 @@ class LoadContainersCommand:
         print(
             " ".join(
                 cast(str, container.container_name)
-                for container in system.load_containers_by_filter(self.filter, True)
+                for container in system.load_containers_by_filter(
+                    self.filter, self.local_only
+                )
             )
         )
