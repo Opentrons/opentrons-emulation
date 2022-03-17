@@ -15,10 +15,15 @@ if [ "$COMMAND" != "build" ] && [ "$COMMAND" != "run" ] && [ "$COMMAND" != "stop
   exit 1
 fi
 
+build_ot3_firmware_simulators()
+  (cd /ot3-firmware && cmake --preset host-gcc10 && cmake --build --preset=simulators)
+
 build_module_simulator() {
-  cd /opentrons-modules && \
-  cmake --preset=stm32-host-gcc10 . && \
-  cmake --build ./build-stm32-host --target $1
+  (cd /opentrons-modules && cmake --preset=stm32-host-gcc10 . && cmake --build ./build-stm32-host --target $1)
+}
+
+build_ot3_firmware_single_simulator() {
+  (cd /ot3-firmware && cmake --preset host-gcc10 && cmake --build ./build-host --target $1)
 }
 
 kill_process() {
@@ -40,21 +45,41 @@ case $FULL_COMMAND in
 
   build-heater-shaker-hardware)
     build_module_simulator "heater-shaker-simulator"
-    mv /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /heater-shaker-simulator
+    cp /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /heater-shaker-simulator
     ;;
   build-thermocycler-hardware)
     build_module_simulator "thermocycler-refresh-simulator"
-    mv /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator /thermocycler-refresh-simulator
+    cp /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator /thermocycler-refresh-simulator
     ;;
 
-  build-common-ot3-firmware|build-ot3-gantry-x-hardware|build-ot3-gantry-y-hardware|build-ot3-head-hardware|build-ot3-pipettes-hardware)
-    cd /ot3-firmware && \
-    cmake --preset host-gcc10 && \
-    cmake --build --preset=simulators
-    mv /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator /pipettes-simulator
-    mv /ot3-firmware/build-host/head/simulator/head-simulator /head-simulator
-    mv /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /gantry-x-simulator
-    mv /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /gantry-y-simulator
+  # Will only use this for remote builds when we can control everything being built at once and then picking
+  # and choosing which executeable is sent to which container
+  build-common-ot3-firmware)
+    build_ot3_firmware_simulators
+    cp /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator /pipettes-simulator
+    cp /ot3-firmware/build-host/head/simulator/head-simulator /head-simulator
+    cp /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /gantry-x-simulator
+    cp /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /gantry-y-simulator
+    ;;
+
+  build-ot3-gantry-x-hardware)
+    build_ot3_firmware_simulators
+    cp /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /gantry-x-simulator
+    ;;
+
+  build-ot3-gantry-y-hardware)
+    build_ot3_firmware_simulators
+    cp /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /gantry-y-simulator
+    ;;
+
+  build-ot3-head-hardware)
+    build_ot3_firmware_simulators
+    cp /ot3-firmware/build-host/head/simulator/head-simulator /head-simulator
+    ;;
+
+  build-ot3-pipettes-hardware)
+    build_ot3_firmware_simulators
+    cp /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator /pipettes-simulator
     ;;
 
   run-heater-shaker-hardware)
@@ -84,7 +109,7 @@ case $FULL_COMMAND in
   # Firmware Level
 
   build-thermocycler-firmware|build-magdeck-firmware|build-tempdeck-firmware|build-emulator-proxy|build-robot-server|build-common-firmware|build-smoothie|build-can-server)
-    rm -rf /usr/local/lib/python3.8/dist-packages/*
+    pip uninstall --yes /dist/*
     (cd /opentrons/shared-data/python && python3 setup.py bdist_wheel -d /dist/)
     (cd /opentrons/api && python3 setup.py bdist_wheel -d /dist/)
     (cd /opentrons/notify-server && python3 setup.py bdist_wheel -d /dist/)

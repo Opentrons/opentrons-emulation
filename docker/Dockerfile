@@ -122,52 +122,68 @@ RUN apt-get install -y nodejs && npm install --global yarn
 # entrypoint.sh should also be bind-mounted in so do not copy it in either
 # Make sure to include the OPENTRONS_HARDWARE env variable
 
+FROM cpp-base as local-cpp-base
+COPY rebuild.sh /rebuild.sh
+ENTRYPOINT ["/rebuild.sh"]
+
+FROM python-base as local-python-base
+COPY rebuild.sh /rebuild.sh
+ENTRYPOINT ["/rebuild.sh"]
+
 ############################
 # Hardware Local Emulators #
 ############################
 
-FROM cpp-base as heater-shaker-hardware-local
+FROM local-cpp-base as heater-shaker-hardware-local
 ENV OPENTRONS_HARDWARE "heater-shaker-hardware"
 
-FROM cpp-base as thermocycler-hardware-local
+FROM local-cpp-base as thermocycler-hardware-local
 ENV OPENTRONS_HARDWARE "thermocycler-hardware"
 
-FROM cpp-base as ot3-pipettes-hardware-local
+# Do not use common-ot3-firmware as value for OPENTRONS_HARDWARE
+# What will happen is the first container to finish building will move all the executables to their new file location
+# and the rest of the containers will not be able to find them
+
+# Instead specify the individual piece of firware as the hardware. This will cause only the container to only build
+# and move firmware for itself. Eliminating the issue of them clobbering each other
+
+FROM local-cpp-base as ot3-pipettes-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-pipettes-hardware"
 
-FROM cpp-base as ot3-head-hardware-local
+FROM local-cpp-base as ot3-head-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-head-hardware"
 
-FROM cpp-base as ot3-gantry-x-hardware-local
+FROM local-cpp-base as ot3-gantry-x-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-gantry-x-hardware"
 
-FROM cpp-base as ot3-gantry-y-hardware-local
+FROM local-cpp-base as ot3-gantry-y-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-gantry-y-hardware"
 
 ############################
 # Firmware Local Emulators #
 ############################
 
-FROM python-base as thermocycler-firmware-local
+FROM local-python-base as thermocycler-firmware-local
 ENV OPENTRONS_HARDWARE "thermocycler-firmware"
 
-FROM python-base as magdeck-firmware-local
+FROM local-python-base as magdeck-firmware-local
 ENV OPENTRONS_HARDWARE "magdeck-firmware"
 
-FROM python-base as tempdeck-firmware-local
+FROM local-python-base as tempdeck-firmware-local
 ENV OPENTRONS_HARDWARE "tempdeck-firmware"
 
-FROM python-base as emulator-proxy-local
+FROM local-python-base as emulator-proxy-local
 ENV OPENTRONS_HARDWARE "emulator-proxy"
 
-FROM python-base as robot-server-local
+FROM local-python-base as robot-server-local
 ENV OPENTRONS_HARDWARE "robot-server"
 
-FROM python-base as smoothie-local
+FROM local-python-base as smoothie-local
 ENV OPENTRONS_HARDWARE "smoothie"
 
-FROM python-base as can-server-local
+FROM local-python-base as can-server-local
 ENV OPENTRONS_HARDWARE "can-server"
+
 
 
 
