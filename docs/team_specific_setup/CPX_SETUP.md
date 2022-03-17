@@ -21,11 +21,11 @@ From the root of the repo run
 
 ### Run Emulation then Build and Start Robot Server
 
-1. From the root of the repo run
-   1. `make run-detached file_path=./samples/team_specific_setups/cpx_ot2.yaml`
-   1. `make local-rebuild file_path=./samples/team_specific_setups/cpx_ot2.yaml`
+From the root of the repo run
 
-> Note: This second step is necessary because we bound our monorepo code into the robot-server emulator. It is up to the user to execute the build and run of any containers they have their local source bound into.\*
+```bash
+make run-detached file_path=./samples/team_specific_setups/cpx_ot2.yaml
+```
 
 ### Make Sure Emulation is Actually Working
 
@@ -46,7 +46,7 @@ to `BOOOOOOP`.
 
 ### Rebuild and Run
 
-Run `make local-rebuild file_path=./samples/team_specific_setups/cpx_ot2.yaml` to rebuild and restart your dev server.
+Run `make restart file_path=./samples/team_specific_setups/cpx_ot2.yaml` to rebuild and restart your dev server.
 
 ### Verify Changes Took Effect
 

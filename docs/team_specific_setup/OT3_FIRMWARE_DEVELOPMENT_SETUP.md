@@ -17,11 +17,11 @@ Go into `samples/team_specific_setups/ot3_firmware_development.yaml` and replace
 **_TOP_** level of your repos:
 
 - `robot.source-location` - Absolute path to your `ot3-firmware` repo.
-  - Example: `/home/derek-maggio/Documents/repos/ot3-firmware`
+    - Example: `/home/derek-maggio/Documents/repos/ot3-firmware`
 - `robot.robot-server-source-location` - Absolute path to your `opentrons` repo.
-  - Example: `/home/derek-maggio/Documents/repos/opentrons`
+    - Example: `/home/derek-maggio/Documents/repos/opentrons`
 - `robot.can-server-source-location` - Absolute path to your `opentrons` repo.
-  - Example: `/home/derek-maggio/Documents/repos/opentrons`
+    - Example: `/home/derek-maggio/Documents/repos/opentrons`
 
 Your configuration should look something like the following:
 
@@ -58,16 +58,6 @@ make build file_path=./samples/team_specific_setups/ot3_firmware_development.yam
 make run-detached file_path=./samples/team_specific_setups/ot3_firmware_development.yaml
 ```
 
-2. Then run the following command to run builds inside containers with source code mounted into them.
-
-```shell
-make local-rebuild-all file_path=./samples/team_specific_setups/ot3_firmware_development.yaml
-```
-
-> Note: This second step is necessary because we bound our source code into the emulators. It is up to the user to execute the build and run of any containers they have their local source bound into.
-
-> Note: There is a quiet version of the command `local-rebuild-all-quiet`
-
 ### Make Sure Emulation is Actually Working
 
 1. Open 2 terminals
@@ -86,23 +76,8 @@ make can-comm file_path=./samples/team_specific_setups/ot3_firmware_development.
 4. Select `device_info_request` then `broadcast`
 1. You should see output in the `can-mon` terminal
 
-### Rebuilding Firmware Only Changes
-
-As you are developing, in `ot3-firmware`, if you only make changes to the firmware you only need to rebuild the
-firmware.
+### Rebuilding Changes
 
 ```shell
-make local-rebuild-firmware file_path=./samples/team_specific_setups/ot3_firmware_development.yaml
+make restart file_path=./samples/team_specific_setups/ot3_firmware_development.yaml
 ```
-
-> Note: There is a quiet version of the command `local-rebuild-firmware-quiet`
-
-### Rebuilding All Changes
-
-As you are developing, if you need to rebuild all local containers run the following command.
-
-```shell
-make local-rebuild file_path=./samples/team_specific_setups/ot3_firmware_development.yaml
-```
-
-> Note: There is a quiet version of the command `local-rebuild-quiet`
