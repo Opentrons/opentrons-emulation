@@ -123,12 +123,12 @@ RUN apt-get install -y nodejs && npm install --global yarn
 # Make sure to include the OPENTRONS_HARDWARE env variable
 
 FROM cpp-base as local-cpp-base
-COPY run.sh /run.sh
-ENTRYPOINT ["/run.sh"]
+COPY rebuild.sh /rebuild.sh
+ENTRYPOINT ["/rebuild.sh"]
 
 FROM python-base as local-python-base
-COPY run.sh /run.sh
-ENTRYPOINT ["/run.sh"]
+COPY rebuild.sh /rebuild.sh
+ENTRYPOINT ["/rebuild.sh"]
 
 ############################
 # Hardware Local Emulators #
