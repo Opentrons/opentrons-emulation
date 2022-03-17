@@ -35,6 +35,8 @@ all these emulators together into systems.
       - [Temperature Model for Thermocycler and Temperature Modules](#temperature-model-for-thermocycler-and-temperature-modules)
   - [Setting Up for Local Development](#setting-up-for-local-development)
     - [CPX Setup](#cpx-setup)
+    - [OT3 Firmware Development Setup](#ot3-firmware-development-setup)
+    - [Apps and UI Setup](#apps-and-ui-setup)
   - [Architecture Diagrams](#architecture-diagrams)
 
 ## What is an Emulator?
@@ -518,6 +520,16 @@ Example 2: Temperature Module with custom temperature model
 ### CPX Setup
 
 Go to [CPX_SETUP.md](https://github.com/Opentrons/opentrons-emulation/blob/main/docs/team_specific_setup/CPX_SETUP.md)
+
+### OT3 Firmware Development Setup
+
+Go
+to [OT3_FIRMWARE_DEVELOPMENT_SETUP.md](https://github.com/Opentrons/opentrons-emulation/blob/main/docs/team_specific_setup/OT3_FIRMWARE_DEVELOPMENT_SETUP.md)
+
+### Apps and UI Setup
+
+Go
+to [APPS_AND_UI_SETUP.md](https://github.com/Opentrons/opentrons-emulation/blob/main/docs/team_specific_setup/APPS_AND_UI_SETUP.md)
 
 ## Architecture Diagrams
 
