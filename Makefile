@@ -7,8 +7,6 @@ SHX := npx shx
 pipenv_opts := --dev
 
 
-include ./scripts/makefile/rebuilding.mk
-
 EMULATION_SYSTEM_DIR := emulation_system
 
 SUB = {SUB}
