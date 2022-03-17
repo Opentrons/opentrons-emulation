@@ -24,11 +24,13 @@ runs:
 
     - name: Cache Python Dependencies
       uses: actions/cache@v2
+      id: cache-virtualenvs
       with:
         path: "~/.local/share/virtualenvs/**"
         key: ${{ runner.os }}-pipenv-${{ hashFiles('./emulation_system/Pipfile.lock') }}-${{ hashFiles('./Pipfile.lock') }}-${{ inputs.cache-break }}
 
     - name: Setup repo
+      if: steps.cache-virtualenvs.outputs.cache-hit != 'true'
       run: |
         pip install pipenv
         make setup
