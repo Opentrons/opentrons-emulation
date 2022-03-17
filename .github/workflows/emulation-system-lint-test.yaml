@@ -15,6 +15,11 @@ on:
       - 'emulation_system/**'
       - '.github/workflows/emulation-system-lint-test.yaml'
   workflow_dispatch:
+    inputs:
+      cache-break:
+        description: Break the Cache
+        required: false
+        default: default
 
 defaults:
   run:
