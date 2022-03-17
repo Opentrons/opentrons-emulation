@@ -131,6 +131,32 @@ def test_robot_port(robot_with_mount_and_modules_services: Dict[str, Any]) -> No
     assert robot_with_mount_and_modules_services[OT2_ID].ports == ["5000:31950"]
 
 
+def test_can_server_port_exposed(
+    ot3_default: Dict[str, Any],
+    testing_global_em_config: OpentronsEmulationConfiguration
+) -> None:
+    """Confirm that when can-server-exposed-port is specified, ports are added to the can-server"""  # noqa: E501
+    ot3_default["can-server-exposed-port"] = 9898
+    runtime_compose_file_model = convert_from_obj(
+        {"robot": ot3_default}, testing_global_em_config
+    )
+    can_server = runtime_compose_file_model.can_server
+    assert can_server is not None
+    assert can_server.ports is not None
+    assert can_server.ports == ["9898:9898"]
+
+
+def test_can_server_port_not_exposed(
+    ot3_only: Dict[str, Any],
+    testing_global_em_config: OpentronsEmulationConfiguration
+) -> None:
+    """Confirm that when can-server-exposed-port is not specified, ports are not added to the can-server"""  # noqa: E501
+    runtime_compose_file_model = convert_from_obj(ot3_only, testing_global_em_config)
+    can_server = runtime_compose_file_model.can_server
+    assert can_server is not None
+    assert can_server.ports is None
+
+
 @pytest.mark.parametrize(
     "service_name, expected_value",
     [
