@@ -20,6 +20,7 @@ COMPOSE_RUN_COMMAND := docker-compose -f - up
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
 COMPOSE_LOGS_COMMAND := docker-compose -f - logs -f
+COMPOSE_RESTART_COMMAND := docker-compose -f - restart --timeout 1
 
 abs_path := $(realpath ${file_path})
 
@@ -35,6 +36,11 @@ build:
 run:
 	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
 	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_RUN_COMMAND)
+
+.PHONY: restart
+restart:
+	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_RESTART_COMMAND)
 
 
 .PHONY: run-detached
