@@ -18,6 +18,11 @@ on:
       - '.github/actions/**'
       - 'action.yaml'
   workflow_dispatch:
+    inputs:
+      cache-break:
+        description: Break the Cache
+        required: false
+        default: default
 
 jobs:
   opentrons-emulation-sanity-check:
@@ -40,6 +45,7 @@ jobs:
         uses: Opentrons/opentrons-emulation@main
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
+          cache-break: ${{ inputs.cache-break }}
           command: setup
 
       - name: Run Emulation
