@@ -27,10 +27,10 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "main"
+          ref: "add-can-server-exposed-port"
 
       - name: YAML Substitution
-        uses: Opentrons/opentrons-emulation@main
+        uses: Opentrons/opentrons-emulation@add-can-server-exposed-port
         with:
           command: yaml-sub
           substitutions: >-

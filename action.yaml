@@ -16,6 +16,11 @@ inputs:
   command:
     description: 'Command to run'
     required: true
+  cache-break:
+    description: Break the Cache
+    required: false
+    default: default
+
 
 runs:
   using: "composite"
@@ -44,6 +49,7 @@ runs:
       uses: ./.github/actions/setup-break-cache
       with:
         input-file: ${{ inputs.input-file }}
+        cache-break: ${{ inputs.cache-break }}
 
 
     - name: Setup Command (Python Only)
@@ -51,6 +57,7 @@ runs:
       uses: ./.github/actions/setup-python-only
       with:
         input-file: ${{ inputs.input-file }}
+        cache-break: ${{ inputs.cache-break }}
 
 
     - name: Teardown Command

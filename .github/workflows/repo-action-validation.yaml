@@ -18,6 +18,11 @@ on:
       - '.github/actions/**'
       - 'action.yaml'
   workflow_dispatch:
+    inputs:
+      cache-break:
+        description: Break the Cache
+        required: false
+        default: default
 
 jobs:
   opentrons-emulation-sanity-check:
@@ -34,16 +39,17 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "main"
+          ref: "add-can-server-exposed-port"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@main
+        uses: Opentrons/opentrons-emulation@add-can-server-exposed-port
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
+          cache-break: ${{ inputs.cache-break }}
           command: setup
 
       - name: Run Emulation
-        uses: Opentrons/opentrons-emulation@main
+        uses: Opentrons/opentrons-emulation@add-can-server-exposed-port
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           command: run
@@ -55,7 +61,7 @@ jobs:
         run: "curl --request GET --header 'opentrons-version: *' http://localhost:31950/modules"
 
       - name: Teardown Emulation
-        uses: Opentrons/opentrons-emulation@main
+        uses: Opentrons/opentrons-emulation@add-can-server-exposed-port
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           command: teardown

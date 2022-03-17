@@ -17,11 +17,11 @@ Go into `samples/team_specific_setups/ot3_firmware_development.yaml` and replace
 **_TOP_** level of your repos:
 
 - `robot.source-location` - Absolute path to your `ot3-firmware` repo.
-    - Example: `/home/derek-maggio/Documents/repos/ot3-firmware`
+  - Example: `/home/derek-maggio/Documents/repos/ot3-firmware`
 - `robot.robot-server-source-location` - Absolute path to your `opentrons` repo.
-    - Example: `/home/derek-maggio/Documents/repos/opentrons`
+  - Example: `/home/derek-maggio/Documents/repos/opentrons`
 - `robot.can-server-source-location` - Absolute path to your `opentrons` repo.
-    - Example: `/home/derek-maggio/Documents/repos/opentrons`
+  - Example: `/home/derek-maggio/Documents/repos/opentrons`
 
 Your configuration should look something like the following:
 

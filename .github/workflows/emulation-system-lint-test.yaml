@@ -32,8 +32,6 @@ jobs:
     steps:
       - name: "Checkout Repo"
         uses: 'actions/checkout@v2'
-        with:
-          node-version: '12'
 
       - name: "Setup Python"
         uses: 'actions/setup-python@v2'
@@ -44,7 +42,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "~/.local/share/virtualenvs/**"
-          key: ${{ runner.os }}-pipenv-${{ hashFiles('./emulation_system/Pipfile.lock') }}-${{ hashFiles('./Pipfile.lock') }}-${{ inputs.cache-break }}
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('./emulation_system/Pipfile.lock') }}-${{ hashFiles('./Pipfile.lock') }}-${{ hashFiles('./Makefile') }}-${{ inputs.cache-break }}
 
       - name: "Setup Project"
         run: |
