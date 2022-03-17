@@ -44,7 +44,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "~/.local/share/virtualenvs/**"
-          key: ${{ runner.os }}-pipenv-${{ hashFiles('./emulation_system/Pipfile.lock') }}-${{ hashFiles('./Pipfile.lock') }}-${{ hashFiles('./Makefile' }}
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('./emulation_system/Pipfile.lock') }}-${{ hashFiles('./Pipfile.lock') }}-${{ hashFiles('./Makefile') }}
 
       - name: "Setup Project"
         run: |
