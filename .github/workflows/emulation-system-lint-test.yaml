@@ -4,18 +4,15 @@
 name: 'emulation-system Lint & Test'
 
 on:
-  # Most of the time, we run on pull requests, which lets us handle external PRs
   push:
     paths:
       - 'emulation_system/**'
-      - 'opentrons-emulation'
       - '.github/workflows/emulation-system-lint-test.yaml'
     tags-ignore:
       - '*'
   pull_request:
     paths:
       - 'emulation_system/**'
-      - 'opentrons-emulation'
       - '.github/workflows/emulation-system-lint-test.yaml'
   workflow_dispatch:
 

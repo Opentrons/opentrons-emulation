@@ -1,6 +1,23 @@
 # Workflow to verify that yaml-substitution are working correctly.
 
-on: [ pull_request, push ]
+name: "YAML Substitution Sanity Check"
+
+on:
+  push:
+    paths:
+      - 'emulation_system/**'
+      - '.github/workflows/yaml-sub-sanity-check.yaml'
+      - '.github/actions/**'
+      - 'action.yaml'
+    tags-ignore:
+      - '*'
+  pull_request:
+    paths:
+      - 'emulation_system/**'
+      - '.github/workflows/yaml-sub-sanity-check.yaml'
+      - '.github/actions/**'
+      - 'action.yaml'
+  workflow_dispatch:
 
 jobs:
   yaml-sub-sanity-check:

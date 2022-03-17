@@ -4,7 +4,6 @@
 name: 'Test Sample Files'
 
 on:
-  # Most of the time, we run on pull requests, which lets us handle external PRs
   push:
     paths:
       - 'emulation_system/**'
