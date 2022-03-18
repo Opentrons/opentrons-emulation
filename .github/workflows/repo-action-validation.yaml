@@ -9,6 +9,7 @@ on:
       - '.github/workflows/repo-action-validation.yaml'
       - '.github/actions/**'
       - 'action.yaml'
+      - 'scripts/makefile/helper_scripts/**'
     tags-ignore:
       - '*'
   pull_request:
@@ -17,6 +18,7 @@ on:
       - '.github/workflows/repo-action-validation.yaml'
       - '.github/actions/**'
       - 'action.yaml'
+      - 'scripts/makefile/helper_scripts/**'
   workflow_dispatch:
     inputs:
       cache-break:
