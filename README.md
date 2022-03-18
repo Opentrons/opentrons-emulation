@@ -4,40 +4,21 @@ Opentrons has various software emulations of their hardware. This repository def
 all these emulators together into systems.
 
 - [Opentrons Emulation](#opentrons-emulation)
-  - [What is an Emulator?](#what-is-an-emulator-)
-  - [How do the Opentrons Emulators work?](#how-do-the-opentrons-emulators-work-)
-  - [Supported Hardware](#supported-hardware)
-  - [Required Software](#required-software)
-  - [Initial Configuration](#initial-configuration)
-  - [Using Emulation](#using-emulation)
+    - [What is an Emulator?](#what-is-an-emulator-)
+    - [How do the Opentrons Emulators work?](#how-do-the-opentrons-emulators-work-)
+    - [Supported Hardware](#supported-hardware)
+    - [Required Software](#required-software)
+    - [Initial Configuration](#initial-configuration)
+    - [Quick Setup](#quick-setup)
+        - [OT2 With All Modules](#ot2-with-all-modules)
+        - [OT3](#ot3)
     - [Emulation Commands](#emulation-commands)
-      - [Building System](#building-system)
-      - [Running System](#running-system)
-      - [Viewing System Logs](#viewing-system-logs)
-      - [Removing System](#removing-system)
-      - [Generate Compose File](#generate-compose-file)
-  - [Emulation Configuration File Key Definitions](#emulation-configuration-file-key-definitions)
-    - [id](#id)
-    - [system-unique-id](#system-unique-id)
-    - [hardware](#hardware)
-    - [source-type](#source-type)
-    - [source-location](#source-location)
-    - [robot-server-source-type](#robot-server-source-type)
-    - [robot-server-source-location](#robot-server-source-location)
-    - [can-server-source-type](#can-server-source-type)
-    - [can-server-source-location](#can-server-source-location)
-    - [emulation-level](#emulation-level)
-    - [exposed-port](#exposed-port)
-    - [hardware-specific-attributes](#hardware-specific-attributes)
-      - [Pipettes](#pipettes)
-        - [Available Pipette Models:](#available-pipette-models-)
-      - [Heater-Shaker and Thermocycler Refresh Communication Mode](#heater-shaker-and-thermocycler-refresh-communication-mode)
-      - [Temperature Model for Thermocycler and Temperature Modules](#temperature-model-for-thermocycler-and-temperature-modules)
-  - [Setting Up for Local Development](#setting-up-for-local-development)
-    - [CPX Setup](#cpx-setup)
-    - [OT3 Firmware Development Setup](#ot3-firmware-development-setup)
-    - [Apps and UI Setup](#apps-and-ui-setup)
-  - [Architecture Diagrams](#architecture-diagrams)
+    - [Building Your Own Configuration Files](#building-your-own-configuration-files)
+    - [Setting Up For Local Development](#setting-up-for-local-development)
+        - [CPX Setup](#cpx-setup)
+        - [OT3 Firmware Development Setup](#ot3-firmware-development-setup)
+        - [Apps and UI Setup](#apps-and-ui-setup)
+    - [Architecture Diagrams](#architecture-diagrams)
 
 ## What is an Emulator?
 
@@ -79,12 +60,12 @@ latest version. Unless you load a really old version, but no guarantees that a s
 Install the following software:
 
 1. Docker
-   1. [Mac Instructions](https://docs.docker.com/desktop/mac/install/)
-      1. Make sure that you have rosetta installed if you are running on an M1 Mac, `softwareupdate --install-rosetta`
-   1. [Linux Instructions](https://docs.docker.com/engine/install/#server)
+    1. [Mac Instructions](https://docs.docker.com/desktop/mac/install/)
+        1. Make sure that you have rosetta installed if you are running on an M1 Mac, `softwareupdate --install-rosetta`
+    1. [Linux Instructions](https://docs.docker.com/engine/install/#server)
 1. Docker-Compose
-   1. Mac Instructions: Installed when you install Docker
-   1. [Linux Instructions](https://docs.docker.com/compose/install/)
+    1. Mac Instructions: Installed when you install Docker
+    1. [Linux Instructions](https://docs.docker.com/compose/install/)
 1. [Install Python 3.10](https://www.python.org/downloads/)
    2\. use [pyenv](https://github.com/pyenv/pyenv)
 
@@ -94,33 +75,33 @@ Install the following software:
 **Setup (Mac)**
 
 1. Navigate to [pyenv docs](https://github.com/pyenv/pyenv)
-   1. [Install pyenv using brew](https://github.com/pyenv/pyenv#homebrew-in-macos)
-   1. Go to [Basic Github Checkout](https://github.com/pyenv/pyenv#basic-github-checkout) in the pyenv README
-   1. Go to Step 2 `Configure your shell's enviornment for Pyenv`
-   1. Scroll down to `For Zsh:` section.
-   1. Run the `MacOS, if Pyenv is installed with Homebrew` instructions
-   1. Restart your terminal
-   1. Install [Python Build Dependencies](https://github.com/pyenv/pyenv/wiki#suggested-build-environment)
-   1. Pyenv is now ready to use
+    1. [Install pyenv using brew](https://github.com/pyenv/pyenv#homebrew-in-macos)
+    1. Go to [Basic Github Checkout](https://github.com/pyenv/pyenv#basic-github-checkout) in the pyenv README
+    1. Go to Step 2 `Configure your shell's enviornment for Pyenv`
+    1. Scroll down to `For Zsh:` section.
+    1. Run the `MacOS, if Pyenv is installed with Homebrew` instructions
+    1. Restart your terminal
+    1. Install [Python Build Dependencies](https://github.com/pyenv/pyenv/wiki#suggested-build-environment)
+    1. Pyenv is now ready to use
 
 **Setup (Linux)**
 
 1. Navigate to [pyenv docs](https://github.com/pyenv/pyenv)
-   1. Follow instructions for [Basic Github Checkout](https://github.com/pyenv/pyenv#basic-github-checkout) in the
-      pyenv README
-      1. In step 2, follow `For Bash` instructions
-   1. Restart your terminal
-   1. Install [Python Build Dependencies](https://github.com/pyenv/pyenv/wiki#suggested-build-environment)
-   1. Pyenv is now ready to use
+    1. Follow instructions for [Basic Github Checkout](https://github.com/pyenv/pyenv#basic-github-checkout) in the
+       pyenv README
+        1. In step 2, follow `For Bash` instructions
+    1. Restart your terminal
+    1. Install [Python Build Dependencies](https://github.com/pyenv/pyenv/wiki#suggested-build-environment)
+    1. Pyenv is now ready to use
 
 **Installing Python**
 
 1. Run `pyenv install --list` to get a list of all available Python versions.
-   1. Choose the latest 3.10 version. For the purpose of this document we will say the latest version is `3.10.2`
-   1. Run `pyenv install 3.10.2` to install Python
-   1. Run `pyenv global 3.10.2`  to set the system version to 3.10.2
-   1. Verify that you are running the correct Python version by running `pyenv version`
-      1. It should say `3.10.2` (set by /something/something/something/pyenv/version)
+    1. Choose the latest 3.10 version. For the purpose of this document we will say the latest version is `3.10.2`
+    1. Run `pyenv install 3.10.2` to install Python
+    1. Run `pyenv global 3.10.2`  to set the system version to 3.10.2
+    1. Verify that you are running the correct Python version by running `pyenv version`
+        1. It should say `3.10.2` (set by /something/something/something/pyenv/version)
 
 **Troubleshooting**
 
@@ -139,383 +120,97 @@ You need to update pyenv. Follow [these](https://github.com/pyenv/pyenv#upgradin
 </details>
 
 4. [Pipenv Installed Globally](https://pipenv.pypa.io/en/latest/install/#installing-pipenv)
-   1. Run `python -m ensurepip --upgrade` to install pip
-   1. Run `pip install pipenv` to install pipenv
+    1. Run `python -m ensurepip --upgrade` to install pip
+    1. Run `pip install pipenv` to install pipenv
 
 ## Initial Configuration
 
 1. In the root of the repository, create to `configuration.json` from `configuration_sample.json`
-   1. `cp configuration_sample.json configuration.json`
+    1. `cp configuration_sample.json configuration.json`
 1. You can leave everything default.
-   1. TODO: `global-settings`, `virtual-machine-settings`, and `aws-ecr-settings` will be removed in future releases
+    1. TODO: `global-settings`, `virtual-machine-settings`, and `aws-ecr-settings` will be removed in future releases
 1. Run `make setup`
 
-## Using Emulation
+## Quick Setup
+
+Now you have performed the initial configuration lets get an emulated system running.
+
+### OT2 With All Modules
+
+An OT2 with a Heater-Shaker Module, Temperature Module, Thermocycler Module, and a Magnetic Module
+
+> Run the following commands from the root of the repo.
+
+**Build the Docker Images**
+
+```bash
+make build file_path=samples/ot2/ot2_with_all_modules.yaml
+```
+
+**Start the Emulator**
+
+```bash
+make run-detached file_path=samples/ot2/ot2_with_all_modules.yaml
+```
+
+**Verify Emulation is Working**
+
+Running the following curl command will hit the /modules endpoint. It should return a JSON describing the attached
+modules.
+
+```bash
+curl -s --location --request GET 'http://localhost:31950/modules' --header 'opentrons-version: *' | json_pp -json_opt pretty,canonical
+```
+
+**Remove Emulation**
+
+```bash
+make remove file_path=samples/ot2/ot2_with_all_modules.yaml
+```
+
+### OT3
+
+An OT3
+
+> Run the following commands from the root of the repo.
+
+**Build the Docker Images**
+
+```bash
+make build file_path=samples/ot3/ot3_remote.yaml
+```
+
+**Start the Emulator**
+
+```bash
+`make run-detached file_path=samples/ot3/ot3_remote.yaml
+```
+
+**Verify Emulation is Working**
+
+Open a CAN bus monitor in another terminal
+
+```bash
+make can-mon file_path=samples/ot3/ot3_remote.yaml
+```
+
+## Makefile Commands
+
+Go to [MAKEFILE_COMMANDS.md](https://github.com/Opentrons/opentrons-emulation/blob/main/docs/MAKEFILE_COMMANDS.md)
+
+## Building Your Own Configuration Files
 
 To run an emulated system you need to create an emulation system configuration file. This can either be a JSON file or a
 YAML file. You can create a single robot and unlimited number of modules in a single configuration, although neither are
 required.
 
-The `samples` directory contains samples of both JSON and YAML configurations.
+The `samples` directory contains samples of YAML configurations.
 
-Once you have a configuration file together you can utilize the various Make commands to build, run, view the logs of,
-and remove systems.
+If you want to create you own files go
+to [EMULATION_CONFIGURATION_FILE_KEY_DEFINITIONS.md](https://github.com/Opentrons/opentrons-emulation/blob/main/docs/EMULATION_CONFIGURATION_FILE_KEY_DEFINITIONS.md)
+for definitions of all the options and examples of more complex setups.
 
-### Emulation Commands
-
-The following emulation commands require a `file_path` argument with a path to a valid emulation configuration file. Can
-specify paths relative to `opentrons-emulation`. They are executed in the top-level directory of the repository.
-
-#### Building System
-
-**Description:** Use this command to build the necessary Docker images from your system. Docker images should be rebuilt
-under the following conditions:
-
-- If anything changes in your configuration file
-- If you have an emulator using `remote` source type, `latest` source location, and there has been an update to the main
-  branch of the source repo
-- If the underlying Dockerfile changes
-
-**Command:** `build`
-
-**Example:** `make build file_path=./samples/yaml/ot2.yaml`
-
-> Note: This repository supports building against `x86_64` and `arm64` type processors
-
-#### Running System
-
-**Description:** Use this command to bring up an emulated system.
-
-**Command:** `make run file_path=./samples/yaml/ot2.yaml`
-
-#### Viewing System Logs
-
-**Description:** Use this command view the logs of a running emulation system.
-
-**Command:** `make logs file_path=./samples/yaml/ot2.yaml`
-
-#### Removing System
-
-**Description:** Use this command to remove an emulated system.
-
-**Command:** `make remove file_path=./samples/yaml/ot2.yaml`
-
-#### Generate Compose File
-
-**Description:** Use this command to generate the Docker Compose file that the system runs under the hood.
-
-**Command:** `make generate-compose-file file_path=./samples/yaml/ot2.yaml`
-
-## Emulation Configuration File Key Definitions
-
-The following definitions are available for usage in the emulation configuration file.
-`Configuration File Alias` is the value that needs to be put in the configuration file
-
-### id
-
-**Description:** A string value for the name of the emulator.
-
-**Acceptable Values:** Can consist of alphanumeric characters and dashes.
-
-**Examples:** `a-name-for-a-container` `s0me-other-name`
-
-### system-unique-id
-
-**Description:** A string value that will be prefixed to all emulator and network names. Use this to differentiate
-systems with the same configuration.
-
-**Acceptable Values:** Can consist of alphanumeric characters and dashes.
-
-**Example:**
-
-You are testing 2 different versions of Heater-Shaker firmware. So you want 2 systems, each with an OT2 and a
-Heater-Shaker, with ids `otie` and `twitchy` respectively. The first system can have a `system-unique-id` of
-`system-1` and the second system can be `system-2`. The ids of system 1 will be `system-1-otie` and `system-1-twitchy`.
-The ids of system 2 will be `system-2-otie` and `system-2-twitchy`.
-
-Because of the `system-unique-id` the emulator names do not clash.
-
-### hardware
-
-**Description:** A string value specifying which hardware to create.
-
-**Acceptable Values:** `ot2`, `ot3`, `heater-shaker-module`, `thermocycler-module`, `temperature-module`,
-`magnetic-module`
-
-### source-type
-
-**Description:** A string value specifying where to pull source code from to build the emulator. You can either pull
-committed code from Github, or bind in your own local code.
-
-**Acceptable Values:** `remote` `local`
-
-### source-location
-
-**Description:** A string value specifying where the system should look for the source code based on the `source-type`.
-
-If you are using `remote` type, you can either specify `latest` to pull the latest committed version from the master
-branch, or specify a full commit sha to pull.
-
-If you are using `local` type, specify a path to the source on your system.
-
-When creating an `ot2` type robot this setting determines what source code the `smoothie` emulator will use. The
-`opentrons` repo should be specified.
-
-When creating an `ot2` type robot this setting determines what source code the `ot3-firmware` emulators will use. The
-`ot3-firmware` should be specified.
-
-### robot-server-source-type
-
-**Description:** Same as `source-type` but specifies what the robot server will be using for source.
-
-**Acceptable Values:** `remote` `local`
-
-### robot-server-source-location
-
-**Description:** Same as `source-location` but specifies what the system should look for source code for the
-robot-server
-
-If you are using `remote` type, you can either specify `latest` to pull the latest committed version from the master
-branch, or specify a full commit sha to pull.
-
-If you are using `local` type, specify a path to the source on your system.
-
-Any commit IDs or local bindings should be to the [monorepo](https://github.com/Opentrons/opentrons)
-
-### can-server-source-type
-
-**Description:** Same as `source-type` but specifies what the can server will be using for source.
-
-**Acceptable Values:** `remote` `local`
-
-### can-server-source-location
-
-**Description:** Same as `source-location` but specifies what the system should look for source code for the can-server
-
-If you are using `remote` type, you can either specify `latest` to pull the latest committed version from the master
-branch, or specify a full commit sha to pull.
-
-If you are using `local` type, specify a path to the source on your system.
-
-Any commit IDs or local bindings should be to the [monorepo](https://github.com/Opentrons/opentrons)
-
-### emulation-level
-
-**Description:** A string value specifiying which emulation level should be used.
-
-**Acceptable Values:** `firmware` `hardware`
-
-```mermaid
-flowchart TB
-  subgraph Firmware Emulation Level
-    F("Higher Level Robot Stack (Robot server, API, UI)")
-    R(Drivers)
-    O(Software model of firmware)
-  end
-  subgraph Hardware Emulation Level
-    A("Higher Level Robot Stack (Robot server, API, UI)")
-    B(Drivers)
-    C(Firmware)
-    D(Software model of firmware)
-  end
-  classDef software fill:#bbf,stroke:#f66,stroke-width:2px,color:#fff,stroke-dasharray: 5 5;
-  class O,D software;
-```
-
-**Supported Emulation Levels By Hardware:**
-
-The various emulators in this repository support different levels of emulation based on their architecture. Below is a
-table with the supported levels for each emulator.
-
-| Hardware                 | Firmware Emulation | Hardware Emulation         |
-| ------------------------ | ------------------ | -------------------------- |
-| **OT2**                  | Yes                | No                         |
-| **OT3**                  | No                 | Yes                        |
-| **Heater-Shaker Module** | No                 | Yes                        |
-| **Thermocycler Module**  | Yes                | Yes (Thermocycler Refresh) |
-| **Magnetic Module**      | Yes                | No                         |
-| **Temperature Module**   | Yes                | No                         |
-
-### exposed-port
-
-**Description:** An integer value specifying a port to expose to the host system. This is currently only available for
-ot2 and ot3 hardware.
-
-**Acceptable Values:** Any free port number
-
-### hardware-specific-attributes
-
-**Description:** An object containing any specific configuration values for hardware you are using.
-
-**Acceptable Values:** Varies. Breakdown below.
-
-#### Pipettes
-
-For OT2 and OT3 you can configure the pipettes attached to the emulated robot.
-
-Example: An OT2 with a P1000 Single and P300 Multi
-
-```json
-{
-    "system-unique-id": "ot2-only",
-    "robot": {
-        "id": "otie",
-        "hardware": "ot2",
-        "source-type": "remote",
-        "source-location": "latest",
-        "emulation-level": "firmware",
-        "exposed-port": 31950,
-        "hardware-specific-attributes": {
-            "left-pipette": {
-                "model": "p1000_single_v2.2",
-                "id": "somerandomid"
-            },
-            "right-pipette": {
-                "model": "p300_multi_v2.1",
-                "id": "someotherrandomid"
-            }
-        }
-    }
-}
-```
-
-______________________________________________________________________
-
-##### Available Pipette Models:
-
-**Version 1 Pipette Models**
-
-**P10 Single V1:**
-`p10_single_v1` `p10_single_v1.3` `p10_single_v1.4` `p10_single_v1.5`
-
-**P10 Multi V1:**
-`p10_multi_v1` `p10_multi_v1.3` `p10_multi_v1.4` `p10_multi_v1.5` `p10_multi_v1.6`
-
-**P50 Single V1:**
-`p50_single_v1` `p50_single_v1.3` `p50_single_v1.4` `p50_single_v1.5`
-
-**P50 Single V1:**
-`p50_multi_v1` `p50_multi_v1.3` `p50_multi_v1.4` `p50_multi_v1.5`
-
-**P300 Single V1:**
-`p300_single_v1` `p300_single_v1.3` `p300_single_v1.4` `p300_single_v1.5`
-
-**P300 Multi V1:**
-`p300_multi_v1` `p300_multi_v1.3` `p300_multi_v1.4` `p300_multi_v1.5`
-
-______________________________________________________________________
-
-**Version 2 Pipette Models**
-
-**P20 Single V2:**
-`p20_single_v2.0` `p20_single_v2.1` `p20_single_v2.2`
-
-**P20 Single V2:**
-`p20_multi_v2.0` `p20_multi_v2.1`
-
-**P300 Single V2:**
-`p300_single_v2.0` `p300_single_v2.1`
-
-**P300 Multi V2:**
-`p300_multi_v2.0` `p300_multi_v2.1`
-
-**P1000 Single V1:**
-`p1000_single_v1` `p1000_single_v1.3` `p1000_single_v1.4` `p1000_single_v1.5`
-
-**P1000 Single V2:**
-`p1000_single_v2.0` `p1000_single_v2.1` `p1000_single_v2.2`
-
-______________________________________________________________________
-
-**Version 3 Pipette Models**
-
-**P1000 Single V3:**
-`p20_single_v3.0` `p300_single_v3.0` `p1000_single_v3.0`
-
-______________________________________________________________________
-
-#### Heater-Shaker and Thermocycler Refresh Communication Mode
-
-For Heater-Shaker and Thermocycler Refresh you can specify the communication mode for the firmware. Either socket or
-through typing G-Codes through stdin. Stdin mode is really only useful for the lowest level debugging and for debugging
-the module by itself with nothing else attached. Therefore, it is defaulted to socket mode.
-
-Example: Heater-Shaker in Stdin mode
-
-```json
-{
-    "system-unique-id": "heater-shaker-stdin-debug",
-    "modules": [
-        {
-            "id": "shakey-and-warm",
-            "hardware": "heater-shaker-module",
-            "source-type": "remote",
-            "source-location": "latest",
-            "emulation_level": "hardware",
-            "hardware-specific-attributes": {
-                "mode": "stdin"
-            }
-        }
-    ]
-}
-```
-
-#### Temperature Model for Thermocycler and Temperature Modules
-
-For the Thermocycler and Temperature modules you can specify the starting temperature and temperature ramp rate
-(degrees-per-tick).
-
-Example 1: Thermocycler Module with custom temperature model
-
-```json
-{
-    "system-unique-id": "thermocycler-with-custom-temperature-model",
-    "modules": [
-        {
-            "id": "t00-hot-to-handle",
-            "hardware": "thermocycler-module",
-            "source-type": "remote",
-            "source-location": "latest",
-            "emulation_level": "firmware",
-            "hardware-specific-attributes": {
-                "lid-temperature": {
-                    "starting": 27.0,
-                    "degrees-per-tick": 2.3
-                },
-                "plate-temperature": {
-                    "starting": 23.0,
-                    "degrees-per-tick": 3.2
-                }
-            }
-        }
-    ]
-}
-```
-
-Example 2: Temperature Module with custom temperature model
-
-```json
-{
-    "system-unique-id": "temperature-module-with-custom-temperature-model",
-    "modules": [
-        {
-            "id": "temperamental",
-            "hardware": "temperature-module",
-            "source-type": "remote",
-            "source-location": "latest",
-            "emulation_level": "firmware",
-            "hardware-specific-attributes": {
-                "temperature": {
-                    "starting": 27.0,
-                    "degrees-per-tick": 2.3
-                }
-            }
-        }
-    ]
-}
-```
-
-## Setting Up for Local Development
+## Setting Up For Local Development
 
 ### CPX Setup
 
