@@ -13,7 +13,7 @@ SUB = {SUB}
 
 EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} -)
 REMOTE_ONLY_EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} - --remote-only)
-COMPOSE_BUILD_COMMAND := docker buildx bake --file tmp-compose.yaml --progress plain
+COMPOSE_BUILD_COMMAND := docker buildx bake --file tmp-compose.yaml
 COMPOSE_RUN_COMMAND := docker-compose -f - up
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
