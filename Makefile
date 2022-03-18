@@ -13,7 +13,7 @@ SUB = {SUB}
 
 EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} -)
 REMOTE_ONLY_EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} - --remote-only)
-COMPOSE_BUILD_COMMAND := docker buildx bake --file tmp-compose.yaml
+COMPOSE_BUILD_COMMAND := docker buildx bake --file tmp-compose.yaml --progress plain
 COMPOSE_RUN_COMMAND := docker-compose -f - up
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
@@ -23,7 +23,7 @@ COMPOSE_RESTART_COMMAND := docker-compose -f - restart --timeout 1
 abs_path := $(realpath ${file_path})
 
 ###########################################
-############# General Commands ############
+####### Emulation Control Commands ########
 ###########################################
 
 .PHONY: generate-compose-file
@@ -37,7 +37,14 @@ generate-compose-file:
 .PHONY: build
 build:
 
-	# Builds generated Docker-Compose file's images using buildx
+	# Builds generated Docker-Compose file's necessary images using docker buildx
+	# Note 1: This repository supports building against `x86_64` and `arm64` type processors
+	#
+	# Note 2: Docker images should be rebuilt under the following conditions:
+	#
+	#	If anything changes in your configuration file
+	#	If you have an emulator using `remote` source type, `latest` source location, and there has been an update to the main branch of the source repo
+	#	If the underlying Dockerfile changes
 
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
 	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
@@ -67,7 +74,6 @@ run-detached:
 remove:
 
 	# Removes containers from generated Docker-Compose file
-
 
 	$(if $(file_path),@echo "Removing system from $(file_path)",$(error file_path variable required))
 	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_KILL_COMMAND)
@@ -100,6 +106,7 @@ remove-build-run-detached:
 restart:
 
 	# Restarts all containers from generated Docker-Compose file
+	# Use this command to rebuild code if you have containers that have locally bound code
 
 	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
 	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_RESTART_COMMAND)
@@ -115,13 +122,14 @@ logs:
 .PHONY: logs-tail
 logs-tail:
 
-	# Prints only the last 100 lines from the logs from all containers to stdout and follows current logs
+	# Prints only the last n lines from the logs from all containers to stdout and follows current logs
 
 	$(if $(file_path),@echo "Printing logs from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path}  | $(COMPOSE_LOGS_COMMAND) --tail 100
+	$(if $(number),,$(error number variable required))
+	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path}  | $(COMPOSE_LOGS_COMMAND) --tail ${number}
 
-.PHONY: load-containers
-load-containers:
+.PHONY: load-container-names
+load-container-names:
 
 	# Return container names based off of passed filter.
 	# Acceptable filters are:
@@ -144,7 +152,7 @@ load-containers:
 
 	$(if $(file_path),,$(error file_path variable required))
 	$(if $(filter),,$(error filter variable required))
-	@(cd ./emulation_system && pipenv run python main.py load-containers "${abs_path}" "${filter}")
+	@(cd ./emulation_system && pipenv run python main.py load-container-names "${abs_path}" "${filter}")
 
 ###########################################
 ########## OT3 Specific Commands ##########
@@ -153,12 +161,12 @@ load-containers:
 .PHONY: can-comm
 can-comm:
 
-	# Runs can communication script against can_server
+	# Run can communication script against can_server
 
 	$(if $(file_path),,$(error file_path variable required))
 	@$(MAKE) \
 		--no-print-directory \
-		load-containers \
+		load-container-names \
 		file_path="${abs_path}" \
 		filter="can-server" \
 		| xargs -o -I{} docker exec -it {} python3 -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
@@ -172,7 +180,7 @@ can-mon:
 	$(if $(file_path),,$(error file_path variable required))
 	@$(MAKE) \
 		--no-print-directory \
-		load-containers \
+		load-container-names \
 		file_path="${abs_path}" \
 		filter="can-server" \
 		| xargs -o -I{} docker exec -it {} python3 -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
