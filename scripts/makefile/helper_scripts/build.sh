@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARCH=`arch`
+ARCH=`./get_untranslated_arch.sh`
 
 FILE_PATH=$1
 
