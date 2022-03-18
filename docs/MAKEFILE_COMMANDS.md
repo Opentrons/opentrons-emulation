@@ -26,8 +26,8 @@
 > **Note 2:** Docker images should be rebuilt under the following conditions:
 >
 > - If anything changes in your configuration file
->- If you have an emulator using `remote` source type, `latest` source location, and there has been an update to the main branch of the source repo
->- If the underlying Dockerfile changes
+> - If you have an emulator using `remote` source type, `latest` source location, and there has been an update to the main branch of the source repo
+> - If the underlying Dockerfile changes
 
 ### Run System (Attach Logs to STDOUT)
 
@@ -142,7 +142,7 @@ Acceptable filters are:
 
 **Example:** `make load-container-names file_path=./samples/ot2/ot2_remote.yaml filter=robot-server`
 
-----
+______________________________________________________________________
 
 ## CAN Communication Commands (OT3 Only)
 
@@ -162,7 +162,7 @@ Acceptable filters are:
 
 **Example:** `make can-mon file_path=./samples/ot3/ot3_remote.yaml`
 
----
+______________________________________________________________________
 
 ## CI Commands
 
