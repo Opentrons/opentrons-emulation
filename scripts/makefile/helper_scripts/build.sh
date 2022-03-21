@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-ARCH=`./scripts/makefile/helper_scripts/get_untranslated_arch.sh`
+SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+ARCH=`${SCRIPT_DIR}/get_untranslated_arch.sh`
 
 FILE_PATH=$1
 
