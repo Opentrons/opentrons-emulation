@@ -61,6 +61,7 @@ case $FULL_COMMAND in
     cp /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /gantry-x-simulator
     cp /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /gantry-y-simulator
     cp /ot3-firmware/build-host/bootloader/simulator/bootloader-simulator /bootloader-simulator
+    cp /ot3-firmware/build-host/gripper/simulator/gripper-simulator /gripper-simulator
     ;;
 
   # TODO: Figure out why below ot3 builders are failing if I build just the single simulator and not all of them.
@@ -88,6 +89,11 @@ case $FULL_COMMAND in
   build-ot3-bootloader-hardware)
     build_ot3_firmware_simulators
     cp /ot3-firmware/build-host/bootloader/simulator/bootloader-simulator /bootloader-simulator
+    ;;
+
+  build-ot3-gripper-hardware)
+    build_ot3_firmware_simulators
+    cp /ot3-firmware/build-host/gripper/simulator/gripper-simulator /gripper-simulator
     ;;
 
   run-heater-shaker-hardware)

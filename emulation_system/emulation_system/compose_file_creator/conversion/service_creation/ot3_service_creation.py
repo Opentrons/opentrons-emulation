@@ -20,6 +20,7 @@ from ...settings.images import (
     OT3BootloaderImages,
     OT3GantryXImages,
     OT3GantryYImages,
+    OT3GripperImages,
     OT3HeadImages,
     OT3PipettesImages,
 )
@@ -47,6 +48,7 @@ SERVICES_TO_CREATE = [
     ServiceInfo(OT3GantryXImages(), OT3Hardware.GANTRY_X),
     ServiceInfo(OT3GantryYImages(), OT3Hardware.GANTRY_Y),
     ServiceInfo(OT3BootloaderImages(), OT3Hardware.BOOTLOADER),
+    ServiceInfo(OT3GripperImages(), OT3Hardware.GRIPPER),
 ]
 
 
