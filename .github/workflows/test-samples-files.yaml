@@ -9,6 +9,7 @@ on:
       - 'emulation_system/**'
       - 'samples/**'
       - '.github/workflows/test-samples-files.yaml'
+      - 'scripts/makefile/helper_scripts/**'
     tags-ignore:
       - '*'
 
@@ -17,6 +18,7 @@ on:
       - 'emulation_system/**'
       - 'samples/**'
       - '.github/workflows/test-samples-files.yaml'
+      - 'scripts/makefile/helper_scripts/**'
   workflow_dispatch:
 
 defaults:
