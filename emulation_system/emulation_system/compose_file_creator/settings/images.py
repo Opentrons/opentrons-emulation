@@ -133,6 +133,15 @@ class OT3GantryYImages(Images):
     remote_hardware_image_name: str = "ot3-gantry-y-hardware-remote"
 
 
+class OT3BootloaderImages(Images):
+    """Image names for OT3 Bootloader."""
+
+    local_firmware_image_name: Literal[None] = None
+    local_hardware_image_name: str = "ot3-bootloader-hardware-local"
+    remote_firmware_image_name: Literal[None] = None
+    remote_hardware_image_name: str = "ot3-bootloader-hardware-remote"
+
+
 class CANServerImages(Images):
     """Image names for CAN server."""
 

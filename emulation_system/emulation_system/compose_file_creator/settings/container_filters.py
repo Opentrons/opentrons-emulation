@@ -12,6 +12,7 @@ from emulation_system.compose_file_creator.settings.images import (
     HeaterShakerModuleImages,
     Images,
     MagneticModuleImages,
+    OT3BootloaderImages,
     OT3GantryXImages,
     OT3GantryYImages,
     OT3HeadImages,
@@ -39,6 +40,7 @@ class ContainerFilters(Enum):
     OT3_GANTRY_Y = ("ot3-gantry-y", [OT3GantryYImages])
     OT3_HEAD = ("ot3-head", [OT3HeadImages])
     OT3_PIPETTES = ("ot3-pipettes", [OT3PipettesImages])
+    OT3_BOOTLOADER = ("ot3-bootloader", [OT3BootloaderImages])
 
     MODULES = (
         "modules",
@@ -56,6 +58,7 @@ class ContainerFilters(Enum):
             OT3GantryYImages,
             OT3HeadImages,
             OT3PipettesImages,
+            OT3BootloaderImages,
             SmoothieImages,
         ],
     )
@@ -72,6 +75,7 @@ class ContainerFilters(Enum):
             OT3GantryYImages,
             OT3HeadImages,
             OT3PipettesImages,
+            OT3BootloaderImages,
             RobotServerImages,
             SmoothieImages,
             TemperatureModuleImages,
