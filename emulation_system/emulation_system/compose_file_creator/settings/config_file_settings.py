@@ -40,6 +40,7 @@ class OT3Hardware(str, Enum):
     GANTRY_X = "ot3-gantry-x"
     GANTRY_Y = "ot3-gantry-y"
     BOOTLOADER = "ot3-bootloader"
+    GRIPPER = "ot3-gripper"
 
 
 class EmulationLevels(str, Enum):

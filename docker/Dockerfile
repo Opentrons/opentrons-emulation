@@ -162,6 +162,9 @@ ENV OPENTRONS_HARDWARE "ot3-gantry-y-hardware"
 FROM local-cpp-base as ot3-bootloader-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-bootloader-hardware"
 
+FROM local-cpp-base as ot3-gripper-hardware-local
+ENV OPENTRONS_HARDWARE "ot3-gripper-hardware"
+
 ############################
 # Firmware Local Emulators #
 ############################
@@ -348,6 +351,12 @@ ENTRYPOINT ["/entrypoint.sh", "run"]
 FROM ubuntu-base as ot3-bootloader-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-bootloader-hardware"
 COPY --from=ot3-firmware-builder /bootloader-simulator /bootloader-simulator
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM ubuntu-base as ot3-gripper-hardware-remote
+ENV OPENTRONS_HARDWARE "ot3-gripper-hardware"
+COPY --from=ot3-firmware-builder /gripper-simulator /gripper-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
