@@ -17,6 +17,7 @@ from ...settings.config_file_settings import (
 )
 from ...settings.images import (
     Images,
+    OT3BootloaderImages,
     OT3GantryXImages,
     OT3GantryYImages,
     OT3HeadImages,
@@ -45,6 +46,7 @@ SERVICES_TO_CREATE = [
     ServiceInfo(OT3PipettesImages(), OT3Hardware.PIPETTES),
     ServiceInfo(OT3GantryXImages(), OT3Hardware.GANTRY_X),
     ServiceInfo(OT3GantryYImages(), OT3Hardware.GANTRY_Y),
+    ServiceInfo(OT3BootloaderImages(), OT3Hardware.BOOTLOADER),
 ]
 
 
