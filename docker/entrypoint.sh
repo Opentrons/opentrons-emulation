@@ -118,6 +118,9 @@ case $FULL_COMMAND in
   run-ot3-bootloader-hardware)
     /bootloader-simulator
     ;;
+  run-ot3-gripper-hardware)
+    /gripper-simulator
+    ;;
 
   stop-ot3-gantry-y-hardware|stop-heater-shaker-hardware|stop-thermocycler-hardware|stop-ot3-pipettes-hardware|stop-ot3-head-hardware|stop-ot3-gantry-x-hardware)
     kill_process $OPENTRONS_HARDWARE
