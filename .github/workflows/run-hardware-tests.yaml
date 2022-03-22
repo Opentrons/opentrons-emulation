@@ -82,4 +82,5 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.EMULATION_NIGHTLY_TESTING_SLACK_WEBHOOK }}
+          SLACK_USERNAME: "OT-3 Integration Tests Results"
           SLACK_MESSAGE: "Test"
