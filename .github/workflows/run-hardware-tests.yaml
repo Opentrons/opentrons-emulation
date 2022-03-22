@@ -79,6 +79,7 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.EMULATION_NIGHTLY_TESTING_SLACK_WEBHOOK }}
           SLACK_USERNAME: "OT-3 Integration Tests Results"
-          SLACK_MESSAGE: Test
+          SLACK_TITLE: Test Run Results
+          SLACK_MESSAGE: ${{ job.status }}
           SLACK_COLOR: ${{ job.status }}
           SLACK_ICON_EMOJI: ':rocket:'
