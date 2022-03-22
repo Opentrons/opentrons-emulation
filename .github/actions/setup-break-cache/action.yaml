@@ -16,5 +16,5 @@ runs:
     - name: Setup Emulation (Break Cache)
       uses: ./.github/actions/setup
       with:
-        input-file: ${PWD}/samples/${{ matrix.file }}
+        input-file: ${{ inputs.input-file }}
         break-cache: $(date +%s%3N)

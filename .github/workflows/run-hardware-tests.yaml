@@ -1,0 +1,74 @@
+# Workflow to verify that repo's emulation actions are working correctly.
+
+name: "Run Hardware Tests"
+
+on:
+  push:
+    paths:
+      - '.github/workflows/run-hardware-tests.yaml'
+      - '.github/actions/**'
+      - 'action.yaml'
+    tags-ignore:
+      - '*'
+  pull_request:
+    paths:
+      - '.github/workflows/run-hardware-tests.yaml'
+      - '.github/actions/**'
+      - 'action.yaml'
+  workflow_dispatch:
+    inputs:
+      cache-break:
+        description: Break the Cache
+        required: false
+        default: default
+
+jobs:
+  run-emulation:
+    runs-on: "ubuntu-18.04"
+    name: Run Emulation
+    steps:
+
+      - name: Checkout opentrons-emulation
+        uses: actions/checkout@v3
+        with:
+          ref: "run-integration-tests-in-ci"
+
+      - name: Checkout monorepo
+        uses: actions/checkout@v3
+        with:
+          repository: "Opentrons/opentrons"
+          path: opentrons
+
+      - name: Setup Python for monorepo
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.7"
+
+      - name: Setup hardware project in monorepo
+        run: |
+          pip install pipenv
+          make setup
+        working-directory: ./opentrons/hardware
+
+      - name: Setup Emulation
+        uses: Opentrons/opentrons-emulation@run-integration-tests-in-ci
+        with:
+          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
+          cache-break: ${{ inputs.cache-break }}
+          command: setup
+
+      - name: Run Emulation
+        uses: Opentrons/opentrons-emulation@run-integration-tests-in-ci
+        with:
+          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
+          command: run
+
+      - name: Run hardware project integration tests
+        run: make test-with-opentrons-sock-emulator
+        working-directory: ./opentrons/hardware
+
+      - name: Teardown Emulation
+        uses: Opentrons/opentrons-emulation@run-integration-tests-in-ci
+        with:
+          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
+          command: teardown
