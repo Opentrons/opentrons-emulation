@@ -33,16 +33,16 @@ jobs:
         with:
           ref: "run-integration-tests-in-ci"
 
-      - name: Checkout opentrons repository
-        uses: actions/checkout@v3
-        with:
-          repository: "Opentrons/opentrons"
-          path: opentrons
+     - name: Checkout monorepo
+            uses: actions/checkout@v3
+            with:
+              repository: "Opentrons/opentrons"
+              path: opentrons
 
-      - name: Setup Python for opentrons repository
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.7"
+    - name: Setup Python for opentrons repository
+            uses: actions/setup-python@v2
+            with:
+              python-version: "3.7"
 
       - name: Setup hardware project in opentrons repository
         run: |
