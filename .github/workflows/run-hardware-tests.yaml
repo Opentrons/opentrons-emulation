@@ -28,56 +28,52 @@ jobs:
     name: Run Hardware Tests
     steps:
 
-      - name: Checkout opentrons-emulation
+      - name: Checkout opentrons-emulation repository
         uses: actions/checkout@v3
         with:
           ref: "run-integration-tests-in-ci"
 
-      - name: Checkout monorepo
+      - name: Checkout opentrons repository
         uses: actions/checkout@v3
         with:
           repository: "Opentrons/opentrons"
           path: opentrons
 
-      - name: Cause Failure
-        run: exit 1
-        shell: bash
+      - name: Setup Python for opentrons repository
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.7"
 
-      #      - name: Setup Python for monorepo
-      #        uses: actions/setup-python@v2
-      #        with:
-      #          python-version: "3.7"
-      #
-      #      - name: Setup hardware project in monorepo
-      #        run: |
-      #          pip install pipenv
-      #          make setup
-      #        working-directory: ./opentrons/hardware
-      #
-      #      - name: Setup Emulation
-      #        uses: Opentrons/opentrons-emulation@run-integration-tests-in-ci
-      #        with:
-      #          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
-      #          cache-break: ${{ inputs.cache-break }}
-      #          command: setup
-      #
-      #      - name: Run Emulation
-      #        uses: Opentrons/opentrons-emulation@run-integration-tests-in-ci
-      #        with:
-      #          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
-      #          command: run
-      #
-      #      - name: Run hardware project integration tests
-      #        run: make test-with-opentrons-sock-emulator
-      #        working-directory: ./opentrons/hardware
-      #
-      #      - name: Teardown Emulation
-      #        uses: Opentrons/opentrons-emulation@run-integration-tests-in-ci
-      #        with:
-      #          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
-      #          command: teardown
+      - name: Setup hardware project in opentrons repository
+        run: |
+          pip install pipenv
+          make setup
+        working-directory: ./opentrons/hardware
 
-      - name: Send Notification
+      - name: Setup opentrons-emulation project
+        uses: Opentrons/opentrons-emulation@run-integration-tests-in-ci
+        with:
+          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
+          cache-break: ${{ inputs.cache-break }}
+          command: setup
+
+      - name: Run emulated system
+        uses: Opentrons/opentrons-emulation@run-integration-tests-in-ci
+        with:
+          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
+          command: run
+
+      - name: Run hardware project integration tests
+        run: make test-with-opentrons-sock-emulator
+        working-directory: ./opentrons/hardware
+
+      - name: Teardown emulation
+        uses: Opentrons/opentrons-emulation@run-integration-tests-in-ci
+        with:
+          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
+          command: teardown
+
+      - name: Send results notification
         if: ${{ always() }}
         uses: rtCamp/action-slack-notify@v2
         env:
