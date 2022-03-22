@@ -56,7 +56,7 @@ case $FULL_COMMAND in
   # and choosing which executeable is sent to which container
   build-common-ot3-firmware)
     build_ot3_firmware_simulators
-    cp /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator /pipettes-simulator
+    cp /ot3-firmware/build-host/pipettes/simulator/pipettes-single-simulator /pipettes-simulator
     cp /ot3-firmware/build-host/head/simulator/head-simulator /head-simulator
     cp /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /gantry-x-simulator
     cp /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /gantry-y-simulator
@@ -83,7 +83,7 @@ case $FULL_COMMAND in
 
   build-ot3-pipettes-hardware)
     build_ot3_firmware_simulators
-    cp /ot3-firmware/build-host/pipettes/simulator/pipettes-simulator /pipettes-simulator
+    cp /ot3-firmware/build-host/pipettes/simulator/pipettes-single-simulator /pipettes-simulator
     ;;
 
   build-ot3-bootloader-hardware)
