@@ -27,7 +27,8 @@ runs:
   steps:
     - name: Validate Command
       if: ${{ !contains(fromJson('["setup", "setup-break-cache", "setup-python-only", "run", "teardown", "yaml-sub"]'), inputs.command)}}
-      run:
+      run: |
+        echo "${{ inputs.command }} is not a command supported in the action.yaml file of opentrons-emulation"
         exit 1
       shell: bash
 
