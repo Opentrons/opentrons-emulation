@@ -23,12 +23,12 @@ on:
         default: default
 
 jobs:
-  run-emulation:
+  run-hardware-tests:
     runs-on: "ubuntu-18.04"
-    name: Run Emulation
+    name: Run Hardware Tests
     steps:
 
-      - name: Checkout opentrons-emulation
+      - name: Checkout opentrons-emulation repository
         uses: actions/checkout@v3
         with:
           ref: "run-integration-tests-in-ci"
@@ -39,25 +39,25 @@ jobs:
           repository: "Opentrons/opentrons"
           path: opentrons
 
-      - name: Setup Python for monorepo
+      - name: Setup Python for opentrons repository
         uses: actions/setup-python@v2
         with:
           python-version: "3.7"
 
-      - name: Setup hardware project in monorepo
+      - name: Setup hardware project in opentrons repository
         run: |
           pip install pipenv
           make setup
         working-directory: ./opentrons/hardware
 
-      - name: Setup Emulation
+      - name: Setup opentrons-emulation project
         uses: Opentrons/opentrons-emulation@run-integration-tests-in-ci
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           cache-break: ${{ inputs.cache-break }}
           command: setup
 
-      - name: Run Emulation
+      - name: Run emulated system
         uses: Opentrons/opentrons-emulation@run-integration-tests-in-ci
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
@@ -67,8 +67,19 @@ jobs:
         run: make test-with-opentrons-sock-emulator
         working-directory: ./opentrons/hardware
 
-      - name: Teardown Emulation
+      - name: Teardown emulation
         uses: Opentrons/opentrons-emulation@run-integration-tests-in-ci
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           command: teardown
+
+      - name: Send results notification
+        if: ${{ always() }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.EMULATION_NIGHTLY_TESTING_SLACK_WEBHOOK }}
+          SLACK_USERNAME: "OT-3 Integration Tests Results"
+          SLACK_TITLE: Test Run Results
+          SLACK_MESSAGE: ${{ job.status }}
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_ICON_EMOJI: ':rocket:'
