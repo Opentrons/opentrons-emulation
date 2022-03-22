@@ -10,53 +10,49 @@ The final images can be 1 of 4 types:
 - `hardware-remote`
 - `firmware-remote`
 
-### ubuntu-base
+`hardware` images emulate the physical hardware are based off of c++ firmware code
 
-`ubuntu-base`, the lowest level image for `opentrons-emulation`, is based off of Ubuntu 20.04 and contains dependencies
-required by all all images.
+`firmware` images emulated the firmware and are based off of Python driver code
 
-### cpp-base
+`local` images expect source code to be bound into the container at the Docker runtime
 
-`cpp-base` is built on top of `ubuntu-base` and contains dependencies for building our C++ firmware
-inside [ot3-firmware](https://github.com/Opentrons/ot3-firmware) and
-[opentrons-modules](https://github.com/Opentrons/opentrons-modules)
+`remote` images download, build, and run source code at the Docker build time
 
-### python-base
-
-`python-base` is build on top of `ubuntu-base` and contains dependencies for building our
-[python monorepo](https://github.com/Opentrons/opentrons)
-
-## Local Image Creation
+## Local Image Creation Diagram
 
 ```mermaid
 stateDiagram-v2
 
-ub: ubuntu-base
-cpp: cpp-base
-python: python-base
-base_with_rebuild_script: base-with-rebuild-script
-add_env_vars: local-image
+ubuntu_base: ubuntu-base
+cpp_base: cpp-base
+python_base: python-base
+python_base_with_rebuild_script: python-base-with-rebuild-script
+cpp_base_with_rebuild_script: cpp-base-with-rebuild-script
+hardware_images: hardware-images
+firmware_images: firmware-images
 
 
-state choose_source_base <<fork>>
-state join <<join>>
+state choose_source_base <<choice>>
 
-[*] --> ub: Start with ubuntu-base
-ub --> choose_source_base: Choose source base
+[*] --> ubuntu_base: Start with ubuntu-base
+ubuntu_base --> choose_source_base: Choose source base
 
-choose_source_base --> cpp: If C++ source
-choose_source_base --> python: If Python source
+choose_source_base --> cpp_base: If hardware image
+choose_source_base --> python_base: If firmware image
 
-python --> join
-cpp --> join
+python_base --> python_base_with_rebuild_script: Add rebuild.sh as entrypoint
+cpp_base --> cpp_base_with_rebuild_script: Add rebuild.sh as entrypoint
 
-join --> base_with_rebuild_script: Add rebuild.sh as entrypoint
+python_base_with_rebuild_script --> firmware_images: Set env vars
+cpp_base_with_rebuild_script --> hardware_images: Set env vars
 
-base_with_rebuild_script --> add_env_vars: Add env vars
-add_env_vars --> [*]: Finished building
+firmware_images --> [*]
+hardware_images --> [*]
+
+
 ```
 
-## Remote Image Creation
+## Remote Image Creation Diagram
 
 ```mermaid
 stateDiagram-v2
