@@ -39,6 +39,10 @@ jobs:
           repository: "Opentrons/opentrons"
           path: opentrons
 
+      - name: Cause Failure
+        run: exit 1
+        shell: bash
+
       #      - name: Setup Python for monorepo
       #        uses: actions/setup-python@v2
       #        with:
