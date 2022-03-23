@@ -296,12 +296,8 @@ FROM opentrons-source as python-emulator-builder
 ENV OPENTRONS_HARDWARE "common-firmware"
 RUN /entrypoint.sh build
 
-FROM ot3-firmware-source as ot3-firmware-get-deps
-RUN (cd /ot3-firmware && cmake --preset host-gcc10)
-
 FROM ot3-firmware-source as ot3-firmware-builder
 ENV OPENTRONS_HARDWARE "common-ot3-firmware"
-COPY --from=ot3-firmware-get-deps /ot3-firmware/stm32-tools/ /ot3-firmware/stm32-tools/
 RUN /entrypoint.sh build
 
 ##################
