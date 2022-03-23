@@ -16,14 +16,14 @@ if [ "$COMMAND" != "build" ] && [ "$COMMAND" != "run" ] && [ "$COMMAND" != "stop
 fi
 
 build_ot3_firmware_simulators()
-  (cd /ot3-firmware && cmake --preset host-gcc10 && cmake --build --preset=simulators)
+  (cd /ot3-firmware && cmake --preset host-gcc10 && cmake --build -j $($(nproc) -1) --preset=simulators)
 
 build_module_simulator() {
-  (cd /opentrons-modules && cmake --preset=stm32-host-gcc10 . && cmake --build ./build-stm32-host --target $1)
+  (cd /opentrons-modules && cmake --preset=stm32-host-gcc10 . && cmake --build -j $($(nproc) -1) ./build-stm32-host --target $1)
 }
 
 build_ot3_firmware_single_simulator() {
-  (cd /ot3-firmware && cmake --preset host-gcc10 && cmake --build ./build-host --target $1)
+  (cd /ot3-firmware && cmake --preset host-gcc10 && cmake --build -j $($(nproc) -1)./build-host --target $1)
 }
 
 kill_process() {
