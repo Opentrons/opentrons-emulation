@@ -30,6 +30,6 @@ runs:
 
     - name: Setup repo
       run: |
-        pip install pipenv
+        pip install pipenv==2022.1.8
         make setup
       shell: bash

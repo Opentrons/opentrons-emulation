@@ -41,17 +41,17 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "add-can-server-exposed-port"
+          ref: "update-action-refs"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@add-can-server-exposed-port
+        uses: Opentrons/opentrons-emulation@update-action-refs
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           cache-break: ${{ inputs.cache-break }}
           command: setup
 
       - name: Run Emulation
-        uses: Opentrons/opentrons-emulation@add-can-server-exposed-port
+        uses: Opentrons/opentrons-emulation@main
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           command: run
@@ -63,7 +63,7 @@ jobs:
         run: "curl --request GET --header 'opentrons-version: *' http://localhost:31950/modules"
 
       - name: Teardown Emulation
-        uses: Opentrons/opentrons-emulation@add-can-server-exposed-port
+        uses: Opentrons/opentrons-emulation@main
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           command: teardown

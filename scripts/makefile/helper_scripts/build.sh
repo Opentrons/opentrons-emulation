@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
-
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-
 ARCH=`${SCRIPT_DIR}/get_untranslated_arch.sh`
-
 FILE_PATH=$1
-
 
 if [ "${ARCH}" == "arm64" ]; then
   # Platform is being set to linux/x86_64 because a requirement of M1 Mac is to use rosetta
