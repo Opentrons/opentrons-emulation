@@ -10,6 +10,7 @@ on:
       - 'samples/**'
       - '.github/workflows/test-samples-files.yaml'
       - 'scripts/makefile/helper_scripts/**'
+      - 'docker/**'
     tags-ignore:
       - '*'
 
@@ -19,6 +20,7 @@ on:
       - 'samples/**'
       - '.github/workflows/test-samples-files.yaml'
       - 'scripts/makefile/helper_scripts/**'
+      - 'docker/**'
   workflow_dispatch:
 
 defaults:
