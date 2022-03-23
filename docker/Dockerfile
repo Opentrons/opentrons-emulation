@@ -61,13 +61,20 @@ RUN apt-get update \
       git \
       libssl-dev \
       && rm -rf /var/lib/apt/lists/*
+RUN add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get update && \
+    apt-get install \
+    	--no-install-recommends \
+       	-y \
+    	python3.7
+RUN (cd /usr/bin/ && ln -s /usr/bin/python3.7 python)
+
 
 ############
 # cpp-base #
 ############
 
 FROM ubuntu-base as cpp-base
-RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get update && \
     apt-get install \
     --no-install-recommends \
@@ -77,10 +84,9 @@ RUN apt-get update && \
     gcc-10 \
     g++-10 \
     lsb-release \
-    python3.7 \
     python3.7-venv \
     > /dev/null
-RUN (cd /usr/bin/ && ln -s /usr/bin/python3.7 python)
+
 RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2-linux-x86_64.tar.gz && \
     tar -zxf cmake-3.21.2-linux-x86_64.tar.gz && \
     rm cmake-3.21.2-linux-x86_64.tar.gz && \
@@ -93,19 +99,17 @@ RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.2
 
 FROM ubuntu-base as python-base
 
-RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get update && \
-    apt-get install -y \
+    apt-get install \
+    --no-install-recommends \
+    -y \
     pipenv \
-    python3.7 \
     libudev-dev \
     libsystemd-dev \
     python3-dev \
     pkgconf \
     libpython3.7-dev \
     pip
-
-RUN (cd /usr/bin/ && ln -s /usr/bin/python3.7 python)
 
 ENV NODE_VERSION 14
 ENV OT_PYTHON "/usr/bin/python3.7"
