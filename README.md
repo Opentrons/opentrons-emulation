@@ -228,4 +228,8 @@ to [APPS_AND_UI_SETUP.md](https://github.com/Opentrons/opentrons-emulation/blob/
 
 ## Architecture Diagrams
 
-Go to [ARCHITECTURE.md](https://github.com/Opentrons/opentrons-emulation/blob/main/docs/ARCHITECTURE.md)
+For more information on how containers are connected to one another and how they communicated refer to
+[ARCHITECTURE.md](https://github.com/Opentrons/opentrons-emulation/blob/main/docs/ARCHITECTURE.md)
+
+For information on the Docker build process refer
+to [DOCKERFILE_ARCHITECTURE.md](https://github.com/Opentrons/opentrons-emulation/blob/main/docs/DOCKERFILE_ARCHITECTURE.md)

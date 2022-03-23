@@ -122,11 +122,11 @@ RUN apt-get install -y nodejs && npm install --global yarn
 # entrypoint.sh should also be bind-mounted in so do not copy it in either
 # Make sure to include the OPENTRONS_HARDWARE env variable
 
-FROM cpp-base as local-cpp-base
+FROM cpp-base as cpp-base-with-rebuild-script
 COPY rebuild.sh /rebuild.sh
 ENTRYPOINT ["/rebuild.sh"]
 
-FROM python-base as local-python-base
+FROM python-base as python-base-with-rebuild-script
 COPY rebuild.sh /rebuild.sh
 ENTRYPOINT ["/rebuild.sh"]
 
@@ -134,10 +134,10 @@ ENTRYPOINT ["/rebuild.sh"]
 # Hardware Local Emulators #
 ############################
 
-FROM local-cpp-base as heater-shaker-hardware-local
+FROM cpp-base-with-rebuild-script as heater-shaker-hardware-local
 ENV OPENTRONS_HARDWARE "heater-shaker-hardware"
 
-FROM local-cpp-base as thermocycler-hardware-local
+FROM cpp-base-with-rebuild-script as thermocycler-hardware-local
 ENV OPENTRONS_HARDWARE "thermocycler-hardware"
 
 # Do not use common-ot3-firmware as value for OPENTRONS_HARDWARE
@@ -147,47 +147,47 @@ ENV OPENTRONS_HARDWARE "thermocycler-hardware"
 # Instead specify the individual piece of firware as the hardware. This will cause only the container to only build
 # and move firmware for itself. Eliminating the issue of them clobbering each other
 
-FROM local-cpp-base as ot3-pipettes-hardware-local
+FROM cpp-base-with-rebuild-script as ot3-pipettes-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-pipettes-hardware"
 
-FROM local-cpp-base as ot3-head-hardware-local
+FROM cpp-base-with-rebuild-script as ot3-head-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-head-hardware"
 
-FROM local-cpp-base as ot3-gantry-x-hardware-local
+FROM cpp-base-with-rebuild-script as ot3-gantry-x-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-gantry-x-hardware"
 
-FROM local-cpp-base as ot3-gantry-y-hardware-local
+FROM cpp-base-with-rebuild-script as ot3-gantry-y-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-gantry-y-hardware"
 
-FROM local-cpp-base as ot3-bootloader-hardware-local
+FROM cpp-base-with-rebuild-script as ot3-bootloader-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-bootloader-hardware"
 
-FROM local-cpp-base as ot3-gripper-hardware-local
+FROM cpp-base-with-rebuild-script as ot3-gripper-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-gripper-hardware"
 
 ############################
 # Firmware Local Emulators #
 ############################
 
-FROM local-python-base as thermocycler-firmware-local
+FROM python-base-with-rebuild-script as thermocycler-firmware-local
 ENV OPENTRONS_HARDWARE "thermocycler-firmware"
 
-FROM local-python-base as magdeck-firmware-local
+FROM python-base-with-rebuild-script as magdeck-firmware-local
 ENV OPENTRONS_HARDWARE "magdeck-firmware"
 
-FROM local-python-base as tempdeck-firmware-local
+FROM python-base-with-rebuild-script as tempdeck-firmware-local
 ENV OPENTRONS_HARDWARE "tempdeck-firmware"
 
-FROM local-python-base as emulator-proxy-local
+FROM python-base-with-rebuild-script as emulator-proxy-local
 ENV OPENTRONS_HARDWARE "emulator-proxy"
 
-FROM local-python-base as robot-server-local
+FROM python-base-with-rebuild-script as robot-server-local
 ENV OPENTRONS_HARDWARE "robot-server"
 
-FROM local-python-base as smoothie-local
+FROM python-base-with-rebuild-script as smoothie-local
 ENV OPENTRONS_HARDWARE "smoothie"
 
-FROM local-python-base as can-server-local
+FROM python-base-with-rebuild-script as can-server-local
 ENV OPENTRONS_HARDWARE "can-server"
 
 
@@ -292,8 +292,12 @@ FROM opentrons-source as python-emulator-builder
 ENV OPENTRONS_HARDWARE "common-firmware"
 RUN /entrypoint.sh build
 
+FROM ot3-firmware-source as ot3-firmware-get-deps
+RUN (cd /ot3-firmware && cmake --preset host-gcc10)
+
 FROM ot3-firmware-source as ot3-firmware-builder
 ENV OPENTRONS_HARDWARE "common-ot3-firmware"
+COPY --from=ot3-firmware-get-deps /ot3-firmware/stm32-tools/ /ot3-firmware/stm32-tools/
 RUN /entrypoint.sh build
 
 ##################
