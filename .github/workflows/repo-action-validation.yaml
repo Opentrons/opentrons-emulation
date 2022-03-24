@@ -11,8 +11,9 @@ on:
       - 'action.yaml'
       - 'scripts/makefile/helper_scripts/**'
       - 'docker/**'
-    tags-ignore:
-      - '*'
+    branches:
+      - 'main'
+      - 'release'
   pull_request:
     paths:
       - 'emulation_system/**'
