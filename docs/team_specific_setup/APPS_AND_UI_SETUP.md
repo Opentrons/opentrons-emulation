@@ -22,7 +22,7 @@ From the root of the repo run
 ### Run Emulation
 
 1. From the root of the repo run
-    1. `make run-detached file_path=./samples/ot2/ot2_will_all_modules.yaml`
+   1. `make run-detached file_path=./samples/ot2/ot2_will_all_modules.yaml`
 
 ### Make Sure Emulation is Actually Working
 
