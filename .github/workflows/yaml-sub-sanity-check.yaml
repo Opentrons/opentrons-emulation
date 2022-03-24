@@ -31,10 +31,10 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "build-improvements"
+          ref: "update-pipenv"
 
       - name: YAML Substitution
-        uses: Opentrons/opentrons-emulation@build-improvements
+        uses: Opentrons/opentrons-emulation@update-pipenv
         with:
           command: yaml-sub
           substitutions: >-

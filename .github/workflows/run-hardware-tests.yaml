@@ -36,7 +36,7 @@ jobs:
       - name: Checkout opentrons-emulation repository
         uses: actions/checkout@v3
         with:
-          ref: "build-improvements"
+          ref: "update-pipenv"
 
       - name: Checkout monorepo
         uses: actions/checkout@v3
@@ -51,19 +51,19 @@ jobs:
 
       - name: Setup hardware project in opentrons repository
         run: |
-          pip install pipenv==2022.1.8
+          pip install pipenv==2022.3.24
           make setup
         working-directory: ./opentrons/hardware
 
       - name: Setup opentrons-emulation project
-        uses: Opentrons/opentrons-emulation@build-improvements
+        uses: Opentrons/opentrons-emulation@update-pipenv
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           cache-break: ${{ inputs.cache-break }}
           command: setup
 
       - name: Run emulated system
-        uses: Opentrons/opentrons-emulation@build-improvements
+        uses: Opentrons/opentrons-emulation@update-pipenv
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           command: run
@@ -73,7 +73,7 @@ jobs:
         working-directory: ./opentrons/hardware
 
       - name: Teardown emulation
-        uses: Opentrons/opentrons-emulation@build-improvements
+        uses: Opentrons/opentrons-emulation@update-pipenv
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           command: teardown

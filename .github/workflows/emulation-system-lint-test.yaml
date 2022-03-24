@@ -46,7 +46,7 @@ jobs:
 
       - name: "Setup Project"
         run: |
-          pip install pipenv==2022.1.8
+          pip install pipenv==2022.3.24
           make setup
 
       - name: "Lint"
