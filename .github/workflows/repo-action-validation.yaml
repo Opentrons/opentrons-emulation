@@ -11,6 +11,7 @@ on:
       - 'action.yaml'
       - 'scripts/makefile/helper_scripts/**'
       - 'docker/**'
+      - './Makefile'
     branches:
       - 'main'
       - 'release'
@@ -22,6 +23,7 @@ on:
       - 'action.yaml'
       - 'scripts/makefile/helper_scripts/**'
       - 'docker/**'
+      - './Makefile'
   workflow_dispatch:
     inputs:
       cache-break:
@@ -44,10 +46,10 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "update-pipenv"
+          ref: "confirm-makefile-changes-break-cache"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@update-pipenv
+        uses: Opentrons/opentrons-emulation@confirm-makefile-changes-break-cache
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           cache-break: ${{ inputs.cache-break }}
