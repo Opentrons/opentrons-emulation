@@ -8,8 +8,9 @@ on:
     paths:
       - 'emulation_system/**'
       - '.github/workflows/emulation-system-lint-test.yaml'
-    tags-ignore:
-      - '*'
+    branches:
+      - 'main'
+      - 'release'
   pull_request:
     paths:
       - 'emulation_system/**'

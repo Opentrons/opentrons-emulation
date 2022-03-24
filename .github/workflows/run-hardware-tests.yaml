@@ -9,8 +9,9 @@ on:
       - '.github/actions/**'
       - 'action.yaml'
       - 'docker/**'
-    tags-ignore:
-      - '*'
+    branches:
+      - 'main'
+      - 'release'
   pull_request:
     paths:
       - '.github/workflows/run-hardware-tests.yaml'
