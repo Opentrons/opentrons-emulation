@@ -233,3 +233,8 @@ For more information on how containers are connected to one another and how they
 
 For information on the Docker build process refer
 to [DOCKERFILE_ARCHITECTURE.md](https://github.com/Opentrons/opentrons-emulation/blob/main/docs/DOCKERFILE_ARCHITECTURE.md)
+
+## Github Action
+
+For information on this repository's Github Action refer
+to [GITHUB_ACTION_DOCS.md](https://github.com/Opentrons/opentrons-emulation/blob/main/docs/GITHUB_ACTION_DOCS.md)
