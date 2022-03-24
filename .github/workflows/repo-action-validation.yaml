@@ -10,6 +10,7 @@ on:
       - '.github/actions/**'
       - 'action.yaml'
       - 'scripts/makefile/helper_scripts/**'
+      - 'docker/**'
     tags-ignore:
       - '*'
   pull_request:
@@ -19,6 +20,7 @@ on:
       - '.github/actions/**'
       - 'action.yaml'
       - 'scripts/makefile/helper_scripts/**'
+      - 'docker/**'
   workflow_dispatch:
     inputs:
       cache-break:
@@ -41,10 +43,10 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "update-action-refs"
+          ref: "update-pipenv"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@update-action-refs
+        uses: Opentrons/opentrons-emulation@update-pipenv
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           cache-break: ${{ inputs.cache-break }}

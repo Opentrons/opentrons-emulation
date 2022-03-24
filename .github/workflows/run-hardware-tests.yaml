@@ -8,6 +8,7 @@ on:
       - '.github/workflows/run-hardware-tests.yaml'
       - '.github/actions/**'
       - 'action.yaml'
+      - 'docker/**'
     tags-ignore:
       - '*'
   pull_request:
@@ -15,6 +16,7 @@ on:
       - '.github/workflows/run-hardware-tests.yaml'
       - '.github/actions/**'
       - 'action.yaml'
+      - 'docker/**'
   schedule:
     # Running at 1:37 AM, so we don't get delays from so many people running nightly actions at midnight/top of hour
     - cron: '37 1 * * 1-5'
@@ -34,7 +36,7 @@ jobs:
       - name: Checkout opentrons-emulation repository
         uses: actions/checkout@v3
         with:
-          ref: "update-action-refs"
+          ref: "update-pipenv"
 
       - name: Checkout monorepo
         uses: actions/checkout@v3
@@ -49,19 +51,19 @@ jobs:
 
       - name: Setup hardware project in opentrons repository
         run: |
-          pip install pipenv==2022.1.8
+          pip install pipenv==2022.3.24
           make setup
         working-directory: ./opentrons/hardware
 
       - name: Setup opentrons-emulation project
-        uses: Opentrons/opentrons-emulation@update-action-refs
+        uses: Opentrons/opentrons-emulation@update-pipenv
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           cache-break: ${{ inputs.cache-break }}
           command: setup
 
       - name: Run emulated system
-        uses: Opentrons/opentrons-emulation@update-action-refs
+        uses: Opentrons/opentrons-emulation@update-pipenv
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           command: run
@@ -71,7 +73,7 @@ jobs:
         working-directory: ./opentrons/hardware
 
       - name: Teardown emulation
-        uses: Opentrons/opentrons-emulation@update-action-refs
+        uses: Opentrons/opentrons-emulation@update-pipenv
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           command: teardown
