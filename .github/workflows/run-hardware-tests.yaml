@@ -51,7 +51,7 @@ jobs:
 
       - name: Setup hardware project in opentrons repository
         run: |
-          pip install pipenv==2022.1.8
+          pip install pipenv==2022.3.24
           make setup
         working-directory: ./opentrons/hardware
 
