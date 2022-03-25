@@ -46,10 +46,10 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "confirm-makefile-changes-break-cache"
+          ref: "main"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@confirm-makefile-changes-break-cache
+        uses: Opentrons/opentrons-emulation@main
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           cache-break: ${{ inputs.cache-break }}
