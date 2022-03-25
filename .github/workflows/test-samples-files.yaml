@@ -14,7 +14,7 @@ on:
       - './Makefile'
     branches:
       - 'main'
-      - 'release'
+      - 'release-*'
 
   pull_request:
     paths:
