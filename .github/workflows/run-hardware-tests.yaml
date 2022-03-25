@@ -41,45 +41,49 @@ jobs:
         with:
           ref: "main"
 
-      - name: Checkout monorepo
-        uses: actions/checkout@v3
-        with:
-          repository: "Opentrons/opentrons"
-          path: opentrons
+      - name: Cause Failure
+        run: exit 1
+        shell: bash
 
-      - name: Setup Python for opentrons repository
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.7"
-
-      - name: Setup hardware project in opentrons repository
-        run: |
-          pip install pipenv==2022.3.24
-          make setup
-        working-directory: ./opentrons/hardware
-
-      - name: Setup opentrons-emulation project
-        uses: Opentrons/opentrons-emulation@main
-        with:
-          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
-          cache-break: ${{ inputs.cache-break }}
-          command: setup
-
-      - name: Run emulated system
-        uses: Opentrons/opentrons-emulation@main
-        with:
-          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
-          command: run
-
-      - name: Run hardware project integration tests
-        run: make test-with-opentrons-sock-emulator
-        working-directory: ./opentrons/hardware
-
-      - name: Teardown emulation
-        uses: Opentrons/opentrons-emulation@main
-        with:
-          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
-          command: teardown
+      #      - name: Checkout monorepo
+      #        uses: actions/checkout@v3
+      #        with:
+      #          repository: "Opentrons/opentrons"
+      #          path: opentrons
+      #
+      #      - name: Setup Python for opentrons repository
+      #        uses: actions/setup-python@v2
+      #        with:
+      #          python-version: "3.7"
+      #
+      #      - name: Setup hardware project in opentrons repository
+      #        run: |
+      #          pip install pipenv==2022.3.24
+      #          make setup
+      #        working-directory: ./opentrons/hardware
+      #
+      #      - name: Setup opentrons-emulation project
+      #        uses: Opentrons/opentrons-emulation@main
+      #        with:
+      #          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
+      #          cache-break: ${{ inputs.cache-break }}
+      #          command: setup
+      #
+      #      - name: Run emulated system
+      #        uses: Opentrons/opentrons-emulation@main
+      #        with:
+      #          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
+      #          command: run
+      #
+      #      - name: Run hardware project integration tests
+      #        run: make test-with-opentrons-sock-emulator
+      #        working-directory: ./opentrons/hardware
+      #
+      #      - name: Teardown emulation
+      #        uses: Opentrons/opentrons-emulation@main
+      #        with:
+      #          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
+      #          command: teardown
 
       - name: Send results notification
         if: ${{ failure() }}
