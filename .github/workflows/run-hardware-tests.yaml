@@ -4,12 +4,6 @@ name: "Run Hardware Tests"
 
 on:
   push:
-    paths:
-      - '.github/workflows/run-hardware-tests.yaml'
-      - '.github/actions/**'
-      - 'action.yaml'
-      - 'docker/**'
-      - './Makefile'
     branches:
       - 'main'
       - 'release-*'

@@ -4,14 +4,6 @@ name: "YAML Substitution Sanity Check"
 
 on:
   push:
-    paths:
-      - 'emulation_system/**'
-      - '.github/workflows/yaml-sub-sanity-check.yaml'
-      - '.github/actions/**'
-      - 'action.yaml'
-      - 'scripts/makefile/helper_scripts/**'
-      - 'docker/**'
-      - './Makefile'
     branches:
       - 'main'
       - 'release-*'

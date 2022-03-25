@@ -4,14 +4,6 @@ name: "Opentrons Emulation Github Action Tests"
 
 on:
   push:
-    paths:
-      - 'emulation_system/**'
-      - '.github/workflows/repo-action-validation.yaml'
-      - '.github/actions/**'
-      - 'action.yaml'
-      - 'scripts/makefile/helper_scripts/**'
-      - 'docker/**'
-      - './Makefile'
     branches:
       - 'main'
       - 'release-*'
