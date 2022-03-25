@@ -5,13 +5,6 @@ name: 'Test Sample Files'
 
 on:
   push:
-    paths:
-      - 'emulation_system/**'
-      - 'samples/**'
-      - '.github/workflows/test-samples-files.yaml'
-      - 'scripts/makefile/helper_scripts/**'
-      - 'docker/**'
-      - './Makefile'
     branches:
       - 'main'
       - 'release-*'

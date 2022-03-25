@@ -5,10 +5,6 @@ name: 'emulation-system Lint & Test'
 
 on:
   push:
-    paths:
-      - 'emulation_system/**'
-      - '.github/workflows/emulation-system-lint-test.yaml'
-      - './Makefile'
     branches:
       - 'main'
       - 'release-*'
