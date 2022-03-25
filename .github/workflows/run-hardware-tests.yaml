@@ -82,7 +82,7 @@ jobs:
           command: teardown
 
       - name: Send results notification
-        if: ${{ always() }}
+        if: ${{ failure() }}
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.EMULATION_NIGHTLY_TESTING_SLACK_WEBHOOK }}
