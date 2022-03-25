@@ -12,6 +12,7 @@ on:
     paths:
       - 'emulation_system/**'
       - '.github/workflows/emulation-system-lint-test.yaml'
+
       - './Makefile'
   workflow_dispatch:
     inputs:

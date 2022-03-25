@@ -16,6 +16,7 @@ on:
       - '.github/workflows/test-samples-files.yaml'
       - 'scripts/makefile/helper_scripts/**'
       - 'docker/**'
+
       - './Makefile'
   workflow_dispatch:
 

@@ -12,6 +12,7 @@ on:
       - 'emulation_system/**'
       - '.github/workflows/repo-action-validation.yaml'
       - '.github/actions/**'
+
       - 'action.yaml'
       - 'scripts/makefile/helper_scripts/**'
       - 'docker/**'

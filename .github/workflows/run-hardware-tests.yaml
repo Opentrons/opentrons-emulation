@@ -12,6 +12,7 @@ on:
       - '.github/workflows/run-hardware-tests.yaml'
       - '.github/actions/**'
       - 'action.yaml'
+
       - 'docker/**'
       - './Makefile'
   schedule:

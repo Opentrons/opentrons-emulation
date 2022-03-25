@@ -15,6 +15,7 @@ on:
       - 'action.yaml'
       - 'scripts/makefile/helper_scripts/**'
       - 'docker/**'
+
       - './Makefile'
   workflow_dispatch:
 
