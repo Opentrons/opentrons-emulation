@@ -1,5 +1,10 @@
 # Opentrons Emulation
 
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Opentrons/opentrons-emulation)
+![GitHub Pipenv locked Python version](https://img.shields.io/github/pipenv/locked/python-version/Opentrons/opentrons-emulation)
+![GitHub](https://img.shields.io/github/license/Opentrons/opentrons-emulation)
+![GitHub repo size](https://img.shields.io/github/repo-size/Opentrons/opentrons-emulation)
+
 Opentrons has various software emulations of their hardware. This repository defines a framework to dynamically connect
 all these emulators together into systems.
 
