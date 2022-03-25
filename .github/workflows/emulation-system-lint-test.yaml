@@ -11,7 +11,7 @@ on:
       - './Makefile'
     branches:
       - 'main'
-      - 'release'
+      - 'release-*'
   pull_request:
     paths:
       - 'emulation_system/**'

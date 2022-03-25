@@ -12,7 +12,7 @@ on:
       - './Makefile'
     branches:
       - 'main'
-      - 'release'
+      - 'release-*'
   pull_request:
     paths:
       - '.github/workflows/run-hardware-tests.yaml'
