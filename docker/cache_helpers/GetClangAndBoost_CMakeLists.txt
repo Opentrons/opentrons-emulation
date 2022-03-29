@@ -1,0 +1,5 @@
+project("BuildDeps")
+cmake_minimum_required(VERSION 3.20)
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+find_package(Clang)
+find_package(Boost 1.71.0)

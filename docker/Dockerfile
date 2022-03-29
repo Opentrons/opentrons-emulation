@@ -245,7 +245,7 @@ RUN (cd / &&  \
     unzip -q ot3-firmware.zip && \
     rm -f ot3-firmware.zip && \
     mv ot3-firmware* ot3-firmware)
-COPY entrypoint.sh /entrypoint.sh
+
 
 ##################
 # modules-source #
@@ -258,7 +258,6 @@ RUN (cd / &&  \
     unzip -q opentrons-modules.zip && \
     rm -f opentrons-modules.zip && \
     mv opentrons-modules* opentrons-modules)
-COPY entrypoint.sh /entrypoint.sh
 
 ####################
 # opentrons-source #
@@ -271,8 +270,19 @@ RUN (cd / &&  \
     unzip -q opentrons.zip && \
     rm -f opentrons.zip && \
     mv opentrons* opentrons)
-COPY entrypoint.sh /entrypoint.sh
 
+#############################################################
+#                    DEPENDENCY GETTERS                     #
+#############################################################
+
+# The following targets get dependencies for their respective projects
+# To make the most of docker caching only dependencies that do not change often should be cached
+
+FROM ot3-firmware-source as ot3-firmware-dependencies
+RUN (cd /ot3-firmware && cmake --preset=host)
+
+FROM opentrons-modules-source as opentrons-modules-dependencies
+RUN (cd /opentrons-modules && cmake cmake --preset=stm32-host)
 
 #############################################################
 #                    EXECUTABLE BUILDERS                    #
@@ -285,19 +295,26 @@ COPY entrypoint.sh /entrypoint.sh
 # Building separately from the Production Target to reduce image size
 
 FROM opentrons-modules-source as heater-shaker-builder
+COPY --from=opentrons-modules-dependencies /opentrons-modules/stm32-tools /opentrons-modules/stm32-tools
 ENV OPENTRONS_HARDWARE "heater-shaker-hardware"
+COPY entrypoint.sh /entrypoint.sh
 RUN /entrypoint.sh build
 
 FROM opentrons-modules-source as thermocycler-builder
+COPY --from=opentrons-modules-dependencies /opentrons-modules/stm32-tools /opentrons-modules/stm32-tools
 ENV OPENTRONS_HARDWARE "thermocycler-hardware"
+COPY entrypoint.sh /entrypoint.sh
 RUN /entrypoint.sh build
 
 FROM opentrons-source as python-emulator-builder
 ENV OPENTRONS_HARDWARE "common-firmware"
+COPY entrypoint.sh /entrypoint.sh
 RUN /entrypoint.sh build
 
 FROM ot3-firmware-source as ot3-firmware-builder
+COPY --from=ot3-firmware-dependencies /ot3-firmware/stm32-tools /ot3-firmware/stm32-tools
 ENV OPENTRONS_HARDWARE "common-ot3-firmware"
+COPY entrypoint.sh /entrypoint.sh
 RUN /entrypoint.sh build
 
 ##################
