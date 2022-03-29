@@ -13,8 +13,7 @@ on:
       - 'emulation_system/**'
       - '.github/workflows/emulation-system-lint-test.yaml'
       - './Makefile'
-      - 'docs/**'
-      - 'README.md'
+      - '*.md'
   workflow_dispatch:
     inputs:
       cache-break:
