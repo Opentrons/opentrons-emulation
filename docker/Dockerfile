@@ -283,6 +283,9 @@ COPY entrypoint.sh /entrypoint.sh
 FROM ot3-firmware-source as ot3-firmware-dependencies
 RUN (cd /ot3-firmware && cmake --preset=host)
 
+FROM opentrons-modules-source as opentrons-modules-dependencies
+RUN (cd /opentrons-modules && cmake cmake --preset=stm32-host)
+
 #############################################################
 #                    EXECUTABLE BUILDERS                    #
 #############################################################
@@ -294,10 +297,12 @@ RUN (cd /ot3-firmware && cmake --preset=host)
 # Building separately from the Production Target to reduce image size
 
 FROM opentrons-modules-source as heater-shaker-builder
+COPY --from=opentrons-modules-dependencies /opentrons-modules/stm32-tools /opentrons-modules/stm32-tools
 ENV OPENTRONS_HARDWARE "heater-shaker-hardware"
 RUN /entrypoint.sh build
 
 FROM opentrons-modules-source as thermocycler-builder
+COPY --from=opentrons-modules-dependencies /opentrons-modules/stm32-tools /opentrons-modules/stm32-tools
 ENV OPENTRONS_HARDWARE "thermocycler-hardware"
 RUN /entrypoint.sh build
 
