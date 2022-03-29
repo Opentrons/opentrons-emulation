@@ -48,8 +48,8 @@ case $FULL_COMMAND in
     cp /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /heater-shaker-simulator
     ;;
   build-thermocycler-hardware)
-    build_module_simulator "thermocycler-refresh-simulator"
-    cp /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-refresh/simulator/thermocycler-refresh-simulator /thermocycler-refresh-simulator
+    build_module_simulator "thermocycler-gen2-simulator"
+    cp /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-gen2/simulator/thermocycler-gen2-simulator /thermocycler-gen2-simulator
     ;;
 
   # Will only use this for remote builds when we can control everything being built at once and then picking
@@ -100,7 +100,7 @@ case $FULL_COMMAND in
     bash -c "/heater-shaker-simulator $OTHER_ARGS"
     ;;
   run-thermocycler-hardware)
-    bash -c "/thermocycler-refresh-simulator $OTHER_ARGS"
+    bash -c "/thermocycler-gen2-simulator $OTHER_ARGS"
     ;;
 
   run-ot3-pipettes-hardware)
