@@ -250,7 +250,7 @@ COPY entrypoint.sh /entrypoint.sh
 
 FROM ot3-firmware-source as ot3-firmware-deps-getter
 
-COPY ./cache_helpers/CMakeLists.txt /ot3-firmware/CMakeLists.txt
+COPY ./cache_helpers/GetClangAndBoost_CMakeLists.txt /ot3-firmware/CMakeLists.txt
 RUN (cd /ot3-firmware && cmake . && cmake --build .)
 
 ##################
