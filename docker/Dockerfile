@@ -247,6 +247,12 @@ RUN (cd / &&  \
     mv ot3-firmware* ot3-firmware)
 COPY entrypoint.sh /entrypoint.sh
 
+
+FROM ot3-firmware-source as ot3-firmware-deps-getter
+
+COPY ./cache_helpers/CMakeLists.txt /ot3-firmware/CMakeLists.txt
+RUN (cd /ot3-firmware && cmake . && cmake --build .)
+
 ##################
 # modules-source #
 ##################
@@ -297,6 +303,7 @@ ENV OPENTRONS_HARDWARE "common-firmware"
 RUN /entrypoint.sh build
 
 FROM ot3-firmware-source as ot3-firmware-builder
+COPY --from=ot3-firmware-deps-getter /ot3-firmware/stm32-tools /ot3-firmware/stm32-tools
 ENV OPENTRONS_HARDWARE "common-ot3-firmware"
 RUN /entrypoint.sh build
 
