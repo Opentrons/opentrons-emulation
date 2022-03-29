@@ -372,7 +372,7 @@ ENTRYPOINT ["/entrypoint.sh", "run"]
 
 FROM ubuntu-base as thermocycler-hardware-remote
 ENV OPENTRONS_HARDWARE "thermocycler-hardware"
-COPY --from=thermocycler-builder /thermocycler-refresh-simulator /thermocycler-refresh-simulator
+COPY --from=thermocycler-builder /thermocycler-gen2-simulator /thermocycler-gen2-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
