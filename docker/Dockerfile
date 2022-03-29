@@ -248,11 +248,6 @@ RUN (cd / &&  \
 COPY entrypoint.sh /entrypoint.sh
 
 
-FROM ot3-firmware-source as ot3-firmware-deps-getter
-
-COPY ./cache_helpers/GetClangAndBoost_CMakeLists.txt /ot3-firmware/CMakeLists.txt
-RUN (cd /ot3-firmware && cmake . && cmake --build .)
-
 ##################
 # modules-source #
 ##################
@@ -278,7 +273,15 @@ RUN (cd / &&  \
     rm -f opentrons.zip && \
     mv opentrons* opentrons)
 COPY entrypoint.sh /entrypoint.sh
+#############################################################
+#                    DEPENDENCY GETTERS                     #
+#############################################################
 
+# The following targets get dependencies for their respective projects
+# To make the most of docker caching only dependencies that do not change often should be cached
+
+FROM ot3-firmware-source as ot3-firmware-dependencies
+RUN (cd /ot3-firmware && cmake --preset=host)
 
 #############################################################
 #                    EXECUTABLE BUILDERS                    #
@@ -303,7 +306,7 @@ ENV OPENTRONS_HARDWARE "common-firmware"
 RUN /entrypoint.sh build
 
 FROM ot3-firmware-source as ot3-firmware-builder
-COPY --from=ot3-firmware-deps-getter /ot3-firmware/stm32-tools /ot3-firmware/stm32-tools
+COPY --from=ot3-firmware-dependencies /ot3-firmware/stm32-tools /ot3-firmware/stm32-tools
 ENV OPENTRONS_HARDWARE "common-ot3-firmware"
 RUN /entrypoint.sh build
 
