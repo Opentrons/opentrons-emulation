@@ -1,123 +1,4 @@
 #############################################################
-#                           BASES                           #
-#############################################################
-
-# The following targets are what final image that the end user will use should be based off of
-
-# ubuntu-base:
-#   * Lowest level build target that all other targets are based off of
-#   * Production targets should be based off of this to keep the images as small as possible
-
-# cpp-base:
-#   * Built on top of ubuntu-base
-#   * Contains common packages that all ot3-firmware and module firmware require
-#   * All firmware Development targets should be based off of this to ensure all packages required for building exist
-
-# python-base:
-#   * Will be built on top of ubuntu-base
-#   * All python level emulators will be based off of python-base
-#   * Will contain all packages needed for building python emulators
-
-###############
-# ubuntu-base #
-###############
-
-FROM ubuntu:20.04 as ubuntu-base
-# Only need to fill out these args, in CI builds to push images to AWS ECR.
-# Don't bother when you are doing manual builds. It will break your cache and your
-# build will take forever
-
-ARG TRIGGER
-ARG BUILD_DATE
-ARG VCS_REF
-ARG VCS_URL
-ARG URL
-ARG VENDOR
-ARG DOCKER_CMD
-ARG DESCRIPTION
-
-LABEL opentrons-emulation.trigger=$TRIGGER
-LABEL opentrons-emulation.build_date=$BUILD_DATE
-LABEL opentrons-emulation.vcs_ref=$VCS_REF
-LABEL opentons-emulation.vcs_url=$VCS_URL
-LABEL opentons-emulation.url=$URL
-LABEL opentons-emulation.vendor=$VENDOR
-LABEL opentons-emulation.docker_cmd=$DOCKER_CMD
-LABEL opentons-emulation.description=$DESCRIPTION
-
-ENV DEBIAN_FRONTEND noninteractive
-
-RUN rm -rf /var/lib/apt/lists/*
-RUN echo "Updating apt" && apt-get update > /dev/null
-RUN apt-get update \
-    && apt-get install \
-       --no-install-recommends \
-       -y \
-      wget \
-      unzip \
-      software-properties-common \
-      build-essential \
-      curl \
-      git \
-      libssl-dev \
-      && rm -rf /var/lib/apt/lists/*
-RUN add-apt-repository ppa:deadsnakes/ppa && \
-    apt-get update && \
-    apt-get install \
-    	--no-install-recommends \
-       	-y \
-    	python3.7
-RUN (cd /usr/bin/ && ln -s /usr/bin/python3.7 python)
-
-
-############
-# cpp-base #
-############
-
-FROM ubuntu-base as cpp-base
-RUN apt-get update && \
-    apt-get install \
-    --no-install-recommends \
-    -y \
-    libgtest-dev \
-    libboost-test-dev \
-    gcc-10 \
-    g++-10 \
-    lsb-release \
-    python3.7-venv \
-    > /dev/null
-
-RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2-linux-x86_64.tar.gz && \
-    tar -zxf cmake-3.21.2-linux-x86_64.tar.gz && \
-    rm cmake-3.21.2-linux-x86_64.tar.gz && \
-    mv cmake-3.21.2-linux-x86_64 cmake && \
-    (cd /usr/bin/ && ln -s /cmake/bin/cmake cmake)
-
-###############
-# python-base #
-###############
-
-FROM ubuntu-base as python-base
-
-RUN apt-get update && \
-    apt-get install \
-    --no-install-recommends \
-    -y \
-    pipenv \
-    libudev-dev \
-    libsystemd-dev \
-    python3-dev \
-    pkgconf \
-    libpython3.7-dev \
-    pip
-
-ENV NODE_VERSION 14
-ENV OT_PYTHON "/usr/bin/python3.7"
-
-RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -
-RUN apt-get install -y nodejs && npm install --global yarn
-
-#############################################################
 #                       LOCAL TARGETS                       #
 #############################################################
 
@@ -126,11 +7,11 @@ RUN apt-get install -y nodejs && npm install --global yarn
 # entrypoint.sh should also be bind-mounted in so do not copy it in either
 # Make sure to include the OPENTRONS_HARDWARE env variable
 
-FROM cpp-base as cpp-base-with-rebuild-script
+FROM ghcr.io/opentrons/cpp-base:latest as cpp-base-with-rebuild-script
 COPY rebuild.sh /rebuild.sh
 ENTRYPOINT ["/rebuild.sh"]
 
-FROM python-base as python-base-with-rebuild-script
+FROM ghcr.io/opentrons/python-base:latest as python-bast-with-rebuild-script
 COPY rebuild.sh /rebuild.sh
 ENTRYPOINT ["/rebuild.sh"]
 
@@ -231,14 +112,14 @@ ENV OPENTRONS_HARDWARE "can-server"
 #   * Contains modules source and entrypoint.sh
 
 # opentrons-source:
-#  * Based off of python-base
+#  * Based off of ghcr.io/opentrons/python-base:latest
 #  * Contains opentrons source and entrypoint.sh
 
 #######################
 # ot3-firmware-source #
 #######################
 
-FROM cpp-base as ot3-firmware-source
+FROM ghcr.io/opentrons/cpp-base:latest as ot3-firmware-source
 ARG FIRMWARE_SOURCE_DOWNLOAD_LOCATION
 ADD $FIRMWARE_SOURCE_DOWNLOAD_LOCATION /ot3-firmware.zip
 RUN (cd / &&  \
@@ -251,7 +132,7 @@ RUN (cd / &&  \
 # modules-source #
 ##################
 
-FROM cpp-base as opentrons-modules-source
+FROM ghcr.io/opentrons/cpp-base:latest as opentrons-modules-source
 ARG MODULE_SOURCE_DOWNLOAD_LOCATION
 ADD $MODULE_SOURCE_DOWNLOAD_LOCATION /opentrons-modules.zip
 RUN (cd / &&  \
@@ -263,7 +144,7 @@ RUN (cd / &&  \
 # opentrons-source #
 ####################
 
-FROM python-base as opentrons-source
+FROM ghcr.io/opentrons/python-base:latest as opentrons-source
 ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION
 ADD $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons.zip
 RUN (cd / &&  \
@@ -324,7 +205,7 @@ RUN /entrypoint.sh build
 # Added this firmware-common image because all firmware level emulator images are based off of
 # the opentrons monorepo, it's just a different command that is ran for each.
 
-FROM python-base as firmware-common
+FROM ghcr.io/opentrons/python-base:latest as firmware-common
 RUN mkdir /dist
 COPY --from=python-emulator-builder /dist/* /dist/
 RUN pip install /dist/*
@@ -345,49 +226,49 @@ RUN pip install /dist/*
 # Each Hardware Production Target should copy the executable from the Executable Builder target
 # Each Hardware Production Target should have a corresponding Executable Builder target
 
-FROM ubuntu-base as ot3-pipettes-hardware-remote
+FROM ghcr.io/opentrons/ubuntu-base:latest as ot3-pipettes-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-pipettes-hardware"
 COPY --from=ot3-firmware-builder /pipettes-simulator /pipettes-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ubuntu-base as ot3-head-hardware-remote
+FROM ghcr.io/opentrons/ubuntu-base:latest as ot3-head-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-head-hardware"
 COPY --from=ot3-firmware-builder /head-simulator /head-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ubuntu-base as ot3-gantry-x-hardware-remote
+FROM ghcr.io/opentrons/ubuntu-base:latest as ot3-gantry-x-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-gantry-x-hardware"
 COPY --from=ot3-firmware-builder /gantry-x-simulator /gantry-x-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ubuntu-base as ot3-gantry-y-hardware-remote
+FROM ghcr.io/opentrons/ubuntu-base:latest as ot3-gantry-y-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-gantry-y-hardware"
 COPY --from=ot3-firmware-builder /gantry-y-simulator /gantry-y-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ubuntu-base as ot3-bootloader-hardware-remote
+FROM ghcr.io/opentrons/ubuntu-base:latest as ot3-bootloader-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-bootloader-hardware"
 COPY --from=ot3-firmware-builder /bootloader-simulator /bootloader-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ubuntu-base as ot3-gripper-hardware-remote
+FROM ghcr.io/opentrons/ubuntu-base:latest as ot3-gripper-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-gripper-hardware"
 COPY --from=ot3-firmware-builder /gripper-simulator /gripper-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ubuntu-base as heater-shaker-hardware-remote
+FROM ghcr.io/opentrons/ubuntu-base:latest as heater-shaker-hardware-remote
 ENV OPENTRONS_HARDWARE "heater-shaker-hardware"
 COPY --from=heater-shaker-builder /heater-shaker-simulator /heater-shaker-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ubuntu-base as thermocycler-hardware-remote
+FROM ghcr.io/opentrons/ubuntu-base:latest as thermocycler-hardware-remote
 ENV OPENTRONS_HARDWARE "thermocycler-hardware"
 COPY --from=thermocycler-builder /thermocycler-gen2-simulator /thermocycler-gen2-simulator
 COPY entrypoint.sh /entrypoint.sh
