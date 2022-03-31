@@ -190,6 +190,11 @@ test-samples:
 
 	@./scripts/makefile/helper_scripts/test_samples.sh
 
+# Pushes image bases to Github Container Registry
+.PHONY: push-docker-image-bases
+push-docker-image-bases:
+	@(cd ./docker && ./build_bases.sh)
+
 ###########################################
 ######## emulation_system Commands ########
 ###########################################

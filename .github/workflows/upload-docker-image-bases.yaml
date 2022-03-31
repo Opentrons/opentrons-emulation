@@ -1,0 +1,28 @@
+# Workflow to upload Docker Image Bases to Github Container Registry
+
+name: "Upload Docker Image Bases"
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'release-*'
+    paths:
+      - '.github/workflows/upload-docker-image-bases.yaml'
+      - 'docker/bases_Dockerfile'
+      - 'docker/build_bases.sh'
+  workflow_dispatch:
+
+jobs:
+  push_to_registry:
+    name: Push Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Log in to registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and push images
+        run: make push-docker-image-bases
