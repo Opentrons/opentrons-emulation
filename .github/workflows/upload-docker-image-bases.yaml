@@ -11,6 +11,7 @@ on:
       - '.github/workflows/upload-docker-image-bases.yaml'
       - 'docker/bases_Dockerfile'
       - 'docker/build_bases.sh'
+    pull_request:
   workflow_dispatch:
 
 jobs:
