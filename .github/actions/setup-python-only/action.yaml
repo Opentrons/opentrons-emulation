@@ -29,9 +29,11 @@ runs:
         path: "~/.local/share/virtualenvs/**"
         key: ${{ runner.os }}-pipenv-${{ hashFiles('./emulation_system/Pipfile.lock') }}-${{ hashFiles('./Pipfile.lock') }}-${{ hashFiles('./Makefile') }}-${{ inputs.cache-break }}
 
+    - name: Install Pipenv
+      run: pip install pipenv==2022.3.24
+      shell: bash
+      
     - name: Setup repo
       if: steps.python-cache.outputs.cache-hit != 'true'
-      run: |
-        pip install pipenv==2022.3.24
-        make setup
+      run: make setup
       shell: bash
