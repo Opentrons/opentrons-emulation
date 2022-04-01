@@ -1,5 +1,20 @@
 # Opentrons Emulation Release Notes
 
+## v2.3.0 (2022-04-01)
+
+### Bug Fixes
+
+- None
+
+### Features
+
+- Add image caching with Github Container
+  Registry [\[PR #157\]](https://github.com/Opentrons/opentrons-emulation/pull/157)
+
+### Chores
+
+- None
+
 ## v2.2.0 (2022-03-29)
 
 ### Bug Fixes
