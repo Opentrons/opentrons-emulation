@@ -11,7 +11,7 @@ FROM ghcr.io/opentrons/cpp-base:latest as cpp-base-with-rebuild-script
 COPY rebuild.sh /rebuild.sh
 ENTRYPOINT ["/rebuild.sh"]
 
-FROM ghcr.io/opentrons/python-base:latest as python-bast-with-rebuild-script
+FROM ghcr.io/opentrons/python-base:latest as python-base-with-rebuild-script
 COPY rebuild.sh /rebuild.sh
 ENTRYPOINT ["/rebuild.sh"]
 
