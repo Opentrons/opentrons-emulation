@@ -46,9 +46,12 @@ jobs:
         with:
           python-version: "3.7"
 
-      - name: Install Pipenv
-        run: pip install pipenv==2022.3.24
-        shell: bash
+      - name: Setup opentrons-emulation project
+        uses: Opentrons/opentrons-emulation@ghcr-image-caching
+        with:
+          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
+          cache-break: ${{ inputs.cache-break }}
+          command: setup
 
       - name: Cache Python Dependencies
         uses: actions/cache@v2
@@ -61,13 +64,6 @@ jobs:
         if: steps.python-cache.outputs.cache-hit != 'true'
         run: make setup
         working-directory: ./opentrons/hardware
-
-      - name: Setup opentrons-emulation project
-        uses: Opentrons/opentrons-emulation@ghcr-image-caching
-        with:
-          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
-          cache-break: ${{ inputs.cache-break }}
-          command: setup
 
       - name: Run emulated system
         uses: Opentrons/opentrons-emulation@ghcr-image-caching
