@@ -193,7 +193,8 @@ test-samples:
 # Pushes image bases to Github Container Registry
 .PHONY: push-docker-image-bases
 push-docker-image-bases:
-	@(cd ./docker && ./build_bases.sh)
+	$(if $(branch_name),,$(error branch_name variable required))
+	@(cd ./docker && ./build_bases.sh ${branch_name})
 
 ###########################################
 ######## emulation_system Commands ########
