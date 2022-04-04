@@ -17,6 +17,11 @@ on:
       - 'docker/**'
       - './Makefile'
   workflow_dispatch:
+    inputs:
+      cache-break:
+        description: Break the Cache
+        required: false
+        default: default
 
 jobs:
   yaml-sub-sanity-check:
@@ -26,10 +31,16 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "main"
+          ref: "fix-cache-breaking"
+
+      - name: Setup Emulation
+        uses: Opentrons/opentrons-emulation@fix-cache-breaking
+        with:
+          cache-break: ${{ github.event.inputs.cache-break }}
+          command: setup-python-only
 
       - name: YAML Substitution
-        uses: Opentrons/opentrons-emulation@main
+        uses: Opentrons/opentrons-emulation@fix-cache-breaking
         with:
           command: yaml-sub
           substitutions: >-

@@ -6,9 +6,6 @@ description: |
 
 author: Derek Maggio
 inputs:
-  input-file:
-    description: 'YAML or JSON system configuration'
-    required: true
   cache-break:
     description: 'Specify a value here to break cache'
     required: false
@@ -23,17 +20,21 @@ runs:
         python-version: "3.10"
 
     - name: Cache Python Dependencies
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: python-cache
       with:
-        path: "~/.local/share/virtualenvs/**"
+        path: |
+          ${{ github.workspace }}/.venv
+          ${{ github.workspace }}/emulation_system/.venv
         key: ${{ runner.os }}-pipenv-${{ hashFiles('./emulation_system/Pipfile.lock') }}-${{ hashFiles('./Pipfile.lock') }}-${{ hashFiles('./Makefile') }}-${{ inputs.cache-break }}
 
     - name: Install Pipenv
       run: pip install pipenv==2022.3.24
       shell: bash
-      
+
     - name: Setup repo
       if: steps.python-cache.outputs.cache-hit != 'true'
       run: make setup
+      env:
+        PIPENV_VENV_IN_PROJECT: enabled
       shell: bash

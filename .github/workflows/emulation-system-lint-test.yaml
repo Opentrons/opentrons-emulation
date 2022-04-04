@@ -30,24 +30,16 @@ jobs:
     name: 'emulation-system linting and tests'
     runs-on: 'ubuntu-18.04'
     steps:
-      - name: "Checkout Repo"
-        uses: 'actions/checkout@v2'
-
-      - name: "Setup Python"
-        uses: 'actions/setup-python@v2'
+      - name: Checkout opentrons-emulation repository
+        uses: actions/checkout@v3
         with:
-          python-version: '3.10'
+          ref: "fix-cache-breaking"
 
-      - name: Cache Python Dependencies
-        uses: actions/cache@v2
+      - name: Setup Emulation
+        uses: Opentrons/opentrons-emulation@fix-cache-breaking
         with:
-          path: "~/.local/share/virtualenvs/**"
-          key: ${{ runner.os }}-pipenv-${{ hashFiles('./emulation_system/Pipfile.lock') }}-${{ hashFiles('./Pipfile.lock') }}-${{ hashFiles('./Makefile') }}-${{ inputs.cache-break }}
-
-      - name: "Setup Project"
-        run: |
-          pip install pipenv==2022.3.24
-          make setup
+          cache-break: ${{ github.event.inputs.cache-break }}
+          command: setup-python-only
 
       - name: "Lint"
         run: make lint
