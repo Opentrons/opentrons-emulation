@@ -120,7 +120,6 @@ jobs:
       - name: Setup opentrons-emulation project
         uses: Opentrons/opentrons-emulation@v2.1.0
           with:
-            input-file: ${PWD}/samples/ot3/ot3_remote.yaml
             command: setup-python-only
 ```
 

@@ -1,5 +1,19 @@
 # Opentrons Emulation Release Notes
 
+## v2.3.1 (2022-04-01)
+
+### Bug Fixes
+
+- Fix breaking caches in Github Actions [\[PR #162\]](https://github.com/Opentrons/opentrons-emulation/pull/162)
+
+### Features
+
+- None
+
+### Chores
+
+- Update pipenv and pyenv steps in README [\[PR #161\]](https://github.com/Opentrons/opentrons-emulation/pull/161)
+
 ## v2.3.0 (2022-04-01)
 
 ### Bug Fixes
