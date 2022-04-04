@@ -90,8 +90,8 @@
 - Simplify Makefile command naming
 - Add Markdown formatter
 - Add documentation for the following
-    - Clarify python setup documentation
-    - Add OT2 Architecture documentation
-    - Add Build Artifact Named Volume Architecture documentation
-    - Add usage docs for OT3 Firmware development
-    - Add usage docs for Apps and UI development
+  - Clarify python setup documentation
+  - Add OT2 Architecture documentation
+  - Add Build Artifact Named Volume Architecture documentation
+  - Add usage docs for OT3 Firmware development
+  - Add usage docs for Apps and UI development
