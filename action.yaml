@@ -43,6 +43,7 @@ runs:
       uses: ./.github/actions/setup
       with:
         input-file: ${{ inputs.input-file }}
+        cache-break: ${{ inputs.cache-break }}
 
 
     - name: Setup Command (Break Cache)
@@ -50,6 +51,7 @@ runs:
       uses: ./.github/actions/setup-break-cache
       with:
         input-file: ${{ inputs.input-file }}
+        cache-break: ${{ inputs.cache-break }}
 
     - name: Setup Command (Python Only)
       if: inputs.command == 'setup-python-only'

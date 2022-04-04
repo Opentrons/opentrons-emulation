@@ -50,7 +50,7 @@ jobs:
         uses: Opentrons/opentrons-emulation@release-v2.3.0
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
-          cache-break: ${{ inputs.cache-break }}
+          cache-break: ${{ github.event.inputs.cache-break }}
           command: setup
 
       - name: Cache Python Dependencies
@@ -58,7 +58,7 @@ jobs:
         id: python-cache
         with:
           path: "~/.local/share/virtualenvs/**"
-          key: ${{ runner.os }}-${{ hashFiles('./opentrons/hardware/Pipfile.lock') }}-${{ inputs.cache-break }}
+          key: ${{ runner.os }}-${{ hashFiles('./opentrons/hardware/Pipfile.lock') }}-${{ github.event.inputs.cache-break }}
 
       - name: Setup hardware project in opentrons repository
         if: steps.python-cache.outputs.cache-hit != 'true'
