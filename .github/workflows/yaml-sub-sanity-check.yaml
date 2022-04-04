@@ -31,16 +31,16 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "fix-cache-breaking"
+          ref: "release-v2.3.1"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@fix-cache-breaking
+        uses: Opentrons/opentrons-emulation@release-v2.3.1
         with:
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup-python-only
 
       - name: YAML Substitution
-        uses: Opentrons/opentrons-emulation@fix-cache-breaking
+        uses: Opentrons/opentrons-emulation@release-v2.3.1
         with:
           command: yaml-sub
           substitutions: >-
