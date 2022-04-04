@@ -230,7 +230,7 @@ teardown:
 .PHONY: lint
 lint:
 
-	$(python) -m mdformat --check .
+	$(python) -m mdformat --check README.md ./docs
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) lint
 
 
@@ -238,7 +238,7 @@ lint:
 # Run formatting against emulation_system (isort, black)
 .PHONY: format
 format:
-	$(python) -m mdformat .
+	$(python) -m mdformat README.md ./docs
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) format
 
 

@@ -26,14 +26,18 @@ runs:
       uses: actions/cache@v2
       id: python-cache
       with:
-        path: "~/.local/share/virtualenvs/**"
+        path: |
+          ~/work/opentrons-emulation/opentrons-emulation/.venv
+          ~/work/opentrons-emulation/opentrons-emulation/emulation_system/.venv
         key: ${{ runner.os }}-pipenv-${{ hashFiles('./emulation_system/Pipfile.lock') }}-${{ hashFiles('./Pipfile.lock') }}-${{ hashFiles('./Makefile') }}-${{ inputs.cache-break }}
 
     - name: Install Pipenv
       run: pip install pipenv==2022.3.24
       shell: bash
-      
+
     - name: Setup repo
       if: steps.python-cache.outputs.cache-hit != 'true'
       run: make setup
+      env:
+        PIPENV_VENV_IN_PROJECT: enabled
       shell: bash
