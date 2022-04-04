@@ -25,6 +25,24 @@ all these emulators together into systems.
     - [Apps and UI Setup](#apps-and-ui-setup)
   - [Architecture Diagrams](#architecture-diagrams)
 
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080'}}}%%
+flowchart LR
+
+subgraph emulation[Emulation]
+    opentrons_app([Opentrons App]) --Cut the cord!!!--- hardware([Real Hardware])
+    opentrons_app --Use emulation!!!--- emulated_hardware([Emulated Hardware])
+end
+
+classDef primarySubgraphStyle fill:#6a9dff,stroke-width:0px,color:white,font-weight:bold;
+classDef node fill:#006fff,color:#ffffff,stroke-width:0px;
+class emulation primarySubgraphStyle;
+linkStyle 0 stroke:#ff0000,stroke-width:2px,color:white;
+linkStyle 1 stroke:#00ff00,stroke-width:2px,color:white;
+
+
+```
+
 ## What is an Emulator?
 
 The simplest description is an emulator is a software model that stands in for a piece of hardware.
@@ -71,32 +89,80 @@ Install the following software:
 1. Docker-Compose
    1. Mac Instructions: Installed when you install Docker
    1. [Linux Instructions](https://docs.docker.com/compose/install/)
+1. [Pipenv Installed Globally](https://pipenv.pypa.io/en/latest/install/#installing-pipenv)
+   1. Run `python -m ensurepip --upgrade` to install pip
+   1. Run `pip install pipenv` to install pipenv
 1. [Install Python 3.10](https://www.python.org/downloads/)
-   2\. use [pyenv](https://github.com/pyenv/pyenv)
+   1. use [pyenv](https://github.com/pyenv/pyenv)
 
 <details>
    <summary>Pyenv Detailed Instructions</summary>
 
 **Setup (Mac)**
 
-1. Navigate to [pyenv docs](https://github.com/pyenv/pyenv)
-   1. [Install pyenv using brew](https://github.com/pyenv/pyenv#homebrew-in-macos)
-   1. Go to [Basic Github Checkout](https://github.com/pyenv/pyenv#basic-github-checkout) in the pyenv README
-   1. Go to Step 2 `Configure your shell's enviornment for Pyenv`
-   1. Scroll down to `For Zsh:` section.
-   1. Run the `MacOS, if Pyenv is installed with Homebrew` instructions
-   1. Restart your terminal
-   1. Install [Python Build Dependencies](https://github.com/pyenv/pyenv/wiki#suggested-build-environment)
-   1. Pyenv is now ready to use
+1. Install pyenv using brew
+
+```
+brew update
+brew install pyenv
+```
+
+2. Configure your shell env
+
+```
+echo 'eval "$(pyenv init --path)"' >> ~/.zprofile
+echo 'eval "$(pyenv init -)"' >> ~/.zshrc
+```
+
+3. Restart your terminal
+   1. Install Python Build Dependencies
+
+```
+brew install openssl readline sqlite3 xz zlib
+```
+
+5. Pyenv is now ready to use
 
 **Setup (Linux)**
 
-1. Navigate to [pyenv docs](https://github.com/pyenv/pyenv)
-   1. Follow instructions for [Basic Github Checkout](https://github.com/pyenv/pyenv#basic-github-checkout) in the
-      pyenv README
-      1. In step 2, follow `For Bash` instructions
+1. Checkout pyenv
+   ```
+   git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+   ```
+   1. Configure your shell env
+      ```
+       sed -Ei -e '/^([^#]|$)/ {a \
+       export PYENV_ROOT="$HOME/.pyenv"`
+       a \
+       export PATH="$PYENV_ROOT/bin:$PATH"
+       a \
+       ' -e ':a' -e '$!{n;ba};}' ~/.profile
+       echo 'eval "$(pyenv init --path)"' >>~/.profile
+       echo 'eval "$(pyenv init -)"' >> ~/.bashrc`
+      ```
    1. Restart your terminal
-   1. Install [Python Build Dependencies](https://github.com/pyenv/pyenv/wiki#suggested-build-environment)
+   1. Install Python Build Dependencies
+      ```
+      sudo apt-get update
+      sudo apt-get install \
+      make \
+      build-essential \
+      libssl-dev \
+      zlib1g-dev \
+      libbz2-dev \
+      libreadline-dev \
+      libsqlite3-dev \
+      wget \
+      curl \
+      llvm \
+      libncursesw5-dev \
+      xz-utils \
+      tk-dev \
+      libxml2-dev \
+      libxmlsec1-dev \
+      libffi-dev \
+      liblzma-dev
+      ```
    1. Pyenv is now ready to use
 
 **Installing Python**
@@ -123,10 +189,6 @@ _Soulution_
 You need to update pyenv. Follow [these](https://github.com/pyenv/pyenv#upgrading) instructions. Then try again.
 
 </details>
-
-4. [Pipenv Installed Globally](https://pipenv.pypa.io/en/latest/install/#installing-pipenv)
-   1. Run `python -m ensurepip --upgrade` to install pip
-   1. Run `pip install pipenv` to install pipenv
 
 ## Initial Configuration
 
