@@ -6,9 +6,6 @@ description: |
 
 author: Derek Maggio
 inputs:
-  input-file:
-    description: 'YAML or JSON system configuration'
-    required: true
   cache-break:
     description: 'Specify a value here to break cache'
     required: false

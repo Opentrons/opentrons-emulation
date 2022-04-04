@@ -21,7 +21,6 @@ runs:
       uses: ./.github/actions/setup-python-only
       with:
         cache-break: ${{ inputs.cache-break }}
-        input-file: ${{ inputs.input-file }}
 
     - name: Create configuration.json
       run: cp configuration_ci.json configuration.json
