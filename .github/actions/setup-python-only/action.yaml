@@ -24,8 +24,8 @@ runs:
       id: python-cache
       with:
         path: |
-          ~/work/opentrons-emulation/opentrons-emulation/.venv
-          ~/work/opentrons-emulation/opentrons-emulation/emulation_system/.venv
+          ${{ github.workspace }}/.venv
+          ${{ github.workspace }}/emulation_system/.venv
         key: ${{ runner.os }}-pipenv-${{ hashFiles('./emulation_system/Pipfile.lock') }}-${{ hashFiles('./Pipfile.lock') }}-${{ hashFiles('./Makefile') }}-${{ inputs.cache-break }}
 
     - name: Install Pipenv
