@@ -26,7 +26,7 @@ runs:
   using: "composite"
   steps:
     - name: Validate Command
-      if: ${{ !contains(fromJson('["setup", "setup-break-cache", "setup-python-only", "run", "teardown", "yaml-sub"]'), inputs.command)}}
+      if: ${{ !contains(fromJson('["setup", "setup-python-only", "run", "teardown", "yaml-sub"]'), inputs.command)}}
       run: |
         echo "${{ inputs.command }} is not a command supported in the action.yaml file of opentrons-emulation"
         exit 1
@@ -41,14 +41,6 @@ runs:
     - name: Setup Command
       if: inputs.command == 'setup'
       uses: ./.github/actions/setup
-      with:
-        input-file: ${{ inputs.input-file }}
-        cache-break: ${{ inputs.cache-break }}
-
-
-    - name: Setup Command (Break Cache)
-      if: inputs.command == 'setup-break-cache'
-      uses: ./.github/actions/setup-break-cache
       with:
         input-file: ${{ inputs.input-file }}
         cache-break: ${{ inputs.cache-break }}
