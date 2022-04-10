@@ -9,20 +9,20 @@ Follow [these](https://github.com/Opentrons/opentrons-emulation/blob/main/README
 
 ### Modify CPX Config
 
-Go into `samples/ot2/ot2_will_all_modules.yaml` and replace the value for `robot.robot-server-source-location` with a
+Go into `samples/ot2/ot2_with_all_modules.yaml` and replace the value for `robot.robot-server-source-location` with a
 path to your mono repo.
 
 ### Build Docker Images
 
 From the root of the repo run
-`make build file_path=./samples/ot2/ot2_will_all_modules.yaml`
+`make build file_path=./samples/ot2/ot2_wiith_all_modules.yaml`
 
 > This may take 10 or more minutes on initial build.
 
 ### Run Emulation
 
 1. From the root of the repo run
-   1. `make run-detached file_path=./samples/ot2/ot2_will_all_modules.yaml`
+   1. `make run-detached file_path=./samples/ot2/ot2_with_all_modules.yaml`
 
 ### Make Sure Emulation is Actually Working
 
