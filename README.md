@@ -168,11 +168,11 @@ brew install openssl readline sqlite3 xz zlib
 **Installing Python**
 
 1. Run `pyenv install --list` to get a list of all available Python versions.
-   1. Choose the latest 3.10 version. For the purpose of this document we will say the latest version is `3.10.2`
-   1. Run `pyenv install 3.10.2` to install Python
-   1. Run `pyenv global 3.10.2`  to set the system version to 3.10.2
+   1. Choose the latest 3.10 version. For the purpose of this document we will say the latest version is `3.10.4`
+   1. Run `pyenv install 3.10.4` to install Python
+   1. Run `pyenv global 3.10.4`  to set the system version to 3.10.4
    1. Verify that you are running the correct Python version by running `pyenv version`
-      1. It should say `3.10.2` (set by /something/something/something/pyenv/version)
+      1. It should say `3.10.4` (set by /something/something/something/pyenv/version)
 
 **Troubleshooting**
 
@@ -181,7 +181,7 @@ _Problem_
 When trying to run `pyenv install 3.10.x` you get
 
 ```bash
-✘ Failed... Something went wrong... python-build: definition not found: 3.10.2
+✘ Failed... Something went wrong... python-build: definition not found: 3.10.4
 ```
 
 _Soulution_
