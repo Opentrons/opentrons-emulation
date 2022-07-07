@@ -33,7 +33,7 @@ jobs:
       - name: Checkout opentrons-emulation repository
         uses: actions/checkout@v3
         with:
-          ref: "release-v2.3.1"
+          ref: "fix-failing-linting"
 
       - name: Checkout monorepo
         uses: actions/checkout@v3
@@ -47,7 +47,7 @@ jobs:
           python-version: "3.7"
 
       - name: Setup opentrons-emulation project
-        uses: Opentrons/opentrons-emulation@release-v2.3.1
+        uses: Opentrons/opentrons-emulation@fix-failing-linting
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           cache-break: ${{ github.event.inputs.cache-break }}
@@ -66,7 +66,7 @@ jobs:
         working-directory: ./opentrons/hardware
 
       - name: Run emulated system
-        uses: Opentrons/opentrons-emulation@release-v2.3.1
+        uses: Opentrons/opentrons-emulation@fix-failing-linting
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           command: run
@@ -76,7 +76,7 @@ jobs:
         working-directory: ./opentrons/hardware
 
       - name: Teardown emulation
-        uses: Opentrons/opentrons-emulation@release-v2.3.1
+        uses: Opentrons/opentrons-emulation@fix-failing-linting
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           command: teardown
