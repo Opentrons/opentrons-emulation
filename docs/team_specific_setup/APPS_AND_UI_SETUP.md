@@ -15,7 +15,7 @@ path to your mono repo.
 ### Build Docker Images
 
 From the root of the repo run
-`make build file_path=./samples/ot2/ot2_wiith_all_modules.yaml`
+`make build file_path=./samples/ot2/ot2_with_all_modules.yaml`
 
 > This may take 10 or more minutes on initial build.
 
