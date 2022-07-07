@@ -45,6 +45,8 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: "3.7"
+          cache: pipenv
+          cache-dependency-path: ./opentrons/hardware/Pipfile.lock
 
       - name: Setup opentrons-emulation project
         uses: Opentrons/opentrons-emulation@fix-failing-linting
@@ -53,15 +55,7 @@ jobs:
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup
 
-      - name: Cache Python Dependencies
-        uses: actions/cache@v2
-        id: python-cache
-        with:
-          path: "~/.local/share/virtualenvs/**"
-          key: ${{ runner.os }}-${{ hashFiles('./opentrons/hardware/Pipfile.lock') }}-${{ github.event.inputs.cache-break }}
-
       - name: Setup hardware project in opentrons repository
-        if: steps.python-cache.outputs.cache-hit != 'true'
         run: make setup
         working-directory: ./opentrons/hardware
 
