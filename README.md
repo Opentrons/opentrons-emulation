@@ -168,11 +168,11 @@ brew install openssl readline sqlite3 xz zlib
 **Installing Python**
 
 1. Run `pyenv install --list` to get a list of all available Python versions.
-   1. Choose the latest 3.10 version. For the purpose of this document we will say the latest version is `3.10.2`
-   1. Run `pyenv install 3.10.2` to install Python
-   1. Run `pyenv global 3.10.2`  to set the system version to 3.10.2
+   1. Choose the latest 3.10 version. For the purpose of this document we will say the latest version is `3.10.4`
+   1. Run `pyenv install 3.10.4` to install Python
+   1. Run `pyenv global 3.10.4`  to set the system version to 3.10.4
    1. Verify that you are running the correct Python version by running `pyenv version`
-      1. It should say `3.10.2` (set by /something/something/something/pyenv/version)
+      1. It should say `3.10.4` (set by /something/something/something/pyenv/version)
 
 **Troubleshooting**
 
@@ -181,7 +181,7 @@ _Problem_
 When trying to run `pyenv install 3.10.x` you get
 
 ```bash
-✘ Failed... Something went wrong... python-build: definition not found: 3.10.2
+✘ Failed... Something went wrong... python-build: definition not found: 3.10.4
 ```
 
 _Soulution_
@@ -232,6 +232,7 @@ curl -s --location --request GET 'http://localhost:31950/modules' --header 'open
 **Remove Emulation**
 
 ```bash
+make generate-compose-file file_path=samples/ot2/ot2_with_all_modules.yaml
 make remove file_path=samples/ot2/ot2_with_all_modules.yaml
 ```
 
@@ -260,6 +261,9 @@ Open a CAN bus monitor in another terminal
 ```bash
 make can-mon file_path=samples/ot3/ot3_remote.yaml
 ```
+**Video Walkthrough for Mac / Linux setup**
+
+[Video from Derek Maggio on setting up the emulator] (https://drive.google.com/file/d/1ftq5MsOYZJY2gy9aGKYvK86O_9n6HZ4w/view)
 
 ## Makefile Commands
 
