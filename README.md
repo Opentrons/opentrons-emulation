@@ -251,7 +251,7 @@ make build file_path=samples/ot3/ot3_remote.yaml
 **Start the Emulator**
 
 ```bash
-`make run-detached file_path=samples/ot3/ot3_remote.yaml
+make run-detached file_path=samples/ot3/ot3_remote.yaml
 ```
 
 **Verify Emulation is Working**
