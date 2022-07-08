@@ -261,9 +261,10 @@ Open a CAN bus monitor in another terminal
 ```bash
 make can-mon file_path=samples/ot3/ot3_remote.yaml
 ```
+
 **Video Walkthrough for Mac / Linux setup**
 
-[Video from Derek Maggio on setting up the emulator] (https://drive.google.com/file/d/1ftq5MsOYZJY2gy9aGKYvK86O_9n6HZ4w/view)
+[Video from Derek Maggio on setting up the emulator](https://drive.google.com/file/d/1ftq5MsOYZJY2gy9aGKYvK86O_9n6HZ4w/view)
 
 ## Makefile Commands
 
