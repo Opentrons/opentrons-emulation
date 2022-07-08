@@ -1,5 +1,20 @@
 # Opentrons Emulation Release Notes
 
+## v2.3.2 (2022-07-08)
+
+### Bug Fixes
+
+- Update python dependency caching [\[PR #169\]](https://github.com/Opentrons/opentrons-emulation/pull/169)
+
+### Features
+
+- None
+
+### Chores
+
+- Update
+  README [\[PR #166\]](https://github.com/Opentrons/opentrons-emulation/pull/166) [\[PR #170\]](https://github.com/Opentrons/opentrons-emulation/pull/170)
+
 ## v2.3.1 (2022-04-01)
 
 ### Bug Fixes
