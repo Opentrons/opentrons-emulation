@@ -38,17 +38,17 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "release-v2.3.1"
+          ref: "fix-failing-linting"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@release-v2.3.1
+        uses: Opentrons/opentrons-emulation@fix-failing-linting
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup
 
       - name: Run Emulation
-        uses: Opentrons/opentrons-emulation@release-v2.3.1
+        uses: Opentrons/opentrons-emulation@fix-failing-linting
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           command: run
@@ -60,7 +60,7 @@ jobs:
         run: "curl --request GET --header 'opentrons-version: *' http://localhost:31950/modules"
 
       - name: Teardown Emulation
-        uses: Opentrons/opentrons-emulation@release-v2.3.1
+        uses: Opentrons/opentrons-emulation@fix-failing-linting
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           command: teardown
