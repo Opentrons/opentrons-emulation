@@ -71,6 +71,13 @@ class TemperatureModelSettings(BaseModel):
     starting: float = float(ROOM_TEMPERATURE)
 
 
+class RPMModelSettings(BaseModel):
+    """RPM behavior model."""
+
+    rpm_per_tick: float = Field(alias="rpm-per-tick", default=100.0)
+    starting: float = 0.0
+
+
 class PipetteSettings(BaseModel):
     """Pipette defintions for OT-2 and OT-3."""
 

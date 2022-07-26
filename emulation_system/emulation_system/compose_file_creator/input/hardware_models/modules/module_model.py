@@ -56,7 +56,11 @@ class ModuleInputModel(HardwareModel):
             "version": self.firmware_serial_number_info.version,
         }
 
-        if self.hardware in [Hardware.THERMOCYCLER_MODULE, Hardware.TEMPERATURE_MODULE]:
+        if self.hardware in [
+            Hardware.THERMOCYCLER_MODULE,
+            Hardware.TEMPERATURE_MODULE,
+            Hardware.HEATER_SHAKER_MODULE,
+        ]:
             value.update(self.hardware_specific_attributes.dict())
 
         return {self.firmware_serial_number_info.env_var_name: json.dumps(value)}

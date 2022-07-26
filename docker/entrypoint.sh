@@ -128,7 +128,7 @@ case $FULL_COMMAND in
 
   # Firmware Level
 
-  build-thermocycler-firmware|build-magdeck-firmware|build-tempdeck-firmware|build-emulator-proxy|build-robot-server|build-common-firmware|build-smoothie|build-can-server)
+  build-thermocycler-firmware|build-heater-shaker-firmware|build-magdeck-firmware|build-tempdeck-firmware|build-emulator-proxy|build-robot-server|build-common-firmware|build-smoothie|build-can-server)
     pip uninstall --yes /dist/*
     (cd /opentrons/shared-data/python && python3 setup.py bdist_wheel -d /dist/)
     (cd /opentrons/api && python3 setup.py bdist_wheel -d /dist/)
@@ -140,6 +140,10 @@ case $FULL_COMMAND in
 
   run-thermocycler-firmware)
     bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_module_emulator thermocycler $OTHER_ARGS"
+    ;;
+
+  run-heater-shaker-firmware)
+    bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_module_emulator heatershaker $OTHER_ARGS"
     ;;
   run-tempdeck-firmware)
     bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_module_emulator tempdeck $OTHER_ARGS"

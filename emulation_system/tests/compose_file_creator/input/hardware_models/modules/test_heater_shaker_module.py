@@ -2,7 +2,7 @@
 from typing import Any, Dict
 
 import pytest
-from pydantic import ValidationError, parse_obj_as
+from pydantic import parse_obj_as
 
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
@@ -62,20 +62,10 @@ def test_heater_shaker_with_stdin(
     assert hs.hardware_specific_attributes.mode == HeaterShakerModes.STDIN
 
 
-def test_heater_shaker_with_bad_emulation_level(
-    heater_shaker_module_bad_emulation_level: Dict[str, Any]
-) -> None:
-    """Confirm that there is a validation error when a bad emulation level is passed."""
-    with pytest.raises(ValidationError):
-        parse_obj_as(
-            HeaterShakerModuleInputModel, heater_shaker_module_bad_emulation_level
-        )
-
-
 def test_heater_shaker_source_repos(
     heater_shaker_module_default: Dict[str, Any]
 ) -> None:
     """Confirm that defined source repos are correct."""
     hs = parse_obj_as(HeaterShakerModuleInputModel, heater_shaker_module_default)
-    assert hs.source_repos.firmware_repo_name is None
+    assert hs.source_repos.firmware_repo_name == OpentronsRepository.OPENTRONS
     assert hs.source_repos.hardware_repo_name == OpentronsRepository.OPENTRONS_MODULES
