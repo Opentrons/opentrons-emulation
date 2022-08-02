@@ -1,0 +1,56 @@
+{
+    "name": "Emulation Container",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "..",
+        "args": {
+            "VARIANT": "3.10-bullseye",
+            "NODE_VERSION": "16.13.1"
+        }
+    },
+    "mounts": [
+        //"source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind",
+        //"source=//var/run/docker.sock,target=/var/run/docker.sock",
+        "source=commandhistory-emulator,target=/commandhistory,type=volume",
+        "source=extensions-emulator,target=/home/vscode/.vscode-server/extensions,type=volume",
+        "source=pipcache-emulator,target=/home/vscode/.cache,type=volume",
+        "source=local-emulator,target=/home/vscode/.local,type=volume"
+    ],
+    "settings": {
+        "python.linting.enabled": true,
+        "python.formatting.provider": "black"
+    },
+    "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "editorconfig.editorconfig",
+        "streetsidesoftware.code-spell-checker",
+        "humao.rest-client",
+        "bpruitt-goddard.mermaid-markdown-syntax-highlighting",
+        "bierner.markdown-mermaid",
+        "redhat.vscode-yaml",
+        "ms-vscode.makefile-tools",
+        "yzhang.markdown-all-in-one",
+        "eamodio.gitlens"
+    ],
+    "postCreateCommand": "pip install --user -U pip pipenv && make setup",
+    "remoteUser": "vscode",
+    "features": {
+        "common": {
+            "username": "automatic",
+            "uid": "automatic",
+            "gid": "automatic",
+            "installZsh": true,
+            "installOhMyZsh": true,
+            "upgradePackages": true,
+            "nonFreePackages": false
+        },
+        "docker-from-docker": "20.10",
+        "terraform": {
+            "version": "1.0.6"
+        },
+        "git": "2.35.1"
+    }
+}
