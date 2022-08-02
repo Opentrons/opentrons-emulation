@@ -1,5 +1,6 @@
 # Opentrons Emulation
 
+[![Open in VSCode Remote - Containers](https://img.shields.io/static/v1?label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Opentrons/opentrons-emulation)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Opentrons/opentrons-emulation)
 ![GitHub Pipenv locked Python version](https://img.shields.io/github/pipenv/locked/python-version/Opentrons/opentrons-emulation)
 ![GitHub](https://img.shields.io/github/license/Opentrons/opentrons-emulation)
@@ -9,24 +10,25 @@ Opentrons has various software emulations of their hardware. This repository def
 all these emulators together into systems.
 
 - [Opentrons Emulation](#opentrons-emulation)
-  - [What is an Emulator?](#what-is-an-emulator-)
-  - [How do the Opentrons Emulators work?](#how-do-the-opentrons-emulators-work-)
+  - [What is an Emulator?](#what-is-an-emulator)
+  - [How do the Opentrons Emulators work?](#how-do-the-opentrons-emulators-work)
   - [Supported Hardware](#supported-hardware)
   - [Required Software](#required-software)
   - [Initial Configuration](#initial-configuration)
   - [Quick Setup](#quick-setup)
     - [OT2 With All Modules](#ot2-with-all-modules)
     - [OT3](#ot3)
-  - [Emulation Commands](#emulation-commands)
+  - [Makefile Commands](#makefile-commands)
   - [Building Your Own Configuration Files](#building-your-own-configuration-files)
   - [Setting Up For Local Development](#setting-up-for-local-development)
     - [CPX Setup](#cpx-setup)
     - [OT3 Firmware Development Setup](#ot3-firmware-development-setup)
     - [Apps and UI Setup](#apps-and-ui-setup)
   - [Architecture Diagrams](#architecture-diagrams)
+  - [Github Action](#github-action)
   - [How To Modify Dockerfiles](#how-to-modify-dockerfiles)
-  - [Debugging](#debugging)
-    - [Debugging Docker-Compose File Generation](#debugging-docker-compose-file-generation)
+- [Debugging](#debugging)
+  - [Debugging Docker-Compose File Generation](#debugging-docker-compose-file-generation)
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080'}}}%%
@@ -345,7 +347,7 @@ An example dev workflow is as follows.
 ## Debugging Docker-Compose File Generation
 
 The generation of the docker-compose file is complex. Business logic is built into the code.
-Two log files are generated for any command that calls `generate-compose-file` so that the logic may be audited. 
+Two log files are generated for any command that calls `generate-compose-file` so that the logic may be audited.
 
 There are two versions of the log file:
 
