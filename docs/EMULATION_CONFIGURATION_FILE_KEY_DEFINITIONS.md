@@ -3,24 +3,24 @@
 The following paramteters are available for usage in the emulation configuration file.
 
 - [Emulation Configuration File Key Definitions](#emulation-configuration-file-key-definitions)
-    - [Universal Parameters](#universal-parameters)
-        - [ID](#id)
-        - [System Unique ID](#system-unique-id)
-        - [Hardware](#hardware)
-        - [Source Type](#source-type)
-        - [Source Location](#source-location)
-        - [Emulation level](#emulation-level)
-    - [Robot Specific Parameters (OT2 and OT3)](#robot-specific-parameters--ot2-and-ot3-)
-        - [Robot Server Source Type](#robot-server-source-type)
-        - [Robot Server Source Location](#robot-server-source-location)
-        - [Expose Port](#expose-port)
-    - [OT3 Specific Parameters](#ot3-specific-parameters)
-        - [CAN Server Source Type](#can-server-source-type)
-        - [CAN Server Source Location](#can-server-source-location)
-    - [Hardware Specific Attributes](#hardware-specific-attributes)
-        - [Pipettes](#pipettes)
-            - [Available Pipette Models:](#available-pipette-models-)
-        - [Temperature Model for Thermocycler and Temperature Modules](#temperature-model-for-thermocycler-and-temperature-modules)
+  - [Universal Parameters](#universal-parameters)
+    - [ID](#id)
+    - [System Unique ID](#system-unique-id)
+    - [Hardware](#hardware)
+    - [Source Type](#source-type)
+    - [Source Location](#source-location)
+    - [Emulation level](#emulation-level)
+  - [Robot Specific Parameters (OT2 and OT3)](#robot-specific-parameters--ot2-and-ot3-)
+    - [Robot Server Source Type](#robot-server-source-type)
+    - [Robot Server Source Location](#robot-server-source-location)
+    - [Expose Port](#expose-port)
+  - [OT3 Specific Parameters](#ot3-specific-parameters)
+    - [CAN Server Source Type](#can-server-source-type)
+    - [CAN Server Source Location](#can-server-source-location)
+  - [Hardware Specific Attributes](#hardware-specific-attributes)
+    - [Pipettes](#pipettes)
+      - [Available Pipette Models:](#available-pipette-models-)
+    - [Temperature Model for Thermocycler and Temperature Modules](#temperature-model-for-thermocycler-and-temperature-modules)
 
 ## Universal Parameters
 
@@ -107,7 +107,7 @@ The various emulators in this repository support different levels of emulation b
 table with the supported levels for each emulator.
 
 | Hardware                 | Firmware Emulation | Hardware Emulation         |
-| ------------------------ |--------------------| -------------------------- |
+| ------------------------ | ------------------ | -------------------------- |
 | **OT2**                  | Yes                | No                         |
 | **OT3**                  | No                 | Yes                        |
 | **Heater-Shaker Module** | Yes                | Yes                        |
