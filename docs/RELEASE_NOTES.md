@@ -1,5 +1,19 @@
 # Opentrons Emulation Release Notes
 
+## v2.3.3 (2022-08-12)
+
+### Bug Fixes
+
+- Fix load-container-names Makefile command [\[PR #172\]](https://github.com/Opentrons/opentrons-emulation/pull/172)
+
+### Features
+
+- Firmware Level Heater-Shaker Emulation [\[PR #173\]](https://github.com/Opentrons/opentrons-emulation/pull/173)
+
+### Chores
+
+- None
+
 ## v2.3.2 (2022-07-08)
 
 ### Bug Fixes
@@ -105,8 +119,8 @@
 - Simplify Makefile command naming
 - Add Markdown formatter
 - Add documentation for the following
-  - Clarify python setup documentation
-  - Add OT2 Architecture documentation
-  - Add Build Artifact Named Volume Architecture documentation
-  - Add usage docs for OT3 Firmware development
-  - Add usage docs for Apps and UI development
+    - Clarify python setup documentation
+    - Add OT2 Architecture documentation
+    - Add Build Artifact Named Volume Architecture documentation
+    - Add usage docs for OT3 Firmware development
+    - Add usage docs for Apps and UI development
