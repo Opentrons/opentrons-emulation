@@ -37,9 +37,9 @@ class Images(BaseModel):
 class HeaterShakerModuleImages(Images):
     """Image names for Heater-Shaker."""
 
-    local_firmware_image_name: str = "heater-shaker-firmware-local"
+    local_firmware_image_name: Literal[None] = None
     local_hardware_image_name: str = "heater-shaker-hardware-local"
-    remote_firmware_image_name: str = "heater-shaker-firmware-remote"
+    remote_firmware_image_name: Literal[None] = None
     remote_hardware_image_name: str = "heater-shaker-hardware-remote"
 
 

@@ -141,7 +141,7 @@ load-container-names:
 
 	$(if $(file_path),,$(error file_path variable required))
 	$(if $(filter),,$(error filter variable required))
-	@(cd ./emulation_system && pipenv run python main.py lc "${abs_path}" "${filter}")
+	@(cd ./emulation_system && pipenv run python main.py load-container-names "${abs_path}" "${filter}")
 
 ###########################################
 ########## OT3 Specific Commands ##########

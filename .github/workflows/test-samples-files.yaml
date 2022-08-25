@@ -26,7 +26,7 @@ defaults:
 jobs:
   lint-test:
     name: 'Run All Sample Files'
-    runs-on: 'ubuntu-20.04'
+    runs-on: 'ubuntu-18.04'
     steps:
       - name: "Checkout Repo"
         uses: 'actions/checkout@v2'

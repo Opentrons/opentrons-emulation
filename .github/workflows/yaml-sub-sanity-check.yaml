@@ -25,22 +25,22 @@ on:
 
 jobs:
   yaml-sub-sanity-check:
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-18.04"
     name: YAML Substitution Sanity Check
     steps:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "release-v2.3.3"
+          ref: "release-v2.3.2"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@release-v2.3.3
+        uses: Opentrons/opentrons-emulation@release-v2.3.2
         with:
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup-python-only
 
       - name: YAML Substitution
-        uses: Opentrons/opentrons-emulation@release-v2.3.3
+        uses: Opentrons/opentrons-emulation@release-v2.3.2
         with:
           command: yaml-sub
           substitutions: >-
