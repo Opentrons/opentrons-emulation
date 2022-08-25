@@ -72,13 +72,13 @@ CONFIGURATIONS = [
         Hardware.HEATER_SHAKER_MODULE,
         EmulationLevels.FIRMWARE,
         SourceType.LOCAL,
-        "heater-shaker-firmware-local",
+        None,
     ],
     [
         Hardware.HEATER_SHAKER_MODULE,
         EmulationLevels.FIRMWARE,
         SourceType.REMOTE,
-        "heater-shaker-firmware-remote",
+        None,
     ],
     # Temperature Module
     [

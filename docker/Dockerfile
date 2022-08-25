@@ -57,9 +57,6 @@ ENV OPENTRONS_HARDWARE "ot3-gripper-hardware"
 FROM python-base-with-rebuild-script as thermocycler-firmware-local
 ENV OPENTRONS_HARDWARE "thermocycler-firmware"
 
-FROM python-base-with-rebuild-script as heater-shaker-firmware-local
-ENV OPENTRONS_HARDWARE "heatershaker-firmware"
-
 FROM python-base-with-rebuild-script as magdeck-firmware-local
 ENV OPENTRONS_HARDWARE "magdeck-firmware"
 
@@ -270,11 +267,6 @@ ENTRYPOINT ["/entrypoint.sh", "run"]
 
 FROM firmware-common as thermocycler-firmware-remote
 ENV OPENTRONS_HARDWARE "thermocycler-firmware"
-COPY entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh", "run"]
-
-FROM firmware-common as heater-shaker-firmware-remote
-ENV OPENTRONS_HARDWARE "heater-shaker-firmware"
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
