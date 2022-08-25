@@ -12,7 +12,8 @@
 
 ### Chores
 
-- None
+- Update Github Action OS's from Ubuntu 18.04 to Ubuntu
+  20.04 [\[PR #175\]](https://github.com/Opentrons/opentrons-emulation/pull/175)
 
 ## v2.3.2 (2022-07-08)
 
