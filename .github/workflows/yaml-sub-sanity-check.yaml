@@ -25,7 +25,7 @@ on:
 
 jobs:
   yaml-sub-sanity-check:
-    runs-on: "ubuntu-18.04"
+    runs-on: "ubuntu-20.04"
     name: YAML Substitution Sanity Check
     steps:
       - name: Checkout opentrons-emulation

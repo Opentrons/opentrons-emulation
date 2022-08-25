@@ -28,7 +28,7 @@ defaults:
 jobs:
   lint-test:
     name: 'emulation-system linting and tests'
-    runs-on: 'ubuntu-18.04'
+    runs-on: 'ubuntu-20.04'
     steps:
       - name: Checkout opentrons-emulation repository
         uses: actions/checkout@v3
