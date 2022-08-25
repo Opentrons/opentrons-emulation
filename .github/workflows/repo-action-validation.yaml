@@ -31,7 +31,7 @@ jobs:
           'ot2/ot2_with_all_modules.yaml',
           'ot3/ot3_remote.yaml',
         ]
-    runs-on: "ubuntu-18.04"
+    runs-on: "ubuntu-20.04"
     name: Opentrons Emulation Sanity Check (${{ matrix.file }})
     steps:
 
