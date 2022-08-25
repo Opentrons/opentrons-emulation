@@ -28,15 +28,15 @@ defaults:
 jobs:
   lint-test:
     name: 'emulation-system linting and tests'
-    runs-on: 'ubuntu-18.04'
+    runs-on: 'ubuntu-20.04'
     steps:
       - name: Checkout opentrons-emulation repository
         uses: actions/checkout@v3
         with:
-          ref: "release-v2.3.2"
+          ref: "release-v2.3.3"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@release-v2.3.2
+        uses: Opentrons/opentrons-emulation@release-v2.3.3
         with:
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup-python-only

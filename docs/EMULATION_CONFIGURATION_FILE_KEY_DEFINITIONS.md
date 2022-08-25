@@ -110,7 +110,7 @@ table with the supported levels for each emulator.
 | ------------------------ | ------------------ | -------------------------- |
 | **OT2**                  | Yes                | No                         |
 | **OT3**                  | No                 | Yes                        |
-| **Heater-Shaker Module** | No                 | Yes                        |
+| **Heater-Shaker Module** | Yes                | Yes                        |
 | **Thermocycler Module**  | Yes                | Yes (Thermocycler Refresh) |
 | **Magnetic Module**      | Yes                | No                         |
 | **Temperature Module**   | Yes                | No                         |

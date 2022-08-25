@@ -1,5 +1,20 @@
 # Opentrons Emulation Release Notes
 
+## v2.3.3 (2022-08-12)
+
+### Bug Fixes
+
+- Fix load-container-names Makefile command [\[PR #172\]](https://github.com/Opentrons/opentrons-emulation/pull/172)
+
+### Features
+
+- Firmware Level Heater-Shaker Emulation [\[PR #173\]](https://github.com/Opentrons/opentrons-emulation/pull/173)
+
+### Chores
+
+- Update Github Action OS's from Ubuntu 18.04 to Ubuntu
+  20.04 [\[PR #175\]](https://github.com/Opentrons/opentrons-emulation/pull/175)
+
 ## v2.3.2 (2022-07-08)
 
 ### Bug Fixes

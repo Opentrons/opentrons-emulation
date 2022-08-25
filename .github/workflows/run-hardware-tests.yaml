@@ -26,14 +26,14 @@ on:
 
 jobs:
   run-hardware-tests:
-    runs-on: "ubuntu-18.04"
+    runs-on: "ubuntu-20.04"
     name: Run Hardware Tests
     steps:
 
       - name: Checkout opentrons-emulation repository
         uses: actions/checkout@v3
         with:
-          ref: "release-v2.3.2"
+          ref: "release-v2.3.3"
 
       - name: Checkout monorepo
         uses: actions/checkout@v3
@@ -49,7 +49,7 @@ jobs:
           cache-dependency-path: ./opentrons/hardware/Pipfile.lock
 
       - name: Setup opentrons-emulation project
-        uses: Opentrons/opentrons-emulation@release-v2.3.2
+        uses: Opentrons/opentrons-emulation@release-v2.3.3
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           cache-break: ${{ github.event.inputs.cache-break }}
@@ -60,7 +60,7 @@ jobs:
         working-directory: ./opentrons/hardware
 
       - name: Run emulated system
-        uses: Opentrons/opentrons-emulation@release-v2.3.2
+        uses: Opentrons/opentrons-emulation@release-v2.3.3
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           command: run
@@ -70,7 +70,7 @@ jobs:
         working-directory: ./opentrons/hardware
 
       - name: Teardown emulation
-        uses: Opentrons/opentrons-emulation@release-v2.3.2
+        uses: Opentrons/opentrons-emulation@release-v2.3.3
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           command: teardown
