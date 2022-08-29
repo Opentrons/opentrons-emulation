@@ -14,8 +14,6 @@ SUB = {SUB}
 EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} -)
 DEV_EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system --dev {SUB} -)
 REMOTE_ONLY_EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} - --remote-only)
-COMPOSE_BUILD_COMMAND := docker buildx bake --file tmp-compose.yaml
-COMPOSE_DEV_BUILD_COMMAND := docker buildx bake --file tmp-compose.yaml --set dockerfile=dev_Dockerfile
 COMPOSE_RUN_COMMAND := docker-compose -f - up
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
@@ -56,17 +54,17 @@ build:
 
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
 	@$(MAKE) --no-print-directory --quiet generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
-	./scripts/makefile/helper_scripts/build.sh ~/tmp-compose.yaml ./Dockerfile
+	./scripts/makefile/helper_scripts/build.sh ~/tmp-compose.yaml
 	@rm ~/tmp-compose.yaml
 
 # Builds generated development Docker-Compose file's necessary images using docker buildx
 .PHONY: dev-build
 dev-build:
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory --quiet dev-generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
 	./scripts/docker_convenience_scripts/create_dev_dockerfile.sh
-	./scripts/makefile/helper_scripts/build.sh ~/tmp-compose.yaml ./dev_Dockerfile
-	@rm ~/tmp-compose.yaml ./docker/dev_Dockerfile
+	@$(MAKE) --no-print-directory --quiet dev-generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
+	./scripts/makefile/helper_scripts/build.sh ~/tmp-compose.yaml
+#	@rm ~/tmp-compose.yaml ./docker/dev_Dockerfile
 
 # Creates and starts Docker Containers from generated Docker-Compose file
 # Outputs logs to stdout
