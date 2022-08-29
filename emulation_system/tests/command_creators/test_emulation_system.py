@@ -2,17 +2,25 @@
 import contextlib
 import io
 import json
-from typing import Any, Dict, Generator
-from unittest.mock import DEFAULT, Mock, patch
+from typing import (
+    Any,
+    Dict,
+    Generator,
+)
+from unittest.mock import (
+    DEFAULT,
+    Mock,
+    patch,
+)
 
 import pytest
 import yaml
 
 from emulation_system.commands.emulation_system_command import (
-    STDIN_NAME,
-    STDOUT_NAME,
     EmulationSystemCommand,
     InvalidFileExtensionException,
+    STDIN_NAME,
+    STDOUT_NAME,
 )
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
@@ -39,6 +47,7 @@ EXPECTED_YAML = convert_yaml(
             OPENTRONS_SOURCE_DOWNLOAD_LOCATION: https://github.com/AnotherOrg/opentrons/archive/refs/heads/edge.zip
           context: /home/derek-maggio/Documents/repos/opentrons-emulation/emulation_system/resources/docker/
           target: emulator-proxy-remote
+          dockerfile: Dockerfile
         container_name: derek-emulator-proxy
         environment:
           OT_EMULATOR_heatershaker_proxy: '{"emulator_port": 10004, "driver_port": 11004}'
@@ -83,7 +92,7 @@ def mocked_em_system(
 ) -> EmulationSystemCommand:
     """Get a mocked EmulationSystemCommand."""
     mock = Mock(spec=io.TextIOWrapper)
-    return EmulationSystemCommand(mock, mock, False, testing_global_em_config)
+    return EmulationSystemCommand(mock, mock, False, False, testing_global_em_config)
 
 
 def test_json_stdin(mocked_em_system: EmulationSystemCommand) -> None:
@@ -104,7 +113,7 @@ def test_yaml_stdin(mocked_em_system: EmulationSystemCommand) -> None:
 def test_yaml_file_in(mocked_em_system: EmulationSystemCommand) -> None:
     """Confirm you can read from a .yaml file."""
     with patch_command(
-        mocked_em_system, "/fake/file.yaml", STDOUT_NAME, YAML_INPUT
+            mocked_em_system, "/fake/file.yaml", STDOUT_NAME, YAML_INPUT
     ) as mp:
         mocked_em_system.execute()
 
@@ -114,7 +123,7 @@ def test_yaml_file_in(mocked_em_system: EmulationSystemCommand) -> None:
 def test_json_file_in(mocked_em_system: EmulationSystemCommand) -> None:
     """Confirm you can read from a .json file."""
     with patch_command(
-        mocked_em_system, "/fake/file.yaml", STDOUT_NAME, JSON_INPUT
+            mocked_em_system, "/fake/file.yaml", STDOUT_NAME, JSON_INPUT
     ) as mp:
         mocked_em_system.execute()
 
@@ -131,7 +140,7 @@ def test_invalid_file_extension(mocked_em_system: EmulationSystemCommand) -> Non
 def test_file_out(mocked_em_system: EmulationSystemCommand) -> None:
     """Confirm writing to a file works."""
     with patch_command(
-        mocked_em_system, STDIN_NAME, "/fake/file.yaml", JSON_INPUT
+            mocked_em_system, STDIN_NAME, "/fake/file.yaml", JSON_INPUT
     ) as mp:
         mocked_em_system.execute()
 

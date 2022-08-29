@@ -61,6 +61,7 @@ def create_can_server_service(
     config_model: SystemConfigurationModel,
     required_networks: RequiredNetworks,
     global_settings: OpentronsEmulationConfiguration,
+    dev: bool,
 ) -> Service:
     """Creates emulator-proxy service."""
     # Going to just use the remote image for now. If someone ends up needing
@@ -102,7 +103,7 @@ def create_can_server_service(
     return Service(
         container_name=can_server_name,
         image=get_service_image(image),
-        build=get_service_build(image, build_args),
+        build=get_service_build(image, build_args, dev),
         tty=True,
         networks=required_networks.networks,
         volumes=mounts,

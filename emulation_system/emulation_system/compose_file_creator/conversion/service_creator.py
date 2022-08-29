@@ -23,6 +23,7 @@ def create_services(
     config_model: SystemConfigurationModel,
     required_networks: RequiredNetworks,
     global_settings: OpentronsEmulationConfiguration,
+    dev: bool,
 ) -> DockerServices:
     """Creates all services to be added to compose file."""
     services = {}
@@ -30,7 +31,7 @@ def create_services(
     can_server_service_name = None
 
     emulator_proxy_service = create_emulator_proxy_service(
-        config_model, required_networks, global_settings
+        config_model, required_networks, global_settings, dev
     )
     emulator_proxy_name = emulator_proxy_service.container_name
     assert emulator_proxy_name is not None  # For mypy
@@ -38,7 +39,7 @@ def create_services(
 
     if config_model.robot is not None and config_model.robot.__class__ == OT2InputModel:
         smoothie_service = create_smoothie_service(
-            config_model, required_networks, global_settings
+            config_model, required_networks, global_settings, dev
         )
         smoothie_name = smoothie_service.container_name
         assert smoothie_name is not None
@@ -47,12 +48,16 @@ def create_services(
     if config_model.robot is not None and config_model.robot.__class__ == OT3InputModel:
 
         can_server_service = create_can_server_service(
-            config_model, required_networks, global_settings
+            config_model, required_networks, global_settings, dev
         )
         can_server_service_name = can_server_service.container_name
         assert can_server_service_name is not None
         ot3_services = create_ot3_services(
-            config_model, required_networks, global_settings, can_server_service_name
+            config_model,
+            required_networks,
+            global_settings,
+            can_server_service_name,
+            dev,
         )
         services[can_server_service_name] = can_server_service
         for ot3_service in ot3_services:
@@ -71,6 +76,7 @@ def create_services(
                 config_model,
                 required_networks,
                 global_settings,
+                dev,
             )
             for container in config_model.containers.values()
         }

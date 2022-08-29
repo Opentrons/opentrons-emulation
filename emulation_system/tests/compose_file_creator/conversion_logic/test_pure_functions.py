@@ -15,7 +15,11 @@ from emulation_system.compose_file_creator.output.compose_file_model import (
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     OpentronsRepository,
 )
-from emulation_system.consts import DOCKERFILE_DIR_LOCATION
+from emulation_system.consts import (
+    DEV_DOCKERFILE_NAME,
+    DOCKERFILE_DIR_LOCATION,
+    DOCKERFILE_NAME,
+)
 
 
 @pytest.mark.parametrize(
@@ -80,7 +84,8 @@ from emulation_system.consts import DOCKERFILE_DIR_LOCATION
             OpentronsRepository.OPENTRONS_MODULES,
             "latest",
             "https://github.com/Opentrons/opentrons-modules/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip",  # noqa: E501
+            "https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip",
+            # noqa: E501
             ListOrDict(
                 __root__={
                     "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/"
@@ -119,13 +124,28 @@ def test_get_build_args(
 
 
 @pytest.mark.parametrize(
-    "image_name,build_args,expected_value",
+    "image_name,build_args,dev,expected_value",
     [
         [
             "test-image:latest",
             None,
+            False,
             BuildItem(
-                context=DOCKERFILE_DIR_LOCATION, target="test-image:latest", args=None
+                context=DOCKERFILE_DIR_LOCATION,
+                target="test-image:latest",
+                args=None,
+                dockerfile=DOCKERFILE_NAME,
+            ),
+        ],
+        [
+            "test-image:latest",
+            None,
+            True,
+            BuildItem(
+                context=DOCKERFILE_DIR_LOCATION,
+                target="test-image:latest",
+                args=None,
+                dockerfile=DEV_DOCKERFILE_NAME,
             ),
         ],
         [
@@ -137,6 +157,7 @@ def test_get_build_args(
                     "/heads/main.zip"
                 }
             ),
+            False,
             BuildItem(
                 context=DOCKERFILE_DIR_LOCATION,
                 target="test-image:latest",
@@ -148,12 +169,40 @@ def test_get_build_args(
                         "main.zip"
                     }
                 ),
+                dockerfile=DOCKERFILE_NAME,
+            ),
+        ],
+        [
+            "test-image:latest",
+            ListOrDict(
+                __root__={
+                    "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons"
+                    "/ot3-firmware/archive/refs"
+                    "/heads/main.zip"
+                }
+            ),
+            True,
+            BuildItem(
+                context=DOCKERFILE_DIR_LOCATION,
+                target="test-image:latest",
+                args=ListOrDict(
+                    __root__={
+                        "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/"
+                        "Opentrons/ot3-firmware/"
+                        "archive/refs/heads/"
+                        "main.zip"
+                    }
+                ),
+                dockerfile=DEV_DOCKERFILE_NAME,
             ),
         ],
     ],
 )
 def test_get_service_build(
-    image_name: str, build_args: Optional[ListOrDict], expected_value: BuildItem
+    image_name: str,
+    build_args: Optional[ListOrDict],
+    dev: bool,
+    expected_value: BuildItem,
 ) -> None:
     """Confirm that get_service_build works as expected."""
-    assert get_service_build(image_name, build_args) == expected_value
+    assert get_service_build(image_name, build_args, dev) == expected_value

@@ -66,10 +66,11 @@ def get_top_level_volumes(service_list: List[Service]) -> Optional[Dict[str, Vol
 def _convert(
     config_model: SystemConfigurationModel,
     global_settings: OpentronsEmulationConfiguration,
+    dev: bool,
 ) -> RuntimeComposeFileModel:
     """Parses SystemConfigurationModel to compose file."""
     required_networks = _get_required_networks(config_model)
-    services = create_services(config_model, required_networks, global_settings)
+    services = create_services(config_model, required_networks, global_settings, dev)
     return RuntimeComposeFileModel(
         is_remote=config_model.is_remote,
         version=config_model.compose_file_version,
@@ -82,7 +83,11 @@ def _convert(
 
 
 def convert_from_obj(
-    input_obj: Dict[str, Any], global_settings: OpentronsEmulationConfiguration
+    input_obj: Dict[str, Any],
+    global_settings: OpentronsEmulationConfiguration,
+    dev: bool,
 ) -> RuntimeComposeFileModel:
     """Parse from obj."""
-    return _convert(parse_obj_as(SystemConfigurationModel, input_obj), global_settings)
+    return _convert(
+        parse_obj_as(SystemConfigurationModel, input_obj), global_settings, dev
+    )

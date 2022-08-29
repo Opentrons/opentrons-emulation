@@ -73,7 +73,7 @@ def robot_set_source_type_params(
             robot_dict["can-server-source-type"] = can_server_source_type
             robot_dict["can-server-source-location"] = can_server_source_location
 
-        return convert_from_obj({"robot": robot_dict}, testing_global_em_config)
+        return convert_from_obj({"robot": robot_dict}, testing_global_em_config, False)
 
     return robot_set_source_type_params
 
@@ -94,7 +94,9 @@ def module_set_source_type_params(
         module_dict["source-location"] = source_location
         module_dict["emulation-level"] = emulation_level
 
-        return convert_from_obj({"modules": [module_dict]}, testing_global_em_config)
+        return convert_from_obj(
+            {"modules": [module_dict]}, testing_global_em_config, False
+        )
 
     return module_set_source_type_params
 
