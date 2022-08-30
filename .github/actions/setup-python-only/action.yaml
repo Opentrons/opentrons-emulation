@@ -18,14 +18,14 @@ runs:
       uses: actions/setup-python@v4
       with:
         python-version: "3.10"
-        cache: pipenv
+        cache: poetry
         cache-dependency-path: |
-          ./emulation_system/Pipfile.lock
-          ./Pipfile.lock
+          ./emulation_system/poetry.lock
+          ./emulation_system/Makefile
           ./Makefile
 
-    - name: Install Pipenv
-      run: pip install pipenv==2022.3.24
+    - name: Install Poetry
+      run: curl -sSL https://install.python-poetry.org | python3 -
       shell: bash
 
     - name: Setup repo
