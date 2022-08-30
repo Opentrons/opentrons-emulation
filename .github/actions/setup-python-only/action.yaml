@@ -14,6 +14,10 @@ runs:
   using: "composite"
   steps:
 
+    - name: Install Poetry
+      run: curl -sSL https://install.python-poetry.org | python3 -
+      shell: bash
+
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
@@ -23,10 +27,6 @@ runs:
           ./emulation_system/poetry.lock
           ./emulation_system/Makefile
           ./Makefile
-
-    - name: Install Poetry
-      run: curl -sSL https://install.python-poetry.org | python3 -
-      shell: bash
 
     - name: Setup repo
       run: make setup
