@@ -43,13 +43,14 @@ jobs:
 
       - name: Setup Python for opentrons repository
         uses: actions/setup-python@v2
+        id: python-3-7
         with:
           python-version: "3.7"
           cache: pipenv
           cache-dependency-path: ./opentrons/hardware/Pipfile.lock
 
       - name: Install Pipenv
-        run: pip install pipenv==2022.3.24 --force-reinstall
+        run: pip install pipenv==2022.3.24
         shell: bash
 
       - name: Setup hardware project in opentrons repository
@@ -70,7 +71,9 @@ jobs:
           command: run
 
       - name: Run hardware project integration tests
-        run: make test-with-opentrons-sock-emulator
+        run: ${{ steps.python-3-7.outputs.python-path }} -m pipenv run py.test tests
+        env:
+          OT3_CAN_DRIVER_INTERFACE: opentrons_sock
         working-directory: ./opentrons/hardware
 
       - name: Teardown emulation
