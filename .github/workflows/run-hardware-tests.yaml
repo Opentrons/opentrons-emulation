@@ -43,44 +43,47 @@ jobs:
 
       - name: Setup Python for opentrons repository
         uses: actions/setup-python@v2
-        id: python-3-7
+        id: python37
         with:
           python-version: "3.7"
           cache: pipenv
           cache-dependency-path: ./opentrons/hardware/Pipfile.lock
 
-      - name: Install Pipenv
-        run: pip install pipenv==2022.3.24
-        shell: bash
-
-      - name: Setup hardware project in opentrons repository
-        run: make setup
-        working-directory: ./opentrons/hardware
-
-      - name: Setup opentrons-emulation project
-        uses: Opentrons/opentrons-emulation@RET-1194-use-poetry-instead-of-pipenv
-        with:
-          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
-          cache-break: ${{ github.event.inputs.cache-break }}
-          command: setup
-
-      - name: Run emulated system
-        uses: Opentrons/opentrons-emulation@RET-1194-use-poetry-instead-of-pipenv
-        with:
-          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
-          command: run
-
-      - name: Run hardware project integration tests
-        run: ${{ steps.python-3-7.outputs.python-path }} -m pipenv run py.test tests
-        env:
-          OT3_CAN_DRIVER_INTERFACE: opentrons_sock
-        working-directory: ./opentrons/hardware
-
-      - name: Teardown emulation
-        uses: Opentrons/opentrons-emulation@RET-1194-use-poetry-instead-of-pipenv
-        with:
-          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
-          command: teardown
+      - name: Print Python Path for 3.7
+        run: echo ${{ steps.python37.outputs.python-path }}
+#
+#      - name: Install Pipenv
+#        run: pip install pipenv==2022.3.24
+#        shell: bash
+#
+#      - name: Setup hardware project in opentrons repository
+#        run: make setup
+#        working-directory: ./opentrons/hardware
+#
+#      - name: Setup opentrons-emulation project
+#        uses: Opentrons/opentrons-emulation@RET-1194-use-poetry-instead-of-pipenv
+#        with:
+#          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
+#          cache-break: ${{ github.event.inputs.cache-break }}
+#          command: setup
+#
+#      - name: Run emulated system
+#        uses: Opentrons/opentrons-emulation@RET-1194-use-poetry-instead-of-pipenv
+#        with:
+#          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
+#          command: run
+#
+#      - name: Run hardware project integration tests
+#        run: ${{ steps.python37.outputs.python-path }} -m pipenv run py.test tests
+#        env:
+#          OT3_CAN_DRIVER_INTERFACE: opentrons_sock
+#        working-directory: ./opentrons/hardware
+#
+#      - name: Teardown emulation
+#        uses: Opentrons/opentrons-emulation@RET-1194-use-poetry-instead-of-pipenv
+#        with:
+#          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
+#          command: teardown
 #
 #      - name: Send results notification
 #        if: ${{ failure() }}
