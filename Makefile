@@ -74,6 +74,23 @@ run-detached:
 	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
 	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_RUN_COMMAND) -d
 
+# Creates and starts Docker Containers from generated Docker-Compose file
+# Outputs logs to stdout
+# Stops and removes containers on exit of logs
+.PHONY: dev-run
+dev-run:
+
+	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
+	@$(MAKE) --no-print-directory dev-generate-compose-file file_path=${abs_path} | $(COMPOSE_RUN_COMMAND)
+
+# Creates and starts Docker Containers from generated Docker-Compose file
+# Detaches logs from stdout and returns control of terminal
+.PHONY: dev-run-detached
+dev-run-detached:
+
+	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
+	@$(MAKE) --no-print-directory dev-generate-compose-file file_path=${abs_path} | $(COMPOSE_RUN_COMMAND) -d
+
 # Removes containers from generated Docker-Compose file
 .PHONY: remove
 remove:

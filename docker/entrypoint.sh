@@ -141,7 +141,6 @@ case $FULL_COMMAND in
   run-thermocycler-firmware)
     bash -c "python -m opentrons.hardware_control.emulation.scripts.run_module_emulator thermocycler $OTHER_ARGS"
     ;;
-
   run-heater-shaker-firmware)
     bash -c "python -m opentrons.hardware_control.emulation.scripts.run_module_emulator heatershaker $OTHER_ARGS"
     ;;
