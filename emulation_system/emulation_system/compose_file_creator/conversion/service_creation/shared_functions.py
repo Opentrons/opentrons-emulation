@@ -19,7 +19,12 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     RepoToBuildArgMapping,
 )
 from emulation_system.compose_file_creator.settings.custom_types import Containers
-from emulation_system.consts import DOCKERFILE_DIR_LOCATION, ENTRYPOINT_FILE_LOCATION
+from emulation_system.consts import (
+    DEV_DOCKERFILE_NAME,
+    DOCKERFILE_DIR_LOCATION,
+    DOCKERFILE_NAME,
+    ENTRYPOINT_FILE_LOCATION,
+)
 
 
 def generate_container_name(
@@ -33,10 +38,15 @@ def generate_container_name(
     )
 
 
-def get_service_build(image_name: str, build_args: Optional[ListOrDict]) -> BuildItem:
+def get_service_build(
+    image_name: str, build_args: Optional[ListOrDict], dev: bool
+) -> BuildItem:
     """Generate BuildItem object for Service."""
     return BuildItem(
-        context=DOCKERFILE_DIR_LOCATION, target=image_name, args=build_args
+        context=DOCKERFILE_DIR_LOCATION,
+        target=image_name,
+        args=build_args,
+        dockerfile=get_dockerfile_name(dev),
     )
 
 
@@ -139,3 +149,8 @@ def add_opentrons_modules_named_volumes(mount_list: List[Union[str, Volume1]]) -
             "opentrons-modules-stm32-tools:/opentrons-modules/stm32-tools",
         ],
     )
+
+
+def get_dockerfile_name(dev: bool) -> str:
+    """Get dockerfile name based off of --dev option."""
+    return DEV_DOCKERFILE_NAME if dev else DOCKERFILE_NAME

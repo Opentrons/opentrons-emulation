@@ -43,7 +43,7 @@ def ot2_only_services(
     """Structure of SystemConfigurationModel with OT-2 only."""
     return cast(
         Dict[str, Service],
-        convert_from_obj(ot2_only, testing_global_em_config).services,
+        convert_from_obj(ot2_only, testing_global_em_config, dev=False).services,
     )
 
 
@@ -84,7 +84,9 @@ def test_ot3_feature_flag_added(
     ot3_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
 ) -> None:
     """Confirm feature flag is added when robot is an OT3."""
-    robot_services = convert_from_obj(ot3_only, testing_global_em_config).services
+    robot_services = convert_from_obj(
+        ot3_only, testing_global_em_config, dev=False
+    ).services
     assert robot_services is not None
     env = robot_services[OT3_ID].environment
     assert env is not None
@@ -135,7 +137,9 @@ def test_firmware_serial_number_env_vars(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that serial number env vars are created correctly on firmware modules."""
-    services = convert_from_obj({"modules": [model]}, testing_global_em_config).services
+    services = convert_from_obj(
+        {"modules": [model]}, testing_global_em_config, dev=False
+    ).services
     assert services is not None
 
     module_env = services[model["id"]].environment
@@ -236,7 +240,7 @@ def test_smoothie_pipettes(
     ot2_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
 ) -> None:
     """Confirm that pipettes JSON is added to smoothie Service."""
-    services = convert_from_obj(ot2_only, testing_global_em_config).services
+    services = convert_from_obj(ot2_only, testing_global_em_config, dev=False).services
     assert services is not None
     smoothie_env = services[SMOOTHIE_ID].environment
     assert smoothie_env is not None
@@ -247,7 +251,7 @@ def test_pipettes_not_added_to_robot_server(
     ot2_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
 ) -> None:
     """Confirm that pipettes JSON is not added to OT2(robot-server) service."""
-    services = convert_from_obj(ot2_only, testing_global_em_config).services
+    services = convert_from_obj(ot2_only, testing_global_em_config, dev=False).services
     assert services is not None
     ot2_env = services[OT2_ID].environment
     assert ot2_env is not None

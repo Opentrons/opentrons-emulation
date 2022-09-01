@@ -53,7 +53,7 @@ class LoadContainersCommand:
             )
         stdin_content = self.input_path.read().strip()
         parsed_content = yaml.safe_load(stdin_content)
-        system = convert_from_obj(parsed_content, self.settings)
+        system = convert_from_obj(parsed_content, self.settings, False)
         print(
             " ".join(
                 cast(str, container.container_name)

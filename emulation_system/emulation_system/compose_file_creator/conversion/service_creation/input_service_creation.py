@@ -117,6 +117,7 @@ def configure_input_service(
     config_model: SystemConfigurationModel,
     required_networks: RequiredNetworks,
     global_settings: OpentronsEmulationConfiguration,
+    dev: bool,
 ) -> Service:
     """Configures services that are defined in input file."""
     build_args = None
@@ -145,7 +146,7 @@ def configure_input_service(
         container_name=generate_container_name(container.id, config_model),
         image=get_service_image(container.get_image_name()),
         tty=True,
-        build=get_service_build(container.get_image_name(), build_args),
+        build=get_service_build(container.get_image_name(), build_args, dev),
         networks=required_networks.networks,
         volumes=get_mount_strings(container),
         depends_on=_get_service_depends_on(

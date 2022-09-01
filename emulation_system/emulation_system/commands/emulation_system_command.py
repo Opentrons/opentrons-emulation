@@ -32,6 +32,7 @@ class EmulationSystemCommand:
     input_path: io.TextIOWrapper
     output_path: io.TextIOWrapper
     remote_only: bool
+    dev: bool
     settings: OpentronsEmulationConfiguration
 
     @classmethod
@@ -43,6 +44,7 @@ class EmulationSystemCommand:
             input_path=args.input_path,
             output_path=args.output_path,
             remote_only=args.remote_only,
+            dev=args.dev,
             settings=settings,
         )
 
@@ -56,7 +58,7 @@ class EmulationSystemCommand:
             )
         stdin_content = self.input_path.read().strip()
         parsed_content = yaml.safe_load(stdin_content)
-        converted_object = convert_from_obj(parsed_content, self.settings)
+        converted_object = convert_from_obj(parsed_content, self.settings, self.dev)
 
         if self.remote_only and not converted_object.is_remote:
             raise NotRemoteOnlyError
