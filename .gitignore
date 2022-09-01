@@ -28,3 +28,6 @@ coverage.xml
 
 # vscode
 .vscode
+
+# Generated Dockerfile for development
+docker/dev_Dockerfile
