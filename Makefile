@@ -1,19 +1,10 @@
-OT_PYTHON ?= python
-pipenv_envvars := $(and $(CI),PIPENV_IGNORE_VIRTUALENVS=1)
-pipenv := $(pipenv_envvars) $(OT_PYTHON) -m pipenv
-python := $(pipenv) run python
-clean_cmd = $(SHX) rm -rf build dist .coverage coverage.xml '*.egg-info' '**/__pycache__' '**/*.pyc' '**/.mypy_cache'
-SHX := npx shx
-pipenv_opts := --dev
-
-
 EMULATION_SYSTEM_DIR := emulation_system
 
 SUB = {SUB}
 
-EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} -)
-DEV_EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system --dev {SUB} -)
-REMOTE_ONLY_EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} - --remote-only)
+EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system {SUB} -)
+DEV_EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system --dev {SUB} -)
+REMOTE_ONLY_EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system {SUB} - --remote-only)
 COMPOSE_RUN_COMMAND := docker-compose -f - up
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
@@ -157,7 +148,7 @@ load-container-names:
 
 	$(if $(file_path),,$(error file_path variable required))
 	$(if $(filter),,$(error filter variable required))
-	@(cd ./emulation_system && pipenv run python main.py lc "${abs_path}" "${filter}")
+	@(cd ./emulation_system && poetry run python main.py lc "${abs_path}" "${filter}")
 
 ###########################################
 ########## OT3 Specific Commands ##########
@@ -173,7 +164,7 @@ can-comm:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="can-server" \
-		| xargs -o -I{} docker exec -it {} python3 -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
+		| xargs -o -I{} docker exec -it {} poetry run python -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
 
 
 # Runs can monitor script against can_server
@@ -186,7 +177,7 @@ can-mon:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="can-server" \
-		| xargs -o -I{} docker exec -it {} python3 -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
+		| xargs -o -I{} docker exec -it {} poetry run python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
 
 ###########################################
 ############### CI Commands ###############
@@ -219,25 +210,18 @@ push-docker-image-bases:
 # Setup emulation_system project
 .PHONY: setup
 setup:
-
-	$(pipenv) sync $(pipenv_opts)
-	$(pipenv) run pip freeze
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) setup
 
 
 # Clean emulation_system project
 .PHONY: clean
 clean:
-
-	$(clean_cmd)
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) clean
 
 
 # Clean emulation_system project
 .PHONY: teardown
 teardown:
-
-	$(pipenv) --rm
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) teardown
 
 
@@ -245,8 +229,6 @@ teardown:
 # Run linting against emulation_system (mypy, isort, black, flake8)
 .PHONY: lint
 lint:
-
-	$(python) -m mdformat --check README.md ./docs
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) lint
 
 
@@ -254,12 +236,10 @@ lint:
 # Run formatting against emulation_system (isort, black)
 .PHONY: format
 format:
-	$(python) -m mdformat README.md ./docs
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) format
 
 
 # Run all pytests in emulation_system project
 .PHONY: test
 test:
-
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) test
