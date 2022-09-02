@@ -90,9 +90,8 @@ Install the following software:
 1. Docker-Compose
    1. Mac Instructions: Installed when you install Docker
    1. [Linux Instructions](https://docs.docker.com/compose/install/)
-1. [Pipenv Installed Globally](https://pipenv.pypa.io/en/latest/install/#installing-pipenv)
-   1. Run `python -m ensurepip --upgrade` to install pip
-   1. Run `pip install pipenv` to install pipenv
+1. [Poetry Installed Globally](https://python-poetry.org/docs/master/#installing-with-the-official-installer)
+   1. Run `curl -sSL https://install.python-poetry.org | python3 -`
 1. [Install Python 3.10](https://www.python.org/downloads/)
    1. use [pyenv](https://github.com/pyenv/pyenv)
 
