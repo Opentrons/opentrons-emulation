@@ -24,6 +24,7 @@ all these emulators together into systems.
     - [OT3 Firmware Development Setup](#ot3-firmware-development-setup)
     - [Apps and UI Setup](#apps-and-ui-setup)
   - [Architecture Diagrams](#architecture-diagrams)
+  - [How To Modify Dockerfiles](#how-to-modify-dockerfiles)
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080'}}}%%
@@ -310,3 +311,27 @@ to [DOCKERFILE_ARCHITECTURE.md](https://github.com/Opentrons/opentrons-emulation
 
 For information on this repository's Github Action refer
 to [GITHUB_ACTION_DOCS.md](https://github.com/Opentrons/opentrons-emulation/blob/main/docs/GITHUB_ACTION_DOCS.md)
+
+## How To Modify Dockerfiles
+
+`opentrons-emulation` is split up into 2 Dockerfiles: `bases_Dockerfile` and `Dockerfile`.
+
+Images in `bases_Dockerfile` are cached to [Github Packages](https://github.com/features/packages) to reduce build time.
+
+`Dockerfile` pulls these pre-built images down from Github Packages instead of building them from scratch.
+
+The issue comes in when testing your changes to `bases_Dockerfile`.
+
+Because `Dockerfile` is hardcoded to pull images
+from Github Packages, you can't really test your changes to `bases_Dockerfile` without pushing your changes and pulling
+them back down. Well if you push broken changes then you break everything for everyone and then everyone hates you.
+
+In order to avoid the wrath of the entire Opentrons software team, the solution is to use the Makefile commands
+prefixed with `dev-`. These commands will combine the 2 Dockerfiles into a single local
+development Dockerfile and you can test building and running locally.
+
+An example dev workflow is as follows.
+
+1. Make some changes to `bases_Dockerfile`
+1. Run `make dev-build file_path=./samples/your/path && make dev-run file_path=./samples/your/path`
+1. Test your changes
