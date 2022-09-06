@@ -71,7 +71,7 @@ def robot_with_mount_and_modules_services(
     ot2_only.update(modules_only)
     return cast(
         Dict[str, Service],
-        convert_from_obj(ot2_only, testing_global_em_config).services,
+        convert_from_obj(ot2_only, testing_global_em_config, False).services,
     )
 
 

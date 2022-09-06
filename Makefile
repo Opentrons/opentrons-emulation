@@ -1,19 +1,10 @@
-OT_PYTHON ?= python
-pipenv_envvars := $(and $(CI),PIPENV_IGNORE_VIRTUALENVS=1)
-pipenv := $(pipenv_envvars) $(OT_PYTHON) -m pipenv
-python := $(pipenv) run python
-clean_cmd = $(SHX) rm -rf build dist .coverage coverage.xml '*.egg-info' '**/__pycache__' '**/*.pyc' '**/.mypy_cache'
-SHX := npx shx
-pipenv_opts := --dev
-
-
 EMULATION_SYSTEM_DIR := emulation_system
 
 SUB = {SUB}
 
-EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} -)
-REMOTE_ONLY_EMULATION_SYSTEM_CMD := (cd ./emulation_system && pipenv run python main.py emulation-system {SUB} - --remote-only)
-COMPOSE_BUILD_COMMAND := docker buildx bake --file tmp-compose.yaml
+EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system {SUB} -)
+DEV_EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system --dev {SUB} -)
+REMOTE_ONLY_EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system {SUB} - --remote-only)
 COMPOSE_RUN_COMMAND := docker-compose -f - up
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
@@ -33,6 +24,13 @@ generate-compose-file:
 	$(if $(file_path),,$(error file_path variable required))
 	@$(subst $(SUB), ${abs_path}, $(EMULATION_SYSTEM_CMD))
 
+# Generates Development Docker-Compose file from passed configuration file and outputs it to stdout
+.PHONY: dev-generate-compose-file
+dev-generate-compose-file:
+
+	$(if $(file_path),,$(error file_path variable required))
+	@$(subst $(SUB), ${abs_path}, $(DEV_EMULATION_SYSTEM_CMD))
+
 
 # Builds generated Docker-Compose file's necessary images using docker buildx
 # Note 1: This repository supports building against `x86_64` and `arm64` type processors
@@ -50,6 +48,15 @@ build:
 	./scripts/makefile/helper_scripts/build.sh ~/tmp-compose.yaml
 	@rm ~/tmp-compose.yaml
 
+# Builds generated development Docker-Compose file's necessary images using docker buildx
+.PHONY: dev-build
+dev-build:
+	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
+	./scripts/docker_convenience_scripts/create_dev_dockerfile.sh
+	@$(MAKE) --no-print-directory --quiet dev-generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
+	./scripts/makefile/helper_scripts/build.sh ~/tmp-compose.yaml
+#	@rm ~/tmp-compose.yaml ./docker/dev_Dockerfile
+
 # Creates and starts Docker Containers from generated Docker-Compose file
 # Outputs logs to stdout
 # Stops and removes containers on exit of logs
@@ -66,6 +73,23 @@ run-detached:
 
 	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
 	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_RUN_COMMAND) -d
+
+# Creates and starts Docker Containers from generated Docker-Compose file
+# Outputs logs to stdout
+# Stops and removes containers on exit of logs
+.PHONY: dev-run
+dev-run:
+
+	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
+	@$(MAKE) --no-print-directory dev-generate-compose-file file_path=${abs_path} | $(COMPOSE_RUN_COMMAND)
+
+# Creates and starts Docker Containers from generated Docker-Compose file
+# Detaches logs from stdout and returns control of terminal
+.PHONY: dev-run-detached
+dev-run-detached:
+
+	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
+	@$(MAKE) --no-print-directory dev-generate-compose-file file_path=${abs_path} | $(COMPOSE_RUN_COMMAND) -d
 
 # Removes containers from generated Docker-Compose file
 .PHONY: remove
@@ -141,7 +165,7 @@ load-container-names:
 
 	$(if $(file_path),,$(error file_path variable required))
 	$(if $(filter),,$(error filter variable required))
-	@(cd ./emulation_system && pipenv run python main.py lc "${abs_path}" "${filter}")
+	@(cd ./emulation_system && poetry run python main.py lc "${abs_path}" "${filter}")
 
 ###########################################
 ########## OT3 Specific Commands ##########
@@ -157,7 +181,7 @@ can-comm:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="can-server" \
-		| xargs -o -I{} docker exec -it {} python3 -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
+		| xargs -o -I{} docker exec -it {} poetry run python -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
 
 
 # Runs can monitor script against can_server
@@ -170,7 +194,7 @@ can-mon:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="can-server" \
-		| xargs -o -I{} docker exec -it {} python3 -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
+		| xargs -o -I{} docker exec -it {} poetry run python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
 
 ###########################################
 ############### CI Commands ###############
@@ -203,25 +227,18 @@ push-docker-image-bases:
 # Setup emulation_system project
 .PHONY: setup
 setup:
-
-	$(pipenv) sync $(pipenv_opts)
-	$(pipenv) run pip freeze
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) setup
 
 
 # Clean emulation_system project
 .PHONY: clean
 clean:
-
-	$(clean_cmd)
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) clean
 
 
 # Clean emulation_system project
 .PHONY: teardown
 teardown:
-
-	$(pipenv) --rm
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) teardown
 
 
@@ -229,8 +246,6 @@ teardown:
 # Run linting against emulation_system (mypy, isort, black, flake8)
 .PHONY: lint
 lint:
-
-	$(python) -m mdformat --check README.md ./docs
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) lint
 
 
@@ -238,12 +253,10 @@ lint:
 # Run formatting against emulation_system (isort, black)
 .PHONY: format
 format:
-	$(python) -m mdformat README.md ./docs
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) format
 
 
 # Run all pytests in emulation_system project
 .PHONY: test
 test:
-
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) test

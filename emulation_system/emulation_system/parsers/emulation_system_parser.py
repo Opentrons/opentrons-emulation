@@ -45,3 +45,7 @@ class EmulationSystemParser(AbstractParser):
         subparser.add_argument(
             "--remote-only", action="store_true", help="Allow only remote source-types"
         )
+
+        subparser.add_argument(
+            "--dev", action="store_true", help="Create dev compose file"
+        )

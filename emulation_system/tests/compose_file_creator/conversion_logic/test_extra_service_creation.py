@@ -56,7 +56,7 @@ def test_emulation_proxy_created(
     config: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
 ) -> None:
     """Verify emulator proxy is created when there are modules."""
-    services = convert_from_obj(config, testing_global_em_config).services
+    services = convert_from_obj(config, testing_global_em_config, False).services
     assert services is not None
     assert EMULATOR_PROXY_ID in set(services.keys())
 
@@ -69,7 +69,7 @@ def test_smoothie_not_created(
     config: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
 ) -> None:
     """Confirm smoothie is created only when ot2 exists."""
-    services = convert_from_obj(config, testing_global_em_config).services
+    services = convert_from_obj(config, testing_global_em_config, False).services
     assert services is not None
     assert SMOOTHIE_ID not in set(services.keys())
 
@@ -81,7 +81,7 @@ def test_smoothie_created(
     config: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
 ) -> None:
     """Confirm smoothie is created only when ot2 exists."""
-    services = convert_from_obj(config, testing_global_em_config).services
+    services = convert_from_obj(config, testing_global_em_config, False).services
     assert services is not None
     assert SMOOTHIE_ID in set(services.keys())
 
@@ -92,7 +92,7 @@ def test_smoothie_with_local_source(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm smoothie uses local source when OT2 is set to local and has mounts."""
-    services = convert_from_obj(ot2_only, testing_global_em_config).services
+    services = convert_from_obj(ot2_only, testing_global_em_config, False).services
     assert services is not None
     smoothie = services[SMOOTHIE_ID]
     assert smoothie.image == f"{SmoothieImages().local_firmware_image_name}:latest"
@@ -108,7 +108,7 @@ def test_smoothie_with_remote_source(
 ) -> None:
     """Confirm smoothie uses remote source when OT2 is set to remote and doesn't have mounts."""  # noqa: E501
     services = convert_from_obj(
-        ot2_only_with_remote_source_type, testing_global_em_config
+        ot2_only_with_remote_source_type, testing_global_em_config, False
     ).services
     assert services is not None
     smoothie = services[SMOOTHIE_ID]
@@ -132,7 +132,7 @@ def test_local_ot3_services_created(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm OT3 hardware emulators are added with OT3 is specified."""
-    services = convert_from_obj(ot3_only, testing_global_em_config).services
+    services = convert_from_obj(ot3_only, testing_global_em_config, False).services
     assert services is not None
     assert container_name in list(services.keys())
 

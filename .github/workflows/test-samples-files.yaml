@@ -25,48 +25,47 @@ defaults:
 
 jobs:
   lint-test:
-    name: 'Run All Sample Files'
-    runs-on: 'ubuntu-20.04'
+    name: Run All Sample Files
+    runs-on: ubuntu-20.04
     steps:
-      - name: "Checkout Repo"
-        uses: 'actions/checkout@v2'
+      - name: Checkout Repo
+        uses: actions/checkout@v3
         with:
-          node-version: '12'
           path: opentrons-emulation
 
-      - name: "Checkout Monorepo"
-        uses: actions/checkout@v2
+      - name: Checkout Monorepo
+        uses: actions/checkout@v3
         with:
           repository: Opentrons/opentrons
           path: opentrons
 
-      - name: "Checkout ot3-firmware"
-        uses: actions/checkout@v2
+      - name: Checkout ot3-firmware
+        uses: actions/checkout@v3
         with:
           repository: Opentrons/ot3-firmware
           path: ot3-firmware
 
-      - name: "Checkout opentrons-modules"
-        uses: actions/checkout@v2
+      - name: Checkout opentrons-modules
+        uses: actions/checkout@v3
         with:
           repository: Opentrons/opentrons-modules
           path: opentrons-modules
 
-      - name: "Setup Python"
-        uses: 'actions/setup-python@v2'
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
-      - name: "Setup Project"
+      - name: Setup Project
         run: |
-          pip install pipenv
+          curl -sSL https://install.python-poetry.org | python3 -
           make setup
         working-directory: ./opentrons-emulation
 
-      - name: "Build Configuration File"
+      - name: Build Configuration File
         run: cp configuration_sample.json configuration.json
         working-directory: ./opentrons-emulation
 
-      - name: "Test All Samples"
+      - name: Test All Samples
         run: make test-samples
         working-directory: ./opentrons-emulation

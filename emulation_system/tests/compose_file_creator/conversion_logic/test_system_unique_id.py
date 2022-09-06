@@ -35,7 +35,9 @@ def with_system_unique_id_services(
     """Get services from with_system_unique_id."""
     return cast(
         Dict[str, Service],
-        convert_from_obj(with_system_unique_id, testing_global_em_config).services,
+        convert_from_obj(
+            with_system_unique_id, testing_global_em_config, False
+        ).services,
     )
 
 
@@ -91,5 +93,5 @@ def test_top_level_network_with_system_unique_id(
 ) -> None:
     """Verify top level network is correct."""
     assert convert_from_obj(
-        with_system_unique_id, testing_global_em_config
+        with_system_unique_id, testing_global_em_config, False
     ).networks == {SYSTEM_UNIQUE_ID: Network()}

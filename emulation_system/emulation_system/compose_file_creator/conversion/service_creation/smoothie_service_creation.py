@@ -42,6 +42,7 @@ def create_smoothie_service(
     config_model: SystemConfigurationModel,
     required_networks: RequiredNetworks,
     global_settings: OpentronsEmulationConfiguration,
+    dev: bool,
 ) -> Service:
     """Create smoothie service."""
     ot2 = config_model.robot
@@ -86,7 +87,7 @@ def create_smoothie_service(
     return Service(
         container_name=smoothie_name,
         image=get_service_image(image),
-        build=get_service_build(image, build_args),
+        build=get_service_build(image, build_args, dev),
         networks=required_networks.networks,
         volumes=mounts,
         tty=True,

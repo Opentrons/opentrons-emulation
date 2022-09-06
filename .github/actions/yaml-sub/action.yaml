@@ -19,6 +19,6 @@ runs:
   using: "composite"
   steps:
     - name: Substitute YAML
-      run: pipenv run python -m emulation_system.compose_file_creator.utilities.substitute_yaml_values ${{ inputs.input-file }} ${{ toJSON(inputs.substitutions) }} > ${{ inputs.output-file-location }}
+      run: poetry run python -m emulation_system.compose_file_creator.utilities.substitute_yaml_values ${{ inputs.input-file }} ${{ toJSON(inputs.substitutions) }} > ${{ inputs.output-file-location }}
       working-directory: ./emulation_system
       shell: bash

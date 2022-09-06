@@ -57,6 +57,7 @@ def create_ot3_services(
     required_networks: RequiredNetworks,
     global_settings: OpentronsEmulationConfiguration,
     can_server_name: str,
+    dev: bool,
 ) -> List[Service]:
     """Create emulated OT3 hardware services."""
     ot3 = config_model.robot
@@ -100,7 +101,7 @@ def create_ot3_services(
             Service(
                 container_name=container_name,
                 image=image_name,
-                build=get_service_build(image_name, build_args),
+                build=get_service_build(image_name, build_args, dev),
                 networks=required_networks.networks,
                 volumes=mounts,
                 tty=True,

@@ -39,6 +39,7 @@ EXPECTED_YAML = convert_yaml(
             OPENTRONS_SOURCE_DOWNLOAD_LOCATION: https://github.com/AnotherOrg/opentrons/archive/refs/heads/edge.zip
           context: /home/derek-maggio/Documents/repos/opentrons-emulation/emulation_system/resources/docker/
           target: emulator-proxy-remote
+          dockerfile: Dockerfile
         container_name: derek-emulator-proxy
         environment:
           OT_EMULATOR_heatershaker_proxy: '{"emulator_port": 10004, "driver_port": 11004}'
@@ -83,7 +84,7 @@ def mocked_em_system(
 ) -> EmulationSystemCommand:
     """Get a mocked EmulationSystemCommand."""
     mock = Mock(spec=io.TextIOWrapper)
-    return EmulationSystemCommand(mock, mock, False, testing_global_em_config)
+    return EmulationSystemCommand(mock, mock, False, False, testing_global_em_config)
 
 
 def test_json_stdin(mocked_em_system: EmulationSystemCommand) -> None:

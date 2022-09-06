@@ -60,15 +60,16 @@ RUN apt-get update \
       curl \
       git \
       libssl-dev \
+      python3-dev \
       && rm -rf /var/lib/apt/lists/*
 RUN add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install \
     	--no-install-recommends \
        	-y \
-    	python3.7-venv
-RUN (cd /usr/bin && ls -l python*)
-RUN (cd /usr/bin/ && ln -s /usr/bin/python3.7 python)
+    	python3.10 \
+    	python3.10-venv && \
+	(cd /usr/bin/ && ln -s /usr/bin/python3.10 python)
 
 
 ############
@@ -100,7 +101,7 @@ RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.2
 FROM ubuntu-base as python-base
 
 ENV NODE_VERSION 14
-ENV OT_PYTHON "/usr/bin/python3.7"
+ENV OT_PYTHON "/usr/bin/python3.10"
 
 RUN apt-get update && \
     apt-get install \
@@ -111,9 +112,10 @@ RUN apt-get update && \
     libsystemd-dev \
     python3-dev \
     pkgconf \
-    libpython3.7-dev
+    libpython3.10-dev
 
-RUN python -m ensurepip --upgrade
+RUN python -m ensurepip --upgrade &&  \
+    python -m pip install --upgrade pip setuptools wheel
 
 RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -
 RUN apt-get install -y nodejs && npm install --global yarn

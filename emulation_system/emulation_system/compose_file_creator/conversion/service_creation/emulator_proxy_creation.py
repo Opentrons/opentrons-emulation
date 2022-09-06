@@ -54,6 +54,7 @@ def create_emulator_proxy_service(
     config_model: SystemConfigurationModel,
     required_networks: RequiredNetworks,
     global_settings: OpentronsEmulationConfiguration,
+    dev: bool,
 ) -> Service:
     """Creates emulator-proxy service."""
     # Going to just use the remote image for now. If someone ends up needing
@@ -65,14 +66,15 @@ def create_emulator_proxy_service(
         container_name=emulator_proxy_name,
         image=get_service_image(image),
         build=get_service_build(
-            image,
+            image_name=image,
             # Will always have build args since we are always using the remote image
-            get_build_args(
+            build_args=get_build_args(
                 repo,
                 "latest",
                 global_settings.get_repo_commit(repo),
                 global_settings.get_repo_head(repo),
             ),
+            dev=dev,
         ),
         tty=True,
         networks=required_networks.networks,
