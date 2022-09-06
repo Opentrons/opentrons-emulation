@@ -46,15 +46,18 @@ linkStyle 1 stroke:#00ff00,stroke-width:2px,color:white;
 
 ## What is an Emulator?
 
-The simplest description is an emulator is a software model that stands in for a piece of hardware.
+The simplest description of an emulator is: a software model that stands in for a piece of hardware.
 
-In practice, this software model should behave and respond the same way as the hardware it is standing in for. The
+In practice, this software model should behave and respond the same way as the hardware being replaced. The
 software that is connected to the emulator should not know the difference between an emulator and the actual hardware.
 It should interact with the emulator in exactly the same manner that it interacts with the hardware.
 
 ## How do the Opentrons Emulators work?
 
-The Opentrons emulators are implemented in one of two ways: by emulating at the firmware level or the hardware level.
+The Opentrons emulators are implemented in one of two ways:
+
+1. Emulating at the firmware level
+1. Emulating at the hardware level.
 
 Firmware Emulation replaces the firmware with a software model and the drivers interact with the model. Note that at
 this level, the hardware is also theoretically emulated as well.
