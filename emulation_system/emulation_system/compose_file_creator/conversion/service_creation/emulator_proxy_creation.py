@@ -1,8 +1,5 @@
 """Pure functions related to creating emulator-proxy service."""
 
-from emulation_system.compose_file_creator.conversion.intermediate_types import (
-    RequiredNetworks,
-)
 from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
 )
@@ -45,14 +42,14 @@ def _create_emulator_proxy_env_vars() -> ListOrDict:
         __root__={
             env_var_name: env_var_value
             for module in MODULE_TYPES
-            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()  # type: ignore [attr-defined] # noqa: E501
+            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()
+            # type: ignore [attr-defined] # noqa: E501
         }
     )
 
 
 def create_emulator_proxy_service(
     config_model: SystemConfigurationModel,
-    required_networks: RequiredNetworks,
     global_settings: OpentronsEmulationConfiguration,
     dev: bool,
 ) -> Service:
@@ -77,6 +74,6 @@ def create_emulator_proxy_service(
             dev=dev,
         ),
         tty=True,
-        networks=required_networks.networks,
+        networks=config_model.required_networks,
         environment=_create_emulator_proxy_env_vars(),
     )

@@ -6,13 +6,6 @@ from emulation_system.compose_file_creator.output.compose_file_model import Serv
 
 
 @dataclass
-class RequiredNetworks:
-    """Networks that are required to be created by Docker."""
-
-    networks: List[str]
-
-
-@dataclass
 class DockerServices:
     """All services to be created by Docker."""
 
@@ -24,3 +17,6 @@ class TopLevelNetworks:
     """Top level network definitions to be added to Compose file."""
 
     networks: Dict[str, None]
+
+
+RequiredNetworks = list[str]

@@ -24,7 +24,6 @@ from ...settings.images import (
     OT3HeadImages,
     OT3PipettesImages,
 )
-from ..intermediate_types import RequiredNetworks
 from .shared_functions import (
     add_ot3_firmware_named_volumes,
     generate_container_name,
@@ -54,7 +53,6 @@ SERVICES_TO_CREATE = [
 
 def create_ot3_services(
     config_model: SystemConfigurationModel,
-    required_networks: RequiredNetworks,
     global_settings: OpentronsEmulationConfiguration,
     can_server_name: str,
     dev: bool,
@@ -102,7 +100,7 @@ def create_ot3_services(
                 container_name=container_name,
                 image=image_name,
                 build=get_service_build(image_name, build_args, dev),
-                networks=required_networks.networks,
+                networks=config_model.required_networks,
                 volumes=mounts,
                 tty=True,
                 environment=env,

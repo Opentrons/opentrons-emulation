@@ -3,9 +3,6 @@
 import json
 from typing import List, Optional, Union
 
-from emulation_system.compose_file_creator.conversion.intermediate_types import (
-    RequiredNetworks,
-)
 from emulation_system.compose_file_creator.errors import (
     HardwareDoesNotExistError,
     IncorrectHardwareError,
@@ -40,7 +37,6 @@ from .shared_functions import (
 
 def create_smoothie_service(
     config_model: SystemConfigurationModel,
-    required_networks: RequiredNetworks,
     global_settings: OpentronsEmulationConfiguration,
     dev: bool,
 ) -> Service:
@@ -88,7 +84,7 @@ def create_smoothie_service(
         container_name=smoothie_name,
         image=get_service_image(image),
         build=get_service_build(image, build_args, dev),
-        networks=required_networks.networks,
+        networks=config_model.required_networks,
         volumes=mounts,
         tty=True,
         environment=converted_env,

@@ -2,9 +2,6 @@
 
 from typing import Any, Dict, List, Optional, Union
 
-from emulation_system.compose_file_creator.conversion.intermediate_types import (
-    RequiredNetworks,
-)
 from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
 )
@@ -115,7 +112,6 @@ def configure_input_service(
     smoothie_name: Optional[str],
     can_server_service_name: Optional[str],
     config_model: SystemConfigurationModel,
-    required_networks: RequiredNetworks,
     global_settings: OpentronsEmulationConfiguration,
     dev: bool,
 ) -> Service:
@@ -147,7 +143,7 @@ def configure_input_service(
         image=get_service_image(container.get_image_name()),
         tty=True,
         build=get_service_build(container.get_image_name(), build_args, dev),
-        networks=required_networks.networks,
+        networks=config_model.required_networks,
         volumes=get_mount_strings(container),
         depends_on=_get_service_depends_on(
             container, emulator_proxy_name, smoothie_name
