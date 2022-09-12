@@ -1,6 +1,6 @@
 """Intermediate types that will be used for composing RuntimeComposeModel."""
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import Dict
 
 from emulation_system.compose_file_creator.output.compose_file_model import Service
 
@@ -20,3 +20,8 @@ class TopLevelNetworks:
 
 
 RequiredNetworks = list[str]
+Volumes = list[str]
+Ports = list[str]
+EnvironmentVariables = dict[str, str]
+DependsOn = list[str]
+Command = str

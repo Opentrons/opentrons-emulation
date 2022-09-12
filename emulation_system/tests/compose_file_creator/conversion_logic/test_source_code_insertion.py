@@ -1,5 +1,10 @@
 """Test everything around inserting source code into containers."""
-from typing import Any, Callable, Dict, Optional, cast
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Optional,
+)
 
 import py
 import pytest
@@ -8,42 +13,23 @@ from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    BuildItem,
-    Service,
-)
 from emulation_system.compose_file_creator.output.runtime_compose_file_model import (
     RuntimeComposeFileModel,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     EmulationLevels,
-    OpentronsRepository,
     RepoToBuildArgMapping,
     SourceType,
 )
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
-from tests.compose_file_creator.conversion_logic.conftest import partial_string_in_mount
-
-FAKE_COMMIT_ID = "ca82a6dff817ec66f44342007202690a93763949"
-
-
-def get_source_code_build_args(service: Service) -> Dict[str, str]:
-    """Get build args for service."""
-    build = service.build
-    assert build is not None
-    assert isinstance(build, BuildItem)
-    assert build.args is not None
-    return cast(Dict[str, str], build.args.__root__)
-
-
-def build_args_are_none(service: Service) -> bool:
-    """Whether or not build args are None. With annoying typing stuff."""
-    build = service.build
-    assert build is not None
-    assert isinstance(build, BuildItem)
-    return build.args is None
+from tests.compose_file_creator.conversion_logic.conftest import (
+    FAKE_COMMIT_ID,
+    build_args_are_none,
+    get_source_code_build_args,
+    partial_string_in_mount,
+)
 
 
 @pytest.fixture
@@ -67,8 +53,8 @@ def robot_set_source_type_params(
         robot_dict["robot-server-source-location"] = robot_server_source_location
 
         if (
-            can_server_source_type is not None
-            and can_server_source_location is not None
+                can_server_source_type is not None
+                and can_server_source_location is not None
         ):
             robot_dict["can-server-source-type"] = can_server_source_type
             robot_dict["can-server-source-location"] = can_server_source_location
@@ -416,36 +402,6 @@ def thermocycler_module_hardware_remote(
     )
 
 
-@pytest.fixture
-def opentrons_head(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
-    """Return head url of opentrons repo from test config file."""
-    return testing_global_em_config.get_repo_head(OpentronsRepository.OPENTRONS)
-
-
-@pytest.fixture
-def ot3_firmware_head(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
-    """Return head url of ot3-firmware repo from test config file."""
-    return testing_global_em_config.get_repo_head(OpentronsRepository.OT3_FIRMWARE)
-
-
-@pytest.fixture
-def opentrons_commit(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
-    """Return commit url of opentrons repo from test config file."""
-    return testing_global_em_config.get_repo_commit(
-        OpentronsRepository.OPENTRONS
-    ).replace("{{commit-sha}}", FAKE_COMMIT_ID)
-
-
-@pytest.fixture
-def ot3_firmware_commit(
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> str:
-    """Return commit url of ot3-firmware repo from test config file."""
-    return testing_global_em_config.get_repo_commit(
-        OpentronsRepository.OT3_FIRMWARE
-    ).replace("{{commit-sha}}", FAKE_COMMIT_ID)
-
-
 @pytest.mark.parametrize(
     "compose_file_model",
     [
@@ -507,7 +463,8 @@ def test_ot3_remote_everything_latest_build_args(
         assert emulator_build_args is not None
         assert RepoToBuildArgMapping.OT3_FIRMWARE in emulator_build_args
         assert (
-            emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
+                emulator_build_args[
+                    RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
         )
 
 
@@ -542,8 +499,8 @@ def test_ot3_remote_everything_commit_id_build_args(
         assert emulator_build_args is not None
         assert RepoToBuildArgMapping.OT3_FIRMWARE in emulator_build_args
         assert (
-            emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE]
-            == ot3_firmware_commit
+                emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE]
+                == ot3_firmware_commit
         )
 
 
@@ -666,7 +623,8 @@ def test_ot3_local_can_server_build_args(
         assert emulator_build_args is not None
         assert RepoToBuildArgMapping.OT3_FIRMWARE in emulator_build_args
         assert (
-            emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
+                emulator_build_args[
+                    RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
         )
 
 
@@ -731,7 +689,8 @@ def test_ot3_local_robot_server_build_args(
         assert emulator_build_args is not None
         assert RepoToBuildArgMapping.OT3_FIRMWARE in emulator_build_args
         assert (
-            emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
+                emulator_build_args[
+                    RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
         )
 
 
