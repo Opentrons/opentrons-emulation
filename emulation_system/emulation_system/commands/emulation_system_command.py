@@ -13,6 +13,10 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
     convert_from_obj,
 )
 from emulation_system.compose_file_creator.errors import NotRemoteOnlyError
+from emulation_system.logging.console import (
+    CONSOLE_OUTPUT_HTML_FILE_PATH,
+    logging_console,
+)
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
@@ -64,3 +68,8 @@ class EmulationSystemCommand:
             raise NotRemoteOnlyError
 
         self.output_path.write(converted_object.to_yaml())
+        logging_console.save_html(
+            CONSOLE_OUTPUT_HTML_FILE_PATH,
+            clear=True,
+            inline_styles=True
+        )

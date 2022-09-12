@@ -1,5 +1,4 @@
 from typing import (
-    List,
     Optional,
 )
 
@@ -19,6 +18,7 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     SourceType,
 )
 from emulation_system.compose_file_creator.settings.images import CANServerImages
+from emulation_system.logging.logging_client import LoggingClient
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
@@ -33,7 +33,6 @@ from ...intermediate_types import (
 )
 from ...service_creation.shared_functions import (
     add_opentrons_named_volumes,
-    generate_container_name,
     get_build_args,
     get_entrypoint_mount_string,
     get_service_build,
@@ -53,6 +52,8 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
         dev: bool,
     ) -> None:
         super().__init__(config_model, global_settings)
+        self._logging_client = LoggingClient()
+        self._logging_client.log_header("CAN Server")
         self._dev = dev
         self._ot3 = self._get_ot3(config_model)
         self._image = self._generate_image()
@@ -74,32 +75,28 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
             if source_type == SourceType.LOCAL
             else CANServerImages().remote_firmware_image_name
         )
-
+        self._logging_client.log_image_name(image_name, source_type)
         return image_name
 
-    @staticmethod
-    def _log_mounts(mounts: List[str]) -> None:
-        ...
-
-    @staticmethod
-    def _log_volumes(volumes: List[str]) -> None:
-        ...
-
     def generate_container_name(self) -> str:
-        can_server_name = generate_container_name(
-            self.CAN_SERVER_NAME, self._config_model
+        system_unique_id = self._config_model.system_unique_id
+        container_name = super()._generate_container_name(
+            self.CAN_SERVER_NAME, system_unique_id
         )
-        return can_server_name
+        self._logging_client.log_container_name(container_name, system_unique_id)
+        return container_name
 
     def generate_image(self) -> str:
         return self._image
 
     def is_tty(self) -> bool:
         tty = True
+        self._logging_client.log_tty(tty)
         return tty
 
     def generate_networks(self) -> RequiredNetworks:
         networks = self._config_model.required_networks
+        self._logging_client.log_networks(networks)
         return networks
 
     def generate_build(self) -> Optional[BuildItem]:
@@ -117,6 +114,7 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
         else:
             build_args = None
             why = self.NO_BUILD_ARGS_REASON
+        self._logging_client.log_build(build_args, why)
         return get_service_build(self._image, build_args, self._dev)
 
     def generate_volumes(self) -> Optional[Volumes]:

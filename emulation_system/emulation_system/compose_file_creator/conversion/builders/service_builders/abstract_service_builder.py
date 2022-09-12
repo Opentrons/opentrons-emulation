@@ -38,9 +38,16 @@ class AbstractServiceBuilder(ABC):
         self._config_model = config_model
         self._global_settings = global_settings
 
-    @abstractmethod
-    def generate_container_name(self) -> str:
-        ...
+    @staticmethod
+    def _generate_container_name(
+        container_id: str, system_unique_id: Optional[str]
+    ) -> str:
+        container_name = (
+            f"{system_unique_id}-{container_id}"
+            if system_unique_id is not None
+            else container_id
+        )
+        return container_name
 
     @abstractmethod
     def generate_image(self) -> str:

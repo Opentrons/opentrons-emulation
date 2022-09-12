@@ -1,18 +1,18 @@
 """OT-3 Module and it's attributes."""
 import os
 import pathlib
-from typing import List, Optional, Union, cast
+from typing import List, Optional
 
 from pydantic import Field
 from typing_extensions import Literal
 
+from emulation_system.compose_file_creator.conversion.intermediate_types import Ports
 from emulation_system.compose_file_creator.input.hardware_models.hardware_specific_attributes import (  # noqa: E501
     HardwareSpecificAttributes,
 )
 from emulation_system.compose_file_creator.input.hardware_models.robots.robot_model import (  # noqa: E501
     RobotInputModel,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import Port
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     CAN_SERVER_MOUNT_NAME,
     DirectoryMount,
@@ -79,13 +79,10 @@ class OT3InputModel(RobotInputModel):
             else []
         )
 
-    def get_can_server_bound_port(self) -> Optional[List[Union[float, str, Port]]]:
+    def get_can_server_bound_port(self) -> Optional[Ports]:
         """Get can server port string."""
         return (
-            cast(
-                List[Union[float, str, Port]],
-                [f"{self.can_server_exposed_port}:{self.can_server_bound_port}"],
-            )
+            [f"{self.can_server_exposed_port}:{self.can_server_bound_port}"]
             if self.can_server_exposed_port is not None
             else None
         )
