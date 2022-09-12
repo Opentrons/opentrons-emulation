@@ -8,7 +8,7 @@ from emulation_system.compose_file_creator.input.configuration_file import (
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
-from .service_creation.can_server_creation import create_can_server_service
+from .builders.service_builders.service_builder_orchestrator import ServiceBuilderOrchestrator
 from .service_creation.emulator_proxy_creation import create_emulator_proxy_service
 from .service_creation.input_service_creation import configure_input_service
 from .service_creation.ot3_service_creation import create_ot3_services
@@ -45,9 +45,9 @@ def create_services(
 
     if config_model.robot is not None and config_model.robot.__class__ == OT3InputModel:
 
-        can_server_service = create_can_server_service(
-            config_model, global_settings, dev
-        )
+        can_server_service = ServiceBuilderOrchestrator(
+            config_model, global_settings
+        ).build_can_server_service(dev)
         can_server_service_name = can_server_service.container_name
         assert can_server_service_name is not None
         ot3_services = create_ot3_services(
