@@ -1,4 +1,7 @@
-from abc import ABC, abstractmethod
+from abc import (
+    ABC,
+    abstractmethod,
+)
 from typing import Optional
 
 from emulation_system.compose_file_creator.conversion.intermediate_types import (
@@ -10,12 +13,36 @@ from emulation_system.compose_file_creator.conversion.intermediate_types import 
     Volumes,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
+from emulation_system.consts import (
+    DEV_DOCKERFILE_NAME,
+    DOCKERFILE_NAME,
+)
 from emulation_system.logging.console import logging_console
 
 
 class LoggingClient(ABC):
-    def __init__(self) -> None:
+
+    HEADER_NAME = "CAN Server"
+
+    def __init__(self, dev: bool) -> None:
+        self._dev = dev
         self._logging_console = logging_console
+        self.log_header(self.HEADER_NAME)
+        self.log_dockerfile()
+
+    def log_dockerfile(self) -> None:
+        if self._dev:
+            output = [
+                f'Since "dev" is "true" setting build.dockerfile to '
+                f'"{DEV_DOCKERFILE_NAME}"'
+            ]
+        else:
+            output = [
+                f'Since "dev" is "false" setting build.dockerfile to '
+                f'"{DOCKERFILE_NAME}"'
+            ]
+        self._logging_console.tabbed_header_print("build.dockerfile")
+        self._logging_console.double_tabbed_print(*output)
 
     def log_header(self, service_being_built: str) -> None:
         self._logging_console.header_print(

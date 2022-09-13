@@ -18,7 +18,7 @@ from emulation_system.logging.can_server_logging_client import CANServerLoggingC
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
-
+from .abstract_service_builder import AbstractServiceBuilder
 from ...intermediate_types import (
     Command,
     DependsOn,
@@ -33,7 +33,6 @@ from ...service_creation.shared_functions import (
     get_entrypoint_mount_string,
     get_service_build,
 )
-from .abstract_service_builder import AbstractServiceBuilder
 
 
 class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
@@ -49,9 +48,8 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
         dev: bool,
     ) -> None:
         super().__init__(config_model, global_settings)
-        self._logging_client = CANServerLoggingClient()
-        self._logging_client.log_header("CAN Server")
         self._dev = dev
+        self._logging_client = CANServerLoggingClient(self._dev)
         self._ot3 = self._get_ot3(config_model)
         self._image = self._generate_image()
 

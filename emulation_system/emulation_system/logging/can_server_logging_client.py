@@ -12,8 +12,8 @@ from emulation_system.logging.logging_client import LoggingClient
 
 
 class CANServerLoggingClient(LoggingClient):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, dev: bool):
+        super().__init__(dev)
 
     def log_build(self, build_args: Optional[ListOrDict]) -> None:
         if build_args is None:
