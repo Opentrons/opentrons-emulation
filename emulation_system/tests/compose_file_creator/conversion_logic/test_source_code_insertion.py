@@ -1,10 +1,5 @@
 """Test everything around inserting source code into containers."""
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Optional,
-)
+from typing import Any, Callable, Dict, Optional
 
 import py
 import pytest
@@ -53,8 +48,8 @@ def robot_set_source_type_params(
         robot_dict["robot-server-source-location"] = robot_server_source_location
 
         if (
-                can_server_source_type is not None
-                and can_server_source_location is not None
+            can_server_source_type is not None
+            and can_server_source_location is not None
         ):
             robot_dict["can-server-source-type"] = can_server_source_type
             robot_dict["can-server-source-location"] = can_server_source_location
@@ -463,8 +458,7 @@ def test_ot3_remote_everything_latest_build_args(
         assert emulator_build_args is not None
         assert RepoToBuildArgMapping.OT3_FIRMWARE in emulator_build_args
         assert (
-                emulator_build_args[
-                    RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
+            emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
         )
 
 
@@ -499,8 +493,8 @@ def test_ot3_remote_everything_commit_id_build_args(
         assert emulator_build_args is not None
         assert RepoToBuildArgMapping.OT3_FIRMWARE in emulator_build_args
         assert (
-                emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE]
-                == ot3_firmware_commit
+            emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE]
+            == ot3_firmware_commit
         )
 
 
@@ -623,8 +617,7 @@ def test_ot3_local_can_server_build_args(
         assert emulator_build_args is not None
         assert RepoToBuildArgMapping.OT3_FIRMWARE in emulator_build_args
         assert (
-                emulator_build_args[
-                    RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
+            emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
         )
 
 
@@ -689,8 +682,7 @@ def test_ot3_local_robot_server_build_args(
         assert emulator_build_args is not None
         assert RepoToBuildArgMapping.OT3_FIRMWARE in emulator_build_args
         assert (
-                emulator_build_args[
-                    RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
+            emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
         )
 
 

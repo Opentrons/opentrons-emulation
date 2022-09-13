@@ -69,7 +69,5 @@ class EmulationSystemCommand:
 
         self.output_path.write(converted_object.to_yaml())
         logging_console.save_html(
-            CONSOLE_OUTPUT_HTML_FILE_PATH,
-            clear=True,
-            inline_styles=True
+            CONSOLE_OUTPUT_HTML_FILE_PATH, clear=True, inline_styles=True
         )

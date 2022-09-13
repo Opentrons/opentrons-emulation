@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-from abc import (
-    ABC,
-    abstractmethod,
-)
+from abc import ABC, abstractmethod
 from typing import Optional
 
 from emulation_system.compose_file_creator.conversion.intermediate_types import (
