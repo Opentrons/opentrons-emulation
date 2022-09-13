@@ -4,14 +4,12 @@ from typing import Optional
 
 import pytest
 
+from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import (  # noqa: E501
     get_build_args,
     get_service_build,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    BuildItem,
-    ListOrDict,
-)
+from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     OpentronsRepository,
 )
@@ -84,7 +82,8 @@ from emulation_system.consts import (
             OpentronsRepository.OPENTRONS_MODULES,
             "latest",
             "https://github.com/Opentrons/opentrons-modules/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip",  # noqa: E501
+            "https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip",
+            # noqa: E501
             # noqa: E501
             ListOrDict(
                 __root__={

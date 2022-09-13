@@ -3,21 +3,16 @@ from typing import Any, Dict, List, cast
 
 import pytest
 
+from emulation_system import OpentronsEmulationConfiguration
+from emulation_system.compose_file_creator import BuildItem, Service
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    BuildItem,
-    Network,
-    Service,
-)
+from emulation_system.compose_file_creator.output.compose_file_model import Network
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DEFAULT_NETWORK_NAME,
 )
 from emulation_system.consts import DOCKERFILE_DIR_LOCATION
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,

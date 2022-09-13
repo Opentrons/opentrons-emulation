@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field, validator
 
+from emulation_system.compose_file_creator import BuildItem, Service
 from emulation_system.compose_file_creator.errors import (
     EmulationLevelNotSupportedError,
     InvalidRemoteSourceError,
@@ -15,10 +16,7 @@ from emulation_system.compose_file_creator.errors import (
     MountNotFoundError,
     NoMountsDefinedError,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    BuildItem,
-    Service,
-)
+from emulation_system.compose_file_creator.images import get_image_name
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     RESTRICTED_MOUNT_NAMES,
     SOURCE_CODE_MOUNT_NAME,
@@ -31,7 +29,6 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     SourceRepositories,
     SourceType,
 )
-from emulation_system.compose_file_creator.settings.images import get_image_name
 
 from .hardware_specific_attributes import HardwareSpecificAttributes
 

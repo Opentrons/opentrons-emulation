@@ -13,9 +13,6 @@ from pydantic import (
     validator,
 )
 
-from emulation_system.compose_file_creator.conversion.intermediate_types import (
-    RequiredNetworks,
-)
 from emulation_system.compose_file_creator.errors import DuplicateHardwareNameError
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     DEFAULT_DOCKER_COMPOSE_VERSION,
@@ -27,6 +24,7 @@ from emulation_system.compose_file_creator.settings.custom_types import (
     Modules,
     Robots,
 )
+from emulation_system.intermediate_types import RequiredNetworks
 
 
 class SystemConfigurationModel(BaseModel):

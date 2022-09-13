@@ -1,21 +1,15 @@
-from abc import (
-    ABC,
-    abstractmethod,
-)
+from abc import ABC, abstractmethod
 from typing import Optional
 
-from emulation_system.compose_file_creator.conversion.intermediate_types import (
+from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
+from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
+from emulation_system.intermediate_types import (
     Command,
     DependsOn,
     EnvironmentVariables,
     Ports,
     RequiredNetworks,
     Volumes,
-)
-from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
-from emulation_system.consts import (
-    DEV_DOCKERFILE_NAME,
-    DOCKERFILE_NAME,
 )
 from emulation_system.logging.console import logging_console
 

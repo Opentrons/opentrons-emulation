@@ -2,12 +2,10 @@
 import pathlib
 from typing import Any, Dict, List, Optional, Union, cast
 
-from emulation_system.compose_file_creator.input.configuration_file import (
-    SystemConfigurationModel,
-)
+from emulation_system import SystemConfigurationModel
+from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.input.hardware_models import RobotInputModel
 from emulation_system.compose_file_creator.output.compose_file_model import (
-    BuildItem,
     ListOrDict,
     Volume1,
 )

@@ -2,20 +2,9 @@
 from dataclasses import dataclass
 from typing import List, Optional, Union
 
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
-
-from ...errors import HardwareDoesNotExistError, IncorrectHardwareError
-from ...input.configuration_file import SystemConfigurationModel
-from ...output.compose_file_model import ListOrDict, Service, Volume1
-from ...settings.config_file_settings import (
-    Hardware,
-    OpentronsRepository,
-    OT3Hardware,
-    SourceType,
-)
-from ...settings.images import (
+from emulation_system import OpentronsEmulationConfiguration
+from emulation_system.compose_file_creator import Service
+from emulation_system.compose_file_creator.images import (
     Images,
     OT3BootloaderImages,
     OT3GantryXImages,
@@ -23,6 +12,16 @@ from ...settings.images import (
     OT3GripperImages,
     OT3HeadImages,
     OT3PipettesImages,
+)
+
+from ...errors import HardwareDoesNotExistError, IncorrectHardwareError
+from ...input.configuration_file import SystemConfigurationModel
+from ...output.compose_file_model import ListOrDict, Volume1
+from ...settings.config_file_settings import (
+    Hardware,
+    OpentronsRepository,
+    OT3Hardware,
+    SourceType,
 )
 from .shared_functions import (
     add_ot3_firmware_named_volumes,

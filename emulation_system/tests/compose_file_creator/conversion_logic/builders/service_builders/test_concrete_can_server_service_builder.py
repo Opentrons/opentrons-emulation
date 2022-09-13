@@ -4,19 +4,14 @@ import pytest
 from pydantic import parse_obj_as
 from pytest_lazyfixture import lazy_fixture
 
-from emulation_system.compose_file_creator.conversion.builders.service_builders.concrete_can_server_service_builder import (
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system.compose_file_creator.conversion import (
     ConcreteCANServerServiceBuilder,
-)
-from emulation_system.compose_file_creator.input.configuration_file import (
-    SystemConfigurationModel,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     RepoToBuildArgMapping,
 )
 from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
 from tests.compose_file_creator.conversion_logic.conftest import (
     FAKE_COMMIT_ID,
     build_args_are_none,

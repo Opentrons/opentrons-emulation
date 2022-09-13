@@ -6,7 +6,6 @@ from typing import List, Optional
 from pydantic import Field
 from typing_extensions import Literal
 
-from emulation_system.compose_file_creator.conversion.intermediate_types import Ports
 from emulation_system.compose_file_creator.input.hardware_models.hardware_specific_attributes import (  # noqa: E501
     HardwareSpecificAttributes,
 )
@@ -24,6 +23,7 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     SourceRepositories,
     SourceType,
 )
+from emulation_system.intermediate_types import Ports
 
 
 class OT3Attributes(HardwareSpecificAttributes):

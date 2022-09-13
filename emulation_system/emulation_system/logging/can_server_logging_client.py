@@ -1,13 +1,13 @@
 from typing import Optional
 
-from emulation_system.compose_file_creator.conversion.intermediate_types import (
+from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
+from emulation_system.intermediate_types import (
     Command,
     DependsOn,
     EnvironmentVariables,
     Ports,
     Volumes,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.logging.logging_client import LoggingClient
 
 

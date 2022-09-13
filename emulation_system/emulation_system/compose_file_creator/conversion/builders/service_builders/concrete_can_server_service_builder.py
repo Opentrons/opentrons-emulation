@@ -1,25 +1,18 @@
 from typing import Optional
 
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.errors import (
     HardwareDoesNotExistError,
     IncorrectHardwareError,
 )
-from emulation_system.compose_file_creator.input.configuration_file import (
-    SystemConfigurationModel,
-)
-from emulation_system.compose_file_creator.output.compose_file_model import BuildItem
+from emulation_system.compose_file_creator.images import CANServerImages
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     Hardware,
     OpentronsRepository,
     SourceType,
 )
-from emulation_system.compose_file_creator.settings.images import CANServerImages
-from emulation_system.logging.can_server_logging_client import CANServerLoggingClient
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
-from .abstract_service_builder import AbstractServiceBuilder
-from ...intermediate_types import (
+from emulation_system.intermediate_types import (
     Command,
     DependsOn,
     EnvironmentVariables,
@@ -27,12 +20,15 @@ from ...intermediate_types import (
     RequiredNetworks,
     Volumes,
 )
+from emulation_system.logging import CANServerLoggingClient
+
 from ...service_creation.shared_functions import (
     add_opentrons_named_volumes,
     get_build_args,
     get_entrypoint_mount_string,
     get_service_build,
 )
+from .abstract_service_builder import AbstractServiceBuilder
 
 
 class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):

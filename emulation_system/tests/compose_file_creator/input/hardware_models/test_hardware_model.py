@@ -7,6 +7,10 @@ from pydantic import ValidationError, parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system.compose_file_creator.errors import InvalidRemoteSourceError
+from emulation_system.compose_file_creator.images import (
+    ImageNotDefinedError,
+    get_image_name,
+)
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
 )
@@ -23,10 +27,6 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     Hardware,
     Mount,
     SourceType,
-)
-from emulation_system.compose_file_creator.settings.images import (
-    ImageNotDefinedError,
-    get_image_name,
 )
 
 CONFIGURATIONS = [

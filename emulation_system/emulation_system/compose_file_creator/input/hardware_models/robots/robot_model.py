@@ -8,6 +8,7 @@ from typing import Any, Dict, List
 
 from pydantic import Field, validator
 
+from emulation_system.compose_file_creator.images import get_image_name
 from emulation_system.compose_file_creator.input.hardware_models.hardware_model import (
     HardwareModel,
 )
@@ -18,7 +19,6 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     OpentronsRepository,
     SourceType,
 )
-from emulation_system.compose_file_creator.settings.images import get_image_name
 
 
 class RobotInputModel(HardwareModel):

@@ -6,15 +6,14 @@ import yaml
 # Have to ignore attr-defined errors from mypy because we are calling type: ignore at
 # the top of compose_file_model. This causes mypy to think that ComposeSpecification
 # and Service do not exist when they actually do.
+from emulation_system.compose_file_creator import BuildItem, Service
+from emulation_system.compose_file_creator.images import Images
 from emulation_system.compose_file_creator.output.compose_file_model import (  # type: ignore[attr-defined] # noqa: E501
-    BuildItem,
     ComposeSpecification,
-    Service,
 )
 from emulation_system.compose_file_creator.settings.container_filters import (
     ContainerFilters,
 )
-from emulation_system.compose_file_creator.settings.images import Images
 
 
 def represent_none(self, _):  # noqa: ANN001 ANN201

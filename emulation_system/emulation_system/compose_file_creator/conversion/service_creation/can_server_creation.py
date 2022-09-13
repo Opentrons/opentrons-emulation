@@ -1,12 +1,9 @@
 """Pure functions related to creating emulator-proxy service."""
 from typing import List, Optional, Union
 
-from emulation_system.compose_file_creator.conversion.intermediate_types import (
-    RequiredNetworks,
-)
-from emulation_system.compose_file_creator.input.configuration_file import (
-    SystemConfigurationModel,
-)
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system.compose_file_creator import Service
+from emulation_system.compose_file_creator.images import CANServerImages
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
     MagneticModuleInputModel,
@@ -15,7 +12,6 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 )
 from emulation_system.compose_file_creator.output.compose_file_model import (
     ListOrDict,
-    Service,
     Volume1,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
@@ -23,10 +19,7 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     OpentronsRepository,
     SourceType,
 )
-from emulation_system.compose_file_creator.settings.images import CANServerImages
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
+from emulation_system.intermediate_types import RequiredNetworks
 
 from ...errors import HardwareDoesNotExistError, IncorrectHardwareError
 from .shared_functions import (
@@ -52,7 +45,8 @@ def _create_emulator_proxy_env_vars() -> ListOrDict:
         __root__={
             env_var_name: env_var_value
             for module in MODULE_TYPES
-            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()  # type: ignore [attr-defined] # noqa: E501
+            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()
+            # type: ignore [attr-defined] # noqa: E501
         }
     )
 

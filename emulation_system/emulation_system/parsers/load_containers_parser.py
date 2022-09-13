@@ -1,10 +1,8 @@
 """Parser for virtual-machine sub-command."""
 import argparse
 
+from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.commands.load_containers_command import LoadContainersCommand
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
 from emulation_system.parser_utils import get_formatter
 from emulation_system.parsers.abstract_parser import AbstractParser
 

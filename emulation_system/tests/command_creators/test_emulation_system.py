@@ -8,14 +8,12 @@ from unittest.mock import DEFAULT, Mock, patch
 import pytest
 import yaml
 
+from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.commands.emulation_system_command import (
     STDIN_NAME,
     STDOUT_NAME,
     EmulationSystemCommand,
     InvalidFileExtensionException,
-)
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
 )
 
 

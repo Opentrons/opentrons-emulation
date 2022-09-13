@@ -3,23 +3,15 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from emulation_system.compose_file_creator.conversion.intermediate_types import (
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system.compose_file_creator import BuildItem, Service
+from emulation_system.intermediate_types import (
     Command,
     DependsOn,
     EnvironmentVariables,
     Ports,
     RequiredNetworks,
     Volumes,
-)
-from emulation_system.compose_file_creator.input.configuration_file import (
-    SystemConfigurationModel,
-)
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    BuildItem,
-    Service,
-)
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
 )
 
 

@@ -2,9 +2,8 @@
 
 from typing import Any, Dict, List, Optional, Union
 
-from emulation_system.compose_file_creator.input.configuration_file import (
-    SystemConfigurationModel,
-)
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system.compose_file_creator import Service
 from emulation_system.compose_file_creator.input.hardware_models import (
     ModuleInputModel,
     OT2InputModel,
@@ -14,16 +13,12 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 from emulation_system.compose_file_creator.output.compose_file_model import (
     ListOrDict,
     Port,
-    Service,
 )
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     EmulationLevels,
     SourceType,
 )
 from emulation_system.compose_file_creator.settings.custom_types import Containers
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
 
 from .shared_functions import (
     generate_container_name,

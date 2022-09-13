@@ -10,22 +10,20 @@ from typing import Any, Dict
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
+from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    OT3Hardware,
-    SourceType,
-)
-from emulation_system.compose_file_creator.settings.images import (
+from emulation_system.compose_file_creator.images import (
     OT3GantryXImages,
     OT3GantryYImages,
     OT3HeadImages,
     OT3PipettesImages,
     SmoothieImages,
 )
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
+from emulation_system.compose_file_creator.settings.config_file_settings import (
+    OT3Hardware,
+    SourceType,
 )
 from tests.compose_file_creator.conftest import EMULATOR_PROXY_ID, SMOOTHIE_ID
 from tests.compose_file_creator.conversion_logic.conftest import partial_string_in_mount

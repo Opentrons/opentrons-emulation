@@ -9,6 +9,7 @@ from dataclasses import dataclass
 
 import yaml
 
+from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
@@ -16,9 +17,6 @@ from emulation_system.compose_file_creator.errors import NotRemoteOnlyError
 from emulation_system.logging.console import (
     CONSOLE_OUTPUT_HTML_FILE_PATH,
     logging_console,
-)
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
 )
 
 STDIN_NAME = "<stdin>"
