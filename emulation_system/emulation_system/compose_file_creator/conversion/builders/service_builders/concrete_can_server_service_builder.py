@@ -34,8 +34,6 @@ from ...service_creation.shared_functions import (
 class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
 
     CAN_SERVER_NAME = "can-server"
-    NO_BUILD_ARGS_REASON = 'can-server-source-type is "local"'
-    BUILD_ARGS_REASON = 'can-server-source-type is "remote"'
 
     def __init__(
         self,
