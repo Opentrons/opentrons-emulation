@@ -91,7 +91,7 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
             self._global_settings.get_repo_commit(repo),
             self._global_settings.get_repo_head(repo),
         )
-        self._logging_client.log_build(build_args)
+        self._logging_client.log_build_args(build_args)
         return get_service_build(self._image, build_args, self._dev)
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:

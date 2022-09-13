@@ -8,17 +8,17 @@ from emulation_system.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.logging.logging_client import LoggingClient
+from emulation_system.logging.logging_client import AbstractLoggingClient
 
 
-class CANServerLoggingClient(LoggingClient):
+class CANServerLoggingClient(AbstractLoggingClient):
 
     HEADER_NAME = "CAN Server"
 
     def __init__(self, dev: bool):
         super().__init__(self.HEADER_NAME, dev)
 
-    def log_build(self, build_args: Optional[IntermediateBuildArgs]) -> None:
+    def log_build_args(self, build_args: Optional[IntermediateBuildArgs]) -> None:
         if build_args is None:
             output = ['Adding no build args since "can-server-source-type" is "local"']
         else:

@@ -8,10 +8,10 @@ from emulation_system.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.logging.logging_client import LoggingClient
+from emulation_system.logging.logging_client import AbstractLoggingClient
 
 
-class EmulatorProxyLoggingClient(LoggingClient):
+class EmulatorProxyLoggingClient(AbstractLoggingClient):
 
     HEADER_NAME = "Emulator Proxy"
 
@@ -27,7 +27,7 @@ class EmulatorProxyLoggingClient(LoggingClient):
             f"it's remote firmware image."
         )
 
-    def log_build(self, build_args: Optional[IntermediateBuildArgs]) -> None:
+    def log_build_args(self, build_args: Optional[IntermediateBuildArgs]) -> None:
         assert build_args is not None
         output = [
             'Since "emulator-proxy" is always "remote", '

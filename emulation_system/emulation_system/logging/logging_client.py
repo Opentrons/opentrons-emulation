@@ -1,3 +1,5 @@
+"""Contains Abstract Base Class for all logging clients."""
+
 from abc import ABC, abstractmethod
 from typing import Optional
 
@@ -14,14 +16,32 @@ from emulation_system.intermediate_types import (
 from emulation_system.logging.console import logging_console
 
 
-class LoggingClient(ABC):
-    def __init__(self, header_name: str, dev: bool) -> None:
+class AbstractLoggingClient(ABC):
+    """Abstract Base Class for all logging clients.
+
+    Defines all possible logging methods for ConcreteServiceBuilder classes to call.
+    Each ConcreteServiceBuilder should use its own concrete implementation of
+    AbstractLoggingClient.
+    """
+
+    def __init__(self, service_builder_name: str, dev: bool) -> None:
+        """Base __init__ method.
+
+        Contains any parameters that are common to all concrete implementations of
+        AbstractLoggingClient.
+        Calls log_header and log_dockerfile since all concrete implementations will need
+        to call it.
+
+        :param service_builder_name: The name of the ConcreteServiceBuilder you are using.  # noqa: E501
+        :param dev: Whether you are in dev mode.
+        """
         self._dev = dev
         self._logging_console = logging_console
-        self.log_header(header_name)
+        self.log_header(service_builder_name)
         self.log_dockerfile()
 
     def log_dockerfile(self) -> None:
+        """Logs message detailing which dockerfile is being used and why."""
         if self._dev:
             output = [
                 f'Since "dev" is "true" setting build.dockerfile to '
@@ -36,6 +56,7 @@ class LoggingClient(ABC):
         self._logging_console.double_tabbed_print(*output)
 
     def log_header(self, service_being_built: str) -> None:
+        """Logs header for ConcreteServiceBuilder."""
         self._logging_console.header_print(
             f"Creating Service for {service_being_built}"
         )
@@ -46,6 +67,10 @@ class LoggingClient(ABC):
         final_container_name: str,
         system_unique_id: Optional[str],
     ) -> None:
+        """Logs what container_name is being set to for the Service.
+
+        Also details how container_name was built and why.
+        """
         if system_unique_id is None:
             message = [
                 '"system-unique-id" is None.',
@@ -64,12 +89,14 @@ class LoggingClient(ABC):
     def log_image_name(
         self, image_name: str, source_type: str, param_name: str
     ) -> None:
+        """Logs what image is being set to and why."""
         self._logging_console.tabbed_header_print("image")
         self._logging_console.double_tabbed_print(
             f'Using image name "{image_name}" since "{param_name}" is "{source_type}".'
         )
 
     def log_networks(self, networks: IntermediateNetworks) -> None:
+        """Logs what networks are being added to Service."""
         tabbed_networks = [f'\t"{network}"' for network in networks]
         self._logging_console.tabbed_header_print("networks")
         self._logging_console.double_tabbed_print(
@@ -77,6 +104,7 @@ class LoggingClient(ABC):
         )
 
     def log_tty(self, is_tty: bool) -> None:
+        """Logs what tty is being set to."""
         if is_tty:
             val = "true"
         else:
@@ -93,27 +121,33 @@ class LoggingClient(ABC):
     ############################################################################
 
     @abstractmethod
-    def log_build(self, build_args: Optional[IntermediateBuildArgs]) -> None:
+    def log_build_args(self, build_args: Optional[IntermediateBuildArgs]) -> None:
+        """Logs what build args are being set, if any, and why."""
         ...
 
     @abstractmethod
     def log_volumes(self, volumes: Optional[IntermediateVolumes]) -> None:
+        """Logs what volumes are beings added, if any, and why."""
         ...
 
     @abstractmethod
     def log_command(self, command: Optional[IntermediateCommand]) -> None:
+        """Logs what command is being set, if it's being set at all, and why."""
         ...
 
     @abstractmethod
     def log_ports(self, ports: Optional[IntermediatePorts]) -> None:
+        """Logs what ports are being set, if any, and why."""
         ...
 
     @abstractmethod
     def log_depends_on(self, depends_on: Optional[IntermediateDependsOn]) -> None:
+        """Logs what depends_on are being set, if any, and why."""
         ...
 
     @abstractmethod
     def log_env_vars(
         self, env_vars: Optional[IntermediateEnvironmentVariables]
     ) -> None:
+        """Logs what environment values are being set, if any, and why."""
         ...

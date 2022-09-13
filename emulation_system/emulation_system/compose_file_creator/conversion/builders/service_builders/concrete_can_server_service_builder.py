@@ -104,7 +104,7 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
 
         else:
             build_args = None
-        self._logging_client.log_build(build_args)
+        self._logging_client.log_build_args(build_args)
         return get_service_build(self._image, build_args, self._dev)
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
