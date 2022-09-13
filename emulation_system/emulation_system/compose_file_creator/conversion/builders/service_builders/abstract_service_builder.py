@@ -39,6 +39,10 @@ class AbstractServiceBuilder(ABC):
         return container_name
 
     @abstractmethod
+    def generate_container_name(self) -> str:
+        ...
+
+    @abstractmethod
     def generate_image(self) -> str:
         ...
 

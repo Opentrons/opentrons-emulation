@@ -6,7 +6,6 @@ from ..input.hardware_models import OT2InputModel, OT3InputModel
 from .builders.service_builders.service_builder_orchestrator import (
     ServiceBuilderOrchestrator,
 )
-from .service_creation.emulator_proxy_creation import create_emulator_proxy_service
 from .service_creation.input_service_creation import configure_input_service
 from .service_creation.ot3_service_creation import create_ot3_services
 from .service_creation.shared_functions import generate_container_name
@@ -19,12 +18,15 @@ def create_services(
     dev: bool,
 ) -> DockerServices:
     """Creates all services to be added to compose file."""
+    service_builder_orchestrator = ServiceBuilderOrchestrator(
+        config_model, global_settings
+    )
     services = {}
     smoothie_name = None
     can_server_service_name = None
 
-    emulator_proxy_service = create_emulator_proxy_service(
-        config_model, global_settings, dev
+    emulator_proxy_service = service_builder_orchestrator.build_emulator_proxy_service(
+        dev
     )
     emulator_proxy_name = emulator_proxy_service.container_name
     assert emulator_proxy_name is not None  # For mypy
@@ -37,10 +39,7 @@ def create_services(
         services[smoothie_name] = smoothie_service
 
     if config_model.robot is not None and config_model.robot.__class__ == OT3InputModel:
-
-        can_server_service = ServiceBuilderOrchestrator(
-            config_model, global_settings
-        ).build_can_server_service(dev)
+        can_server_service = service_builder_orchestrator.build_can_server_service(dev)
         can_server_service_name = can_server_service.container_name
         assert can_server_service_name is not None
         ot3_services = create_ot3_services(

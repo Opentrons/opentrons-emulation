@@ -2,6 +2,7 @@ from emulation_system import OpentronsEmulationConfiguration, SystemConfiguratio
 from emulation_system.compose_file_creator import Service
 from emulation_system.compose_file_creator.conversion import (
     ConcreteCANServerServiceBuilder,
+    ConcreteEmulatorProxyServiceBuilder,
 )
 
 
@@ -15,7 +16,11 @@ class ServiceBuilderOrchestrator:
         self._global_settings = global_settings
 
     def build_can_server_service(self, dev: bool) -> Service:
-        service = ConcreteCANServerServiceBuilder(
+        return ConcreteCANServerServiceBuilder(
             self._config_model, self._global_settings, dev
         ).build_service()
-        return service
+
+    def build_emulator_proxy_service(self, dev: bool) -> Service:
+        return ConcreteEmulatorProxyServiceBuilder(
+            self._config_model, self._global_settings, dev
+        ).build_service()
