@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import os
+from typing import Any, Dict, List
 
 from rich.console import Console
 from rich.highlighter import RegexHighlighter
+from rich.pretty import pretty_repr
 
 from emulation_system.consts import ROOT_DIR
 
@@ -84,6 +86,10 @@ class CustomConsole(Console):
         objects = ["\t\t" + obj for obj in objects]
 
         self.print(*objects, **kwargs, sep="\n")
+
+    @staticmethod
+    def convert_dict(dict_to_convert: Dict[str, Any]) -> List[str]:
+        return pretty_repr(dict_to_convert).split("\n")
 
 
 logging_console = CustomConsole(

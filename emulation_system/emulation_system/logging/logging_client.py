@@ -15,13 +15,10 @@ from emulation_system.logging.console import logging_console
 
 
 class LoggingClient(ABC):
-
-    HEADER_NAME = "CAN Server"
-
-    def __init__(self, dev: bool) -> None:
+    def __init__(self, header_name: str, dev: bool) -> None:
         self._dev = dev
         self._logging_console = logging_console
-        self.log_header(self.HEADER_NAME)
+        self.log_header(header_name)
         self.log_dockerfile()
 
     def log_dockerfile(self) -> None:
@@ -44,27 +41,32 @@ class LoggingClient(ABC):
         )
 
     def log_container_name(
-        self, container_name: str, system_unique_id: Optional[str]
+        self,
+        passed_container_name: str,
+        final_container_name: str,
+        system_unique_id: Optional[str],
     ) -> None:
         if system_unique_id is None:
-            message = (
-                '"system-unique-id" is None. \n'
-                f'Setting container_name as passed to: "{container_name}".'
-            )
+            message = [
+                '"system-unique-id" is None.',
+                f'Setting container_name as passed to: "{passed_container_name}".',
+            ]
         else:
-            message = []
-            message.append(f'"system-unique-id" is "{system_unique_id}".')
-            message.append(f"Prepending it to passed container name. ")
-            message.append(f'Setting container name to "{container_name}".')
+            message = [
+                f'"system-unique-id" is "{system_unique_id}".',
+                f'Prepending it to passed container name: "{passed_container_name}". ',
+                f'Setting container name to "{final_container_name}".',
+            ]
 
         self._logging_console.tabbed_header_print("container_name")
         self._logging_console.double_tabbed_print(*message)
 
-    def log_image_name(self, image_name: str, source_type: str) -> None:
+    def log_image_name(
+        self, image_name: str, source_type: str, param_name: str
+    ) -> None:
         self._logging_console.tabbed_header_print("image")
         self._logging_console.double_tabbed_print(
-            f'Using image name "{image_name}" since '
-            f'can-server-source-type is "{source_type}".'
+            f'Using image name "{image_name}" since "{param_name}" is "{source_type}".'
         )
 
     def log_networks(self, networks: RequiredNetworks) -> None:
@@ -80,7 +82,7 @@ class LoggingClient(ABC):
         else:
             val = "false"
         self._logging_console.tabbed_header_print("tty")
-        self._logging_console.double_tabbed_print(f'Setting "tty" to "{val}".')
+        self._logging_console.double_tabbed_print(f'Setting tty to "{val}".')
 
     ############################################################################
     # Note that all below abstract logging methods have parallel methods in    #

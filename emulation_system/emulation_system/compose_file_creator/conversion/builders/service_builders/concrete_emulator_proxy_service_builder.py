@@ -26,6 +26,7 @@ from emulation_system.intermediate_types import (
     RequiredNetworks,
     Volumes,
 )
+from emulation_system.logging import EmulatorProxyLoggingClient
 
 
 class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
@@ -47,6 +48,7 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
     ) -> None:
         super().__init__(config_model, global_settings)
         self._dev = dev
+        self._logging_client = EmulatorProxyLoggingClient(self._dev)
         self._image = self._generate_image()
 
     def generate_container_name(self) -> str:
@@ -54,21 +56,31 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         container_name = super()._generate_container_name(
             self.EMULATOR_PROXY_NAME, system_unique_id
         )
+        self._logging_client.log_container_name(
+            self.EMULATOR_PROXY_NAME, container_name, system_unique_id
+        )
         return container_name
 
-    @staticmethod
-    def _generate_image() -> str:
-        return EmulatorProxyImages().remote_firmware_image_name
+    def _generate_image(self) -> str:
+        image_name = EmulatorProxyImages().remote_firmware_image_name
+        # Passing blank strings because EmulatorProxyLoggingClient overrides
+        # LoggingClient's log_image_name method, but doesn't need the last 2 parameters.
+        # But those parameters need to be there to match the parent's signature.
+        self._logging_client.log_image_name(image_name, "", "")
+        return image_name
 
     def generate_image(self) -> str:
         return get_service_image(self._image)
 
     def is_tty(self) -> bool:
         tty = True
+        self._logging_client.log_tty(tty)
         return tty
 
     def generate_networks(self) -> RequiredNetworks:
+        # TODO: Not sure if emulator-proxy needs to have access to CAN Network
         networks = self._config_model.required_networks
+        self._logging_client.log_networks(networks)
         return networks
 
     def generate_build(self) -> Optional[BuildItem]:
@@ -79,23 +91,34 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
             self._global_settings.get_repo_commit(repo),
             self._global_settings.get_repo_head(repo),
         )
+        self._logging_client.log_build(build_args)
         return get_service_build(self._image, build_args, self._dev)
 
     def generate_volumes(self) -> Optional[Volumes]:
-        return None
+        volumes = None
+        self._logging_client.log_volumes(volumes)
+        return volumes
 
     def generate_command(self) -> Optional[Command]:
-        return None
+        command = None
+        self._logging_client.log_command(command)
+        return command
 
     def generate_ports(self) -> Optional[Ports]:
-        return None
+        ports = None
+        self._logging_client.log_ports(ports)
+        return ports
 
     def generate_depends_on(self) -> Optional[DependsOn]:
-        return None
+        depends_on = None
+        self._logging_client.log_depends_on(depends_on)
+        return depends_on
 
     def generate_env_vars(self) -> Optional[EnvironmentVariables]:
-        return {
+        env_vars = {
             env_var_name: env_var_value
             for module in self.MODULE_TYPES
             for env_var_name, env_var_value in module.get_proxy_info_env_var().items()
         }
+        self._logging_client.log_env_vars(env_vars)
+        return env_vars

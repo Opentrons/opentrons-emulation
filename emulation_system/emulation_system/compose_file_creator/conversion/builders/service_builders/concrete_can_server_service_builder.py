@@ -64,7 +64,9 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
             if source_type == SourceType.LOCAL
             else CANServerImages().remote_firmware_image_name
         )
-        self._logging_client.log_image_name(image_name, source_type)
+        self._logging_client.log_image_name(
+            image_name, source_type, "can-server-source-type"
+        )
         return image_name
 
     def generate_container_name(self) -> str:
@@ -72,7 +74,9 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
         container_name = super()._generate_container_name(
             self.CAN_SERVER_NAME, system_unique_id
         )
-        self._logging_client.log_container_name(container_name, system_unique_id)
+        self._logging_client.log_container_name(
+            self.CAN_SERVER_NAME, container_name, system_unique_id
+        )
         return container_name
 
     def generate_image(self) -> str:

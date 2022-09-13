@@ -12,15 +12,14 @@
 # `source-location` supplies source code for the OT3-firmware emulators
 # `robot-server-source-location` supplies source code for the robot-server
 
-system-unique-id: ot3-only
 robot:
   id: otie
   hardware: ot3
   source-type: local
-  source-location: /home/runner/work/opentrons-emulation/opentrons-emulation/ot3-firmware
+  source-location: /home/derek-maggio/Documents/repos/ot3-firmware
   robot-server-source-type: local
-  robot-server-source-location: /home/runner/work/opentrons-emulation/opentrons-emulation/opentrons
+  robot-server-source-location: /home/derek-maggio/Documents/repos/opentrons
   can-server-source-type: local
-  can-server-source-location: /home/runner/work/opentrons-emulation/opentrons-emulation/opentrons
+  can-server-source-location: /home/derek-maggio/Documents/repos/opentrons
   emulation-level: hardware
   exposed-port: 31950
