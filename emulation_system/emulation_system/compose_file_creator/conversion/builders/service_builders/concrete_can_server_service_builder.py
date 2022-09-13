@@ -1,6 +1,4 @@
-from typing import (
-    Optional,
-)
+from typing import Optional
 
 from emulation_system.compose_file_creator.errors import (
     HardwareDoesNotExistError,
@@ -9,20 +7,18 @@ from emulation_system.compose_file_creator.errors import (
 from emulation_system.compose_file_creator.input.configuration_file import (
     SystemConfigurationModel,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    BuildItem,
-)
+from emulation_system.compose_file_creator.output.compose_file_model import BuildItem
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     Hardware,
     OpentronsRepository,
     SourceType,
 )
 from emulation_system.compose_file_creator.settings.images import CANServerImages
-from emulation_system.logging.logging_client import LoggingClient
+from emulation_system.logging.can_server_logging_client import CANServerLoggingClient
 from emulation_system.opentrons_emulation_configuration import (
     OpentronsEmulationConfiguration,
 )
-from .abstract_service_builder import AbstractServiceBuilder
+
 from ...intermediate_types import (
     Command,
     DependsOn,
@@ -37,6 +33,7 @@ from ...service_creation.shared_functions import (
     get_entrypoint_mount_string,
     get_service_build,
 )
+from .abstract_service_builder import AbstractServiceBuilder
 
 
 class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
@@ -52,7 +49,7 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
         dev: bool,
     ) -> None:
         super().__init__(config_model, global_settings)
-        self._logging_client = LoggingClient()
+        self._logging_client = CANServerLoggingClient()
         self._logging_client.log_header("CAN Server")
         self._dev = dev
         self._ot3 = self._get_ot3(config_model)
@@ -101,40 +98,45 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
 
     def generate_build(self) -> Optional[BuildItem]:
         repo = OpentronsRepository.OPENTRONS
-        source_type = self._ot3.can_server_source_type
-        if source_type == SourceType.REMOTE:
+        if self._ot3.can_server_source_type == SourceType.REMOTE:
             build_args = get_build_args(
                 repo,
                 self._ot3.can_server_source_location,
                 self._global_settings.get_repo_commit(repo),
                 self._global_settings.get_repo_head(repo),
             )
-            why = self.BUILD_ARGS_REASON
 
         else:
             build_args = None
-            why = self.NO_BUILD_ARGS_REASON
-        self._logging_client.log_build(build_args, why)
+        self._logging_client.log_build(build_args)
         return get_service_build(self._image, build_args, self._dev)
 
     def generate_volumes(self) -> Optional[Volumes]:
         if self._ot3.can_server_source_type == SourceType.LOCAL:
-            mounts = [get_entrypoint_mount_string()]
-            mounts.extend(self._ot3.get_can_mount_strings())
-            add_opentrons_named_volumes(mounts)
+            volumes = [get_entrypoint_mount_string()]
+            volumes.extend(self._ot3.get_can_mount_strings())
+            add_opentrons_named_volumes(volumes)
         else:
-            mounts = None
-
-        return mounts
+            volumes = None
+        self._logging_client.log_volumes(volumes)
+        return volumes
 
     def generate_command(self) -> Optional[Command]:
-        return None
+        command = None
+        self._logging_client.log_command(command)
+        return command
 
     def generate_ports(self) -> Optional[Ports]:
-        return self._ot3.get_can_server_bound_port()
+        ports = self._ot3.get_can_server_bound_port()
+        self._logging_client.log_ports(ports)
+        return ports
 
     def generate_depends_on(self) -> Optional[DependsOn]:
-        return None
+        depends_on = None
+        self._logging_client.log_depends_on(depends_on)
+        return depends_on
 
     def generate_env_vars(self) -> Optional[EnvironmentVariables]:
-        return None
+        env_vars = None
+        self._logging_client.log_env_vars(env_vars)
+        return env_vars
