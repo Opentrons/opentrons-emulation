@@ -31,16 +31,16 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "RET-1194-overhaul-emulation"
+          ref: "refactor-conversion-logic-RQA-243"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@RET-1194-overhaul-emulation
+        uses: Opentrons/opentrons-emulation@refactor-conversion-logic-RQA-243
         with:
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup-python-only
 
       - name: YAML Substitution
-        uses: Opentrons/opentrons-emulation@RET-1194-overhaul-emulation
+        uses: Opentrons/opentrons-emulation@refactor-conversion-logic-RQA-243
         with:
           command: yaml-sub
           substitutions: >-
