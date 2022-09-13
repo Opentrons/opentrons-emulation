@@ -2,6 +2,7 @@ from typing import Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem
+from emulation_system.compose_file_creator.conversion import AbstractServiceBuilder
 from emulation_system.compose_file_creator.errors import (
     HardwareDoesNotExistError,
     IncorrectHardwareError,
@@ -28,7 +29,6 @@ from ...service_creation.shared_functions import (
     get_entrypoint_mount_string,
     get_service_build,
 )
-from .abstract_service_builder import AbstractServiceBuilder
 
 
 class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
