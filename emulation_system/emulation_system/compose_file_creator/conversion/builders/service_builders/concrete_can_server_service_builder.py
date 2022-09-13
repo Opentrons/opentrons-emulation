@@ -14,12 +14,12 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     SourceType,
 )
 from emulation_system.intermediate_types import (
-    Command,
-    DependsOn,
-    EnvironmentVariables,
-    Ports,
-    RequiredNetworks,
-    Volumes,
+    IntermediateCommand,
+    IntermediateDependsOn,
+    IntermediateEnvironmentVariables,
+    IntermediateNetworks,
+    IntermediatePorts,
+    IntermediateVolumes,
 )
 from emulation_system.logging import CANServerLoggingClient
 
@@ -87,7 +87,7 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
         self._logging_client.log_tty(tty)
         return tty
 
-    def generate_networks(self) -> RequiredNetworks:
+    def generate_networks(self) -> IntermediateNetworks:
         networks = self._config_model.required_networks
         self._logging_client.log_networks(networks)
         return networks
@@ -107,7 +107,7 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
         self._logging_client.log_build(build_args)
         return get_service_build(self._image, build_args, self._dev)
 
-    def generate_volumes(self) -> Optional[Volumes]:
+    def generate_volumes(self) -> Optional[IntermediateVolumes]:
         if self._ot3.can_server_source_type == SourceType.LOCAL:
             volumes = [get_entrypoint_mount_string()]
             volumes.extend(self._ot3.get_can_mount_strings())
@@ -117,22 +117,22 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
         self._logging_client.log_volumes(volumes)
         return volumes
 
-    def generate_command(self) -> Optional[Command]:
+    def generate_command(self) -> Optional[IntermediateCommand]:
         command = None
         self._logging_client.log_command(command)
         return command
 
-    def generate_ports(self) -> Optional[Ports]:
+    def generate_ports(self) -> Optional[IntermediatePorts]:
         ports = self._ot3.get_can_server_bound_port()
         self._logging_client.log_ports(ports)
         return ports
 
-    def generate_depends_on(self) -> Optional[DependsOn]:
+    def generate_depends_on(self) -> Optional[IntermediateDependsOn]:
         depends_on = None
         self._logging_client.log_depends_on(depends_on)
         return depends_on
 
-    def generate_env_vars(self) -> Optional[EnvironmentVariables]:
+    def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         env_vars = None
         self._logging_client.log_env_vars(env_vars)
         return env_vars

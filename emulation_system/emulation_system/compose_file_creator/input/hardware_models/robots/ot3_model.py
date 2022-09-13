@@ -23,7 +23,7 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     SourceRepositories,
     SourceType,
 )
-from emulation_system.intermediate_types import Ports
+from emulation_system.intermediate_types import IntermediatePorts
 
 
 class OT3Attributes(HardwareSpecificAttributes):
@@ -79,7 +79,7 @@ class OT3InputModel(RobotInputModel):
             else []
         )
 
-    def get_can_server_bound_port(self) -> Optional[Ports]:
+    def get_can_server_bound_port(self) -> Optional[IntermediatePorts]:
         """Get can server port string."""
         return (
             [f"{self.can_server_exposed_port}:{self.can_server_bound_port}"]

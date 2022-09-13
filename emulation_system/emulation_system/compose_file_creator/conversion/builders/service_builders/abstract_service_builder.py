@@ -1,17 +1,27 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, cast
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem, Service
+from emulation_system.docker_expected_types import (
+    ServiceBuild,
+    ServiceCommand,
+    ServiceContainerName,
+    ServiceEnvironment,
+    ServiceImage,
+    ServicePorts,
+    ServiceTTY,
+    ServiceVolumes,
+)
 from emulation_system.intermediate_types import (
-    Command,
-    DependsOn,
-    EnvironmentVariables,
-    Ports,
-    RequiredNetworks,
-    Volumes,
+    IntermediateCommand,
+    IntermediateDependsOn,
+    IntermediateEnvironmentVariables,
+    IntermediateNetworks,
+    IntermediatePorts,
+    IntermediateVolumes,
 )
 
 
@@ -51,7 +61,7 @@ class AbstractServiceBuilder(ABC):
         ...
 
     @abstractmethod
-    def generate_networks(self) -> RequiredNetworks:
+    def generate_networks(self) -> IntermediateNetworks:
         ...
 
     #############################################################
@@ -63,35 +73,35 @@ class AbstractServiceBuilder(ABC):
         ...
 
     @abstractmethod
-    def generate_volumes(self) -> Optional[Volumes]:
+    def generate_volumes(self) -> Optional[IntermediateVolumes]:
         ...
 
     @abstractmethod
-    def generate_ports(self) -> Optional[Ports]:
+    def generate_ports(self) -> Optional[IntermediatePorts]:
         ...
 
     @abstractmethod
-    def generate_env_vars(self) -> Optional[EnvironmentVariables]:
+    def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         ...
 
     @abstractmethod
-    def generate_command(self) -> Optional[Command]:
+    def generate_command(self) -> Optional[IntermediateCommand]:
         ...
 
     @abstractmethod
-    def generate_depends_on(self) -> Optional[DependsOn]:
+    def generate_depends_on(self) -> Optional[IntermediateDependsOn]:
         ...
 
     def build_service(self) -> Service:
         return Service(
-            container_name=self.generate_container_name(),
-            image=self.generate_image(),
-            build=self.generate_build(),
-            tty=self.is_tty(),
+            container_name=cast(ServiceContainerName, self.generate_container_name()),
+            image=cast(ServiceImage, self.generate_image()),
+            build=cast(ServiceBuild, self.generate_build()),
+            tty=cast(ServiceTTY, self.is_tty()),
+            volumes=cast(ServiceVolumes, self.generate_volumes()),
+            ports=cast(ServicePorts, self.generate_ports()),
+            environment=cast(ServiceEnvironment, self.generate_env_vars()),
+            command=cast(ServiceCommand, self.generate_command()),
             networks=self.generate_networks(),
-            volumes=self.generate_volumes(),
-            ports=self.generate_ports(),
-            environment=self.generate_env_vars(),
-            command=self.generate_command(),
             depends_on=self.generate_depends_on(),
         )

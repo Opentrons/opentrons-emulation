@@ -1,15 +1,15 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
 from emulation_system.intermediate_types import (
-    Command,
-    DependsOn,
-    EnvironmentVariables,
-    Ports,
-    RequiredNetworks,
-    Volumes,
+    IntermediateBuildArgs,
+    IntermediateCommand,
+    IntermediateDependsOn,
+    IntermediateEnvironmentVariables,
+    IntermediateNetworks,
+    IntermediatePorts,
+    IntermediateVolumes,
 )
 from emulation_system.logging.console import logging_console
 
@@ -69,7 +69,7 @@ class LoggingClient(ABC):
             f'Using image name "{image_name}" since "{param_name}" is "{source_type}".'
         )
 
-    def log_networks(self, networks: RequiredNetworks) -> None:
+    def log_networks(self, networks: IntermediateNetworks) -> None:
         tabbed_networks = [f'\t"{network}"' for network in networks]
         self._logging_console.tabbed_header_print("networks")
         self._logging_console.double_tabbed_print(
@@ -93,25 +93,27 @@ class LoggingClient(ABC):
     ############################################################################
 
     @abstractmethod
-    def log_build(self, build_args: Optional[ListOrDict]) -> None:
+    def log_build(self, build_args: Optional[IntermediateBuildArgs]) -> None:
         ...
 
     @abstractmethod
-    def log_volumes(self, volumes: Optional[Volumes]) -> None:
+    def log_volumes(self, volumes: Optional[IntermediateVolumes]) -> None:
         ...
 
     @abstractmethod
-    def log_command(self, command: Optional[Command]) -> None:
+    def log_command(self, command: Optional[IntermediateCommand]) -> None:
         ...
 
     @abstractmethod
-    def log_ports(self, ports: Optional[Ports]) -> None:
+    def log_ports(self, ports: Optional[IntermediatePorts]) -> None:
         ...
 
     @abstractmethod
-    def log_depends_on(self, depends_on: Optional[DependsOn]) -> None:
+    def log_depends_on(self, depends_on: Optional[IntermediateDependsOn]) -> None:
         ...
 
     @abstractmethod
-    def log_env_vars(self, env_vars: Optional[EnvironmentVariables]) -> None:
+    def log_env_vars(
+        self, env_vars: Optional[IntermediateEnvironmentVariables]
+    ) -> None:
         ...

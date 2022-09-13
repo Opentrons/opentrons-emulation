@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple, cast
 
 from rich.console import Console
 from rich.highlighter import RegexHighlighter
@@ -73,17 +73,17 @@ class CustomConsole(Console):
 
     def tabbed_print(self, *objects, **kwargs) -> None:
         """Adds a tab character to all passed strings."""
-        objects = ["\t" + obj for obj in objects]
+        objects = cast(Tuple, ["\t" + obj for obj in objects])  # casting for typing
 
         self.print(*objects, **kwargs, sep="\n")
 
     def tabbed_header_print(self, *objects, **kwargs):
-        objects = ["\t" + obj for obj in objects]
+        objects = cast(Tuple, ["\t" + obj for obj in objects])  # casting for typing
         self.print(*objects, **kwargs, sep="\n", style=SECOND_LEVEL_HEADER_STYLE_STRING)
 
     def double_tabbed_print(self, *objects, **kwargs) -> None:
         """Adds a tab character to all passed strings."""
-        objects = ["\t\t" + obj for obj in objects]
+        objects = cast(Tuple, ["\t\t" + obj for obj in objects])
 
         self.print(*objects, **kwargs, sep="\n")
 

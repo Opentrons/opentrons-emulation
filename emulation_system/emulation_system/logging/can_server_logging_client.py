@@ -1,12 +1,12 @@
 from typing import Optional
 
-from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.intermediate_types import (
-    Command,
-    DependsOn,
-    EnvironmentVariables,
-    Ports,
-    Volumes,
+    IntermediateBuildArgs,
+    IntermediateCommand,
+    IntermediateDependsOn,
+    IntermediateEnvironmentVariables,
+    IntermediatePorts,
+    IntermediateVolumes,
 )
 from emulation_system.logging.logging_client import LoggingClient
 
@@ -18,19 +18,19 @@ class CANServerLoggingClient(LoggingClient):
     def __init__(self, dev: bool):
         super().__init__(self.HEADER_NAME, dev)
 
-    def log_build(self, build_args: Optional[ListOrDict]) -> None:
+    def log_build(self, build_args: Optional[IntermediateBuildArgs]) -> None:
         if build_args is None:
             output = ['Adding no build args since "can-server-source-type" is "local"']
         else:
             output = [
                 'Since "can-server-source-type" is "remote", '
                 "adding the following build args:",
-                *self._logging_console.convert_dict(build_args.dict()["__root__"]),
+                *self._logging_console.convert_dict(build_args),
             ]
         self._logging_console.tabbed_header_print("build.args")
         self._logging_console.double_tabbed_print(*output)
 
-    def log_volumes(self, volumes: Optional[Volumes]) -> None:
+    def log_volumes(self, volumes: Optional[IntermediateVolumes]) -> None:
         if volumes is None:
             output = ['Adding no volumes since "can-server-source-type" is "remote".']
         else:
@@ -43,11 +43,11 @@ class CANServerLoggingClient(LoggingClient):
         self._logging_console.tabbed_header_print("volumes")
         self._logging_console.double_tabbed_print(*output)
 
-    def log_command(self, command: Optional[Command]) -> None:
+    def log_command(self, command: Optional[IntermediateCommand]) -> None:
         self._logging_console.tabbed_header_print("command")
         self._logging_console.double_tabbed_print("Does not require command field.")
 
-    def log_ports(self, ports: Optional[Ports]) -> None:
+    def log_ports(self, ports: Optional[IntermediatePorts]) -> None:
         if ports is None:
             output = ["No ports will be exposed."]
         else:
@@ -60,11 +60,13 @@ class CANServerLoggingClient(LoggingClient):
         self._logging_console.tabbed_header_print("ports")
         self._logging_console.double_tabbed_print(*output)
 
-    def log_depends_on(self, depends_on: Optional[DependsOn]) -> None:
+    def log_depends_on(self, depends_on: Optional[IntermediateDependsOn]) -> None:
         self._logging_console.tabbed_header_print("depends_on")
         self._logging_console.double_tabbed_print("Does not require depends_on field.")
 
-    def log_env_vars(self, env_vars: Optional[EnvironmentVariables]) -> None:
+    def log_env_vars(
+        self, env_vars: Optional[IntermediateEnvironmentVariables]
+    ) -> None:
         self._logging_console.tabbed_header_print("environment")
         self._logging_console.double_tabbed_print(
             "Does not require environment variables."

@@ -18,6 +18,7 @@ from emulation_system.consts import (
     DOCKERFILE_DIR_LOCATION,
     DOCKERFILE_NAME,
 )
+from emulation_system.intermediate_types import IntermediateBuildArgs
 
 
 @pytest.mark.parametrize(
@@ -199,7 +200,7 @@ def test_get_build_args(
 )
 def test_get_service_build(
     image_name: str,
-    build_args: Optional[ListOrDict],
+    build_args: Optional[IntermediateBuildArgs],
     dev: bool,
     expected_value: BuildItem,
 ) -> None:

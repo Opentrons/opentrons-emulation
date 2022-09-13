@@ -1,7 +1,7 @@
 """Pure functions related to the creation of the smoothie Service."""
 
 import json
-from typing import List, Optional, Union
+from typing import List, Optional, cast
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import Service
@@ -10,15 +10,13 @@ from emulation_system.compose_file_creator.errors import (
     IncorrectHardwareError,
 )
 from emulation_system.compose_file_creator.images import SmoothieImages
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    ListOrDict,
-    Volume1,
-)
+from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     Hardware,
     OpentronsRepository,
     SourceType,
 )
+from emulation_system.docker_expected_types import ServiceVolumes
 
 from .shared_functions import (
     add_opentrons_named_volumes,
@@ -69,7 +67,7 @@ def create_smoothie_service(
         if ot2.source_type == SourceType.REMOTE
         else None
     )
-    mounts: Optional[List[Union[str, Volume1]]] = None
+    mounts: Optional[List[str]] = None
     if ot2.source_type == SourceType.LOCAL:
         mounts = [get_entrypoint_mount_string()]
         mounts.extend(ot2.get_mount_strings())
@@ -80,7 +78,7 @@ def create_smoothie_service(
         image=get_service_image(image),
         build=get_service_build(image, build_args, dev),
         networks=config_model.required_networks,
-        volumes=mounts,
+        volumes=cast(ServiceVolumes, mounts),
         tty=True,
         environment=converted_env,
     )

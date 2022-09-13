@@ -2,9 +2,10 @@ from typing import Any, Dict
 
 import pytest
 from pydantic import parse_obj_as
-from pytest_lazyfixture import lazy_fixture
+from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.conversion import (
     ConcreteCANServerServiceBuilder,
 )
@@ -60,8 +61,11 @@ def test_simple_can_server_values(
     expected_dockerfile_name = DEV_DOCKERFILE_NAME if dev else DOCKERFILE_NAME
 
     assert service.container_name == "can-server"
+    assert isinstance(service.build, BuildItem)
+    assert isinstance(service.build.context, str)
     assert "opentrons-emulation/docker/" in service.build.context
     assert service.build.dockerfile == expected_dockerfile_name
+    assert isinstance(service.networks, list)
     assert len(service.networks) == 2
     assert "can-network" in service.networks
     assert "local-network" in service.networks
@@ -88,6 +92,8 @@ def test_can_server_remote(
     service = ConcreteCANServerServiceBuilder(
         config, testing_global_em_config, dev=True
     ).build_service()
+    assert isinstance(service.build, BuildItem)
+    assert isinstance(service.build.context, str)
     assert service.build.target == "can-server-remote"
     assert service.volumes is None
     assert get_source_code_build_args(service) == {
@@ -102,6 +108,8 @@ def test_can_server_local(
     service = ConcreteCANServerServiceBuilder(
         local_can, testing_global_em_config, dev=True
     ).build_service()
+    assert isinstance(service.build, BuildItem)
+    assert isinstance(service.build.context, str)
     assert service.build.target == "can-server-local"
     assert build_args_are_none(service)
 

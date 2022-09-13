@@ -19,12 +19,12 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     OpentronsRepository,
 )
 from emulation_system.intermediate_types import (
-    Command,
-    DependsOn,
-    EnvironmentVariables,
-    Ports,
-    RequiredNetworks,
-    Volumes,
+    IntermediateCommand,
+    IntermediateDependsOn,
+    IntermediateEnvironmentVariables,
+    IntermediateNetworks,
+    IntermediatePorts,
+    IntermediateVolumes,
 )
 from emulation_system.logging import EmulatorProxyLoggingClient
 
@@ -77,7 +77,7 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         self._logging_client.log_tty(tty)
         return tty
 
-    def generate_networks(self) -> RequiredNetworks:
+    def generate_networks(self) -> IntermediateNetworks:
         # TODO: Not sure if emulator-proxy needs to have access to CAN Network
         networks = self._config_model.required_networks
         self._logging_client.log_networks(networks)
@@ -94,31 +94,31 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         self._logging_client.log_build(build_args)
         return get_service_build(self._image, build_args, self._dev)
 
-    def generate_volumes(self) -> Optional[Volumes]:
+    def generate_volumes(self) -> Optional[IntermediateVolumes]:
         volumes = None
         self._logging_client.log_volumes(volumes)
         return volumes
 
-    def generate_command(self) -> Optional[Command]:
+    def generate_command(self) -> Optional[IntermediateCommand]:
         command = None
         self._logging_client.log_command(command)
         return command
 
-    def generate_ports(self) -> Optional[Ports]:
+    def generate_ports(self) -> Optional[IntermediatePorts]:
         ports = None
         self._logging_client.log_ports(ports)
         return ports
 
-    def generate_depends_on(self) -> Optional[DependsOn]:
+    def generate_depends_on(self) -> Optional[IntermediateDependsOn]:
         depends_on = None
         self._logging_client.log_depends_on(depends_on)
         return depends_on
 
-    def generate_env_vars(self) -> Optional[EnvironmentVariables]:
+    def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         env_vars = {
             env_var_name: env_var_value
             for module in self.MODULE_TYPES
-            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()
+            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()  # type: ignore [attr-defined]
         }
         self._logging_client.log_env_vars(env_vars)
         return env_vars

@@ -1,6 +1,6 @@
 """Logic for creating OT3 emulated hardware services."""
 from dataclasses import dataclass
-from typing import List, Optional, Union
+from typing import List, Optional, cast
 
 from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator import Service
@@ -13,10 +13,11 @@ from emulation_system.compose_file_creator.images import (
     OT3HeadImages,
     OT3PipettesImages,
 )
+from emulation_system.docker_expected_types import ServiceVolumes
 
 from ...errors import HardwareDoesNotExistError, IncorrectHardwareError
 from ...input.configuration_file import SystemConfigurationModel
-from ...output.compose_file_model import ListOrDict, Volume1
+from ...output.compose_file_model import ListOrDict
 from ...settings.config_file_settings import (
     Hardware,
     OpentronsRepository,
@@ -88,7 +89,7 @@ def create_ot3_services(
             else None
         )
 
-        mounts: Optional[List[Union[str, Volume1]]] = None
+        mounts: Optional[List[str]] = None
         if ot3.source_type == SourceType.LOCAL:
             mounts = [get_entrypoint_mount_string()]
             mounts.extend(ot3.get_mount_strings())
@@ -100,7 +101,7 @@ def create_ot3_services(
                 image=image_name,
                 build=get_service_build(image_name, build_args, dev),
                 networks=config_model.required_networks,
-                volumes=mounts,
+                volumes=cast(ServiceVolumes, mounts),
                 tty=True,
                 environment=env,
             )

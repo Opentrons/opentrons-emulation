@@ -24,7 +24,7 @@ from emulation_system.compose_file_creator.settings.custom_types import (
     Modules,
     Robots,
 )
-from emulation_system.intermediate_types import RequiredNetworks
+from emulation_system.intermediate_types import IntermediateNetworks
 
 
 class SystemConfigurationModel(BaseModel):
@@ -147,7 +147,7 @@ class SystemConfigurationModel(BaseModel):
         return robot_is_remote and modules_are_remote
 
     @property
-    def required_networks(self) -> RequiredNetworks:
+    def required_networks(self) -> IntermediateNetworks:
         """Get required networks to create for system."""
         local_network_name = (
             DEFAULT_NETWORK_NAME
@@ -159,7 +159,7 @@ class SystemConfigurationModel(BaseModel):
         if self.requires_can_network:
             required_networks.append(self.can_network_name)
 
-        return RequiredNetworks(required_networks)
+        return IntermediateNetworks(required_networks)
 
     @classmethod
     def from_file(cls, file_path: str) -> SystemConfigurationModel:

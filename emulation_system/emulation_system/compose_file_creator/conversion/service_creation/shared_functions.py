@@ -1,14 +1,11 @@
 """Function useful to multiple service creation modules."""
 import pathlib
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import List, Optional, cast
 
 from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.input.hardware_models import RobotInputModel
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    ListOrDict,
-    Volume1,
-)
+from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.compose_file_creator.settings.config_file_settings import (
     ENTRYPOINT_MOUNT_NAME,
     FileMount,
@@ -23,6 +20,7 @@ from emulation_system.consts import (
     DOCKERFILE_NAME,
     ENTRYPOINT_FILE_LOCATION,
 )
+from emulation_system.intermediate_types import IntermediateBuildArgs
 
 
 def generate_container_name(
@@ -37,13 +35,13 @@ def generate_container_name(
 
 
 def get_service_build(
-    image_name: str, build_args: Optional[ListOrDict], dev: bool
+    image_name: str, build_args: Optional[IntermediateBuildArgs], dev: bool
 ) -> BuildItem:
     """Generate BuildItem object for Service."""
     return BuildItem(
         context=DOCKERFILE_DIR_LOCATION,
         target=image_name,
-        args=build_args,
+        args=cast(ListOrDict, build_args),
         dockerfile=get_dockerfile_name(dev),
     )
 
@@ -53,7 +51,7 @@ def get_service_image(image_name: str) -> str:
     return f"{image_name}:latest"
 
 
-def get_mount_strings(container: Containers) -> Optional[List[Union[str, Volume1]]]:
+def get_mount_strings(container: Containers) -> Optional[List[str]]:
     """Get mount strings defined on container."""
     mount_strings = (
         container.get_robot_server_mount_strings()
@@ -63,16 +61,12 @@ def get_mount_strings(container: Containers) -> Optional[List[Union[str, Volume1
     if len(mount_strings) > 0:
         mount_strings.append(get_entrypoint_mount_string())
         if container.get_source_repo() == OpentronsRepository.OPENTRONS:
-            add_opentrons_named_volumes(cast(List[Union[str, Volume1]], mount_strings))
+            add_opentrons_named_volumes(mount_strings)
         elif container.get_source_repo() == OpentronsRepository.OPENTRONS_MODULES:
-            add_opentrons_modules_named_volumes(
-                cast(List[Union[str, Volume1]], mount_strings)
-            )
+            add_opentrons_modules_named_volumes(mount_strings)
         elif container.get_source_repo() == OpentronsRepository.OT3_FIRMWARE:
-            add_ot3_firmware_named_volumes(
-                cast(List[Union[str, Volume1]], mount_strings)
-            )
-        return cast(List[Union[str, Volume1]], mount_strings)
+            add_ot3_firmware_named_volumes(mount_strings)
+        return mount_strings
     else:
         return None
 
@@ -92,20 +86,19 @@ def get_build_args(
     source_location: str,
     format_string: str,
     head: str,
-) -> ListOrDict:
+) -> IntermediateBuildArgs:
     """Get build arguments for service."""
-    env_var_to_use = RepoToBuildArgMapping[source_repo.name]
+    env_var_to_use = str(RepoToBuildArgMapping[source_repo.name].value)
     value = (
         head
         if source_location == "latest"
         else format_string.replace("{{commit-sha}}", source_location)
     )
-    arg_dict: Dict[str, Any] = {env_var_to_use: value}
-    return ListOrDict(__root__=arg_dict)
+    return {env_var_to_use: value}
 
 
 def _add_named_volumes(
-    mount_list: List[Union[str, Volume1]],
+    mount_list: List[str],
     directory_to_search_for: str,
     build_dirs: List[str],
 ) -> None:
@@ -116,7 +109,7 @@ def _add_named_volumes(
             break
 
 
-def add_ot3_firmware_named_volumes(mount_list: List[Union[str, Volume1]]) -> None:
+def add_ot3_firmware_named_volumes(mount_list: List[str]) -> None:
     """Add ot3 firmware named volumes."""
     _add_named_volumes(
         mount_list,
@@ -128,7 +121,7 @@ def add_ot3_firmware_named_volumes(mount_list: List[Union[str, Volume1]]) -> Non
     )
 
 
-def add_opentrons_named_volumes(mount_list: List[Union[str, Volume1]]) -> None:
+def add_opentrons_named_volumes(mount_list: List[str]) -> None:
     """Add opentrons named volumes."""
     _add_named_volumes(
         mount_list,
@@ -137,7 +130,7 @@ def add_opentrons_named_volumes(mount_list: List[Union[str, Volume1]]) -> None:
     )
 
 
-def add_opentrons_modules_named_volumes(mount_list: List[Union[str, Volume1]]) -> None:
+def add_opentrons_modules_named_volumes(mount_list: List[str]) -> None:
     """Add opentrons-modules named volumes."""
     _add_named_volumes(
         mount_list,

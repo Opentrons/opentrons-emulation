@@ -1,6 +1,6 @@
 """Pure functions related to creating Service objects from definitions in input file."""
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, cast
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import Service
@@ -19,6 +19,7 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     SourceType,
 )
 from emulation_system.compose_file_creator.settings.custom_types import Containers
+from emulation_system.docker_expected_types import ServiceVolumes
 
 from .shared_functions import (
     generate_container_name,
@@ -139,7 +140,7 @@ def configure_input_service(
         tty=True,
         build=get_service_build(container.get_image_name(), build_args, dev),
         networks=config_model.required_networks,
-        volumes=get_mount_strings(container),
+        volumes=cast(ServiceVolumes, get_mount_strings(container)),
         depends_on=_get_service_depends_on(
             container, emulator_proxy_name, smoothie_name
         ),
