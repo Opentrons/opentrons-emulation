@@ -111,6 +111,7 @@ def test_can_server_remote(
     service = ConcreteCANServerServiceBuilder(
         config, testing_global_em_config, dev=True
     ).build_service()
+    assert service.image == "can-server-remote"
     assert isinstance(service.build, BuildItem)
     assert isinstance(service.build.context, str)
     assert service.build.target == "can-server-remote"
@@ -128,6 +129,7 @@ def test_can_server_local(
     service = ConcreteCANServerServiceBuilder(
         local_can, testing_global_em_config, dev=True
     ).build_service()
+    assert service.image == "can-server-local"
     assert isinstance(service.build, BuildItem)
     assert isinstance(service.build.context, str)
     assert service.build.target == "can-server-local"
