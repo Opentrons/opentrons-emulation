@@ -1,4 +1,4 @@
-"""Tests to confirm that ConcreteCANServerServiceBuilder builds the CAN Server Service correctly."""  # noqa: E501
+"""Tests to confirm that ConcreteCANServerServiceBuilder builds the CAN Server Service correctly."""
 from typing import Any, Dict, cast
 
 import pytest
@@ -47,7 +47,7 @@ def test_simple_can_server_values(
     testing_global_em_config: OpentronsEmulationConfiguration,
     opentrons_head: str,
 ) -> None:
-    """Tests for values that are the same for all configurations of an Emulator Proxy."""  # noqa: E501
+    """Tests for values that are the same for all configurations of an Emulator Proxy."""
     service = ConcreteEmulatorProxyServiceBuilder(
         config_model, testing_global_em_config, dev=dev
     ).build_service()

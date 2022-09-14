@@ -33,7 +33,7 @@ from ...service_creation.shared_functions import (
 
 
 class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
-    """Concrete implementation of AbstractServiceBuilder for building an Emulator Proxy."""  # noqa: E501
+    """Concrete implementation of AbstractServiceBuilder for building an Emulator Proxy."""
 
     EMULATOR_PROXY_NAME = "emulator-proxy"
 
@@ -140,7 +140,7 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         env_vars = {
             env_var_name: env_var_value
             for module in self.MODULE_TYPES
-            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()  # type: ignore [attr-defined] # noqa: E501
+            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()  # type: ignore [attr-defined]
         }
         self._logging_client.log_env_vars(env_vars)
         return env_vars

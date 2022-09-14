@@ -49,7 +49,7 @@ EXPECTED_YAML = convert_yaml(
         - derek
         tty: true
     version: '3.8'
-    """  # noqa: E501
+    """
 )
 
 JSON_INPUT = json.dumps({"system-unique-id": "derek"})

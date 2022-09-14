@@ -98,7 +98,7 @@ class AbstractServiceBuilder(ABC):
 
     @abstractmethod
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
-        """Method to, if necessary, generate value for environment parameter for Service."""  # noqa: E501
+        """Method to, if necessary, generate value for environment parameter for Service."""
         ...
 
     @abstractmethod
@@ -108,7 +108,7 @@ class AbstractServiceBuilder(ABC):
 
     @abstractmethod
     def generate_depends_on(self) -> Optional[IntermediateDependsOn]:
-        """Method to, if necessary, generate value for depends_on parameter for Service."""  # noqa: E501
+        """Method to, if necessary, generate value for depends_on parameter for Service."""
         ...
 
     def build_service(self) -> Service:

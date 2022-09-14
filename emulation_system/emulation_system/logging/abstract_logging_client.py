@@ -32,7 +32,7 @@ class AbstractLoggingClient(ABC):
         Calls log_header and log_dockerfile since all concrete implementations will need
         to call it.
 
-        :param service_builder_name: The name of the ConcreteServiceBuilder you are using.  # noqa: E501
+        :param service_builder_name: The name of the ConcreteServiceBuilder you are using.
         :param dev: Whether you are in dev mode.
         """
         self._dev = dev

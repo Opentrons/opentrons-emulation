@@ -5,7 +5,7 @@ from typing import Optional
 import pytest
 
 from emulation_system.compose_file_creator import BuildItem
-from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import (  # noqa: E501
+from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import (
     get_build_args,
     get_service_build,
 )
@@ -75,7 +75,7 @@ from emulation_system.intermediate_types import IntermediateBuildArgs
             OpentronsRepository.OPENTRONS_MODULES,
             "latest",
             "https://github.com/Opentrons/opentrons-modules/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip",  # noqa: E501
+            "https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip",
             {
                 "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/"
                 "opentrons-modules/archive/refs/"

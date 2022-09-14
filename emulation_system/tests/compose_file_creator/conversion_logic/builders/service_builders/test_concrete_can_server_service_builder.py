@@ -1,4 +1,4 @@
-"""Tests to confirm that ConcreteCANServerServiceBuilder builds the CAN Server Service correctly."""  # noqa: E501
+"""Tests to confirm that ConcreteCANServerServiceBuilder builds the CAN Server Service correctly."""
 
 from typing import Any, Dict
 
@@ -107,7 +107,7 @@ def test_can_server_remote(
     testing_global_em_config: OpentronsEmulationConfiguration,
     expected_url: str,
 ) -> None:
-    """Tests for values that are the same for all remote configurations of a CANServer."""  # noqa: E501
+    """Tests for values that are the same for all remote configurations of a CANServer."""
     service = ConcreteCANServerServiceBuilder(
         config, testing_global_em_config, dev=True
     ).build_service()

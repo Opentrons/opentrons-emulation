@@ -4,10 +4,10 @@ from typing import ClassVar, List, Optional
 from pydantic import Field
 from typing_extensions import Literal
 
-from emulation_system.compose_file_creator.input.hardware_models.hardware_specific_attributes import (  # noqa: E501
+from emulation_system.compose_file_creator.input.hardware_models.hardware_specific_attributes import (
     HardwareSpecificAttributes,
 )
-from emulation_system.compose_file_creator.input.hardware_models.modules.module_model import (  # noqa: E501
+from emulation_system.compose_file_creator.input.hardware_models.modules.module_model import (
     FirmwareSerialNumberModel,
     ModuleInputModel,
     ProxyInfoModel,

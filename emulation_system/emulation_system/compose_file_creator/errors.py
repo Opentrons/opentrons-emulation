@@ -62,7 +62,7 @@ class DuplicateHardwareNameError(Exception):
 
 
 class ImageNotDefinedError(Exception):
-    """Exception thrown when there is no image defined for specified emulation level/source type."""  # noqa: E501
+    """Exception thrown when there is no image defined for specified emulation level/source type."""
 
     def __init__(self, emulation_level: str, source_type: str, hardware: str) -> None:
         super().__init__(

@@ -104,7 +104,7 @@ def test_smoothie_with_remote_source(
     ot2_only_with_remote_source_type: Dict[str, Any],
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
-    """Confirm smoothie uses remote source when OT2 is set to remote and doesn't have mounts."""  # noqa: E501
+    """Confirm smoothie uses remote source when OT2 is set to remote and doesn't have mounts."""
     services = convert_from_obj(
         ot2_only_with_remote_source_type, testing_global_em_config, False
     ).services

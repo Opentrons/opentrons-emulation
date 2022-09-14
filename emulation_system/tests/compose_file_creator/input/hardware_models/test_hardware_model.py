@@ -220,7 +220,7 @@ def test_getting_image(
     source_type: SourceType,
     expected_image: Optional[str],
 ) -> None:
-    """Confirm that correct image is returned, otherwise config exception is thrown if image is not defined."""  # noqa: E501
+    """Confirm that correct image is returned, otherwise config exception is thrown if image is not defined."""
     if expected_image is None:
         with pytest.raises(ImageNotDefinedError):
             get_image_name(hardware, source_type, emulation_level)
