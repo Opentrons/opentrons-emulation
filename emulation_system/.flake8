@@ -31,3 +31,8 @@ exclude =
 per-file-ignores =
 	# Import paths are so long. Don't fight with flake8 to make them work
 	emulation_system/compose_file_creator/input/hardware_models/__init__.py:E501
+
+	# Regexes are super long.
+	# Annotating *args would be way too long and not very helpful.
+	# Annotating **kwargs would be way too long and not very helpful.
+	emulation_system/logging/console.py: E501, ANN002, ANN003

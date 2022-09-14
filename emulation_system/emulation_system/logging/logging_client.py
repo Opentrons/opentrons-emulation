@@ -52,14 +52,12 @@ class AbstractLoggingClient(ABC):
                 f'Since "dev" is "false" setting build.dockerfile to '
                 f'"{DOCKERFILE_NAME}"'
             ]
-        self._logging_console.tabbed_header_print("build.dockerfile")
+        self._logging_console.h2_print("build.dockerfile")
         self._logging_console.double_tabbed_print(*output)
 
     def log_header(self, service_being_built: str) -> None:
         """Logs header for ConcreteServiceBuilder."""
-        self._logging_console.header_print(
-            f"Creating Service for {service_being_built}"
-        )
+        self._logging_console.h1_print(f"Creating Service for {service_being_built}")
 
     def log_container_name(
         self,
@@ -83,14 +81,14 @@ class AbstractLoggingClient(ABC):
                 f'Setting container name to "{final_container_name}".',
             ]
 
-        self._logging_console.tabbed_header_print("container_name")
+        self._logging_console.h2_print("container_name")
         self._logging_console.double_tabbed_print(*message)
 
     def log_image_name(
         self, image_name: str, source_type: str, param_name: str
     ) -> None:
         """Logs what image is being set to and why."""
-        self._logging_console.tabbed_header_print("image")
+        self._logging_console.h2_print("image")
         self._logging_console.double_tabbed_print(
             f'Using image name "{image_name}" since "{param_name}" is "{source_type}".'
         )
@@ -98,7 +96,7 @@ class AbstractLoggingClient(ABC):
     def log_networks(self, networks: IntermediateNetworks) -> None:
         """Logs what networks are being added to Service."""
         tabbed_networks = [f'\t"{network}"' for network in networks]
-        self._logging_console.tabbed_header_print("networks")
+        self._logging_console.h2_print("networks")
         self._logging_console.double_tabbed_print(
             "Adding the following networks:", *tabbed_networks
         )
@@ -109,7 +107,7 @@ class AbstractLoggingClient(ABC):
             val = "true"
         else:
             val = "false"
-        self._logging_console.tabbed_header_print("tty")
+        self._logging_console.h2_print("tty")
         self._logging_console.double_tabbed_print(f'Setting tty to "{val}".')
 
     ############################################################################

@@ -1,3 +1,5 @@
+"""All classes providing interfacing with rich.console.Console."""
+
 from __future__ import annotations
 
 import os
@@ -54,13 +56,19 @@ class CustomHightlighter(RegexHighlighter):
 
 
 class CustomConsole(Console):
+    """Class extending the functionality of rich's Console."""
+
     def __init__(self, *args, **kwargs) -> None:
+        """Uses same args and kwargs as Console class
+
+        See https://rich.readthedocs.io/en/stable/reference/console.html#rich.console.Console
+        """
         super().__init__(*args, **kwargs)
 
-    def header_print(self, *objects, **kwargs) -> None:
-        """Adds header styling to passed string.
+    def h1_print(self, *objects, **kwargs) -> None:
+        """Prints 1st level header.
 
-        Will not override any styles passed with style kwarg. Instead it will
+        Will not override any styles passed with style kwarg. Instead, it will
         append the style.
         """
         if "style" in kwargs:
@@ -71,15 +79,27 @@ class CustomConsole(Console):
             kwargs["style"] = TOP_LEVEL_HEADER_STYLE_STRING
         self.print(*objects, **kwargs, sep="\n")
 
+    def h2_print(self, *objects, **kwargs) -> None:
+        """Prints 2nd level header.
+
+        Will not override any styles passed with style kwarg. Instead, it will
+        append the style.
+        """
+        if "style" in kwargs:
+            split_styles = SECOND_LEVEL_HEADER_STYLE_STRING.split(" ")
+            split_styles.extend(kwargs["style"].split(" "))
+            kwargs["style"] = " ".join(split_styles)
+        else:
+            kwargs["style"] = SECOND_LEVEL_HEADER_STYLE_STRING
+
+        objects = cast(Tuple, ["\t" + obj for obj in objects])  # casting for typing
+        self.print(*objects, **kwargs, sep="\n")
+
     def tabbed_print(self, *objects, **kwargs) -> None:
         """Adds a tab character to all passed strings."""
         objects = cast(Tuple, ["\t" + obj for obj in objects])  # casting for typing
 
         self.print(*objects, **kwargs, sep="\n")
-
-    def tabbed_header_print(self, *objects, **kwargs):
-        objects = cast(Tuple, ["\t" + obj for obj in objects])  # casting for typing
-        self.print(*objects, **kwargs, sep="\n", style=SECOND_LEVEL_HEADER_STYLE_STRING)
 
     def double_tabbed_print(self, *objects, **kwargs) -> None:
         """Adds a tab character to all passed strings."""
@@ -89,6 +109,7 @@ class CustomConsole(Console):
 
     @staticmethod
     def convert_dict(dict_to_convert: Dict[str, Any]) -> List[str]:
+        """Converts dictionary into a list of strings to pretty print."""
         return pretty_repr(dict_to_convert).split("\n")
 
 

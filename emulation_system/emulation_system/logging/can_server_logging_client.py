@@ -27,7 +27,7 @@ class CANServerLoggingClient(AbstractLoggingClient):
                 "adding the following build args:",
                 *self._logging_console.convert_dict(build_args),
             ]
-        self._logging_console.tabbed_header_print("build.args")
+        self._logging_console.h2_print("build.args")
         self._logging_console.double_tabbed_print(*output)
 
     def log_volumes(self, volumes: Optional[IntermediateVolumes]) -> None:
@@ -40,11 +40,11 @@ class CANServerLoggingClient(AbstractLoggingClient):
                 "adding the following volumes and bind mounts:",
                 *tabbed_volumes,
             ]
-        self._logging_console.tabbed_header_print("volumes")
+        self._logging_console.h2_print("volumes")
         self._logging_console.double_tabbed_print(*output)
 
     def log_command(self, command: Optional[IntermediateCommand]) -> None:
-        self._logging_console.tabbed_header_print("command")
+        self._logging_console.h2_print("command")
         self._logging_console.double_tabbed_print("Does not require command field.")
 
     def log_ports(self, ports: Optional[IntermediatePorts]) -> None:
@@ -57,17 +57,17 @@ class CANServerLoggingClient(AbstractLoggingClient):
                 "adding the following ports",
                 *tabbed_ports,
             ]
-        self._logging_console.tabbed_header_print("ports")
+        self._logging_console.h2_print("ports")
         self._logging_console.double_tabbed_print(*output)
 
     def log_depends_on(self, depends_on: Optional[IntermediateDependsOn]) -> None:
-        self._logging_console.tabbed_header_print("depends_on")
+        self._logging_console.h2_print("depends_on")
         self._logging_console.double_tabbed_print("Does not require depends_on field.")
 
     def log_env_vars(
         self, env_vars: Optional[IntermediateEnvironmentVariables]
     ) -> None:
-        self._logging_console.tabbed_header_print("environment")
+        self._logging_console.h2_print("environment")
         self._logging_console.double_tabbed_print(
             "Does not require environment variables."
         )
