@@ -8,11 +8,11 @@ from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem
+from emulation_system.compose_file_creator.config_file_settings import (
+    RepoToBuildArgMapping,
+)
 from emulation_system.compose_file_creator.conversion import (
     ConcreteCANServerServiceBuilder,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    RepoToBuildArgMapping,
 )
 from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
 from tests.compose_file_creator.conversion_logic.conftest import (

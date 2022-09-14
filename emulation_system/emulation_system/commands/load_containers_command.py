@@ -15,9 +15,8 @@ from emulation_system.commands.emulation_system_command import (
     STDIN_NAME,
     InvalidFileExtensionException,
 )
-from emulation_system.compose_file_creator.conversion.conversion_functions import (
-    convert_from_obj,
-)
+
+from ..compose_file_creator.conversion.conversion_functions import convert_from_obj
 
 
 @dataclass

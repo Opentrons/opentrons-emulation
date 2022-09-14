@@ -1,11 +1,11 @@
 """Class for creating intermediate type DockerServices."""
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
-from emulation_system.intermediate_types import DockerServices
+from emulation_system.compose_file_creator.types.intermediate_types import (
+    DockerServices,
+)
 
 from ..input.hardware_models import OT2InputModel, OT3InputModel
-from .builders.service_builders.service_builder_orchestrator import (
-    ServiceBuilderOrchestrator,
-)
+from . import ServiceBuilderOrchestrator
 from .service_creation.input_service_creation import configure_input_service
 from .service_creation.ot3_service_creation import create_ot3_services
 from .service_creation.shared_functions import generate_container_name

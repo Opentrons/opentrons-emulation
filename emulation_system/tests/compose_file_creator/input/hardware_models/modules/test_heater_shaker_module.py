@@ -4,14 +4,14 @@ from typing import Any, Dict
 import pytest
 from pydantic import parse_obj_as
 
-from emulation_system.compose_file_creator.input.hardware_models import (
-    HeaterShakerModuleInputModel,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
+from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     Hardware,
     HeaterShakerModes,
     OpentronsRepository,
+)
+from emulation_system.compose_file_creator.input.hardware_models import (
+    HeaterShakerModuleInputModel,
 )
 from tests.compose_file_creator.conftest import (
     HEATER_SHAKER_MODULE_EMULATION_LEVEL,

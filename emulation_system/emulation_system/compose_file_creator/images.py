@@ -4,12 +4,8 @@ from typing import List, Optional
 from pydantic import BaseModel
 from typing_extensions import Literal
 
-from emulation_system.compose_file_creator.errors import ImageNotDefinedError
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    EmulationLevels,
-    Hardware,
-    SourceType,
-)
+from .config_file_settings import EmulationLevels, Hardware, SourceType
+from .errors import ImageNotDefinedError
 
 
 class Images(BaseModel):

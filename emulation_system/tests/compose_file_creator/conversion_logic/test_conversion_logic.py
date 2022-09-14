@@ -9,10 +9,7 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
     convert_from_obj,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import Network
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    DEFAULT_NETWORK_NAME,
-)
-from emulation_system.consts import DOCKERFILE_DIR_LOCATION
+from emulation_system.consts import DEFAULT_NETWORK_NAME, DOCKERFILE_DIR_LOCATION
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,

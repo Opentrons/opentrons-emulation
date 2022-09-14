@@ -6,6 +6,14 @@ import pytest
 from pydantic import ValidationError, parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
+from emulation_system.compose_file_creator.config_file_settings import (
+    DirectoryMount,
+    EmulationLevels,
+    FileMount,
+    Hardware,
+    Mount,
+    SourceType,
+)
 from emulation_system.compose_file_creator.errors import InvalidRemoteSourceError
 from emulation_system.compose_file_creator.images import (
     ImageNotDefinedError,
@@ -19,15 +27,7 @@ from emulation_system.compose_file_creator.input.hardware_models.hardware_model 
     MountNotFoundError,
     NoMountsDefinedError,
 )
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    SOURCE_CODE_MOUNT_NAME,
-    DirectoryMount,
-    EmulationLevels,
-    FileMount,
-    Hardware,
-    Mount,
-    SourceType,
-)
+from emulation_system.consts import SOURCE_CODE_MOUNT_NAME
 
 CONFIGURATIONS = [
     # OT2

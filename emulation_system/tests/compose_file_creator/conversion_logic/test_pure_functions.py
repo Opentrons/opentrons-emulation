@@ -5,20 +5,22 @@ from typing import Optional
 import pytest
 
 from emulation_system.compose_file_creator import BuildItem
+from emulation_system.compose_file_creator.config_file_settings import (
+    OpentronsRepository,
+)
 from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import (
     get_build_args,
     get_service_build,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    OpentronsRepository,
+from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateBuildArgs,
 )
 from emulation_system.consts import (
     DEV_DOCKERFILE_NAME,
     DOCKERFILE_DIR_LOCATION,
     DOCKERFILE_NAME,
 )
-from emulation_system.intermediate_types import IntermediateBuildArgs
 
 
 @pytest.mark.parametrize(

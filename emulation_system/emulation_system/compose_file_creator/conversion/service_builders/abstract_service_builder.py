@@ -7,7 +7,7 @@ from typing import Optional, cast
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem, Service
-from emulation_system.docker_expected_types import (
+from emulation_system.compose_file_creator.types.final_types import (
     ServiceBuild,
     ServiceCommand,
     ServiceContainerName,
@@ -17,7 +17,7 @@ from emulation_system.docker_expected_types import (
     ServiceTTY,
     ServiceVolumes,
 )
-from emulation_system.intermediate_types import (
+from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateCommand,
     IntermediateDependsOn,
     IntermediateEnvironmentVariables,

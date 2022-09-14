@@ -5,19 +5,19 @@ from typing import List, Optional, cast
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import Service
+from emulation_system.compose_file_creator.config_file_settings import (
+    Hardware,
+    OpentronsRepository,
+    SourceType,
+)
 from emulation_system.compose_file_creator.errors import (
     HardwareDoesNotExistError,
     IncorrectHardwareError,
 )
 from emulation_system.compose_file_creator.images import SmoothieImages
 from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    Hardware,
-    OpentronsRepository,
-    SourceType,
-)
-from emulation_system.docker_expected_types import ServiceVolumes
 
+from ...types.final_types import ServiceVolumes
 from .shared_functions import (
     add_opentrons_named_volumes,
     generate_container_name,

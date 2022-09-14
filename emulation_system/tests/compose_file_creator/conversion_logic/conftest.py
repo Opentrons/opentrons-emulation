@@ -6,6 +6,10 @@ import pytest
 
 from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator import BuildItem, Service
+from emulation_system.compose_file_creator.config_file_settings import (
+    MountTypes,
+    OpentronsRepository,
+)
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
@@ -17,10 +21,6 @@ from emulation_system.compose_file_creator.images import (
     ThermocyclerModuleImages,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import Volume1
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    MountTypes,
-    OpentronsRepository,
-)
 from tests.compose_file_creator.conftest import (
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,

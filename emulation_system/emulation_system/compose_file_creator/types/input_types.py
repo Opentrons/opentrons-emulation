@@ -1,7 +1,8 @@
-"""Custom type aliases to add a nice layer of abstraction."""
+"""Consolidate InputModels into semantically meaningful types."""
+
 from typing import Union
 
-from emulation_system.compose_file_creator.input.hardware_models import (
+from ..input.hardware_models import (
     HeaterShakerModuleInputModel,
     MagneticModuleInputModel,
     OT2InputModel,
@@ -16,7 +17,5 @@ Modules = Union[
     TemperatureModuleInputModel,
     MagneticModuleInputModel,
 ]
-
 Robots = Union[OT2InputModel, OT3InputModel]
-
 Containers = Union[Robots, Modules]

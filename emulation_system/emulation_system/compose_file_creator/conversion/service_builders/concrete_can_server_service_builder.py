@@ -4,33 +4,32 @@ from typing import Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem
+from emulation_system.compose_file_creator.config_file_settings import (
+    Hardware,
+    OpentronsRepository,
+    SourceType,
+)
 from emulation_system.compose_file_creator.conversion import AbstractServiceBuilder
+from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import (
+    add_opentrons_named_volumes,
+    get_build_args,
+    get_entrypoint_mount_string,
+    get_service_build,
+)
 from emulation_system.compose_file_creator.errors import (
     HardwareDoesNotExistError,
     IncorrectHardwareError,
 )
 from emulation_system.compose_file_creator.images import CANServerImages
 from emulation_system.compose_file_creator.input.hardware_models import OT3InputModel
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    Hardware,
-    OpentronsRepository,
-    SourceType,
-)
-from emulation_system.intermediate_types import (
+from emulation_system.compose_file_creator.logging import CANServerLoggingClient
+from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateCommand,
     IntermediateDependsOn,
     IntermediateEnvironmentVariables,
     IntermediateNetworks,
     IntermediatePorts,
     IntermediateVolumes,
-)
-from emulation_system.logging import CANServerLoggingClient
-
-from ...service_creation.shared_functions import (
-    add_opentrons_named_volumes,
-    get_build_args,
-    get_entrypoint_mount_string,
-    get_service_build,
 )
 
 

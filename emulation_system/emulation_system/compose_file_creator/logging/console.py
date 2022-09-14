@@ -112,6 +112,10 @@ class CustomConsole(Console):
         """Converts dictionary into a list of strings to pretty print."""
         return pretty_repr(dict_to_convert).split("\n")
 
+    def save_log(self) -> None:
+        """Saves generated log to file."""
+        self.save_html(CONSOLE_OUTPUT_HTML_FILE_PATH, clear=True, inline_styles=True)
+
 
 logging_console = CustomConsole(
     width=200,

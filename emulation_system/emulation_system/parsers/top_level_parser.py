@@ -4,9 +4,10 @@ import sys
 
 from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.executable import Executable
-from emulation_system.parser_utils import get_formatter
-from emulation_system.parsers.emulation_system_parser import EmulationSystemParser
-from emulation_system.parsers.load_containers_parser import LoadContainersParser
+
+from .emulation_system_parser import EmulationSystemParser
+from .load_containers_parser import LoadContainersParser
+from .parser_utils import get_formatter
 
 
 class TopLevelParser:

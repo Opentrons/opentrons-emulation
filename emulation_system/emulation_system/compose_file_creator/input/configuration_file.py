@@ -13,18 +13,12 @@ from pydantic import (
     validator,
 )
 
-from emulation_system.compose_file_creator.errors import DuplicateHardwareNameError
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    DEFAULT_DOCKER_COMPOSE_VERSION,
-    DEFAULT_NETWORK_NAME,
-    Hardware,
-)
-from emulation_system.compose_file_creator.settings.custom_types import (
-    Containers,
-    Modules,
-    Robots,
-)
-from emulation_system.intermediate_types import IntermediateNetworks
+from emulation_system.consts import DEFAULT_DOCKER_COMPOSE_VERSION, DEFAULT_NETWORK_NAME
+
+from ..config_file_settings import Hardware
+from ..errors import DuplicateHardwareNameError
+from ..types.input_types import Containers, Modules, Robots
+from ..types.intermediate_types import IntermediateNetworks
 
 
 class SystemConfigurationModel(BaseModel):

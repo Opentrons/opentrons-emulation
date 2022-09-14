@@ -3,8 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
-from emulation_system.intermediate_types import (
+from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
     IntermediateDependsOn,
@@ -13,7 +12,9 @@ from emulation_system.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.logging.console import logging_console
+from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
+
+from .console import logging_console
 
 
 class AbstractLoggingClient(ABC):

@@ -4,6 +4,12 @@ from typing import List, Optional, cast
 
 from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator import Service
+from emulation_system.compose_file_creator.config_file_settings import (
+    Hardware,
+    OpentronsRepository,
+    OT3Hardware,
+    SourceType,
+)
 from emulation_system.compose_file_creator.images import (
     Images,
     OT3BootloaderImages,
@@ -13,17 +19,11 @@ from emulation_system.compose_file_creator.images import (
     OT3HeadImages,
     OT3PipettesImages,
 )
-from emulation_system.docker_expected_types import ServiceVolumes
 
 from ...errors import HardwareDoesNotExistError, IncorrectHardwareError
 from ...input.configuration_file import SystemConfigurationModel
 from ...output.compose_file_model import ListOrDict
-from ...settings.config_file_settings import (
-    Hardware,
-    OpentronsRepository,
-    OT3Hardware,
-    SourceType,
-)
+from ...types.final_types import ServiceVolumes
 from .shared_functions import (
     add_ot3_firmware_named_volumes,
     generate_container_name,

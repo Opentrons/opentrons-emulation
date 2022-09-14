@@ -2,9 +2,10 @@
 import argparse
 
 from emulation_system import OpentronsEmulationConfiguration
-from emulation_system.commands.emulation_system_command import EmulationSystemCommand
-from emulation_system.parser_utils import get_formatter
-from emulation_system.parsers.abstract_parser import AbstractParser
+from emulation_system.commands import EmulationSystemCommand
+
+from .abstract_parser import AbstractParser
+from .parser_utils import get_formatter
 
 
 class EmulationSystemParser(AbstractParser):

@@ -6,14 +6,7 @@ from typing import List, Optional
 from pydantic import Field
 from typing_extensions import Literal
 
-from emulation_system.compose_file_creator.input.hardware_models.hardware_specific_attributes import (
-    HardwareSpecificAttributes,
-)
-from emulation_system.compose_file_creator.input.hardware_models.robots.robot_model import (
-    RobotInputModel,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    CAN_SERVER_MOUNT_NAME,
+from emulation_system.compose_file_creator.config_file_settings import (
     DirectoryMount,
     EmulationLevels,
     Hardware,
@@ -23,7 +16,15 @@ from emulation_system.compose_file_creator.settings.config_file_settings import 
     SourceRepositories,
     SourceType,
 )
-from emulation_system.intermediate_types import IntermediatePorts
+from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediatePorts,
+)
+from emulation_system.consts import CAN_SERVER_MOUNT_NAME
+
+from ..hardware_specific_attributes import HardwareSpecificAttributes
+
+# cannot import from . because of circular import issue
+from .robot_model import RobotInputModel
 
 
 class OT3Attributes(HardwareSpecificAttributes):

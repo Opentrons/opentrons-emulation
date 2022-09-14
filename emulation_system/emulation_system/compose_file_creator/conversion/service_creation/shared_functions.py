@@ -4,23 +4,25 @@ from typing import List, Optional, cast
 
 from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem
-from emulation_system.compose_file_creator.input.hardware_models import RobotInputModel
-from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    ENTRYPOINT_MOUNT_NAME,
+from emulation_system.compose_file_creator.config_file_settings import (
     FileMount,
     MountTypes,
     OpentronsRepository,
     RepoToBuildArgMapping,
 )
-from emulation_system.compose_file_creator.settings.custom_types import Containers
+from emulation_system.compose_file_creator.input.hardware_models import RobotInputModel
+from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
+from emulation_system.compose_file_creator.types.input_types import Containers
+from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateBuildArgs,
+)
 from emulation_system.consts import (
     DEV_DOCKERFILE_NAME,
     DOCKERFILE_DIR_LOCATION,
     DOCKERFILE_NAME,
     ENTRYPOINT_FILE_LOCATION,
+    ENTRYPOINT_MOUNT_NAME,
 )
-from emulation_system.intermediate_types import IntermediateBuildArgs
 
 
 def generate_container_name(

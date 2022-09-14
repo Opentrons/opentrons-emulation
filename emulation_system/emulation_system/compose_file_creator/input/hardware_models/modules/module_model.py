@@ -7,14 +7,12 @@ from typing import ClassVar, Dict, Optional
 
 from pydantic import BaseModel, Field
 
-from emulation_system.compose_file_creator.input.hardware_models.hardware_model import (
-    EmulationLevelNotSupportedError,
-    HardwareModel,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
+from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     Hardware,
 )
+
+from ..hardware_model import EmulationLevelNotSupportedError, HardwareModel
 
 
 class FirmwareSerialNumberModel(BaseModel):

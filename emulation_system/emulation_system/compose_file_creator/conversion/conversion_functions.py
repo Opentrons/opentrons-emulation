@@ -5,19 +5,13 @@ from pydantic import parse_obj_as
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import Service
-from emulation_system.compose_file_creator.conversion.service_creator import (
-    create_services,
-)
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    Network,
-    Volume,
-)
-from emulation_system.compose_file_creator.output.runtime_compose_file_model import (
-    RuntimeComposeFileModel,
-)
+
+from ..output.compose_file_model import Network, Volume
+from ..output.runtime_compose_file_model import RuntimeComposeFileModel
+from .service_creator import create_services
 
 
-def get_top_level_volumes(service_list: List[Service]) -> Optional[Dict[str, Volume]]:
+def _get_top_level_volumes(service_list: List[Service]) -> Optional[Dict[str, Volume]]:
     """Get top level volumes dict."""
     mount_list = set()
     for service in service_list:
@@ -49,7 +43,7 @@ def _convert(
         networks={
             network_name: Network() for network_name in config_model.required_networks
         },
-        volumes=get_top_level_volumes(list(services.values())),
+        volumes=_get_top_level_volumes(list(services.values())),
     )
 
 

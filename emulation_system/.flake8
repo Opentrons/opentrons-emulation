@@ -37,4 +37,4 @@ per-file-ignores =
 	# Regexes are super long.
 	# Annotating *args would be way too long and not very helpful.
 	# Annotating **kwargs would be way too long and not very helpful.
-	emulation_system/logging/console.py: E501, ANN002, ANN003
+	emulation_system/compose_file_creator/logging/console.py: E501, ANN002, ANN003

@@ -7,6 +7,7 @@ import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system import OpentronsEmulationConfiguration
+from emulation_system.compose_file_creator.config_file_settings import EmulationLevels
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
@@ -18,9 +19,6 @@ from emulation_system.compose_file_creator.input.hardware_models import (
     ThermocyclerModuleInputModel,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import Service
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    EmulationLevels,
-)
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,

@@ -8,17 +8,16 @@ from typing import Any, Dict, List
 
 from pydantic import Field, validator
 
-from emulation_system.compose_file_creator.images import get_image_name
-from emulation_system.compose_file_creator.input.hardware_models.hardware_model import (
-    HardwareModel,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    ROBOT_SERVER_MOUNT_NAME,
+from emulation_system.compose_file_creator.config_file_settings import (
     DirectoryMount,
     MountTypes,
     OpentronsRepository,
     SourceType,
 )
+from emulation_system.compose_file_creator.images import get_image_name
+from emulation_system.consts import ROBOT_SERVER_MOUNT_NAME
+
+from ..hardware_model import HardwareModel
 
 
 class RobotInputModel(HardwareModel):

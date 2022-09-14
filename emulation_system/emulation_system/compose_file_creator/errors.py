@@ -2,7 +2,7 @@
 
 from typing import List, Set
 
-from emulation_system.compose_file_creator.settings.config_file_settings import Hardware
+from .config_file_settings import Hardware
 
 
 class MountError(Exception):

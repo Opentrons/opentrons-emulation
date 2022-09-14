@@ -4,21 +4,16 @@ from typing import ClassVar, List, Optional
 from pydantic import Field
 from typing_extensions import Literal
 
-from emulation_system.compose_file_creator.input.hardware_models.hardware_specific_attributes import (
-    HardwareSpecificAttributes,
-)
-from emulation_system.compose_file_creator.input.hardware_models.modules.module_model import (
-    FirmwareSerialNumberModel,
-    ModuleInputModel,
-    ProxyInfoModel,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
+from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     Hardware,
     OpentronsRepository,
     SourceRepositories,
     TemperatureModelSettings,
 )
+
+from ..hardware_specific_attributes import HardwareSpecificAttributes
+from .module_model import FirmwareSerialNumberModel, ModuleInputModel, ProxyInfoModel
 
 
 class ThermocyclerModuleAttributes(HardwareSpecificAttributes):

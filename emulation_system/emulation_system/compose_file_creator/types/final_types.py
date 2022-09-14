@@ -8,12 +8,12 @@ mypy hate everything you have ever done.
 
 from typing import List, Optional, Union
 
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    BuildItem,
-    ListOrDict,
-    Port,
-    Volume1,
-)
+from .. import BuildItem
+from ..output.compose_file_model import ListOrDict, Port, Volume1
+
+# TODO: Need to figure out what to do with DependsOn and Networks
+#       In compose_file_model.py they implement constr which mypy does not like.
+
 
 ServiceVolumes = Optional[List[Union[str, Volume1]]]
 ServicePorts = Optional[List[Union[float, str, Port]]]
@@ -23,6 +23,3 @@ ServiceImage = Optional[str]
 ServiceBuild = Optional[Union[str, BuildItem]]
 ServiceTTY = Optional[bool]
 ServiceCommand = Optional[Union[str, List[str]]]
-
-# TODO: Need to figure out what to do with DependsOn and Networks
-#       In compose_file_model.py they implement constr which mypy does not like.

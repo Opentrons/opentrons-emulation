@@ -7,11 +7,9 @@ import os
 
 from pydantic import BaseModel, Field, parse_obj_as
 
-from emulation_system.compose_file_creator.errors import RepoDoesNotExistError
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    OpentronsRepository,
-)
-from emulation_system.consts import (
+from .compose_file_creator.config_file_settings import OpentronsRepository
+from .compose_file_creator.errors import RepoDoesNotExistError
+from .consts import (
     CONFIGURATION_FILE_LOCATION_VAR_NAME,
     DEFAULT_CONFIGURATION_FILE_PATH,
 )

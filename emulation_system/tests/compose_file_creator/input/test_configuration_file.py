@@ -19,9 +19,7 @@ from emulation_system.compose_file_creator.input.hardware_models import (
     TemperatureModuleInputModel,
     ThermocyclerModuleInputModel,
 )
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    DEFAULT_DOCKER_COMPOSE_VERSION,
-)
+from emulation_system.consts import DEFAULT_DOCKER_COMPOSE_VERSION
 from tests.compose_file_creator.conftest import (
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,

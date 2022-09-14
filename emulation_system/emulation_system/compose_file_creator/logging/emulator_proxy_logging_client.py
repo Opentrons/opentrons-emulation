@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from emulation_system.intermediate_types import (
+from ..types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
     IntermediateDependsOn,
@@ -10,7 +10,7 @@ from emulation_system.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.logging.abstract_logging_client import AbstractLoggingClient
+from .abstract_logging_client import AbstractLoggingClient
 
 
 class EmulatorProxyLoggingClient(AbstractLoggingClient):
