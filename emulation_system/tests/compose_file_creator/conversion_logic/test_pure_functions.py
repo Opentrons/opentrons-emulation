@@ -83,9 +83,7 @@ from emulation_system.intermediate_types import IntermediateBuildArgs
             OpentronsRepository.OPENTRONS_MODULES,
             "latest",
             "https://github.com/Opentrons/opentrons-modules/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip",
-            # noqa: E501
-            # noqa: E501
+            "https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip",  # noqa: E501
             ListOrDict(
                 __root__={
                     "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/"

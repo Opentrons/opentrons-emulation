@@ -1,3 +1,5 @@
+"""Tests to confirm that ConcreteCANServerServiceBuilder builds the CAN Server Service correctly."""  # noqa: E501
+
 from typing import Any, Dict
 
 import pytest
@@ -23,17 +25,32 @@ from tests.compose_file_creator.conversion_logic.conftest import (
 
 @pytest.fixture
 def remote_can_latest(ot3_only: Dict[str, Any]) -> SystemConfigurationModel:
+    """Gets SystemConfigurationModel.
+
+    can-server-source-type is set to remote.
+    can-server-source-location is set to latest.
+    """
     return parse_obj_as(SystemConfigurationModel, ot3_only)
 
 
 @pytest.fixture
 def remote_can_commit_id(ot3_only: Dict[str, Any]) -> SystemConfigurationModel:
+    """Gets SystemConfigurationModel.
+
+    can-server-source-type is set to remote.
+    can-server-source-location is set a commit id.
+    """
     ot3_only["robot"]["can-server-source-location"] = FAKE_COMMIT_ID
     return parse_obj_as(SystemConfigurationModel, ot3_only)
 
 
 @pytest.fixture
 def local_can(ot3_only: Dict[str, Any], opentrons_dir: str) -> SystemConfigurationModel:
+    """Gets SystemConfigurationModel.
+
+    can-server-source-type is set to local.
+    can-server-source-location is set to a monorepo dir.
+    """
     ot3_only["robot"]["can-server-source-type"] = "local"
     ot3_only["robot"]["can-server-source-location"] = opentrons_dir
 
@@ -54,6 +71,7 @@ def test_simple_can_server_values(
     dev: bool,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
+    """Tests for values that are the same for all configurations of a CANServer."""
     service = ConcreteCANServerServiceBuilder(
         config_model, testing_global_em_config, dev=dev
     ).build_service()
@@ -89,6 +107,7 @@ def test_can_server_remote(
     testing_global_em_config: OpentronsEmulationConfiguration,
     expected_url: str,
 ) -> None:
+    """Tests for values that are the same for all remote configurations of a CANServer."""  # noqa: E501
     service = ConcreteCANServerServiceBuilder(
         config, testing_global_em_config, dev=True
     ).build_service()
@@ -105,6 +124,7 @@ def test_can_server_local(
     local_can: SystemConfigurationModel,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
+    """Test for values for local configuration of a CANServer."""
     service = ConcreteCANServerServiceBuilder(
         local_can, testing_global_em_config, dev=True
     ).build_service()

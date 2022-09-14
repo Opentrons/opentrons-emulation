@@ -22,6 +22,7 @@ class EmulatorProxyLoggingClient(AbstractLoggingClient):
     HEADER_NAME = "Emulator Proxy"
 
     def __init__(self, dev: bool) -> None:
+        """Creates EmulatorProxyLoggingClient."""
         super().__init__(self.HEADER_NAME, dev)
 
     def log_image_name(

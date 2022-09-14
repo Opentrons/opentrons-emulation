@@ -1,3 +1,5 @@
+"""Logging client for ConcreteCANServerBuilder."""
+
 from typing import Optional
 
 from emulation_system.intermediate_types import (
@@ -12,13 +14,16 @@ from emulation_system.logging.logging_client import AbstractLoggingClient
 
 
 class CANServerLoggingClient(AbstractLoggingClient):
+    """Concrete implementation of AbstractLoggingClient for CANServerServiceBuilder."""
 
     HEADER_NAME = "CAN Server"
 
-    def __init__(self, dev: bool):
+    def __init__(self, dev: bool) -> None:
+        """Create CANServerLoggingClient"""
         super().__init__(self.HEADER_NAME, dev)
 
     def log_build_args(self, build_args: Optional[IntermediateBuildArgs]) -> None:
+        """Logs what build args are being set, if any, and why."""
         if build_args is None:
             output = ['Adding no build args since "can-server-source-type" is "local"']
         else:
@@ -31,6 +36,7 @@ class CANServerLoggingClient(AbstractLoggingClient):
         self._logging_console.double_tabbed_print(*output)
 
     def log_volumes(self, volumes: Optional[IntermediateVolumes]) -> None:
+        """Logs what volumes are beings added, if any, and why."""
         if volumes is None:
             output = ['Adding no volumes since "can-server-source-type" is "remote".']
         else:
@@ -44,10 +50,12 @@ class CANServerLoggingClient(AbstractLoggingClient):
         self._logging_console.double_tabbed_print(*output)
 
     def log_command(self, command: Optional[IntermediateCommand]) -> None:
+        """Logs that no command is being added."""
         self._logging_console.h2_print("command")
         self._logging_console.double_tabbed_print("Does not require command field.")
 
     def log_ports(self, ports: Optional[IntermediatePorts]) -> None:
+        """Logs what ports are being set, if any, and why."""
         if ports is None:
             output = ["No ports will be exposed."]
         else:
@@ -61,12 +69,14 @@ class CANServerLoggingClient(AbstractLoggingClient):
         self._logging_console.double_tabbed_print(*output)
 
     def log_depends_on(self, depends_on: Optional[IntermediateDependsOn]) -> None:
+        """Logs that no depends_ons are being added."""
         self._logging_console.h2_print("depends_on")
         self._logging_console.double_tabbed_print("Does not require depends_on field.")
 
     def log_env_vars(
         self, env_vars: Optional[IntermediateEnvironmentVariables]
     ) -> None:
+        """Logs that no environment variables are being added."""
         self._logging_console.h2_print("environment")
         self._logging_console.double_tabbed_print(
             "Does not require environment variables."

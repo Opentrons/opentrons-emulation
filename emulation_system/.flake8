@@ -29,8 +29,9 @@ exclude =
 	emulation_system/compose_file_creator/output/compose_file_model.py
 
 per-file-ignores =
-	# Import paths are so long. Don't fight with flake8 to make them work
+	# Import paths are too long, not much I can do about that.
 	emulation_system/compose_file_creator/input/hardware_models/__init__.py:E501
+	emulation_system/compose_file_creator/conversion/__init__.py:E501
 
 	# Regexes are super long.
 	# Annotating *args would be way too long and not very helpful.

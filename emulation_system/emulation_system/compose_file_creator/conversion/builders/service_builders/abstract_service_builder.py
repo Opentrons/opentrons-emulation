@@ -1,3 +1,5 @@
+"""Module containing AbstractServiceBuilder class."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -34,6 +36,7 @@ class AbstractServiceBuilder(ABC):
         config_model: SystemConfigurationModel,
         global_settings: OpentronsEmulationConfiguration,
     ) -> None:
+        """Defines parameters required for ALL concrete builders."""
         self._config_model = config_model
         self._global_settings = global_settings
 
@@ -41,6 +44,12 @@ class AbstractServiceBuilder(ABC):
     def _generate_container_name(
         container_id: str, system_unique_id: Optional[str]
     ) -> str:
+        """Generates container_name.
+
+        Looks at system-unique-id field from configuration file.
+        If it exists, prepends it to passed container-id and returns new value.
+        If it does not exist, just returns container-id.
+        """
         container_name = (
             f"{system_unique_id}-{container_id}"
             if system_unique_id is not None
@@ -50,18 +59,22 @@ class AbstractServiceBuilder(ABC):
 
     @abstractmethod
     def generate_container_name(self) -> str:
+        """Method to generate value for container_name parameter for Service."""
         ...
 
     @abstractmethod
     def generate_image(self) -> str:
+        """Method to generate value for image parameter for Service."""
         ...
 
     @abstractmethod
     def is_tty(self) -> bool:
+        """Method to generate value for tty parameter for Service."""
         ...
 
     @abstractmethod
     def generate_networks(self) -> IntermediateNetworks:
+        """Method to generate value for networks parameter for Service."""
         ...
 
     #############################################################
@@ -70,29 +83,36 @@ class AbstractServiceBuilder(ABC):
 
     @abstractmethod
     def generate_build(self) -> Optional[BuildItem]:
+        """Method to, if necessary, generate value for build parameter for Service."""
         ...
 
     @abstractmethod
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
+        """Method to, if necessary, generate value for volumes parameter for Service."""
         ...
 
     @abstractmethod
     def generate_ports(self) -> Optional[IntermediatePorts]:
+        """Method to, if necessary, generate value for ports parameter for Service."""
         ...
 
     @abstractmethod
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
+        """Method to, if necessary, generate value for environment parameter for Service."""  # noqa: E501
         ...
 
     @abstractmethod
     def generate_command(self) -> Optional[IntermediateCommand]:
+        """Method to, if necessary, generate value for command parameter for Service."""
         ...
 
     @abstractmethod
     def generate_depends_on(self) -> Optional[IntermediateDependsOn]:
+        """Method to, if necessary, generate value for depends_on parameter for Service."""  # noqa: E501
         ...
 
     def build_service(self) -> Service:
+        """Method calling all generate* methods to build Service object."""
         return Service(
             container_name=cast(ServiceContainerName, self.generate_container_name()),
             image=cast(ServiceImage, self.generate_image()),
