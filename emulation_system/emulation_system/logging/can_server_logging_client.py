@@ -10,7 +10,7 @@ from emulation_system.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.logging.logging_client import AbstractLoggingClient
+from emulation_system.logging.abstract_logging_client import AbstractLoggingClient
 
 
 class CANServerLoggingClient(AbstractLoggingClient):
