@@ -4,12 +4,12 @@ from typing import Any, Dict
 import pytest
 from pydantic import ValidationError, parse_obj_as
 
-from emulation_system.compose_file_creator.input.hardware_models import OT2InputModel
-from emulation_system.compose_file_creator.settings.config_file_settings import (
+from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     Hardware,
     OpentronsRepository,
 )
+from emulation_system.compose_file_creator.input.hardware_models import OT2InputModel
 from tests.compose_file_creator.conftest import (
     OT2_EMULATION_LEVEL,
     OT2_ID,

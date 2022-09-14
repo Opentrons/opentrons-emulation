@@ -7,11 +7,9 @@ import os
 
 from pydantic import BaseModel, Field, parse_obj_as
 
-from emulation_system.compose_file_creator.errors import RepoDoesNotExistError
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    OpentronsRepository,
-)
-from emulation_system.consts import (
+from .compose_file_creator.config_file_settings import OpentronsRepository
+from .compose_file_creator.errors import RepoDoesNotExistError
+from .consts import (
     CONFIGURATION_FILE_LOCATION_VAR_NAME,
     DEFAULT_CONFIGURATION_FILE_PATH,
 )
@@ -76,9 +74,9 @@ class OpentronsEmulationConfiguration(BaseModel):
     def get_repo_commit(self, repo: OpentronsRepository) -> str:
         """Helper method to get repo commit string."""
         lookup = {
-            OpentronsRepository.OPENTRONS: self.emulation_settings.source_download_locations.commits.opentrons,  # noqa: E501
-            OpentronsRepository.OT3_FIRMWARE: self.emulation_settings.source_download_locations.commits.ot3_firmware,  # noqa: E501
-            OpentronsRepository.OPENTRONS_MODULES: self.emulation_settings.source_download_locations.commits.modules,  # noqa: E501
+            OpentronsRepository.OPENTRONS: self.emulation_settings.source_download_locations.commits.opentrons,
+            OpentronsRepository.OT3_FIRMWARE: self.emulation_settings.source_download_locations.commits.ot3_firmware,
+            OpentronsRepository.OPENTRONS_MODULES: self.emulation_settings.source_download_locations.commits.modules,
         }
 
         try:
@@ -91,9 +89,9 @@ class OpentronsEmulationConfiguration(BaseModel):
     def get_repo_head(self, repo: OpentronsRepository) -> str:
         """Helper method to get repo head string."""
         lookup = {
-            OpentronsRepository.OPENTRONS: self.emulation_settings.source_download_locations.heads.opentrons,  # noqa: E501
-            OpentronsRepository.OT3_FIRMWARE: self.emulation_settings.source_download_locations.heads.ot3_firmware,  # noqa: E501
-            OpentronsRepository.OPENTRONS_MODULES: self.emulation_settings.source_download_locations.heads.modules,  # noqa: E501
+            OpentronsRepository.OPENTRONS: self.emulation_settings.source_download_locations.heads.opentrons,
+            OpentronsRepository.OT3_FIRMWARE: self.emulation_settings.source_download_locations.heads.ot3_firmware,
+            OpentronsRepository.OPENTRONS_MODULES: self.emulation_settings.source_download_locations.heads.modules,
         }
 
         try:
@@ -104,7 +102,7 @@ class OpentronsEmulationConfiguration(BaseModel):
         return head
 
 
-def load_opentrons_emulation_configuration_from_env() -> OpentronsEmulationConfiguration:  # noqa: E501
+def load_opentrons_emulation_configuration_from_env() -> OpentronsEmulationConfiguration:
     """Helper function for loading OpentronsEmulationConfiguration object."""
     if CONFIGURATION_FILE_LOCATION_VAR_NAME in os.environ:
         file_path = os.environ[CONFIGURATION_FILE_LOCATION_VAR_NAME]

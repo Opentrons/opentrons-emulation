@@ -9,13 +9,11 @@ from dataclasses import dataclass
 
 import yaml
 
-from emulation_system.compose_file_creator.conversion.conversion_functions import (
-    convert_from_obj,
-)
-from emulation_system.compose_file_creator.errors import NotRemoteOnlyError
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
+from emulation_system import OpentronsEmulationConfiguration
+
+from ..compose_file_creator.conversion.conversion_functions import convert_from_obj
+from ..compose_file_creator.errors import NotRemoteOnlyError
+from ..compose_file_creator.logging.console import logging_console
 
 STDIN_NAME = "<stdin>"
 STDOUT_NAME = "<stdout>"
@@ -64,3 +62,4 @@ class EmulationSystemCommand:
             raise NotRemoteOnlyError
 
         self.output_path.write(converted_object.to_yaml())
+        logging_console.save_log()

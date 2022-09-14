@@ -4,16 +4,12 @@ from typing import Any, Dict, cast
 
 import pytest
 
+from emulation_system import OpentronsEmulationConfiguration
+from emulation_system.compose_file_creator import Service
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    Network,
-    Service,
-)
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
+from emulation_system.compose_file_creator.output.compose_file_model import Network
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,

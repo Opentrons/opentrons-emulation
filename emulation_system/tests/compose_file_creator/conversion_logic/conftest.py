@@ -4,26 +4,23 @@ from typing import Any, Dict, List, Optional, Union, cast
 import py
 import pytest
 
+from emulation_system import OpentronsEmulationConfiguration
+from emulation_system.compose_file_creator import BuildItem, Service
+from emulation_system.compose_file_creator.config_file_settings import (
+    MountTypes,
+    OpentronsRepository,
+)
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    Service,
-    Volume1,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    MountTypes,
-)
-from emulation_system.compose_file_creator.settings.images import (
+from emulation_system.compose_file_creator.images import (
     HeaterShakerModuleImages,
     MagneticModuleImages,
     RobotServerImages,
     TemperatureModuleImages,
     ThermocyclerModuleImages,
 )
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
+from emulation_system.compose_file_creator.output.compose_file_model import Volume1
 from tests.compose_file_creator.conftest import (
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,
@@ -50,6 +47,7 @@ SERVICE_NAMES = [
 
 EXTRA_MOUNT_PATH = "/var/log/log_files"
 EMULATION_CONFIGURATION_FILE_NAME = "test-config.json"
+FAKE_COMMIT_ID = "ca82a6dff817ec66f44342007202690a93763949"
 
 
 @pytest.fixture
@@ -81,3 +79,50 @@ def partial_string_in_mount(
     """Check if the partial string exists in any of the Service's mounts."""
     assert volumes is not None
     return any([string in volume for volume in volumes])
+
+
+def get_source_code_build_args(service: Service) -> Dict[str, str]:
+    """Get build args for service."""
+    build = service.build
+    assert build is not None
+    assert isinstance(build, BuildItem)
+    assert build.args is not None
+    return cast(Dict[str, str], build.args.__root__)
+
+
+def build_args_are_none(service: Service) -> bool:
+    """Whether or not build args are None. With annoying typing stuff."""
+    build = service.build
+    assert build is not None
+    assert isinstance(build, BuildItem)
+    return build.args is None
+
+
+@pytest.fixture
+def opentrons_head(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
+    """Return head url of opentrons repo from test config file."""
+    return testing_global_em_config.get_repo_head(OpentronsRepository.OPENTRONS)
+
+
+@pytest.fixture
+def ot3_firmware_head(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
+    """Return head url of ot3-firmware repo from test config file."""
+    return testing_global_em_config.get_repo_head(OpentronsRepository.OT3_FIRMWARE)
+
+
+@pytest.fixture
+def opentrons_commit(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
+    """Return commit url of opentrons repo from test config file."""
+    return testing_global_em_config.get_repo_commit(
+        OpentronsRepository.OPENTRONS
+    ).replace("{{commit-sha}}", FAKE_COMMIT_ID)
+
+
+@pytest.fixture
+def ot3_firmware_commit(
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> str:
+    """Return commit url of ot3-firmware repo from test config file."""
+    return testing_global_em_config.get_repo_commit(
+        OpentronsRepository.OT3_FIRMWARE
+    ).replace("{{commit-sha}}", FAKE_COMMIT_ID)

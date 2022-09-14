@@ -5,11 +5,9 @@ from typing import Any, Dict
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
+from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
-)
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
 )
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,

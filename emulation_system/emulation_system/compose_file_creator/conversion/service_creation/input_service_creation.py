@@ -1,12 +1,12 @@
 """Pure functions related to creating Service objects from definitions in input file."""
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, cast
 
-from emulation_system.compose_file_creator.conversion.intermediate_types import (
-    RequiredNetworks,
-)
-from emulation_system.compose_file_creator.input.configuration_file import (
-    SystemConfigurationModel,
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system.compose_file_creator import Service
+from emulation_system.compose_file_creator.config_file_settings import (
+    EmulationLevels,
+    SourceType,
 )
 from emulation_system.compose_file_creator.input.hardware_models import (
     ModuleInputModel,
@@ -17,17 +17,10 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 from emulation_system.compose_file_creator.output.compose_file_model import (
     ListOrDict,
     Port,
-    Service,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    EmulationLevels,
-    SourceType,
-)
-from emulation_system.compose_file_creator.settings.custom_types import Containers
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
 )
 
+from ...types.final_types import ServiceVolumes
+from ...types.input_types import Containers
 from .shared_functions import (
     generate_container_name,
     get_build_args,
@@ -115,7 +108,6 @@ def configure_input_service(
     smoothie_name: Optional[str],
     can_server_service_name: Optional[str],
     config_model: SystemConfigurationModel,
-    required_networks: RequiredNetworks,
     global_settings: OpentronsEmulationConfiguration,
     dev: bool,
 ) -> Service:
@@ -147,8 +139,8 @@ def configure_input_service(
         image=get_service_image(container.get_image_name()),
         tty=True,
         build=get_service_build(container.get_image_name(), build_args, dev),
-        networks=required_networks.networks,
-        volumes=get_mount_strings(container),
+        networks=config_model.required_networks,
+        volumes=cast(ServiceVolumes, get_mount_strings(container)),
         depends_on=_get_service_depends_on(
             container, emulator_proxy_name, smoothie_name
         ),

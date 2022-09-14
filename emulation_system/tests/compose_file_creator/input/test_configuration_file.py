@@ -10,10 +10,8 @@ import pytest
 from pydantic import ValidationError
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
+from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator.errors import DuplicateHardwareNameError
-from emulation_system.compose_file_creator.input.configuration_file import (
-    SystemConfigurationModel,
-)
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
     MagneticModuleInputModel,
@@ -21,9 +19,7 @@ from emulation_system.compose_file_creator.input.hardware_models import (
     TemperatureModuleInputModel,
     ThermocyclerModuleInputModel,
 )
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    DEFAULT_DOCKER_COMPOSE_VERSION,
-)
+from emulation_system.consts import DEFAULT_DOCKER_COMPOSE_VERSION
 from tests.compose_file_creator.conftest import (
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,
@@ -94,7 +90,7 @@ def null_everything() -> Dict[str, None]:
 
 @pytest.fixture
 def with_invalid_system_unique_id(ot2_and_modules: Dict[str, Any]) -> Dict[str, Any]:
-    """Structure of SystemConfigurationModel with robot, modules, and an invalid system-unique-id."""  # noqa: E501
+    """Structure of SystemConfigurationModel with robot, modules, and an invalid system-unique-id."""
     ot2_and_modules["system-unique-id"] = "I aM uNiQuE bUt InVaLiD"
     return ot2_and_modules
 
@@ -140,7 +136,7 @@ def create_system_configuration(obj: Dict) -> SystemConfigurationModel:
     ],
 )
 def test_duplicate_names(config: Dict[str, Any]) -> None:
-    """Confirm that ValidationError is thrown when a robot and module have the same name."""  # noqa: E501
+    """Confirm that ValidationError is thrown when a robot and module have the same name."""
     print(config)
     with pytest.raises(DuplicateHardwareNameError) as err:
         create_system_configuration(config)
@@ -152,7 +148,7 @@ def test_duplicate_names(config: Dict[str, Any]) -> None:
 
 
 def test_invalid_container_name(invalid_ot2_name: Dict[str, Any]) -> None:
-    """Confirm that ValidationError is thrown when a robot and module have the same name."""  # noqa: E501
+    """Confirm that ValidationError is thrown when a robot and module have the same name."""
     with pytest.raises(ValidationError) as err:
         create_system_configuration(invalid_ot2_name)
     expected_error_text = ".*string does not match regex.*"

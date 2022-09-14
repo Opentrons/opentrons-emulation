@@ -5,20 +5,7 @@ from typing import Optional, Union
 from pydantic import BaseModel, DirectoryPath, Field, FilePath
 from typing_extensions import Literal
 
-ROOM_TEMPERATURE: float = 23.0
-
-DEFAULT_DOCKER_COMPOSE_VERSION = "3.8"
-DEFAULT_NETWORK_NAME = "local-network"
-SOURCE_CODE_MOUNT_NAME = "SOURCE_CODE"
-ROBOT_SERVER_MOUNT_NAME = "ROBOT_SERVER_SOURCE_CODE"
-CAN_SERVER_MOUNT_NAME = "CAN_SERVER_SOURCE_CODE"
-ENTRYPOINT_MOUNT_NAME = "ENTRYPOINT"
-RESTRICTED_MOUNT_NAMES = [
-    SOURCE_CODE_MOUNT_NAME,
-    ROBOT_SERVER_MOUNT_NAME,
-    ENTRYPOINT_MOUNT_NAME,
-    CAN_SERVER_MOUNT_NAME,
-]
+from emulation_system.consts import ROOM_TEMPERATURE
 
 
 class Hardware(str, Enum):

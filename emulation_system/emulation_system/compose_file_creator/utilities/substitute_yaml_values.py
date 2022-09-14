@@ -10,9 +10,7 @@ import yaml
 from pydantic import parse_obj_as
 from pydantic.utils import deepcopy
 
-from emulation_system.compose_file_creator.input.configuration_file import (
-    SystemConfigurationModel,
-)
+from emulation_system import SystemConfigurationModel
 
 
 @dataclass

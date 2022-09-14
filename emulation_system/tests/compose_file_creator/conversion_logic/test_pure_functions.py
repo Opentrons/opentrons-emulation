@@ -4,16 +4,17 @@ from typing import Optional
 
 import pytest
 
-from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import (  # noqa: E501
+from emulation_system.compose_file_creator import BuildItem
+from emulation_system.compose_file_creator.config_file_settings import (
+    OpentronsRepository,
+)
+from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import (
     get_build_args,
     get_service_build,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    BuildItem,
-    ListOrDict,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    OpentronsRepository,
+from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
+from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateBuildArgs,
 )
 from emulation_system.consts import (
     DEV_DOCKERFILE_NAME,
@@ -30,82 +31,69 @@ from emulation_system.consts import (
             "ca82a6dff817ec66f44342007202690a93763949",
             "https://github.com/Opentrons/opentrons/archive/{{commit-sha}}.zip",
             "https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip",
-            ListOrDict(
-                __root__={
-                    "OPENTRONS_SOURCE_DOWNLOAD_LOCATION": "https://github.com/"
-                    "Opentrons/opentrons/archive/"
-                    "ca82a6dff817ec66f44342"
-                    "007202690a93763949.zip"
-                }
-            ),
+            {
+                "OPENTRONS_SOURCE_DOWNLOAD_LOCATION": "https://github.com/"
+                "Opentrons/opentrons/archive/"
+                "ca82a6dff817ec66f44342"
+                "007202690a93763949.zip"
+            },
         ],
         [
             OpentronsRepository.OPENTRONS_MODULES,
             "ca82a6dff817ec66f44342007202690a93763949",
             "https://github.com/Opentrons/opentrons-modules/archive/{{commit-sha}}.zip",
             "https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip",
-            ListOrDict(
-                __root__={
-                    "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/"
-                    "opentrons-modules/archive/"
-                    "ca82a6dff817ec66f4434200720269"
-                    "0a93763949.zip"
-                }
-            ),
+            {
+                "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/"
+                "opentrons-modules/archive/"
+                "ca82a6dff817ec66f4434200720269"
+                "0a93763949.zip"
+            },
         ],
         [
             OpentronsRepository.OT3_FIRMWARE,
             "ca82a6dff817ec66f44342007202690a93763949",
             "https://github.com/Opentrons/ot3-firmware/archive/{{commit-sha}}.zip",
             "https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip",
-            ListOrDict(
-                __root__={
-                    "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/"
-                    "Opentrons/ot3-firmware/"
-                    "archive/ca82a6dff817ec66f443"
-                    "42007202690a93763949.zip"
-                }
-            ),
+            {
+                "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/"
+                "Opentrons/ot3-firmware/"
+                "archive/ca82a6dff817ec66f443"
+                "42007202690a93763949.zip"
+            },
         ],
         [
             OpentronsRepository.OPENTRONS,
             "latest",
             "https://github.com/Opentrons/opentrons/archive/{{commit-sha}}.zip",
             "https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip",
-            ListOrDict(
-                __root__={
-                    "OPENTRONS_SOURCE_DOWNLOAD_LOCATION": "https://github.com/"
-                    "Opentrons/opentrons/archive/"
-                    "refs/heads/edge.zip"
-                }
-            ),
+            {
+                "OPENTRONS_SOURCE_DOWNLOAD_LOCATION": "https://github.com/"
+                "Opentrons/opentrons/archive/"
+                "refs/heads/edge.zip"
+            },
         ],
         [
             OpentronsRepository.OPENTRONS_MODULES,
             "latest",
             "https://github.com/Opentrons/opentrons-modules/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip",  # noqa: E501
-            # noqa: E501
-            ListOrDict(
-                __root__={
-                    "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/"
-                    "opentrons-modules/archive/refs/"
-                    "heads/edge.zip"
-                }
-            ),
+            "https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip",
+            {
+                "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/"
+                "opentrons-modules/archive/refs/"
+                "heads/edge.zip"
+            },
         ],
         [
             OpentronsRepository.OT3_FIRMWARE,
             "latest",
             "https://github.com/Opentrons/ot3-firmware/archive/{{commit-sha}}.zip",
             "https://github.com/Opentrons/ot3-firmware/archive/refs/heads/main.zip",
-            ListOrDict(
-                __root__={
-                    "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/"
-                    "ot3-firmware/archive/refs/"
-                    "heads/main.zip"
-                }
-            ),
+            {
+                "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/"
+                "ot3-firmware/archive/refs/"
+                "heads/main.zip"
+            },
         ],
     ],
 )
@@ -200,7 +188,7 @@ def test_get_build_args(
 )
 def test_get_service_build(
     image_name: str,
-    build_args: Optional[ListOrDict],
+    build_args: Optional[IntermediateBuildArgs],
     dev: bool,
     expected_value: BuildItem,
 ) -> None:

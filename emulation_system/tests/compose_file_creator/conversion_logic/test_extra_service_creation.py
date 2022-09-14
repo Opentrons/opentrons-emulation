@@ -10,22 +10,20 @@ from typing import Any, Dict
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system.compose_file_creator.conversion.conversion_functions import (
-    convert_from_obj,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
+from emulation_system import OpentronsEmulationConfiguration
+from emulation_system.compose_file_creator.config_file_settings import (
     OT3Hardware,
     SourceType,
 )
-from emulation_system.compose_file_creator.settings.images import (
+from emulation_system.compose_file_creator.conversion.conversion_functions import (
+    convert_from_obj,
+)
+from emulation_system.compose_file_creator.images import (
     OT3GantryXImages,
     OT3GantryYImages,
     OT3HeadImages,
     OT3PipettesImages,
     SmoothieImages,
-)
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
 )
 from tests.compose_file_creator.conftest import EMULATOR_PROXY_ID, SMOOTHIE_ID
 from tests.compose_file_creator.conversion_logic.conftest import partial_string_in_mount
@@ -106,7 +104,7 @@ def test_smoothie_with_remote_source(
     ot2_only_with_remote_source_type: Dict[str, Any],
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
-    """Confirm smoothie uses remote source when OT2 is set to remote and doesn't have mounts."""  # noqa: E501
+    """Confirm smoothie uses remote source when OT2 is set to remote and doesn't have mounts."""
     services = convert_from_obj(
         ot2_only_with_remote_source_type, testing_global_em_config, False
     ).services

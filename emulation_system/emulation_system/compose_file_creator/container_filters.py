@@ -5,8 +5,8 @@ from __future__ import annotations
 from enum import Enum
 from typing import List, Type
 
-from emulation_system.compose_file_creator.errors import InvalidFilterError
-from emulation_system.compose_file_creator.settings.images import (
+from .errors import InvalidFilterError
+from .images import (
     CANServerImages,
     EmulatorProxyImages,
     HeaterShakerModuleImages,

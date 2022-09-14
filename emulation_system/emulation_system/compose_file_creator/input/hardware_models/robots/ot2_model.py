@@ -2,19 +2,18 @@
 from pydantic import Field
 from typing_extensions import Literal
 
-from emulation_system.compose_file_creator.input.hardware_models.hardware_specific_attributes import (  # noqa: E501
-    HardwareSpecificAttributes,
-)
-from emulation_system.compose_file_creator.input.hardware_models.robots.robot_model import (  # noqa: E501
-    RobotInputModel,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
+from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     Hardware,
     OpentronsRepository,
     PipetteSettings,
     SourceRepositories,
 )
+
+from ..hardware_specific_attributes import HardwareSpecificAttributes
+
+# cannot import from . because of circular import issue
+from .robot_model import RobotInputModel
 
 
 class OT2Attributes(HardwareSpecificAttributes):

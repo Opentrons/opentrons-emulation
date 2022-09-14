@@ -1,33 +1,23 @@
 """Pure functions related to the creation of the smoothie Service."""
 
 import json
-from typing import List, Optional, Union
+from typing import List, Optional, cast
 
-from emulation_system.compose_file_creator.conversion.intermediate_types import (
-    RequiredNetworks,
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system.compose_file_creator import Service
+from emulation_system.compose_file_creator.config_file_settings import (
+    Hardware,
+    OpentronsRepository,
+    SourceType,
 )
 from emulation_system.compose_file_creator.errors import (
     HardwareDoesNotExistError,
     IncorrectHardwareError,
 )
-from emulation_system.compose_file_creator.input.configuration_file import (
-    SystemConfigurationModel,
-)
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    ListOrDict,
-    Service,
-    Volume1,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    Hardware,
-    OpentronsRepository,
-    SourceType,
-)
-from emulation_system.compose_file_creator.settings.images import SmoothieImages
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
+from emulation_system.compose_file_creator.images import SmoothieImages
+from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 
+from ...types.final_types import ServiceVolumes
 from .shared_functions import (
     add_opentrons_named_volumes,
     generate_container_name,
@@ -40,7 +30,6 @@ from .shared_functions import (
 
 def create_smoothie_service(
     config_model: SystemConfigurationModel,
-    required_networks: RequiredNetworks,
     global_settings: OpentronsEmulationConfiguration,
     dev: bool,
 ) -> Service:
@@ -78,7 +67,7 @@ def create_smoothie_service(
         if ot2.source_type == SourceType.REMOTE
         else None
     )
-    mounts: Optional[List[Union[str, Volume1]]] = None
+    mounts: Optional[List[str]] = None
     if ot2.source_type == SourceType.LOCAL:
         mounts = [get_entrypoint_mount_string()]
         mounts.extend(ot2.get_mount_strings())
@@ -88,8 +77,8 @@ def create_smoothie_service(
         container_name=smoothie_name,
         image=get_service_image(image),
         build=get_service_build(image, build_args, dev),
-        networks=required_networks.networks,
-        volumes=mounts,
+        networks=config_model.required_networks,
+        volumes=cast(ServiceVolumes, mounts),
         tty=True,
         environment=converted_env,
     )

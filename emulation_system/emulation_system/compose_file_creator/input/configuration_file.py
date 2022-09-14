@@ -13,16 +13,12 @@ from pydantic import (
     validator,
 )
 
-from emulation_system.compose_file_creator.errors import DuplicateHardwareNameError
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    DEFAULT_DOCKER_COMPOSE_VERSION,
-    Hardware,
-)
-from emulation_system.compose_file_creator.settings.custom_types import (
-    Containers,
-    Modules,
-    Robots,
-)
+from emulation_system.consts import DEFAULT_DOCKER_COMPOSE_VERSION, DEFAULT_NETWORK_NAME
+
+from ..config_file_settings import Hardware
+from ..errors import DuplicateHardwareNameError
+from ..types.input_types import Containers, Modules, Robots
+from ..types.intermediate_types import IntermediateNetworks
 
 
 class SystemConfigurationModel(BaseModel):
@@ -108,7 +104,11 @@ class SystemConfigurationModel(BaseModel):
     @property
     def can_network_name(self) -> str:
         """Returns name of CAN network."""
-        return f"{self.system_unique_id}-CAN"
+        return (
+            f"{self.system_unique_id}-can-network"
+            if self.system_unique_id is not None
+            else "can-network"
+        )
 
     @property
     def containers(self) -> Mapping[str, Containers]:
@@ -139,6 +139,21 @@ class SystemConfigurationModel(BaseModel):
         )
 
         return robot_is_remote and modules_are_remote
+
+    @property
+    def required_networks(self) -> IntermediateNetworks:
+        """Get required networks to create for system."""
+        local_network_name = (
+            DEFAULT_NETWORK_NAME
+            if self.system_unique_id is None
+            else self.system_unique_id
+        )
+
+        required_networks = [cast(str, local_network_name)]
+        if self.requires_can_network:
+            required_networks.append(self.can_network_name)
+
+        return IntermediateNetworks(required_networks)
 
     @classmethod
     def from_file(cls, file_path: str) -> SystemConfigurationModel:

@@ -4,10 +4,8 @@ from __future__ import annotations
 import abc
 import argparse
 
+from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.executable import Executable
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
 
 
 class AbstractCommand(abc.ABC):

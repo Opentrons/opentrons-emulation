@@ -4,7 +4,7 @@ from typing import Any, Dict
 import py
 import pytest
 
-from emulation_system.compose_file_creator.settings.config_file_settings import (
+from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     Hardware,
     SourceType,
@@ -191,6 +191,6 @@ def ot3_and_modules(
 
 @pytest.fixture
 def with_system_unique_id(ot2_and_modules: Dict[str, Any]) -> Dict[str, Any]:
-    """Structure of SystemConfigurationModel with robot, modules, and system-unique-id."""  # noqa: E501
+    """Structure of SystemConfigurationModel with robot, modules, and system-unique-id."""
     ot2_and_modules["system-unique-id"] = SYSTEM_UNIQUE_ID
     return ot2_and_modules

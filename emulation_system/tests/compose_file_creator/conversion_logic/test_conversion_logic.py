@@ -3,21 +3,13 @@ from typing import Any, Dict, List, cast
 
 import pytest
 
+from emulation_system import OpentronsEmulationConfiguration
+from emulation_system.compose_file_creator import BuildItem, Service
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    BuildItem,
-    Network,
-    Service,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    DEFAULT_NETWORK_NAME,
-)
-from emulation_system.consts import DOCKERFILE_DIR_LOCATION
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
+from emulation_system.compose_file_creator.output.compose_file_model import Network
+from emulation_system.consts import DEFAULT_NETWORK_NAME, DOCKERFILE_DIR_LOCATION
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,
@@ -137,7 +129,7 @@ def test_can_server_port_exposed(
     ot3_default: Dict[str, Any],
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
-    """Confirm that when can-server-exposed-port is specified, ports are added to the can-server"""  # noqa: E501
+    """Confirm that when can-server-exposed-port is specified, ports are added to the can-server"""
     ot3_default["can-server-exposed-port"] = 9898
     runtime_compose_file_model = convert_from_obj(
         {"robot": ot3_default}, testing_global_em_config, False
@@ -151,7 +143,7 @@ def test_can_server_port_exposed(
 def test_can_server_port_not_exposed(
     ot3_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
 ) -> None:
-    """Confirm that when can-server-exposed-port is not specified, ports are not added to the can-server"""  # noqa: E501
+    """Confirm that when can-server-exposed-port is not specified, ports are not added to the can-server"""
     runtime_compose_file_model = convert_from_obj(
         ot3_only, testing_global_em_config, False
     )

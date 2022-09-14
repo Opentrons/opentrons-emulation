@@ -8,14 +8,12 @@ from unittest.mock import DEFAULT, Mock, patch
 import pytest
 import yaml
 
+from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.commands.emulation_system_command import (
     STDIN_NAME,
     STDOUT_NAME,
     EmulationSystemCommand,
     InvalidFileExtensionException,
-)
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
 )
 
 
@@ -51,7 +49,7 @@ EXPECTED_YAML = convert_yaml(
         - derek
         tty: true
     version: '3.8'
-    """  # noqa: E501
+    """
 )
 
 JSON_INPUT = json.dumps({"system-unique-id": "derek"})

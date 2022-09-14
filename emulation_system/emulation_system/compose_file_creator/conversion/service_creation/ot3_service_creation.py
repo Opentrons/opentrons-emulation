@@ -1,21 +1,16 @@
 """Logic for creating OT3 emulated hardware services."""
 from dataclasses import dataclass
-from typing import List, Optional, Union
+from typing import List, Optional, cast
 
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
-
-from ...errors import HardwareDoesNotExistError, IncorrectHardwareError
-from ...input.configuration_file import SystemConfigurationModel
-from ...output.compose_file_model import ListOrDict, Service, Volume1
-from ...settings.config_file_settings import (
+from emulation_system import OpentronsEmulationConfiguration
+from emulation_system.compose_file_creator import Service
+from emulation_system.compose_file_creator.config_file_settings import (
     Hardware,
     OpentronsRepository,
     OT3Hardware,
     SourceType,
 )
-from ...settings.images import (
+from emulation_system.compose_file_creator.images import (
     Images,
     OT3BootloaderImages,
     OT3GantryXImages,
@@ -24,7 +19,11 @@ from ...settings.images import (
     OT3HeadImages,
     OT3PipettesImages,
 )
-from ..intermediate_types import RequiredNetworks
+
+from ...errors import HardwareDoesNotExistError, IncorrectHardwareError
+from ...input.configuration_file import SystemConfigurationModel
+from ...output.compose_file_model import ListOrDict
+from ...types.final_types import ServiceVolumes
 from .shared_functions import (
     add_ot3_firmware_named_volumes,
     generate_container_name,
@@ -54,7 +53,6 @@ SERVICES_TO_CREATE = [
 
 def create_ot3_services(
     config_model: SystemConfigurationModel,
-    required_networks: RequiredNetworks,
     global_settings: OpentronsEmulationConfiguration,
     can_server_name: str,
     dev: bool,
@@ -91,7 +89,7 @@ def create_ot3_services(
             else None
         )
 
-        mounts: Optional[List[Union[str, Volume1]]] = None
+        mounts: Optional[List[str]] = None
         if ot3.source_type == SourceType.LOCAL:
             mounts = [get_entrypoint_mount_string()]
             mounts.extend(ot3.get_mount_strings())
@@ -102,8 +100,8 @@ def create_ot3_services(
                 container_name=container_name,
                 image=image_name,
                 build=get_service_build(image_name, build_args, dev),
-                networks=required_networks.networks,
-                volumes=mounts,
+                networks=config_model.required_networks,
+                volumes=cast(ServiceVolumes, mounts),
                 tty=True,
                 environment=env,
             )
