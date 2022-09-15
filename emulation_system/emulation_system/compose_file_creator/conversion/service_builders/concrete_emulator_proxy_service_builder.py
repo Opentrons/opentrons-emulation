@@ -7,7 +7,6 @@ from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
 )
-from emulation_system.compose_file_creator.conversion import AbstractServiceBuilder
 from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import (
     get_build_args,
     get_service_build,
@@ -29,6 +28,8 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
+
+from .abstract_service_builder import AbstractServiceBuilder
 
 
 class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
@@ -55,17 +56,6 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         self._logging_client = EmulatorProxyLoggingClient(self._dev)
         self._image = self._generate_image()
 
-    def generate_container_name(self) -> str:
-        """Generates value for container_name parameter."""
-        system_unique_id = self._config_model.system_unique_id
-        container_name = super()._generate_container_name(
-            self.EMULATOR_PROXY_NAME, system_unique_id
-        )
-        self._logging_client.log_container_name(
-            self.EMULATOR_PROXY_NAME, container_name, system_unique_id
-        )
-        return container_name
-
     def _generate_image(self) -> str:
         """Inner method for generating image.
 
@@ -80,6 +70,17 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         # But those parameters need to be there to match the parent's signature.
         self._logging_client.log_image_name(image_name, "", "")
         return image_name
+
+    def generate_container_name(self) -> str:
+        """Generates value for container_name parameter."""
+        system_unique_id = self._config_model.system_unique_id
+        container_name = super()._generate_container_name(
+            self.EMULATOR_PROXY_NAME, system_unique_id
+        )
+        self._logging_client.log_container_name(
+            self.EMULATOR_PROXY_NAME, container_name, system_unique_id
+        )
+        return container_name
 
     def generate_image(self) -> str:
         """Generates value for image parameter."""

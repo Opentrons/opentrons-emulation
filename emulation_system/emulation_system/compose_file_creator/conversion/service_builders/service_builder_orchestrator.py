@@ -2,9 +2,11 @@
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import Service
-from emulation_system.compose_file_creator.conversion import (
+
+from . import (
     ConcreteCANServerServiceBuilder,
     ConcreteEmulatorProxyServiceBuilder,
+    ConcreteSmoothieServiceBuilder,
 )
 
 
@@ -29,5 +31,11 @@ class ServiceBuilderOrchestrator:
     def build_emulator_proxy_service(self, dev: bool) -> Service:
         """Method to generate and return an Emulator Proxy Service."""
         return ConcreteEmulatorProxyServiceBuilder(
+            self._config_model, self._global_settings, dev
+        ).build_service()
+
+    def build_smoothie_service(self, dev: bool) -> Service:
+        """Method to generate and return a Smoothie Service."""
+        return ConcreteSmoothieServiceBuilder(
             self._config_model, self._global_settings, dev
         ).build_service()

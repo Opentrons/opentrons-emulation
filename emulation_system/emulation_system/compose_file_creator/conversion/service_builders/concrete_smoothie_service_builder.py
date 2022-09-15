@@ -1,5 +1,5 @@
-"""Module containing ConcreteCANServerServiceBuilder class."""
-
+"""Module containing ConcreteSmoothieServiceBuilder"""
+import json
 from typing import Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
@@ -14,8 +14,10 @@ from emulation_system.compose_file_creator.conversion.service_creation.shared_fu
     get_entrypoint_mount_string,
     get_service_build,
 )
-from emulation_system.compose_file_creator.images import CANServerImages
-from emulation_system.compose_file_creator.logging import CANServerLoggingClient
+from emulation_system.compose_file_creator.images import SmoothieImages
+from emulation_system.compose_file_creator.logging.smoothie_logging_client import (
+    SmoothieLoggingClient,
+)
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateCommand,
     IntermediateDependsOn,
@@ -28,10 +30,10 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
 from .abstract_service_builder import AbstractServiceBuilder
 
 
-class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
-    """Concrete implementation of AbstractServiceBuilder for building a CAN Server."""
+class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
+    """Concrete implementation of AbstractServiceBuilder for building a Smoothie Service."""
 
-    CAN_SERVER_NAME = "can-server"
+    SMOOTHIE_NAME = "smoothie"
 
     def __init__(
         self,
@@ -39,11 +41,11 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
         global_settings: OpentronsEmulationConfiguration,
         dev: bool,
     ) -> None:
-        """Instantiates a ConcreteCANServerServiceBuilder object."""
+        """Instantiates a ConcreteSmoothieServiceBuilder object."""
         super().__init__(config_model, global_settings)
         self._dev = dev
-        self._logging_client = CANServerLoggingClient(self._dev)
-        self._ot3 = self.get_ot3(config_model)
+        self._ot2 = self.get_ot2(config_model)
+        self._logging_client = SmoothieLoggingClient(self._dev)
         self._image = self._generate_image()
 
     def _generate_image(self) -> str:
@@ -54,31 +56,30 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
         This prevents, primarily, logging happening twice, but also the increased
         overhead of calculating the same thing twice.
         """
-        source_type = self._ot3.can_server_source_type
+        smoothie_images = SmoothieImages()
+        source_type = self._ot2.source_type
         image_name = (
-            CANServerImages().local_firmware_image_name
+            smoothie_images.local_firmware_image_name
             if source_type == SourceType.LOCAL
-            else CANServerImages().remote_firmware_image_name
+            else smoothie_images.remote_firmware_image_name
         )
-        self._logging_client.log_image_name(
-            image_name, source_type, "can-server-source-type"
-        )
+        self._logging_client.log_image_name(image_name, source_type, "source-type")
         return image_name
 
     def generate_container_name(self) -> str:
         """Generates value for container_name parameter."""
         system_unique_id = self._config_model.system_unique_id
         container_name = super()._generate_container_name(
-            self.CAN_SERVER_NAME, system_unique_id
+            self.SMOOTHIE_NAME, system_unique_id
         )
         self._logging_client.log_container_name(
-            self.CAN_SERVER_NAME, container_name, system_unique_id
+            self.SMOOTHIE_NAME, container_name, system_unique_id
         )
         return container_name
 
     def generate_image(self) -> str:
         """Generates value for image parameter."""
-        return self._image
+        return f"{self._image}:latest"
 
     def is_tty(self) -> bool:
         """Generates value for tty parameter."""
@@ -95,10 +96,10 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
     def generate_build(self) -> Optional[BuildItem]:
         """Generates value for build parameter."""
         repo = OpentronsRepository.OPENTRONS
-        if self._ot3.can_server_source_type == SourceType.REMOTE:
+        if self._ot2.source_type == SourceType.REMOTE:
             build_args = get_build_args(
                 repo,
-                self._ot3.can_server_source_location,
+                self._ot2.source_location,
                 self._global_settings.get_repo_commit(repo),
                 self._global_settings.get_repo_head(repo),
             )
@@ -110,9 +111,9 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        if self._ot3.can_server_source_type == SourceType.LOCAL:
+        if self._ot2.source_type == SourceType.LOCAL:
             volumes = [get_entrypoint_mount_string()]
-            volumes.extend(self._ot3.get_can_mount_strings())
+            volumes.extend(self._ot2.get_mount_strings())
             add_opentrons_named_volumes(volumes)
         else:
             volumes = None
@@ -127,7 +128,7 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
 
     def generate_ports(self) -> Optional[IntermediatePorts]:
         """Generates value for ports parameter."""
-        ports = self._ot3.get_can_server_bound_port()
+        ports = None
         self._logging_client.log_ports(ports)
         return ports
 
@@ -139,6 +140,8 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
-        env_vars = None
+        inner_env_vars = self._ot2.hardware_specific_attributes.dict()
+        inner_env_vars["port"] = 11000
+        env_vars = {"OT_EMULATOR_smoothie": json.dumps(inner_env_vars)}
         self._logging_client.log_env_vars(env_vars)
         return env_vars

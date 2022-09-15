@@ -9,7 +9,6 @@ from . import ServiceBuilderOrchestrator
 from .service_creation.input_service_creation import configure_input_service
 from .service_creation.ot3_service_creation import create_ot3_services
 from .service_creation.shared_functions import generate_container_name
-from .service_creation.smoothie_service_creation import create_smoothie_service
 
 
 def create_services(
@@ -33,7 +32,7 @@ def create_services(
     services[emulator_proxy_name] = emulator_proxy_service
 
     if config_model.robot is not None and config_model.robot.__class__ == OT2InputModel:
-        smoothie_service = create_smoothie_service(config_model, global_settings, dev)
+        smoothie_service = service_builder_orchestrator.build_smoothie_service(dev)
         smoothie_name = smoothie_service.container_name
         assert smoothie_name is not None
         services[smoothie_name] = smoothie_service
