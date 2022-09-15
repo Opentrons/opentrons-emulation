@@ -1,10 +1,6 @@
 """Tests related to system-unique-id property."""
 
-from typing import (
-    Any,
-    Dict,
-    cast,
-)
+from typing import Any, Dict, cast
 
 import pytest
 
@@ -60,8 +56,8 @@ def test_service_keys_with_system_unique_id(
         f"{SYSTEM_UNIQUE_ID}-{service_name}" for service_name in service_names
     }
     assert (
-            set(with_system_unique_id_services.keys())
-            == service_names_with_system_unique_id
+        set(with_system_unique_id_services.keys())
+        == service_names_with_system_unique_id
     )
 
 
@@ -72,8 +68,8 @@ def test_service_container_name_with_system_unique_id(
     """Verify container name matches service name."""
     modded_service_name = f"{SYSTEM_UNIQUE_ID}-{service_name}"
     assert (
-            with_system_unique_id_services[modded_service_name].container_name
-            == modded_service_name
+        with_system_unique_id_services[modded_service_name].container_name
+        == modded_service_name
     )
 
 
