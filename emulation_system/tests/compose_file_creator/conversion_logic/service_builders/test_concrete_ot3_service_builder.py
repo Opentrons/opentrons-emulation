@@ -1,23 +1,12 @@
 """Tests to confirm that ConcreteOT3ServiceBuilder builds the CAN Server Service correctly."""
-from typing import (
-    Any,
-    Dict,
-    List,
-    cast,
-)
+from typing import Any, Dict, List, cast
 
 import pytest
 from pydantic import parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system import (
-    OpentronsEmulationConfiguration,
-    SystemConfigurationModel,
-)
-from emulation_system.compose_file_creator import (
-    BuildItem,
-    Service,
-)
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system.compose_file_creator import BuildItem, Service
 from emulation_system.compose_file_creator.config_file_settings import (
     OT3Hardware,
     RepoToBuildArgMapping,
@@ -31,10 +20,7 @@ from emulation_system.compose_file_creator.images import (
     OT3HeadImages,
     OT3PipettesImages,
 )
-from emulation_system.consts import (
-    DEV_DOCKERFILE_NAME,
-    DOCKERFILE_NAME,
-)
+from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
 from tests.compose_file_creator.conversion_logic.conftest import (
     FAKE_COMMIT_ID,
     build_args_are_none,
@@ -83,7 +69,9 @@ def local_source(
 
 
 def get_ot3_service(service_list: List[Service], hardware: OT3Hardware) -> Service:
+    """Load OT-3 Service from passed service_list."""
     for service in service_list:
+        assert service.image is not None
         if hardware in service.image:
             return service
 
@@ -114,8 +102,8 @@ def test_simple_ot3_values(
     expected_dockerfile_name = DEV_DOCKERFILE_NAME if dev else DOCKERFILE_NAME
 
     for service in services:
-        assert service.build.dockerfile == expected_dockerfile_name
         assert isinstance(service.build, BuildItem)
+        assert service.build.dockerfile == expected_dockerfile_name
         assert isinstance(service.build.context, str)
         assert "opentrons-emulation/docker/" in service.build.context
         assert isinstance(service.networks, list)
@@ -143,7 +131,7 @@ def test_ot3_service_container_names_values(
     dev: bool,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
-    """Tests for values that are the same for all configurations of a Smoothie Service."""
+    """Tests for container name for all configurations of a Smoothie Service."""
     services = ServiceBuilderOrchestrator(
         config_model, testing_global_em_config
     ).build_ot3_services(dev=dev, can_server_service_name="can-server")
@@ -241,6 +229,13 @@ def test_ot3_service_remote(
     assert bootloader.image == OT3BootloaderImages().remote_hardware_image_name
     assert gripper.image == OT3GripperImages().remote_hardware_image_name
 
+    assert isinstance(head.build, BuildItem)
+    assert isinstance(pipettes.build, BuildItem)
+    assert isinstance(gantry_x.build, BuildItem)
+    assert isinstance(gantry_y.build, BuildItem)
+    assert isinstance(bootloader.build, BuildItem)
+    assert isinstance(gripper.build, BuildItem)
+
     assert head.build.target == OT3HeadImages().remote_hardware_image_name
     assert pipettes.build.target == OT3PipettesImages().remote_hardware_image_name
     assert gantry_x.build.target == OT3GantryXImages().remote_hardware_image_name
@@ -277,6 +272,13 @@ def test_ot3_services_local(
     assert gantry_y.image == OT3GantryYImages().local_hardware_image_name
     assert bootloader.image == OT3BootloaderImages().local_hardware_image_name
     assert gripper.image == OT3GripperImages().local_hardware_image_name
+
+    assert isinstance(head.build, BuildItem)
+    assert isinstance(pipettes.build, BuildItem)
+    assert isinstance(gantry_x.build, BuildItem)
+    assert isinstance(gantry_y.build, BuildItem)
+    assert isinstance(bootloader.build, BuildItem)
+    assert isinstance(gripper.build, BuildItem)
 
     assert head.build.target == OT3HeadImages().local_hardware_image_name
     assert pipettes.build.target == OT3PipettesImages().local_hardware_image_name
