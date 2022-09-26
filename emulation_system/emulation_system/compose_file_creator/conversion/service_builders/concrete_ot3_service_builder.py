@@ -144,7 +144,7 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         env_vars = {"CAN_SERVER_HOST": self._can_server_service_name}
 
         if isinstance(self._service_info.image, OT3PipettesImages):
-            env_vars["EEPROM_FILENAME"] = ""
+            env_vars["EEPROM_FILENAME"] = "eeprom.bin"
 
         self._logging_client.log_env_vars(env_vars)
         return env_vars
