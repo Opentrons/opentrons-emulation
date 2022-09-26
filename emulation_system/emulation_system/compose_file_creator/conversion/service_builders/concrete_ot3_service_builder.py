@@ -1,7 +1,10 @@
 """Module containing ConcreteOT3ServiceBuilder class."""
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
 from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
@@ -21,11 +24,10 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-
-from ...images import OT3PipettesImages
-from ...logging import OT3LoggingClient
 from .abstract_service_builder import AbstractServiceBuilder
 from .service_info import ServiceInfo
+from ...images import OT3PipettesImages
+from ...logging import OT3LoggingClient
 
 
 class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
@@ -144,7 +146,7 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         env_vars = {"CAN_SERVER_HOST": self._can_server_service_name}
 
         if isinstance(self._service_info.image, OT3PipettesImages):
-            env_vars["EEPROM_FILENAME"] = ""
+            env_vars["EEPROM_FILENAME"] = "eeprom.bin"
 
         self._logging_client.log_env_vars(env_vars)
         return env_vars
