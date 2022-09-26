@@ -194,3 +194,13 @@ def with_system_unique_id(ot2_and_modules: Dict[str, Any]) -> Dict[str, Any]:
     """Structure of SystemConfigurationModel with robot, modules, and system-unique-id."""
     ot2_and_modules["system-unique-id"] = SYSTEM_UNIQUE_ID
     return ot2_and_modules
+
+
+@pytest.fixture
+def ot3_firmware_dir(tmpdir: py.path.local) -> str:
+    """Get path to temporary opentrons-modules directory.
+
+    Note that this variable is scoped to the test. So if you call the fixture from
+    different places in the test the variable will be the same.
+    """
+    return str(tmpdir.mkdir("ot3-firmware"))

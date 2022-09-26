@@ -1,7 +1,6 @@
 """Test everything around inserting source code into containers."""
 from typing import Any, Callable, Dict, Optional
 
-import py
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
@@ -78,16 +77,6 @@ def module_set_source_type_params(
         )
 
     return module_set_source_type_params
-
-
-@pytest.fixture
-def ot3_firmware_dir(tmpdir: py.path.local) -> str:
-    """Get path to temporary opentrons-modules directory.
-
-    Note that this variable is scoped to the test. So if you call the fixture from
-    different places in the test the variable will be the same.
-    """
-    return str(tmpdir.mkdir("ot3-firmware"))
 
 
 @pytest.fixture
