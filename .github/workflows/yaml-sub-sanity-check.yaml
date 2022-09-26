@@ -31,16 +31,16 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "smoothie-service-creation-RQA-256"
+          ref: "RQA-258-fix-ot3-emulation-not-starting"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@smoothie-service-creation-RQA-256
+        uses: Opentrons/opentrons-emulation@RQA-258-fix-ot3-emulation-not-starting
         with:
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup-python-only
 
       - name: YAML Substitution
-        uses: Opentrons/opentrons-emulation@smoothie-service-creation-RQA-256
+        uses: Opentrons/opentrons-emulation@RQA-258-fix-ot3-emulation-not-starting
         with:
           command: yaml-sub
           substitutions: >-
