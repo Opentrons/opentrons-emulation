@@ -15,7 +15,6 @@ from emulation_system.compose_file_creator.conversion.service_creation.shared_fu
     get_service_build,
 )
 from emulation_system.compose_file_creator.images import CANServerImages
-from emulation_system.compose_file_creator.logging import CANServerLoggingClient
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateCommand,
     IntermediateDependsOn,
@@ -25,6 +24,7 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateVolumes,
 )
 
+from ...logging import CANServerLoggingClient
 from .abstract_service_builder import AbstractServiceBuilder
 
 
