@@ -33,10 +33,10 @@ jobs:
       - name: Checkout opentrons-emulation repository
         uses: actions/checkout@v3
         with:
-          ref: "ot3-service-creation-RQA-255"
+          ref: "smoothie-service-creation-RQA-256"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@ot3-service-creation-RQA-255
+        uses: Opentrons/opentrons-emulation@smoothie-service-creation-RQA-256
         with:
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup-python-only
