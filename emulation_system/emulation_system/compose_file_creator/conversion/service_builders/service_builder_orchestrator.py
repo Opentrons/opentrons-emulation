@@ -13,6 +13,7 @@ from ...images import (
     OT3HeadImages,
     OT3PipettesImages,
 )
+from ...types.intermediate_types import DockerServices
 from . import (
     ConcreteCANServerServiceBuilder,
     ConcreteEmulatorProxyServiceBuilder,
@@ -96,3 +97,41 @@ class ServiceBuilderOrchestrator:
             ).build_service()
             for container in self._config_model.containers.values()
         ]
+
+    def build_services(self) -> DockerServices:
+        """Build services."""
+        services = {}
+        smoothie_name = None
+        can_server_service_name = None
+
+        emulator_proxy_service = self.build_emulator_proxy_service()
+        emulator_proxy_name = emulator_proxy_service.container_name
+        assert emulator_proxy_name is not None  # For mypy
+        services[emulator_proxy_name] = emulator_proxy_service
+
+        if self._config_model.has_ot2:
+            smoothie_service = self.build_smoothie_service()
+            smoothie_name = smoothie_service.container_name
+            assert smoothie_name is not None
+            services[smoothie_name] = smoothie_service
+
+        if self._config_model.has_ot3:
+            can_server_service = self.build_can_server_service()
+            can_server_service_name = can_server_service.container_name
+            assert can_server_service_name is not None
+            ot3_services = self.build_ot3_services(
+                can_server_service_name,
+            )
+            services[can_server_service_name] = can_server_service
+            for ot3_service in ot3_services:
+                assert ot3_service.container_name is not None
+                services[ot3_service.container_name] = ot3_service
+
+        input_services = self.build_input_services(
+            emulator_proxy_name, smoothie_name, can_server_service_name
+        )
+        for service in input_services:
+            assert service.container_name is not None
+            services[service.container_name] = service
+
+        return DockerServices(services)
