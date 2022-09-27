@@ -5,8 +5,6 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
 )
 
 from . import ServiceBuilderOrchestrator
-from .service_creation.input_service_creation import configure_input_service
-from .service_creation.shared_functions import generate_container_name
 
 
 def create_services(
@@ -45,21 +43,11 @@ def create_services(
             assert ot3_service.container_name is not None
             services[ot3_service.container_name] = ot3_service
 
-    services.update(
-        {
-            generate_container_name(
-                container.id, config_model
-            ): configure_input_service(
-                container,
-                emulator_proxy_name,
-                smoothie_name,
-                can_server_service_name,
-                config_model,
-                global_settings,
-                dev,
-            )
-            for container in config_model.containers.values()
-        }
+    input_services = service_builder_orchestrator.build_input_services(
+        emulator_proxy_name, smoothie_name, can_server_service_name
     )
+    for service in input_services:
+        assert service.container_name is not None
+        services[service.container_name] = service
 
     return DockerServices(services)

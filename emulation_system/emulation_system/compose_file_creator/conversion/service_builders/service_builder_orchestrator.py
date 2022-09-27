@@ -1,5 +1,5 @@
 """Module containing ServiceBuilderOrchestrator class."""
-from typing import List
+from typing import List, Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import Service
@@ -16,6 +16,7 @@ from ...images import (
 from . import (
     ConcreteCANServerServiceBuilder,
     ConcreteEmulatorProxyServiceBuilder,
+    ConcreteInputServiceBuilder,
     ConcreteOT3ServiceBuilder,
     ConcreteSmoothieServiceBuilder,
 )
@@ -74,4 +75,24 @@ class ServiceBuilderOrchestrator:
                 service_info,
             ).build_service()
             for service_info in self.OT3_SERVICES_TO_CREATE
+        ]
+
+    def build_input_services(
+        self,
+        emulator_proxy_name: Optional[str],
+        smoothie_name: Optional[str],
+        can_server_service_name: Optional[str],
+    ) -> List[Service]:
+        """Build services directly specified in input file."""
+        return [
+            ConcreteInputServiceBuilder(
+                self._config_model,
+                self._global_settings,
+                self._dev,
+                container,
+                emulator_proxy_name,
+                smoothie_name,
+                can_server_service_name,
+            ).build_service()
+            for container in self._config_model.containers.values()
         ]
