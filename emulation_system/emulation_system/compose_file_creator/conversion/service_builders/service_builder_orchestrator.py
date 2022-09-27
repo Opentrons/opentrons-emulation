@@ -46,26 +46,27 @@ class ServiceBuilderOrchestrator:
         self._config_model = config_model
         self._global_settings = global_settings
         self._dev = dev
+        self._services: DockerServices = {}
 
-    def build_can_server_service(self) -> Service:
+    def _build_can_server_service(self) -> Service:
         """Method to generate and return a CAN Server Service."""
         return ConcreteCANServerServiceBuilder(
             self._config_model, self._global_settings, self._dev
         ).build_service()
 
-    def build_emulator_proxy_service(self) -> Service:
+    def _build_emulator_proxy_service(self) -> Service:
         """Method to generate and return an Emulator Proxy Service."""
         return ConcreteEmulatorProxyServiceBuilder(
             self._config_model, self._global_settings, self._dev
         ).build_service()
 
-    def build_smoothie_service(self) -> Service:
+    def _build_smoothie_service(self) -> Service:
         """Method to generate and return a Smoothie Service."""
         return ConcreteSmoothieServiceBuilder(
             self._config_model, self._global_settings, self._dev
         ).build_service()
 
-    def build_ot3_services(self, can_server_service_name: str) -> List[Service]:
+    def _build_ot3_services(self, can_server_service_name: str) -> List[Service]:
         """Generates OT-3 Firmware Services."""
         return [
             ConcreteOT3ServiceBuilder(
@@ -78,7 +79,7 @@ class ServiceBuilderOrchestrator:
             for service_info in self.OT3_SERVICES_TO_CREATE
         ]
 
-    def build_input_services(
+    def _build_input_services(
         self,
         emulator_proxy_name: Optional[str],
         smoothie_name: Optional[str],
@@ -98,40 +99,60 @@ class ServiceBuilderOrchestrator:
             for container in self._config_model.containers.values()
         ]
 
-    def build_services(self) -> DockerServices:
-        """Build services."""
-        services = {}
-        smoothie_name = None
-        can_server_service_name = None
+    def __add_ot2_services(self) -> str:
+        smoothie_service = self._build_smoothie_service()
+        smoothie_name = smoothie_service.container_name
+        assert smoothie_name is not None
+        self._services[smoothie_name] = smoothie_service
 
-        emulator_proxy_service = self.build_emulator_proxy_service()
+        return smoothie_name
+
+    def __add_ot3_services(self) -> str:
+        can_server_service = self._build_can_server_service()
+        can_server_service_name = can_server_service.container_name
+        assert can_server_service_name is not None
+        ot3_services = self._build_ot3_services(
+            can_server_service_name,
+        )
+        self._services[can_server_service_name] = can_server_service
+        for ot3_service in ot3_services:
+            assert ot3_service.container_name is not None
+            self._services[ot3_service.container_name] = ot3_service
+
+        return can_server_service_name
+
+    def __add_emulator_proxy_service(self) -> str:
+        emulator_proxy_service = self._build_emulator_proxy_service()
         emulator_proxy_name = emulator_proxy_service.container_name
         assert emulator_proxy_name is not None  # For mypy
-        services[emulator_proxy_name] = emulator_proxy_service
+        self._services[emulator_proxy_name] = emulator_proxy_service
 
-        if self._config_model.has_ot2:
-            smoothie_service = self.build_smoothie_service()
-            smoothie_name = smoothie_service.container_name
-            assert smoothie_name is not None
-            services[smoothie_name] = smoothie_service
+        return emulator_proxy_name
 
-        if self._config_model.has_ot3:
-            can_server_service = self.build_can_server_service()
-            can_server_service_name = can_server_service.container_name
-            assert can_server_service_name is not None
-            ot3_services = self.build_ot3_services(
-                can_server_service_name,
-            )
-            services[can_server_service_name] = can_server_service
-            for ot3_service in ot3_services:
-                assert ot3_service.container_name is not None
-                services[ot3_service.container_name] = ot3_service
-
-        input_services = self.build_input_services(
+    def __add_input_services(
+        self,
+        emulator_proxy_name: str,
+        smoothie_name: Optional[str],
+        can_server_service_name: Optional[str],
+    ) -> None:
+        input_services = self._build_input_services(
             emulator_proxy_name, smoothie_name, can_server_service_name
         )
         for service in input_services:
             assert service.container_name is not None
-            services[service.container_name] = service
+            self._services[service.container_name] = service
 
-        return DockerServices(services)
+    def build_services(self) -> DockerServices:
+        """Build services."""
+        emulator_proxy_name = self.__add_emulator_proxy_service()
+        smoothie_name = (
+            self.__add_ot2_services() if self._config_model.has_ot2 else None
+        )
+        can_server_service_name = (
+            self.__add_ot3_services() if self._config_model.has_ot3 else None
+        )
+        self.__add_input_services(
+            emulator_proxy_name, smoothie_name, can_server_service_name
+        )
+
+        return DockerServices(self._services)

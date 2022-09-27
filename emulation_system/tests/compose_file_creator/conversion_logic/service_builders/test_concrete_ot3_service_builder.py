@@ -97,7 +97,7 @@ def test_simple_ot3_values(
     """Tests for values that are the same for all configurations of a Smoothie Service."""
     services = ServiceBuilderOrchestrator(
         config_model, testing_global_em_config, dev
-    ).build_ot3_services(can_server_service_name="can-server")
+    )._build_ot3_services(can_server_service_name="can-server")
 
     expected_dockerfile_name = DEV_DOCKERFILE_NAME if dev else DOCKERFILE_NAME
 
@@ -134,7 +134,7 @@ def test_ot3_service_container_names_values(
     """Tests for container name for all configurations of a Smoothie Service."""
     services = ServiceBuilderOrchestrator(
         config_model, testing_global_em_config, dev
-    ).build_ot3_services(can_server_service_name="can-server")
+    )._build_ot3_services(can_server_service_name="can-server")
 
     # The number of items in ServiceBuilderOrchestrator.OT3_SERVICES_TO_CREATE
     assert len(services) == 6
@@ -168,7 +168,7 @@ def test_ot3_service_environment_variables(
     """Tests for values that are the same for all configurations of a Smoothie Service."""
     services = ServiceBuilderOrchestrator(
         config_model, testing_global_em_config, dev=True
-    ).build_ot3_services(can_server_service_name="can-server")
+    )._build_ot3_services(can_server_service_name="can-server")
 
     # The number of items in ServiceBuilderOrchestrator.OT3_SERVICES_TO_CREATE
     assert len(services) == 6
@@ -213,7 +213,7 @@ def test_ot3_service_remote(
     """Tests for values that are the same for all remote configurations of a Smoothie Service."""
     services = ServiceBuilderOrchestrator(
         config_model, testing_global_em_config, dev=True
-    ).build_ot3_services(can_server_service_name="can-server")
+    )._build_ot3_services(can_server_service_name="can-server")
     assert len(services) == 6
     head = get_ot3_service(services, OT3Hardware.HEAD)
     pipettes = get_ot3_service(services, OT3Hardware.PIPETTES)
@@ -257,7 +257,7 @@ def test_ot3_services_local(
     """Test for values for local configuration of a Smoothie Service."""
     services = ServiceBuilderOrchestrator(
         local_source, testing_global_em_config, dev=True
-    ).build_ot3_services(can_server_service_name="can-server")
+    )._build_ot3_services(can_server_service_name="can-server")
     assert len(services) == 6
     head = get_ot3_service(services, OT3Hardware.HEAD)
     pipettes = get_ot3_service(services, OT3Hardware.PIPETTES)
