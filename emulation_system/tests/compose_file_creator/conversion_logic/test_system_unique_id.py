@@ -10,6 +10,7 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
     convert_from_obj,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import Network
+from emulation_system.consts import DEFAULT_NETWORK_NAME
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,
@@ -79,7 +80,7 @@ def test_service_local_network_with_system_unique_id(
     """Verify local network on individual services are correct."""
     modded_service_name = f"{SYSTEM_UNIQUE_ID}-{service_name}"
     assert with_system_unique_id_services[modded_service_name].networks == [
-        SYSTEM_UNIQUE_ID
+        f"{SYSTEM_UNIQUE_ID}-{DEFAULT_NETWORK_NAME}"
     ]
 
 
@@ -90,4 +91,4 @@ def test_top_level_network_with_system_unique_id(
     """Verify top level network is correct."""
     assert convert_from_obj(
         with_system_unique_id, testing_global_em_config, False
-    ).networks == {SYSTEM_UNIQUE_ID: Network()}
+    ).networks == {f"{SYSTEM_UNIQUE_ID}-{DEFAULT_NETWORK_NAME}": Network()}

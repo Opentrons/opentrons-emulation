@@ -29,7 +29,7 @@ def convert_yaml(yaml_string: str) -> Dict[str, Any]:
 EXPECTED_YAML = convert_yaml(
     """
     networks:
-      derek: {}
+      derek-local-network: {}
     services:
       derek-emulator-proxy:
         build:
@@ -46,7 +46,7 @@ EXPECTED_YAML = convert_yaml(
           OT_EMULATOR_thermocycler_proxy: '{"emulator_port": 10003, "driver_port": 11003}'
         image: emulator-proxy-remote:latest
         networks:
-        - derek
+        - derek-local-network
         tty: true
     version: '3.8'
     """

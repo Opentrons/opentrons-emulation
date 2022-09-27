@@ -22,3 +22,4 @@ robot:
   can-server-source-location: latest
   emulation-level: hardware
   exposed-port: 31950
+  can-server-exposed-port: 9898

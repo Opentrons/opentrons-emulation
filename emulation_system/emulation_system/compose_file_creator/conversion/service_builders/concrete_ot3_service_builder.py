@@ -1,5 +1,4 @@
-"""Module containing ConcreteCANServerServiceBuilder class."""
-
+"""Module containing ConcreteOT3ServiceBuilder class."""
 from typing import Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
@@ -9,12 +8,11 @@ from emulation_system.compose_file_creator.config_file_settings import (
     SourceType,
 )
 from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import (
-    add_opentrons_named_volumes,
+    add_ot3_firmware_named_volumes,
     get_build_args,
     get_entrypoint_mount_string,
     get_service_build,
 )
-from emulation_system.compose_file_creator.images import CANServerImages
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateCommand,
     IntermediateDependsOn,
@@ -24,26 +22,30 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateVolumes,
 )
 
-from ...logging import CANServerLoggingClient
+from ...images import OT3PipettesImages
+from ...logging import OT3LoggingClient
 from .abstract_service_builder import AbstractServiceBuilder
+from .service_info import ServiceInfo
 
 
-class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
-    """Concrete implementation of AbstractServiceBuilder for building a CAN Server."""
-
-    CAN_SERVER_NAME = "can-server"
+class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
+    """Concrete implementation of AbstractServiceBuilder for building OT-3 firmware services."""
 
     def __init__(
         self,
         config_model: SystemConfigurationModel,
         global_settings: OpentronsEmulationConfiguration,
         dev: bool,
+        can_server_service_name: str,
+        service_info: ServiceInfo,
     ) -> None:
-        """Instantiates a ConcreteCANServerServiceBuilder object."""
+        """Instantiates a ConcreteOT3ServiceBuilder object."""
         super().__init__(config_model, global_settings)
         self._dev = dev
-        self._logging_client = CANServerLoggingClient(self._dev)
+        self._can_server_service_name = can_server_service_name
+        self._service_info = service_info
         self._ot3 = self.get_ot3(config_model)
+        self._logging_client = OT3LoggingClient(service_info.container_name, self._dev)
         self._image = self._generate_image()
 
     def _generate_image(self) -> str:
@@ -54,25 +56,24 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
         This prevents, primarily, logging happening twice, but also the increased
         overhead of calculating the same thing twice.
         """
-        source_type = self._ot3.can_server_source_type
+        source_type = self._ot3.source_type
         image_name = (
-            CANServerImages().local_firmware_image_name
+            self._service_info.image.local_hardware_image_name
             if source_type == SourceType.LOCAL
-            else CANServerImages().remote_firmware_image_name
+            else self._service_info.image.remote_hardware_image_name
         )
-        self._logging_client.log_image_name(
-            image_name, source_type, "can-server-source-type"
-        )
+        assert image_name is not None
+        self._logging_client.log_image_name(image_name, source_type, "source-type")
         return image_name
 
     def generate_container_name(self) -> str:
         """Generates value for container_name parameter."""
         system_unique_id = self._config_model.system_unique_id
         container_name = super()._generate_container_name(
-            self.CAN_SERVER_NAME, system_unique_id
+            self._service_info.container_name, system_unique_id
         )
         self._logging_client.log_container_name(
-            self.CAN_SERVER_NAME, container_name, system_unique_id
+            self._service_info.container_name, container_name, system_unique_id
         )
         return container_name
 
@@ -94,14 +95,15 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
 
     def generate_build(self) -> Optional[BuildItem]:
         """Generates value for build parameter."""
-        repo = OpentronsRepository.OPENTRONS
-        if self._ot3.can_server_source_type == SourceType.REMOTE:
+        repo = OpentronsRepository.OT3_FIRMWARE
+        if self._ot3.source_type == SourceType.REMOTE:
             build_args = get_build_args(
                 repo,
-                self._ot3.can_server_source_location,
+                self._ot3.source_location,
                 self._global_settings.get_repo_commit(repo),
                 self._global_settings.get_repo_head(repo),
             )
+            # TODO: Add monorepo for OT-3 State Manager Compatibility
 
         else:
             build_args = None
@@ -110,10 +112,10 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        if self._ot3.can_server_source_type == SourceType.LOCAL:
+        if self._ot3.source_type == SourceType.LOCAL:
             volumes = [get_entrypoint_mount_string()]
-            volumes.extend(self._ot3.get_can_mount_strings())
-            add_opentrons_named_volumes(volumes)
+            volumes.extend(self._ot3.get_mount_strings())
+            add_ot3_firmware_named_volumes(volumes)
         else:
             volumes = None
         self._logging_client.log_volumes(volumes)
@@ -127,7 +129,7 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
 
     def generate_ports(self) -> Optional[IntermediatePorts]:
         """Generates value for ports parameter."""
-        ports = self._ot3.get_can_server_bound_port()
+        ports = None
         self._logging_client.log_ports(ports)
         return ports
 
@@ -139,6 +141,10 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
-        env_vars = None
+        env_vars = {"CAN_SERVER_HOST": self._can_server_service_name}
+
+        if isinstance(self._service_info.image, OT3PipettesImages):
+            env_vars["EEPROM_FILENAME"] = "eeprom.bin"
+
         self._logging_client.log_env_vars(env_vars)
         return env_vars

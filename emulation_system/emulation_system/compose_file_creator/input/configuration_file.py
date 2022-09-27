@@ -146,7 +146,7 @@ class SystemConfigurationModel(BaseModel):
         local_network_name = (
             DEFAULT_NETWORK_NAME
             if self.system_unique_id is None
-            else self.system_unique_id
+            else f"{self.system_unique_id}-{DEFAULT_NETWORK_NAME}"
         )
 
         required_networks = [cast(str, local_network_name)]

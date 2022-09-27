@@ -62,6 +62,8 @@ def local_can(ot3_only: Dict[str, Any], opentrons_dir: str) -> SystemConfigurati
     [
         (lazy_fixture("remote_can_latest"), True),
         (lazy_fixture("remote_can_latest"), False),
+        (lazy_fixture("remote_can_commit_id"), True),
+        (lazy_fixture("remote_can_commit_id"), False),
         (lazy_fixture("local_can"), True),
         (lazy_fixture("local_can"), False),
     ],

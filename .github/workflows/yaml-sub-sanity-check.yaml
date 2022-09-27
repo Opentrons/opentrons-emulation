@@ -31,16 +31,16 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "refactor-conversion-logic-RQA-243"
+          ref: "smoothie-service-creation-RQA-256"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@refactor-conversion-logic-RQA-243
+        uses: Opentrons/opentrons-emulation@smoothie-service-creation-RQA-256
         with:
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup-python-only
 
       - name: YAML Substitution
-        uses: Opentrons/opentrons-emulation@refactor-conversion-logic-RQA-243
+        uses: Opentrons/opentrons-emulation@smoothie-service-creation-RQA-256
         with:
           command: yaml-sub
           substitutions: >-

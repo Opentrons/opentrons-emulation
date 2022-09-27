@@ -3,10 +3,19 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Optional, cast
+from typing import Optional, Type, cast
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem, Service
+from emulation_system.compose_file_creator.config_file_settings import Hardware
+from emulation_system.compose_file_creator.errors import (
+    HardwareDoesNotExistError,
+    IncorrectHardwareError,
+)
+from emulation_system.compose_file_creator.input.hardware_models import (
+    OT2InputModel,
+    OT3InputModel,
+)
 from emulation_system.compose_file_creator.types.final_types import (
     ServiceBuild,
     ServiceCommand,
@@ -17,6 +26,7 @@ from emulation_system.compose_file_creator.types.final_types import (
     ServiceTTY,
     ServiceVolumes,
 )
+from emulation_system.compose_file_creator.types.input_types import Robots
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateCommand,
     IntermediateDependsOn,
@@ -39,6 +49,34 @@ class AbstractServiceBuilder(ABC):
         """Defines parameters required for ALL concrete builders."""
         self._config_model = config_model
         self._global_settings = global_settings
+
+    @staticmethod
+    def _get_robot(
+        config_model: SystemConfigurationModel,
+        hardware: Hardware,
+        expected_type: Type[Robots],
+    ) -> Robots:
+        """Checks for robot object in SystemConfigurationModel and returns it."""
+        robot = config_model.robot
+        if robot is None:
+            raise HardwareDoesNotExistError(hardware)
+        if not isinstance(robot, expected_type):
+            raise IncorrectHardwareError(robot.hardware, hardware)
+        return robot
+
+    @classmethod
+    def get_ot2(cls, config_model: SystemConfigurationModel) -> OT2InputModel:
+        """Checks for OT-2 object in SystemConfigurationModel and returns it."""
+        robot = cls._get_robot(config_model, Hardware.OT2, OT2InputModel)
+        assert isinstance(robot, OT2InputModel)
+        return robot
+
+    @classmethod
+    def get_ot3(cls, config_model: SystemConfigurationModel) -> OT3InputModel:
+        """Checks for OT-3 object in SystemConfigurationModel and returns it."""
+        robot = cls._get_robot(config_model, Hardware.OT3, OT3InputModel)
+        assert isinstance(robot, OT3InputModel)
+        return robot
 
     @staticmethod
     def _generate_container_name(
