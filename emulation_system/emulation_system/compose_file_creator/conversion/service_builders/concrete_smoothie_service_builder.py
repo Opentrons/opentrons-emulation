@@ -1,4 +1,4 @@
-"""Module containing ConcreteSmoothieServiceBuilder"""
+"""Module containing ConcreteSmoothieServiceBuilder."""
 import json
 from typing import Optional
 

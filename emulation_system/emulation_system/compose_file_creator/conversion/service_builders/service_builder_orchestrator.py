@@ -38,38 +38,38 @@ class ServiceBuilderOrchestrator:
         self,
         config_model: SystemConfigurationModel,
         global_settings: OpentronsEmulationConfiguration,
+        dev: bool,
     ) -> None:
         """Instantiates a ServiceBuilderOrchestrator object."""
         self._config_model = config_model
         self._global_settings = global_settings
+        self._dev = dev
 
-    def build_can_server_service(self, dev: bool) -> Service:
+    def build_can_server_service(self) -> Service:
         """Method to generate and return a CAN Server Service."""
         return ConcreteCANServerServiceBuilder(
-            self._config_model, self._global_settings, dev
+            self._config_model, self._global_settings, self._dev
         ).build_service()
 
-    def build_emulator_proxy_service(self, dev: bool) -> Service:
+    def build_emulator_proxy_service(self) -> Service:
         """Method to generate and return an Emulator Proxy Service."""
         return ConcreteEmulatorProxyServiceBuilder(
-            self._config_model, self._global_settings, dev
+            self._config_model, self._global_settings, self._dev
         ).build_service()
 
-    def build_smoothie_service(self, dev: bool) -> Service:
+    def build_smoothie_service(self) -> Service:
         """Method to generate and return a Smoothie Service."""
         return ConcreteSmoothieServiceBuilder(
-            self._config_model, self._global_settings, dev
+            self._config_model, self._global_settings, self._dev
         ).build_service()
 
-    def build_ot3_services(
-        self, dev: bool, can_server_service_name: str
-    ) -> List[Service]:
+    def build_ot3_services(self, can_server_service_name: str) -> List[Service]:
         """Generates OT-3 Firmware Services."""
         return [
             ConcreteOT3ServiceBuilder(
                 self._config_model,
                 self._global_settings,
-                dev,
+                self._dev,
                 can_server_service_name,
                 service_info,
             ).build_service()

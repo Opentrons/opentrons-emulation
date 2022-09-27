@@ -4,7 +4,6 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     DockerServices,
 )
 
-from ..input.hardware_models import OT2InputModel, OT3InputModel
 from . import ServiceBuilderOrchestrator
 from .service_creation.input_service_creation import configure_input_service
 from .service_creation.shared_functions import generate_container_name
@@ -17,31 +16,28 @@ def create_services(
 ) -> DockerServices:
     """Creates all services to be added to compose file."""
     service_builder_orchestrator = ServiceBuilderOrchestrator(
-        config_model, global_settings
+        config_model, global_settings, dev
     )
     services = {}
     smoothie_name = None
     can_server_service_name = None
 
-    emulator_proxy_service = service_builder_orchestrator.build_emulator_proxy_service(
-        dev
-    )
+    emulator_proxy_service = service_builder_orchestrator.build_emulator_proxy_service()
     emulator_proxy_name = emulator_proxy_service.container_name
     assert emulator_proxy_name is not None  # For mypy
     services[emulator_proxy_name] = emulator_proxy_service
 
-    if config_model.robot is not None and config_model.robot.__class__ == OT2InputModel:
-        smoothie_service = service_builder_orchestrator.build_smoothie_service(dev)
+    if config_model.has_ot2:
+        smoothie_service = service_builder_orchestrator.build_smoothie_service()
         smoothie_name = smoothie_service.container_name
         assert smoothie_name is not None
         services[smoothie_name] = smoothie_service
 
-    if config_model.robot is not None and config_model.robot.__class__ == OT3InputModel:
-        can_server_service = service_builder_orchestrator.build_can_server_service(dev)
+    if config_model.has_ot3:
+        can_server_service = service_builder_orchestrator.build_can_server_service()
         can_server_service_name = can_server_service.container_name
         assert can_server_service_name is not None
         ot3_services = service_builder_orchestrator.build_ot3_services(
-            dev,
             can_server_service_name,
         )
         services[can_server_service_name] = can_server_service
