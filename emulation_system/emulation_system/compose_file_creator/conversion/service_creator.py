@@ -7,7 +7,6 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
 from ..input.hardware_models import OT2InputModel, OT3InputModel
 from . import ServiceBuilderOrchestrator
 from .service_creation.input_service_creation import configure_input_service
-from .service_creation.ot3_service_creation import create_ot3_services
 from .service_creation.shared_functions import generate_container_name
 
 
@@ -41,11 +40,9 @@ def create_services(
         can_server_service = service_builder_orchestrator.build_can_server_service(dev)
         can_server_service_name = can_server_service.container_name
         assert can_server_service_name is not None
-        ot3_services = create_ot3_services(
-            config_model,
-            global_settings,
-            can_server_service_name,
+        ot3_services = service_builder_orchestrator.build_ot3_services(
             dev,
+            can_server_service_name,
         )
         services[can_server_service_name] = can_server_service
         for ot3_service in ot3_services:

@@ -15,9 +15,6 @@ from emulation_system.compose_file_creator.conversion.service_creation.shared_fu
     get_service_build,
 )
 from emulation_system.compose_file_creator.images import SmoothieImages
-from emulation_system.compose_file_creator.logging.smoothie_logging_client import (
-    SmoothieLoggingClient,
-)
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateCommand,
     IntermediateDependsOn,
@@ -27,6 +24,7 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateVolumes,
 )
 
+from ...logging import SmoothieLoggingClient
 from .abstract_service_builder import AbstractServiceBuilder
 
 

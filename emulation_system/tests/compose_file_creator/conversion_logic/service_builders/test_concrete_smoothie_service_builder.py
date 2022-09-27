@@ -1,4 +1,4 @@
-"""Tests to confirm that ConcreteCANServerServiceBuilder builds the CAN Server Service correctly."""
+"""Tests to confirm that ConcreteSmoothieServiceBuilder builds the CAN Server Service correctly."""
 import json
 from typing import Any, Dict, cast
 
@@ -140,7 +140,6 @@ def test_smoothie_remote(
     ).build_service()
     assert service.image == "smoothie-remote:latest"
     assert isinstance(service.build, BuildItem)
-    assert isinstance(service.build.context, str)
     assert service.build.target == "smoothie-remote"
     assert service.volumes is None
     assert get_source_code_build_args(service) == {
@@ -158,7 +157,6 @@ def test_smoothie_local(
     ).build_service()
     assert service.image == "smoothie-local:latest"
     assert isinstance(service.build, BuildItem)
-    assert isinstance(service.build.context, str)
     assert service.build.target == "smoothie-local"
     assert build_args_are_none(service)
 

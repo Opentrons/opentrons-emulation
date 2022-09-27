@@ -19,7 +19,6 @@ from emulation_system.compose_file_creator.input.hardware_models import (
     TemperatureModuleInputModel,
     ThermocyclerModuleInputModel,
 )
-from emulation_system.compose_file_creator.logging import EmulatorProxyLoggingClient
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateCommand,
     IntermediateDependsOn,
@@ -29,6 +28,7 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateVolumes,
 )
 
+from ...logging import EmulatorProxyLoggingClient
 from .abstract_service_builder import AbstractServiceBuilder
 
 
