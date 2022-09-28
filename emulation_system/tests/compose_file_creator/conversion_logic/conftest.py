@@ -1,21 +1,11 @@
 """Conftest for conversion logic."""
-from typing import (
-    Any,
-    Dict,
-    List,
-    Optional,
-    Union,
-    cast,
-)
+from typing import Any, Dict, List, Optional, Union, cast
 
 import py
 import pytest
 
 from emulation_system import OpentronsEmulationConfiguration
-from emulation_system.compose_file_creator import (
-    BuildItem,
-    Service,
-)
+from emulation_system.compose_file_creator import BuildItem, Service
 from emulation_system.compose_file_creator.config_file_settings import (
     MountTypes,
     OpentronsRepository,
