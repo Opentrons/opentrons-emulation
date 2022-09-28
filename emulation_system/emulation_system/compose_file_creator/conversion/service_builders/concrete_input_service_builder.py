@@ -16,7 +16,6 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     add_opentrons_named_volumes,
     add_ot3_firmware_named_volumes,
     get_build_args,
-    get_entrypoint_mount_string,
 )
 
 from ...config_file_settings import OpentronsRepository
@@ -116,7 +115,7 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
             else self._container.get_mount_strings()
         )
         if len(mount_strings) > 0:
-            mount_strings.append(get_entrypoint_mount_string())
+            mount_strings.append(self.ENTRYPOINT_MOUNT_STRING)
             source_repo = self._container.get_source_repo()
             match source_repo:
                 case OpentronsRepository.OPENTRONS:

@@ -1,27 +1,13 @@
 """Function useful to multiple service creation modules."""
-import pathlib
 from typing import List
 
 from emulation_system.compose_file_creator.config_file_settings import (
-    FileMount,
-    MountTypes,
     OpentronsRepository,
     RepoToBuildArgMapping,
 )
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
 )
-from emulation_system.consts import ENTRYPOINT_FILE_LOCATION, ENTRYPOINT_MOUNT_NAME
-
-
-def get_entrypoint_mount_string() -> str:
-    """Return bind mount string to entrypoint.sh."""
-    return FileMount(
-        name=ENTRYPOINT_MOUNT_NAME,
-        type=MountTypes.FILE,
-        source_path=pathlib.Path(ENTRYPOINT_FILE_LOCATION),
-        mount_path="/entrypoint.sh",
-    ).get_bind_mount_string()
 
 
 def get_build_args(

@@ -20,7 +20,6 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
 from emulation_system.compose_file_creator.utilities.shared_functions import (
     add_opentrons_named_volumes,
     get_build_args,
-    get_entrypoint_mount_string,
 )
 
 from ...logging import SmoothieLoggingClient
@@ -109,7 +108,7 @@ class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
         if self._ot2.source_type == SourceType.LOCAL:
-            volumes = [get_entrypoint_mount_string()]
+            volumes = [self.ENTRYPOINT_MOUNT_STRING]
             volumes.extend(self._ot2.get_mount_strings())
             add_opentrons_named_volumes(volumes)
         else:

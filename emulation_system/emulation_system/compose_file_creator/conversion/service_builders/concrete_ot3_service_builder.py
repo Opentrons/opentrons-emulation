@@ -18,7 +18,6 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
 from emulation_system.compose_file_creator.utilities.shared_functions import (
     add_ot3_firmware_named_volumes,
     get_build_args,
-    get_entrypoint_mount_string,
 )
 
 from ...images import OT3PipettesImages
@@ -112,7 +111,7 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
         if self._ot3.source_type == SourceType.LOCAL:
-            volumes = [get_entrypoint_mount_string()]
+            volumes = [self.ENTRYPOINT_MOUNT_STRING]
             volumes.extend(self._ot3.get_mount_strings())
             add_ot3_firmware_named_volumes(volumes)
         else:

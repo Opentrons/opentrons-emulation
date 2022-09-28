@@ -2,12 +2,17 @@
 
 from __future__ import annotations
 
+import pathlib
 from abc import ABC, abstractmethod
 from typing import Optional, Type, cast
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem, Service
-from emulation_system.compose_file_creator.config_file_settings import Hardware
+from emulation_system.compose_file_creator.config_file_settings import (
+    FileMount,
+    Hardware,
+    MountTypes,
+)
 from emulation_system.compose_file_creator.errors import (
     HardwareDoesNotExistError,
     IncorrectHardwareError,
@@ -45,11 +50,20 @@ from emulation_system.consts import (
     DEV_DOCKERFILE_NAME,
     DOCKERFILE_DIR_LOCATION,
     DOCKERFILE_NAME,
+    ENTRYPOINT_FILE_LOCATION,
+    ENTRYPOINT_MOUNT_NAME,
 )
 
 
 class AbstractServiceBuilder(ABC):
     """Abstract class defining all necessary functions to build a service."""
+
+    ENTRYPOINT_MOUNT_STRING = FileMount(
+        name=ENTRYPOINT_MOUNT_NAME,
+        type=MountTypes.FILE,
+        source_path=pathlib.Path(ENTRYPOINT_FILE_LOCATION),
+        mount_path="/entrypoint.sh",
+    ).get_bind_mount_string()
 
     @abstractmethod
     def __init__(
