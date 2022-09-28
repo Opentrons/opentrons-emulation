@@ -16,6 +16,7 @@ from emulation_system.compose_file_creator.input.hardware_models import (
     OT2InputModel,
     OT3InputModel,
 )
+from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.compose_file_creator.types.final_types import (
     ServiceBuild,
     ServiceCommand,
@@ -40,8 +41,10 @@ from emulation_system.compose_file_creator.utilities.hardware_utils import (
     is_ot2,
     is_ot3,
 )
-from emulation_system.compose_file_creator.utilities.shared_functions import (
-    get_service_build,
+from emulation_system.consts import (
+    DEV_DOCKERFILE_NAME,
+    DOCKERFILE_DIR_LOCATION,
+    DOCKERFILE_NAME,
 )
 
 
@@ -134,9 +137,14 @@ class AbstractServiceBuilder(ABC):
         """Method to, if necessary, generate value for build parameter for Service."""
         ...
 
-    def generate_build(self) -> Optional[BuildItem]:
+    def generate_build(self) -> BuildItem:
         """Generates BuildItem."""
-        return get_service_build(self._image, self.generate_build_args(), self._dev)
+        return BuildItem(
+            context=DOCKERFILE_DIR_LOCATION,
+            target=self._image,
+            args=cast(ListOrDict, self.generate_build_args()),
+            dockerfile=DEV_DOCKERFILE_NAME if self._dev else DOCKERFILE_NAME,
+        )
 
     @abstractmethod
     def generate_volumes(self) -> Optional[IntermediateVolumes]:

@@ -1,37 +1,17 @@
 """Function useful to multiple service creation modules."""
 import pathlib
-from typing import List, Optional, cast
+from typing import List
 
-from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.config_file_settings import (
     FileMount,
     MountTypes,
     OpentronsRepository,
     RepoToBuildArgMapping,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
 )
-from emulation_system.consts import (
-    DEV_DOCKERFILE_NAME,
-    DOCKERFILE_DIR_LOCATION,
-    DOCKERFILE_NAME,
-    ENTRYPOINT_FILE_LOCATION,
-    ENTRYPOINT_MOUNT_NAME,
-)
-
-
-def get_service_build(
-    image_name: str, build_args: Optional[IntermediateBuildArgs], dev: bool
-) -> BuildItem:
-    """Generate BuildItem object for Service."""
-    return BuildItem(
-        context=DOCKERFILE_DIR_LOCATION,
-        target=image_name,
-        args=cast(ListOrDict, build_args),
-        dockerfile=DEV_DOCKERFILE_NAME if dev else DOCKERFILE_NAME,
-    )
+from emulation_system.consts import ENTRYPOINT_FILE_LOCATION, ENTRYPOINT_MOUNT_NAME
 
 
 def get_entrypoint_mount_string() -> str:
