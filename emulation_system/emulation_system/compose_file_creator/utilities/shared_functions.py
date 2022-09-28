@@ -21,7 +21,6 @@ from emulation_system.compose_file_creator.input.hardware_models.hardware_model 
     HardwareModel,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
-from emulation_system.compose_file_creator.types.input_types import Containers
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
 )
@@ -44,26 +43,6 @@ def get_service_build(
         args=cast(ListOrDict, build_args),
         dockerfile=DEV_DOCKERFILE_NAME if dev else DOCKERFILE_NAME,
     )
-
-
-def get_mount_strings(container: Containers) -> Optional[List[str]]:
-    """Get mount strings defined on container."""
-    mount_strings = (
-        container.get_robot_server_mount_strings()
-        if issubclass(container.__class__, RobotInputModel)
-        else container.get_mount_strings()
-    )
-    if len(mount_strings) > 0:
-        mount_strings.append(get_entrypoint_mount_string())
-        if container.get_source_repo() == OpentronsRepository.OPENTRONS:
-            add_opentrons_named_volumes(mount_strings)
-        elif container.get_source_repo() == OpentronsRepository.OPENTRONS_MODULES:
-            add_opentrons_modules_named_volumes(mount_strings)
-        elif container.get_source_repo() == OpentronsRepository.OT3_FIRMWARE:
-            add_ot3_firmware_named_volumes(mount_strings)
-        return mount_strings
-    else:
-        return None
 
 
 def get_entrypoint_mount_string() -> str:

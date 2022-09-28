@@ -1,5 +1,5 @@
 """Module containing ConcreteInputServiceBuilder."""
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem
@@ -12,8 +12,11 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateVolumes,
 )
 from emulation_system.compose_file_creator.utilities.shared_functions import (
+    add_opentrons_modules_named_volumes,
+    add_opentrons_named_volumes,
+    add_ot3_firmware_named_volumes,
     get_build_args,
-    get_mount_strings,
+    get_entrypoint_mount_string,
     get_service_build,
     is_hardware_emulation_level,
     is_module,
@@ -24,6 +27,7 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     is_robot,
 )
 
+from ...config_file_settings import OpentronsRepository
 from ...types.input_types import Containers
 from .abstract_service_builder import AbstractServiceBuilder
 
@@ -105,7 +109,24 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        return get_mount_strings(self._container)
+        mount_strings: List[str] = (
+            self._container.get_robot_server_mount_strings()
+            if is_robot(self._container)
+            else self._container.get_mount_strings()
+        )
+        if len(mount_strings) > 0:
+            mount_strings.append(get_entrypoint_mount_string())
+            source_repo = self._container.get_source_repo()
+            match source_repo:
+                case OpentronsRepository.OPENTRONS:
+                    add_opentrons_named_volumes(mount_strings)
+                case OpentronsRepository.OPENTRONS_MODULES:
+                    add_opentrons_modules_named_volumes(mount_strings)
+                case OpentronsRepository.OT3_FIRMWARE:
+                    add_ot3_firmware_named_volumes(mount_strings)
+            return mount_strings
+        else:
+            return None
 
     def generate_command(self) -> Optional[IntermediateCommand]:
         """Generates value for command parameter."""
