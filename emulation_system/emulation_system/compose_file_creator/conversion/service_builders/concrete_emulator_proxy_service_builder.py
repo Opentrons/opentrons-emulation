@@ -7,11 +7,6 @@ from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
 )
-from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import (
-    get_build_args,
-    get_service_build,
-    get_service_image,
-)
 from emulation_system.compose_file_creator.images import EmulatorProxyImages
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
@@ -26,6 +21,10 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateNetworks,
     IntermediatePorts,
     IntermediateVolumes,
+)
+from emulation_system.compose_file_creator.utilities.shared_functions import (
+    get_build_args,
+    get_service_build,
 )
 
 from ...logging import EmulatorProxyLoggingClient
@@ -84,7 +83,7 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
 
     def generate_image(self) -> str:
         """Generates value for image parameter."""
-        return get_service_image(self._image)
+        return f"{self._image}:latest"
 
     def is_tty(self) -> bool:
         """Generates value for tty parameter."""

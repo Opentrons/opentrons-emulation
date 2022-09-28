@@ -8,12 +8,6 @@ from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     SourceType,
 )
-from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import (
-    add_opentrons_named_volumes,
-    get_build_args,
-    get_entrypoint_mount_string,
-    get_service_build,
-)
 from emulation_system.compose_file_creator.images import CANServerImages
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateCommand,
@@ -22,6 +16,12 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateNetworks,
     IntermediatePorts,
     IntermediateVolumes,
+)
+from emulation_system.compose_file_creator.utilities.shared_functions import (
+    add_opentrons_named_volumes,
+    get_build_args,
+    get_entrypoint_mount_string,
+    get_service_build,
 )
 
 from ...logging import CANServerLoggingClient

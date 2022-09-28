@@ -1,16 +1,25 @@
 """Function useful to multiple service creation modules."""
 import pathlib
-from typing import List, Optional, cast
+from typing import List, Optional, TypeGuard, cast
 
-from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.config_file_settings import (
+    EmulationLevels,
     FileMount,
     MountTypes,
     OpentronsRepository,
     RepoToBuildArgMapping,
+    SourceType,
 )
-from emulation_system.compose_file_creator.input.hardware_models import RobotInputModel
+from emulation_system.compose_file_creator.input.hardware_models import (
+    ModuleInputModel,
+    OT2InputModel,
+    OT3InputModel,
+    RobotInputModel,
+)
+from emulation_system.compose_file_creator.input.hardware_models.hardware_model import (
+    HardwareModel,
+)
 from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.compose_file_creator.types.input_types import Containers
 from emulation_system.compose_file_creator.types.intermediate_types import (
@@ -25,17 +34,6 @@ from emulation_system.consts import (
 )
 
 
-def generate_container_name(
-    container_id: str, config_model: SystemConfigurationModel
-) -> str:
-    """If system-unique-id is defined prefix it to container name."""
-    return (
-        f"{config_model.system_unique_id}-{container_id}"
-        if config_model.system_unique_id is not None
-        else container_id
-    )
-
-
 def get_service_build(
     image_name: str, build_args: Optional[IntermediateBuildArgs], dev: bool
 ) -> BuildItem:
@@ -44,13 +42,8 @@ def get_service_build(
         context=DOCKERFILE_DIR_LOCATION,
         target=image_name,
         args=cast(ListOrDict, build_args),
-        dockerfile=get_dockerfile_name(dev),
+        dockerfile=DEV_DOCKERFILE_NAME if dev else DOCKERFILE_NAME,
     )
-
-
-def get_service_image(image_name: str) -> str:
-    """Build image string."""
-    return f"{image_name}:latest"
 
 
 def get_mount_strings(container: Containers) -> Optional[List[str]]:
@@ -144,6 +137,44 @@ def add_opentrons_modules_named_volumes(mount_list: List[str]) -> None:
     )
 
 
-def get_dockerfile_name(dev: bool) -> str:
-    """Get dockerfile name based off of --dev option."""
-    return DEV_DOCKERFILE_NAME if dev else DOCKERFILE_NAME
+def is_robot(hardware: HardwareModel) -> TypeGuard[RobotInputModel]:
+    """Whether hardware is a robot."""
+    return issubclass(hardware.__class__, RobotInputModel)
+
+
+def is_module(hardware: HardwareModel) -> TypeGuard[ModuleInputModel]:
+    """Whether hardware is a module."""
+    return issubclass(hardware.__class__, ModuleInputModel)
+
+
+def is_ot2(hardware: HardwareModel) -> TypeGuard[OT2InputModel]:
+    """Whether hardware is an OT-2."""
+    return isinstance(hardware, OT2InputModel)
+
+
+def is_ot3(hardware: HardwareModel) -> TypeGuard[OT3InputModel]:
+    """Whether hardware is an OT-3"""
+    return isinstance(hardware, OT3InputModel)
+
+
+def is_remote_robot(hardware: HardwareModel) -> TypeGuard[RobotInputModel]:
+    """Whether hardware is a remote robot."""
+    return (
+        is_robot(hardware)
+        and hasattr(hardware, "robot_server_source_type")
+        and getattr(hardware, "robot_server_source_type") == SourceType.REMOTE
+    )
+
+
+def is_remote_module(hardware: HardwareModel) -> TypeGuard[ModuleInputModel]:
+    """Whether hardware is a remote module."""
+    return (
+        is_module(hardware)
+        and hasattr(hardware, "source_type")
+        and getattr(hardware, "source_type") == SourceType.REMOTE
+    )
+
+
+def is_hardware_emulation_level(hardware: HardwareModel) -> bool:
+    """Whether hardware is hardware emulation level."""
+    return hardware.emulation_level == EmulationLevels.HARDWARE

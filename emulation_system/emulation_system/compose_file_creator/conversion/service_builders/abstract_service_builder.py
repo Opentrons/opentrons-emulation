@@ -35,6 +35,10 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
+from emulation_system.compose_file_creator.utilities.shared_functions import (
+    is_ot2,
+    is_ot3,
+)
 
 
 class AbstractServiceBuilder(ABC):
@@ -68,14 +72,14 @@ class AbstractServiceBuilder(ABC):
     def get_ot2(cls, config_model: SystemConfigurationModel) -> OT2InputModel:
         """Checks for OT-2 object in SystemConfigurationModel and returns it."""
         robot = cls._get_robot(config_model, Hardware.OT2, OT2InputModel)
-        assert isinstance(robot, OT2InputModel)
+        assert is_ot2(robot)
         return robot
 
     @classmethod
     def get_ot3(cls, config_model: SystemConfigurationModel) -> OT3InputModel:
         """Checks for OT-3 object in SystemConfigurationModel and returns it."""
         robot = cls._get_robot(config_model, Hardware.OT3, OT3InputModel)
-        assert isinstance(robot, OT3InputModel)
+        assert is_ot3(robot)
         return robot
 
     @staticmethod

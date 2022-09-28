@@ -3,15 +3,6 @@ from typing import Any, Dict, Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem
-from emulation_system.compose_file_creator.config_file_settings import (
-    EmulationLevels,
-    SourceType,
-)
-from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import (
-    get_build_args,
-    get_mount_strings,
-    get_service_build,
-)
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateCommand,
     IntermediateDependsOn,
@@ -20,13 +11,19 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-
-from ...input.hardware_models import (
-    ModuleInputModel,
-    OT2InputModel,
-    OT3InputModel,
-    RobotInputModel,
+from emulation_system.compose_file_creator.utilities.shared_functions import (
+    get_build_args,
+    get_mount_strings,
+    get_service_build,
+    is_hardware_emulation_level,
+    is_module,
+    is_ot2,
+    is_ot3,
+    is_remote_module,
+    is_remote_robot,
+    is_robot,
 )
+
 from ...types.input_types import Containers
 from .abstract_service_builder import AbstractServiceBuilder
 
@@ -91,15 +88,9 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
         """Generates value for build parameter."""
         build_args = None
         source_location = None
-        if (
-            issubclass(self._container.__class__, RobotInputModel)
-            and self._container.robot_server_source_type == SourceType.REMOTE
-        ):
+        if is_remote_robot(self._container):
             source_location = self._container.robot_server_source_location
-        elif (
-            not issubclass(self._container.__class__, RobotInputModel)
-            and self._container.source_type == SourceType.REMOTE
-        ):
+        elif is_remote_module(self._container):
             source_location = self._container.source_location
 
         if source_location is not None:
@@ -120,23 +111,23 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
         """Generates value for command parameter."""
         command = None
         if self._emulator_proxy_name is not None:
-            if self._container.emulation_level == EmulationLevels.HARDWARE:
-                command = self._container.get_hardware_level_command(
+            command = (
+                self._container.get_hardware_level_command(self._emulator_proxy_name)
+                if is_hardware_emulation_level(self._container)
+                else self._container.get_firmware_level_command(
                     self._emulator_proxy_name
                 )
-            else:
-                command = self._container.get_firmware_level_command(
-                    self._emulator_proxy_name
-                )
+            )
 
         return command
 
     def generate_ports(self) -> Optional[IntermediatePorts]:
         """Generates value for ports parameter."""
-        ports = None
-        if issubclass(self._container.__class__, RobotInputModel):
-            ports = [self._container.get_port_binding_string()]
-        return ports
+        return (
+            [self._container.get_port_binding_string()]
+            if is_robot(self._container)
+            else None
+        )
 
     def generate_depends_on(self) -> Optional[IntermediateDependsOn]:
         """Generates value for depends_on parameter."""
@@ -144,9 +135,7 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
         if self._emulator_proxy_name is not None:
             dependencies.append(self._emulator_proxy_name)
 
-        if self._smoothie_name is not None and issubclass(
-            self._container.__class__, OT2InputModel
-        ):
+        if self._smoothie_name is not None and is_ot2(self._container):
             dependencies.append(self._smoothie_name)
 
         return dependencies if len(dependencies) != 0 else None
@@ -155,28 +144,25 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
         """Generates value for environment parameter."""
         temp_vars: Dict[str, Any] = {}
 
-        if (
-            issubclass(self._container.__class__, RobotInputModel)
-            and self._emulator_proxy_name is not None
-        ):
+        if is_robot(self._container) and self._emulator_proxy_name is not None:
             temp_vars[
                 "OT_EMULATOR_module_server"
             ] = f'{{"host": "{self._emulator_proxy_name}"}}'
 
-        if issubclass(self._container.__class__, OT2InputModel):
+        if is_ot2(self._container):
             # TODO: If emulator proxy port is ever not hardcoded will have to update from
             #  11000 to a variable
             temp_vars[
                 "OT_SMOOTHIE_EMULATOR_URI"
             ] = f"socket://{self._smoothie_name}:11000"
 
-        if issubclass(self._container.__class__, OT3InputModel):
+        if is_ot3(self._container):
             temp_vars["OT_API_FF_enableOT3HardwareController"] = True
             temp_vars["OT3_CAN_DRIVER_interface"] = "opentrons_sock"
             temp_vars["OT3_CAN_DRIVER_host"] = self._can_server_service_name
             temp_vars["OT3_CAN_DRIVER_port"] = 9898
 
-        if issubclass(self._container.__class__, ModuleInputModel):
+        if is_module(self._container):
             temp_vars.update(self._container.get_serial_number_env_var())
             temp_vars.update(self._container.get_proxy_info_env_var())
         return temp_vars
