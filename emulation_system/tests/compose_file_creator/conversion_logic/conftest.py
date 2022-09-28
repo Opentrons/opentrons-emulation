@@ -1,11 +1,21 @@
 """Conftest for conversion logic."""
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+    Union,
+    cast,
+)
 
 import py
 import pytest
 
 from emulation_system import OpentronsEmulationConfiguration
-from emulation_system.compose_file_creator import BuildItem, Service
+from emulation_system.compose_file_creator import (
+    BuildItem,
+    Service,
+)
 from emulation_system.compose_file_creator.config_file_settings import (
     MountTypes,
     OpentronsRepository,
@@ -46,7 +56,6 @@ SERVICE_NAMES = [
 ]
 
 EXTRA_MOUNT_PATH = "/var/log/log_files"
-EMULATION_CONFIGURATION_FILE_NAME = "test-config.json"
 FAKE_COMMIT_ID = "ca82a6dff817ec66f44342007202690a93763949"
 
 
