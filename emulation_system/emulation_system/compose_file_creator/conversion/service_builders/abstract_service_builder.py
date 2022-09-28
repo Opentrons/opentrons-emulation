@@ -28,6 +28,7 @@ from emulation_system.compose_file_creator.types.final_types import (
 )
 from emulation_system.compose_file_creator.types.input_types import Robots
 from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateBuildArgs,
     IntermediateCommand,
     IntermediateDependsOn,
     IntermediateEnvironmentVariables,
@@ -38,6 +39,9 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
 from emulation_system.compose_file_creator.utilities.hardware_utils import (
     is_ot2,
     is_ot3,
+)
+from emulation_system.compose_file_creator.utilities.shared_functions import (
+    get_service_build,
 )
 
 
@@ -53,6 +57,8 @@ class AbstractServiceBuilder(ABC):
         """Defines parameters required for ALL concrete builders."""
         self._config_model = config_model
         self._global_settings = global_settings
+        self._image: str = NotImplemented
+        self._dev: bool = NotImplemented
 
     @staticmethod
     def _get_robot(
@@ -124,9 +130,13 @@ class AbstractServiceBuilder(ABC):
     #############################################################
 
     @abstractmethod
-    def generate_build(self) -> Optional[BuildItem]:
+    def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Method to, if necessary, generate value for build parameter for Service."""
         ...
+
+    def generate_build(self) -> Optional[BuildItem]:
+        """Generates BuildItem."""
+        return get_service_build(self._image, self.generate_build_args(), self._dev)
 
     @abstractmethod
     def generate_volumes(self) -> Optional[IntermediateVolumes]:

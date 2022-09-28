@@ -2,12 +2,12 @@
 from typing import Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
-from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     SourceType,
 )
 from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateBuildArgs,
     IntermediateCommand,
     IntermediateDependsOn,
     IntermediateEnvironmentVariables,
@@ -19,7 +19,6 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     add_ot3_firmware_named_volumes,
     get_build_args,
     get_entrypoint_mount_string,
-    get_service_build,
 )
 
 from ...images import OT3PipettesImages
@@ -93,7 +92,7 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         self._logging_client.log_networks(networks)
         return networks
 
-    def generate_build(self) -> Optional[BuildItem]:
+    def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""
         repo = OpentronsRepository.OT3_FIRMWARE
         if self._ot3.source_type == SourceType.REMOTE:
@@ -108,7 +107,7 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         else:
             build_args = None
         self._logging_client.log_build_args(build_args)
-        return get_service_build(self._image, build_args, self._dev)
+        return build_args
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""

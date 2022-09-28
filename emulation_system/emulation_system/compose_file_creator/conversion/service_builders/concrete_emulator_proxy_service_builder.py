@@ -3,7 +3,6 @@
 from typing import Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
-from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
 )
@@ -15,6 +14,7 @@ from emulation_system.compose_file_creator.input.hardware_models import (
     ThermocyclerModuleInputModel,
 )
 from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateBuildArgs,
     IntermediateCommand,
     IntermediateDependsOn,
     IntermediateEnvironmentVariables,
@@ -24,7 +24,6 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
 )
 from emulation_system.compose_file_creator.utilities.shared_functions import (
     get_build_args,
-    get_service_build,
 )
 
 from ...logging import EmulatorProxyLoggingClient
@@ -98,7 +97,7 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         self._logging_client.log_networks(networks)
         return networks
 
-    def generate_build(self) -> Optional[BuildItem]:
+    def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""
         repo = OpentronsRepository.OPENTRONS
         build_args = get_build_args(
@@ -108,7 +107,7 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
             self._global_settings.get_repo_head(repo),
         )
         self._logging_client.log_build_args(build_args)
-        return get_service_build(self._image, build_args, self._dev)
+        return build_args
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""

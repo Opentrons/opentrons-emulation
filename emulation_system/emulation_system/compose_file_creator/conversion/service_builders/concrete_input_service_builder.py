@@ -2,8 +2,8 @@
 from typing import Any, Dict, List, Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
-from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateBuildArgs,
     IntermediateCommand,
     IntermediateDependsOn,
     IntermediateEnvironmentVariables,
@@ -17,7 +17,6 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     add_ot3_firmware_named_volumes,
     get_build_args,
     get_entrypoint_mount_string,
-    get_service_build,
 )
 
 from ...config_file_settings import OpentronsRepository
@@ -90,7 +89,7 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
         networks = self._config_model.required_networks
         return networks
 
-    def generate_build(self) -> Optional[BuildItem]:
+    def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""
         build_args = None
         source_location = None
@@ -107,7 +106,7 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
                 self._global_settings.get_repo_commit(repo),
                 self._global_settings.get_repo_head(repo),
             )
-        return get_service_build(self._image, build_args, self._dev)
+        return build_args
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""

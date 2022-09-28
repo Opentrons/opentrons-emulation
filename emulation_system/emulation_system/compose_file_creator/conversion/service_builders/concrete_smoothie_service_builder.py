@@ -3,13 +3,13 @@ import json
 from typing import Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
-from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     SourceType,
 )
 from emulation_system.compose_file_creator.images import SmoothieImages
 from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateBuildArgs,
     IntermediateCommand,
     IntermediateDependsOn,
     IntermediateEnvironmentVariables,
@@ -21,7 +21,6 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     add_opentrons_named_volumes,
     get_build_args,
     get_entrypoint_mount_string,
-    get_service_build,
 )
 
 from ...logging import SmoothieLoggingClient
@@ -91,7 +90,7 @@ class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
         self._logging_client.log_networks(networks)
         return networks
 
-    def generate_build(self) -> Optional[BuildItem]:
+    def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""
         repo = OpentronsRepository.OPENTRONS
         if self._ot2.source_type == SourceType.REMOTE:
@@ -105,7 +104,7 @@ class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
         else:
             build_args = None
         self._logging_client.log_build_args(build_args)
-        return get_service_build(self._image, build_args, self._dev)
+        return build_args
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
