@@ -18,6 +18,11 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     get_build_args,
     get_entrypoint_mount_string,
     get_service_build,
+)
+
+from ...config_file_settings import OpentronsRepository
+from ...types.input_types import Containers
+from ...utilities.hardware_utils import (
     is_hardware_emulation_level,
     is_module,
     is_ot2,
@@ -26,9 +31,6 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     is_remote_robot,
     is_robot,
 )
-
-from ...config_file_settings import OpentronsRepository
-from ...types.input_types import Containers
 from .abstract_service_builder import AbstractServiceBuilder
 
 

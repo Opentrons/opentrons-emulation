@@ -35,7 +35,7 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.compose_file_creator.utilities.shared_functions import (
+from emulation_system.compose_file_creator.utilities.hardware_utils import (
     is_ot2,
     is_ot3,
 )

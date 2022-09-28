@@ -1,24 +1,13 @@
 """Function useful to multiple service creation modules."""
 import pathlib
-from typing import List, Optional, TypeGuard, cast
+from typing import List, Optional, cast
 
 from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.config_file_settings import (
-    EmulationLevels,
     FileMount,
     MountTypes,
     OpentronsRepository,
     RepoToBuildArgMapping,
-    SourceType,
-)
-from emulation_system.compose_file_creator.input.hardware_models import (
-    ModuleInputModel,
-    OT2InputModel,
-    OT3InputModel,
-    RobotInputModel,
-)
-from emulation_system.compose_file_creator.input.hardware_models.hardware_model import (
-    HardwareModel,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.compose_file_creator.types.intermediate_types import (
@@ -80,7 +69,7 @@ def _add_named_volumes(
     for mount in mount_list:
         if directory_to_search_for in mount:
             mount_list.extend(build_dirs)
-            break
+            return
 
 
 def add_ot3_firmware_named_volumes(mount_list: List[str]) -> None:
@@ -114,46 +103,3 @@ def add_opentrons_modules_named_volumes(mount_list: List[str]) -> None:
             "opentrons-modules-stm32-tools:/opentrons-modules/stm32-tools",
         ],
     )
-
-
-def is_robot(hardware: HardwareModel) -> TypeGuard[RobotInputModel]:
-    """Whether hardware is a robot."""
-    return issubclass(hardware.__class__, RobotInputModel)
-
-
-def is_module(hardware: HardwareModel) -> TypeGuard[ModuleInputModel]:
-    """Whether hardware is a module."""
-    return issubclass(hardware.__class__, ModuleInputModel)
-
-
-def is_ot2(hardware: HardwareModel) -> TypeGuard[OT2InputModel]:
-    """Whether hardware is an OT-2."""
-    return isinstance(hardware, OT2InputModel)
-
-
-def is_ot3(hardware: HardwareModel) -> TypeGuard[OT3InputModel]:
-    """Whether hardware is an OT-3"""
-    return isinstance(hardware, OT3InputModel)
-
-
-def is_remote_robot(hardware: HardwareModel) -> TypeGuard[RobotInputModel]:
-    """Whether hardware is a remote robot."""
-    return (
-        is_robot(hardware)
-        and hasattr(hardware, "robot_server_source_type")
-        and getattr(hardware, "robot_server_source_type") == SourceType.REMOTE
-    )
-
-
-def is_remote_module(hardware: HardwareModel) -> TypeGuard[ModuleInputModel]:
-    """Whether hardware is a remote module."""
-    return (
-        is_module(hardware)
-        and hasattr(hardware, "source_type")
-        and getattr(hardware, "source_type") == SourceType.REMOTE
-    )
-
-
-def is_hardware_emulation_level(hardware: HardwareModel) -> bool:
-    """Whether hardware is hardware emulation level."""
-    return hardware.emulation_level == EmulationLevels.HARDWARE
