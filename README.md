@@ -344,17 +344,12 @@ An example dev workflow is as follows.
 
 ## Debugging Docker-Compose File Generation
 
-Figuring out how the docker-compose file was generated from your input yaml file is extremely confusing.
-There is a ton of business logic going on and without explanation for decisions, things seem to be generated,
-at random.
+The generation of the docker-compose file is complex. Business logic is built into the code.
+Two log files are generated for any command that calls `generate-compose-file` so that the logic may be audited. 
 
-In attempt to clarify why things are generated they way they are, 2 log files will be generated whenever you
-call any command that calls `generate-compose-file` behind the scenes.
-
-The 2 versions of log files are a raw text version and a rich text version.
+There are two versions of the log file:
 
 - **Raw Text File:** `opentrons-emulation/compose_file_creator_log.txt`
 - **Rich Text File:** `opentrons-emulation/compose_file_creator_log.html`
 
-The raw text file can be viewed in any text editor. The rich text file can be viewed in any text editor that
-supports html rendering, or just by opening it a browser.
+The `.txt` file may be viewed in any text editor. The `.html` file may be viewed in a text editor that supports html rendering or in a browser.
