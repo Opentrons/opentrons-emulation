@@ -25,6 +25,8 @@ all these emulators together into systems.
     - [Apps and UI Setup](#apps-and-ui-setup)
   - [Architecture Diagrams](#architecture-diagrams)
   - [How To Modify Dockerfiles](#how-to-modify-dockerfiles)
+  - [Debugging](#debugging)
+    - [Debugging Docker-Compose File Generation](#debugging-docker-compose-file-generation)
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080'}}}%%
@@ -337,3 +339,17 @@ An example dev workflow is as follows.
 1. Make some changes to `bases_Dockerfile`
 1. Run `make dev-build file_path=./samples/your/path && make dev-run file_path=./samples/your/path`
 1. Test your changes
+
+# Debugging
+
+## Debugging Docker-Compose File Generation
+
+The generation of the docker-compose file is complex. Business logic is built into the code.
+Two log files are generated for any command that calls `generate-compose-file` so that the logic may be audited. 
+
+There are two versions of the log file:
+
+- **Raw Text File:** `opentrons-emulation/compose_file_creator_log.txt`
+- **Rich Text File:** `opentrons-emulation/compose_file_creator_log.html`
+
+The `.txt` file may be viewed in any text editor. The `.html` file may be viewed in a text editor that supports html rendering or in a browser.
