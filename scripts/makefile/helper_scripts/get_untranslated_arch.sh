@@ -7,7 +7,7 @@
 arch_name=$(uname -m)
 os_name=$(uname)
 
-if [ ${os_name} == "Darwin" ] && [ ${arch_name} == "x86_64" ] && [ $(sysctl -in sysctl.proc_translated) == "1" ]; then
+if [[ ${os_name} == "Darwin" ]] && [[ ${arch_name} == "x86_64" ]] && [[ $(sysctl -in sysctl.proc_translated) == "1" ]]; then
     arch_name="arm64"
 fi
 
