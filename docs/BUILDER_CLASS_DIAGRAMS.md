@@ -9,7 +9,7 @@ AbstractServiceBuilder: OpentronsEmulationConfiguration -global_settings
 
 AbstractServiceBuilder: generate_container_name() str
 AbstractServiceBuilder: generate_image() str
-AbstractServiceBuilder: generate_build() BuildItem
+AbstractServiceBuilder: generate_build_args() BuildItem
 AbstractServiceBuilder: is_tty() bool
 AbstractServiceBuilder: generate_networks() RequiredNetworks
 AbstractServiceBuilder: generate_volumes() Optional~Volumes~
@@ -26,7 +26,7 @@ ConcreteOT3ServiceBuilder: -dev bool
 
 ConcreteOT3ServiceBuilder: generate_container_name() str
 ConcreteOT3ServiceBuilder: generate_image() str
-ConcreteOT3ServiceBuilder: generate_build() BuildItem
+ConcreteOT3ServiceBuilder: generate_build_args() BuildItem
 ConcreteOT3ServiceBuilder: is_tty() True
 ConcreteOT3ServiceBuilder: generate_networks() RequiredNetworks
 ConcreteOT3ServiceBuilder: generate_volumes() Optional~Volumes~
@@ -46,7 +46,7 @@ ConcreteInputServiceBuilder: -dev bool
 
 ConcreteInputServiceBuilder: generate_container_name() str
 ConcreteInputServiceBuilder: generate_image() str
-ConcreteInputServiceBuilder: generate_build() BuildItem
+ConcreteInputServiceBuilder: generate_build_args() BuildItem
 ConcreteInputServiceBuilder: is_tty() True
 ConcreteInputServiceBuilder: generate_networks() RequiredNetworks
 ConcreteInputServiceBuilder: generate_volumes() Optional~Volumes~
@@ -62,7 +62,7 @@ ConcreteCANServerServiceBuilder: -dev bool
 
 ConcreteCANServerServiceBuilder: generate_container_name() str
 ConcreteCANServerServiceBuilder: generate_image() str
-ConcreteCANServerServiceBuilder: generate_build() BuildItem
+ConcreteCANServerServiceBuilder: generate_build_args() BuildItem
 ConcreteCANServerServiceBuilder: is_tty() True
 ConcreteCANServerServiceBuilder: generate_networks() RequiredNetworks
 ConcreteCANServerServiceBuilder: generate_volumes() Optional~Volumes~
@@ -78,7 +78,7 @@ ConcreteEmulatorProxyServiceBuilder: -dev bool
 
 ConcreteEmulatorProxyServiceBuilder: generate_container_name() str
 ConcreteEmulatorProxyServiceBuilder: generate_image() str
-ConcreteEmulatorProxyServiceBuilder: generate_build() BuildItem
+ConcreteEmulatorProxyServiceBuilder: generate_build_args() BuildItem
 ConcreteEmulatorProxyServiceBuilder: is_tty() True
 ConcreteEmulatorProxyServiceBuilder: generate_networks() RequiredNetworks
 ConcreteEmulatorProxyServiceBuilder: generate_volumes() None
@@ -94,7 +94,7 @@ ConcreteSmoothieServiceBuilder: -dev bool
 
 ConcreteSmoothieServiceBuilder: generate_container_name() str
 ConcreteSmoothieServiceBuilder: generate_image() str
-ConcreteSmoothieServiceBuilder: generate_build() BuildItem
+ConcreteSmoothieServiceBuilder: generate_build_args() BuildItem
 ConcreteSmoothieServiceBuilder: is_tty() True
 ConcreteSmoothieServiceBuilder: generate_networks() RequiredNetworks
 ConcreteSmoothieServiceBuilder: generate_volumes() Optional~Volumes~

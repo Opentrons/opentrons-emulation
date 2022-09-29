@@ -1,25 +1,12 @@
 """Tests for conversion pure functions."""
 
-from typing import Optional
-
 import pytest
 
-from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
 )
-from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import (
+from emulation_system.compose_file_creator.utilities.shared_functions import (
     get_build_args,
-    get_service_build,
-)
-from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
-from emulation_system.compose_file_creator.types.intermediate_types import (
-    IntermediateBuildArgs,
-)
-from emulation_system.consts import (
-    DEV_DOCKERFILE_NAME,
-    DOCKERFILE_DIR_LOCATION,
-    DOCKERFILE_NAME,
 )
 
 
@@ -109,88 +96,3 @@ def test_get_build_args(
         get_build_args(source_repo, source_location, format_string, head)
         == expected_value
     )
-
-
-@pytest.mark.parametrize(
-    "image_name,build_args,dev,expected_value",
-    [
-        [
-            "test-image:latest",
-            None,
-            False,
-            BuildItem(
-                context=DOCKERFILE_DIR_LOCATION,
-                target="test-image:latest",
-                args=None,
-                dockerfile=DOCKERFILE_NAME,
-            ),
-        ],
-        [
-            "test-image:latest",
-            None,
-            True,
-            BuildItem(
-                context=DOCKERFILE_DIR_LOCATION,
-                target="test-image:latest",
-                args=None,
-                dockerfile=DEV_DOCKERFILE_NAME,
-            ),
-        ],
-        [
-            "test-image:latest",
-            ListOrDict(
-                __root__={
-                    "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons"
-                    "/ot3-firmware/archive/refs"
-                    "/heads/main.zip"
-                }
-            ),
-            False,
-            BuildItem(
-                context=DOCKERFILE_DIR_LOCATION,
-                target="test-image:latest",
-                args=ListOrDict(
-                    __root__={
-                        "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/"
-                        "Opentrons/ot3-firmware/"
-                        "archive/refs/heads/"
-                        "main.zip"
-                    }
-                ),
-                dockerfile=DOCKERFILE_NAME,
-            ),
-        ],
-        [
-            "test-image:latest",
-            ListOrDict(
-                __root__={
-                    "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons"
-                    "/ot3-firmware/archive/refs"
-                    "/heads/main.zip"
-                }
-            ),
-            True,
-            BuildItem(
-                context=DOCKERFILE_DIR_LOCATION,
-                target="test-image:latest",
-                args=ListOrDict(
-                    __root__={
-                        "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/"
-                        "Opentrons/ot3-firmware/"
-                        "archive/refs/heads/"
-                        "main.zip"
-                    }
-                ),
-                dockerfile=DEV_DOCKERFILE_NAME,
-            ),
-        ],
-    ],
-)
-def test_get_service_build(
-    image_name: str,
-    build_args: Optional[IntermediateBuildArgs],
-    dev: bool,
-    expected_value: BuildItem,
-) -> None:
-    """Confirm that get_service_build works as expected."""
-    assert get_service_build(image_name, build_args, dev) == expected_value

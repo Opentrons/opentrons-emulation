@@ -19,6 +19,7 @@ from ..config_file_settings import Hardware
 from ..errors import DuplicateHardwareNameError
 from ..types.input_types import Containers, Modules, Robots
 from ..types.intermediate_types import IntermediateNetworks
+from .hardware_models import OT2InputModel, OT3InputModel
 
 
 class SystemConfigurationModel(BaseModel):
@@ -130,7 +131,7 @@ class SystemConfigurationModel(BaseModel):
 
     @property
     def is_remote(self) -> bool:
-        """Checks if all modules are robots are remote."""
+        """Checks if all modules and robots are remote."""
         robot_is_remote = self.robot.is_remote if self.robot is not None else True
         modules_are_remote = (
             all(module.is_remote for module in self.modules)
@@ -154,6 +155,16 @@ class SystemConfigurationModel(BaseModel):
             required_networks.append(self.can_network_name)
 
         return IntermediateNetworks(required_networks)
+
+    @property
+    def has_ot2(self) -> bool:
+        """Whether, robot is an OT-2."""
+        return self.robot is not None and isinstance(self.robot, OT2InputModel)
+
+    @property
+    def has_ot3(self) -> bool:
+        """Whether, robot is an OT-3."""
+        return self.robot is not None and isinstance(self.robot, OT3InputModel)
 
     @classmethod
     def from_file(cls, file_path: str) -> SystemConfigurationModel:

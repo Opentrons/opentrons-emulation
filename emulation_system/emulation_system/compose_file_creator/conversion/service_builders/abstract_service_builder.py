@@ -2,12 +2,17 @@
 
 from __future__ import annotations
 
+import pathlib
 from abc import ABC, abstractmethod
 from typing import Optional, Type, cast
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem, Service
-from emulation_system.compose_file_creator.config_file_settings import Hardware
+from emulation_system.compose_file_creator.config_file_settings import (
+    FileMount,
+    Hardware,
+    MountTypes,
+)
 from emulation_system.compose_file_creator.errors import (
     HardwareDoesNotExistError,
     IncorrectHardwareError,
@@ -16,6 +21,7 @@ from emulation_system.compose_file_creator.input.hardware_models import (
     OT2InputModel,
     OT3InputModel,
 )
+from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.compose_file_creator.types.final_types import (
     ServiceBuild,
     ServiceCommand,
@@ -28,6 +34,7 @@ from emulation_system.compose_file_creator.types.final_types import (
 )
 from emulation_system.compose_file_creator.types.input_types import Robots
 from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateBuildArgs,
     IntermediateCommand,
     IntermediateDependsOn,
     IntermediateEnvironmentVariables,
@@ -35,10 +42,28 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
+from emulation_system.compose_file_creator.utilities.hardware_utils import (
+    is_ot2,
+    is_ot3,
+)
+from emulation_system.consts import (
+    DEV_DOCKERFILE_NAME,
+    DOCKERFILE_DIR_LOCATION,
+    DOCKERFILE_NAME,
+    ENTRYPOINT_FILE_LOCATION,
+    ENTRYPOINT_MOUNT_NAME,
+)
 
 
 class AbstractServiceBuilder(ABC):
     """Abstract class defining all necessary functions to build a service."""
+
+    ENTRYPOINT_MOUNT_STRING = FileMount(
+        name=ENTRYPOINT_MOUNT_NAME,
+        type=MountTypes.FILE,
+        source_path=pathlib.Path(ENTRYPOINT_FILE_LOCATION),
+        mount_path="/entrypoint.sh",
+    ).get_bind_mount_string()
 
     @abstractmethod
     def __init__(
@@ -49,6 +74,8 @@ class AbstractServiceBuilder(ABC):
         """Defines parameters required for ALL concrete builders."""
         self._config_model = config_model
         self._global_settings = global_settings
+        self._image: str = NotImplemented
+        self._dev: bool = NotImplemented
 
     @staticmethod
     def _get_robot(
@@ -68,14 +95,14 @@ class AbstractServiceBuilder(ABC):
     def get_ot2(cls, config_model: SystemConfigurationModel) -> OT2InputModel:
         """Checks for OT-2 object in SystemConfigurationModel and returns it."""
         robot = cls._get_robot(config_model, Hardware.OT2, OT2InputModel)
-        assert isinstance(robot, OT2InputModel)
+        assert is_ot2(robot)
         return robot
 
     @classmethod
     def get_ot3(cls, config_model: SystemConfigurationModel) -> OT3InputModel:
         """Checks for OT-3 object in SystemConfigurationModel and returns it."""
         robot = cls._get_robot(config_model, Hardware.OT3, OT3InputModel)
-        assert isinstance(robot, OT3InputModel)
+        assert is_ot3(robot)
         return robot
 
     @staticmethod
@@ -120,9 +147,18 @@ class AbstractServiceBuilder(ABC):
     #############################################################
 
     @abstractmethod
-    def generate_build(self) -> Optional[BuildItem]:
+    def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Method to, if necessary, generate value for build parameter for Service."""
         ...
+
+    def generate_build(self) -> BuildItem:
+        """Generates BuildItem."""
+        return BuildItem(
+            context=DOCKERFILE_DIR_LOCATION,
+            target=self._image,
+            args=cast(ListOrDict, self.generate_build_args()),
+            dockerfile=DEV_DOCKERFILE_NAME if self._dev else DOCKERFILE_NAME,
+        )
 
     @abstractmethod
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
