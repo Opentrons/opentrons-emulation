@@ -1,7 +1,10 @@
 """Module containing ConcreteOT3ServiceBuilder class."""
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     SourceType,
@@ -16,14 +19,14 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateVolumes,
 )
 from emulation_system.compose_file_creator.utilities.shared_functions import (
+    add_opentrons_named_volumes,
     add_ot3_firmware_named_volumes,
     get_build_args,
 )
-
-from ...images import OT3PipettesImages
-from ...logging import OT3LoggingClient
 from .abstract_service_builder import AbstractServiceBuilder
 from .service_info import ServiceInfo
+from ...images import OT3PipettesImages
+from ...logging import OT3LoggingClient
 
 
 class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
@@ -93,16 +96,25 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
 
     def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""
-        repo = OpentronsRepository.OT3_FIRMWARE
+        ot3_firmware_repo = OpentronsRepository.OT3_FIRMWARE
+        monorepo = OpentronsRepository.OPENTRONS
+        build_args: Optional[IntermediateBuildArgs] = {}
         if self._ot3.source_type == SourceType.REMOTE:
-            build_args = get_build_args(
-                repo,
+            ot3_firmware_build_args = get_build_args(
+                ot3_firmware_repo,
                 self._ot3.source_location,
-                self._global_settings.get_repo_commit(repo),
-                self._global_settings.get_repo_head(repo),
+                self._global_settings.get_repo_commit(ot3_firmware_repo),
+                self._global_settings.get_repo_head(ot3_firmware_repo),
             )
-            # TODO: Add monorepo for OT-3 State Manager Compatibility
-
+            build_args.update(ot3_firmware_build_args)
+        if self._ot3.opentrons_hardware_source_type == SourceType.REMOTE:
+            monorepo_build_args = get_build_args(
+                monorepo,
+                self._ot3.opentrons_hardware_source_location,
+                self._global_settings.get_repo_commit(monorepo),
+                self._global_settings.get_repo_head(monorepo),
+            )
+            build_args.update(monorepo_build_args)
         else:
             build_args = None
         self._logging_client.log_build_args(build_args)
@@ -110,10 +122,17 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        if self._ot3.source_type == SourceType.LOCAL:
-            volumes = [self.ENTRYPOINT_MOUNT_STRING]
+        volumes: Optional[IntermediateVolumes] = []
+        if SourceType.LOCAL in [self._ot3.source_type, self._ot3.opentrons_hardware_source_type]:
+            volumes.append(self.ENTRYPOINT_MOUNT_STRING)
             volumes.extend(self._ot3.get_mount_strings())
-            add_ot3_firmware_named_volumes(volumes)
+
+            if self._ot3.source_type == SourceType.LOCAL:
+                add_ot3_firmware_named_volumes(volumes)
+
+            if self._ot3.opentrons_hardware_source_type == SourceType.LOCAL:
+                add_opentrons_named_volumes(volumes)
+
         else:
             volumes = None
         self._logging_client.log_volumes(volumes)
