@@ -19,6 +19,7 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
 )
 
 from ...config_file_settings import OpentronsRepository
+from ...logging import InputLoggingClient
 from ...types.input_types import Containers
 from ...utilities.hardware_utils import (
     is_hardware_emulation_level,
@@ -54,7 +55,14 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
         self._smoothie_name = smoothie_name
         self._can_server_service_name = can_server_service_name
         self._dev = dev
+        self._container_name = self._internal_generate_container_name()
+        self._logging_client = InputLoggingClient(self._container_name, self._dev)
         self._image = self._generate_image()
+        self._logging_client.log_container_name(
+            self._container.id,
+            self._container_name,
+            self._config_model.system_unique_id,
+        )
 
     def _generate_image(self) -> str:
         """Inner method for generating image.
@@ -64,15 +72,22 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
         This prevents, primarily, logging happening twice, but also the increased
         overhead of calculating the same thing twice.
         """
-        return self._container.get_image_name()
+        image_name = self._container.get_image_name()
+        source_type = self._container.source_type
+        self._logging_client.log_image_name(image_name, source_type, "source-type")
+        return image_name
 
-    def generate_container_name(self) -> str:
+    def _internal_generate_container_name(self) -> str:
         """Generates value for container_name parameter."""
         system_unique_id = self._config_model.system_unique_id
         container_name = super()._generate_container_name(
             self._container.id, system_unique_id
         )
         return container_name
+
+    def generate_container_name(self) -> str:
+        """Return container name."""
+        return self._container_name
 
     def generate_image(self) -> str:
         """Generates value for image parameter."""
@@ -81,11 +96,13 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
     def is_tty(self) -> bool:
         """Generates value for tty parameter."""
         tty = True
+        self._logging_client.log_tty(tty)
         return tty
 
     def generate_networks(self) -> IntermediateNetworks:
         """Generates value for networks parameter."""
         networks = self._config_model.required_networks
+        self._logging_client.log_networks(networks)
         return networks
 
     def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
@@ -105,6 +122,7 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
                 self._global_settings.get_repo_commit(repo),
                 self._global_settings.get_repo_head(repo),
             )
+        self._logging_client.log_build_args(build_args)
         return build_args
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
@@ -114,6 +132,7 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
             if is_robot(self._container)
             else self._container.get_mount_strings()
         )
+        volumes = None
         if len(mount_strings) > 0:
             mount_strings.append(self.ENTRYPOINT_MOUNT_STRING)
             source_repo = self._container.get_source_repo()
@@ -124,9 +143,10 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
                     add_opentrons_modules_named_volumes(mount_strings)
                 case OpentronsRepository.OT3_FIRMWARE:
                     add_ot3_firmware_named_volumes(mount_strings)
-            return mount_strings
-        else:
-            return None
+            volumes = mount_strings
+
+        self._logging_client.log_volumes(volumes)
+        return volumes
 
     def generate_command(self) -> Optional[IntermediateCommand]:
         """Generates value for command parameter."""
@@ -139,16 +159,18 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
                     self._emulator_proxy_name
                 )
             )
-
+        self._logging_client.log_command(command)
         return command
 
     def generate_ports(self) -> Optional[IntermediatePorts]:
         """Generates value for ports parameter."""
-        return (
+        ports = (
             [self._container.get_port_binding_string()]
             if is_robot(self._container)
             else None
         )
+        self._logging_client.log_ports(ports)
+        return ports
 
     def generate_depends_on(self) -> Optional[IntermediateDependsOn]:
         """Generates value for depends_on parameter."""
@@ -159,7 +181,9 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
         if self._smoothie_name is not None and is_ot2(self._container):
             dependencies.append(self._smoothie_name)
 
-        return dependencies if len(dependencies) != 0 else None
+        deps = dependencies if len(dependencies) != 0 else None
+        self._logging_client.log_depends_on(deps)
+        return deps
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
@@ -186,4 +210,7 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
         if is_module(self._container):
             temp_vars.update(self._container.get_serial_number_env_var())
             temp_vars.update(self._container.get_proxy_info_env_var())
-        return temp_vars
+
+        env_vars = None if len(temp_vars) == 0 else temp_vars
+        self._logging_client.log_env_vars(env_vars)
+        return env_vars
