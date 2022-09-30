@@ -1,27 +1,25 @@
-"""Module containing ConcreteSmoothieServiceBuilder"""
+"""Module containing ConcreteSmoothieServiceBuilder."""
 import json
 from typing import Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
-from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     SourceType,
 )
-from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import (
-    add_opentrons_named_volumes,
-    get_build_args,
-    get_entrypoint_mount_string,
-    get_service_build,
-)
 from emulation_system.compose_file_creator.images import SmoothieImages
 from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateBuildArgs,
     IntermediateCommand,
     IntermediateDependsOn,
     IntermediateEnvironmentVariables,
     IntermediateNetworks,
     IntermediatePorts,
     IntermediateVolumes,
+)
+from emulation_system.compose_file_creator.utilities.shared_functions import (
+    add_opentrons_named_volumes,
+    get_build_args,
 )
 
 from ...logging import SmoothieLoggingClient
@@ -40,11 +38,10 @@ class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
         dev: bool,
     ) -> None:
         """Instantiates a ConcreteSmoothieServiceBuilder object."""
-        super().__init__(config_model, global_settings)
-        self._dev = dev
+        super().__init__(config_model, global_settings, dev)
         self._ot2 = self.get_ot2(config_model)
         self._logging_client = SmoothieLoggingClient(self._dev)
-        self._image = self._generate_image()
+        self._smoothie_image = self._generate_image()
 
     def _generate_image(self) -> str:
         """Inner method for generating image.
@@ -79,6 +76,10 @@ class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
         """Generates value for image parameter."""
         return f"{self._image}:latest"
 
+    @property
+    def _image(self) -> str:
+        return self._smoothie_image
+
     def is_tty(self) -> bool:
         """Generates value for tty parameter."""
         tty = True
@@ -91,7 +92,7 @@ class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
         self._logging_client.log_networks(networks)
         return networks
 
-    def generate_build(self) -> Optional[BuildItem]:
+    def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""
         repo = OpentronsRepository.OPENTRONS
         if self._ot2.source_type == SourceType.REMOTE:
@@ -105,12 +106,12 @@ class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
         else:
             build_args = None
         self._logging_client.log_build_args(build_args)
-        return get_service_build(self._image, build_args, self._dev)
+        return build_args
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
         if self._ot2.source_type == SourceType.LOCAL:
-            volumes = [get_entrypoint_mount_string()]
+            volumes = [self.ENTRYPOINT_MOUNT_STRING]
             volumes.extend(self._ot2.get_mount_strings())
             add_opentrons_named_volumes(volumes)
         else:

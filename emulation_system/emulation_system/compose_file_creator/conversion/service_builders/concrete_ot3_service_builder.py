@@ -2,24 +2,22 @@
 from typing import Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
-from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     SourceType,
 )
-from emulation_system.compose_file_creator.conversion.service_creation.shared_functions import (
-    add_ot3_firmware_named_volumes,
-    get_build_args,
-    get_entrypoint_mount_string,
-    get_service_build,
-)
 from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateBuildArgs,
     IntermediateCommand,
     IntermediateDependsOn,
     IntermediateEnvironmentVariables,
     IntermediateNetworks,
     IntermediatePorts,
     IntermediateVolumes,
+)
+from emulation_system.compose_file_creator.utilities.shared_functions import (
+    add_ot3_firmware_named_volumes,
+    get_build_args,
 )
 
 from ...images import OT3PipettesImages
@@ -40,13 +38,12 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         service_info: ServiceInfo,
     ) -> None:
         """Instantiates a ConcreteOT3ServiceBuilder object."""
-        super().__init__(config_model, global_settings)
-        self._dev = dev
+        super().__init__(config_model, global_settings, dev)
         self._can_server_service_name = can_server_service_name
         self._service_info = service_info
         self._ot3 = self.get_ot3(config_model)
         self._logging_client = OT3LoggingClient(service_info.container_name, self._dev)
-        self._image = self._generate_image()
+        self._ot3_image = self._generate_image()
 
     def _generate_image(self) -> str:
         """Inner method for generating image.
@@ -81,6 +78,10 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         """Generates value for image parameter."""
         return self._image
 
+    @property
+    def _image(self) -> str:
+        return self._ot3_image
+
     def is_tty(self) -> bool:
         """Generates value for tty parameter."""
         tty = True
@@ -93,7 +94,7 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         self._logging_client.log_networks(networks)
         return networks
 
-    def generate_build(self) -> Optional[BuildItem]:
+    def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""
         repo = OpentronsRepository.OT3_FIRMWARE
         if self._ot3.source_type == SourceType.REMOTE:
@@ -108,12 +109,12 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         else:
             build_args = None
         self._logging_client.log_build_args(build_args)
-        return get_service_build(self._image, build_args, self._dev)
+        return build_args
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
         if self._ot3.source_type == SourceType.LOCAL:
-            volumes = [get_entrypoint_mount_string()]
+            volumes = [self.ENTRYPOINT_MOUNT_STRING]
             volumes.extend(self._ot3.get_mount_strings())
             add_ot3_firmware_named_volumes(volumes)
         else:

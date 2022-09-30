@@ -8,5 +8,5 @@ IntermediateVolumes = list[str]
 IntermediatePorts = list[str]
 IntermediateEnvironmentVariables = dict[str, str]
 IntermediateDependsOn = list[str]
-IntermediateCommand = str
+IntermediateCommand = list[str]
 IntermediateBuildArgs = dict[str, str]
