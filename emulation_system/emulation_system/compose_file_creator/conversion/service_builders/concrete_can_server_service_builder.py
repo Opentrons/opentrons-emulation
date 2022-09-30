@@ -2,10 +2,7 @@
 
 from typing import Optional
 
-from emulation_system import (
-    OpentronsEmulationConfiguration,
-    SystemConfigurationModel,
-)
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     SourceType,
@@ -24,8 +21,9 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     add_opentrons_named_volumes,
     get_build_args,
 )
-from .abstract_service_builder import AbstractServiceBuilder
+
 from ...logging import CANServerLoggingClient
+from .abstract_service_builder import AbstractServiceBuilder
 
 
 class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):

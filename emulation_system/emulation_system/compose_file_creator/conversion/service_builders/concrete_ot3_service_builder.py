@@ -1,10 +1,7 @@
 """Module containing ConcreteOT3ServiceBuilder class."""
 from typing import Optional
 
-from emulation_system import (
-    OpentronsEmulationConfiguration,
-    SystemConfigurationModel,
-)
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     SourceType,
@@ -22,10 +19,11 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     add_ot3_firmware_named_volumes,
     get_build_args,
 )
-from .abstract_service_builder import AbstractServiceBuilder
-from .service_info import ServiceInfo
+
 from ...images import OT3PipettesImages
 from ...logging import OT3LoggingClient
+from .abstract_service_builder import AbstractServiceBuilder
+from .service_info import ServiceInfo
 
 
 class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):

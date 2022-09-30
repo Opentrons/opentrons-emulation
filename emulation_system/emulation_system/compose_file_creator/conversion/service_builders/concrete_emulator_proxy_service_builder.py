@@ -2,10 +2,7 @@
 
 from typing import Optional
 
-from emulation_system import (
-    OpentronsEmulationConfiguration,
-    SystemConfigurationModel,
-)
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
 )
@@ -28,8 +25,9 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
 from emulation_system.compose_file_creator.utilities.shared_functions import (
     get_build_args,
 )
-from .abstract_service_builder import AbstractServiceBuilder
+
 from ...logging import EmulatorProxyLoggingClient
+from .abstract_service_builder import AbstractServiceBuilder
 
 
 class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
