@@ -2,6 +2,7 @@
 
 from typing import Optional
 
+from .abstract_logging_client import AbstractLoggingClient
 from ..types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
@@ -10,7 +11,6 @@ from ..types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from .abstract_logging_client import AbstractLoggingClient
 
 
 class OT3LoggingClient(AbstractLoggingClient):
@@ -41,8 +41,7 @@ class OT3LoggingClient(AbstractLoggingClient):
         else:
             tabbed_volumes = [f"\t{volume}" for volume in volumes]
             output = [
-                'Since "source-type" is "remote",'
-                "adding the following volumes and bind mounts:",
+                "Adding the following volumes and bind mounts:",
                 *tabbed_volumes,
             ]
         self._logging_console.h2_print("volumes")
