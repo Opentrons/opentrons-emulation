@@ -29,6 +29,7 @@ generate-compose-file:
 dev-generate-compose-file:
 
 	$(if $(file_path),,$(error file_path variable required))
+	@./scripts/docker_convenience_scripts/create_dev_dockerfile.sh
 	@$(subst $(SUB), ${abs_path}, $(DEV_EMULATION_SYSTEM_CMD))
 
 
@@ -52,7 +53,6 @@ build:
 .PHONY: dev-build
 dev-build:
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	./scripts/docker_convenience_scripts/create_dev_dockerfile.sh
 	@$(MAKE) --no-print-directory --quiet dev-generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
 	./scripts/makefile/helper_scripts/build.sh ~/tmp-compose.yaml
 #	@rm ~/tmp-compose.yaml ./docker/dev_Dockerfile
