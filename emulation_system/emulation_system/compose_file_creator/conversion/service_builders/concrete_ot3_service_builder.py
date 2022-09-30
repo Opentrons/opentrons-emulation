@@ -1,7 +1,10 @@
 """Module containing ConcreteOT3ServiceBuilder class."""
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     SourceType,
@@ -19,11 +22,10 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     add_ot3_firmware_named_volumes,
     get_build_args,
 )
-
-from ...images import OT3PipettesImages
-from ...logging import OT3LoggingClient
 from .abstract_service_builder import AbstractServiceBuilder
 from .service_info import ServiceInfo
+from ...images import OT3PipettesImages
+from ...logging import OT3LoggingClient
 
 
 class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
@@ -38,13 +40,12 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         service_info: ServiceInfo,
     ) -> None:
         """Instantiates a ConcreteOT3ServiceBuilder object."""
-        super().__init__(config_model, global_settings)
-        self._dev = dev
+        super().__init__(config_model, global_settings, dev)
         self._can_server_service_name = can_server_service_name
         self._service_info = service_info
         self._ot3 = self.get_ot3(config_model)
         self._logging_client = OT3LoggingClient(service_info.container_name, self._dev)
-        self._image = self._generate_image()
+        self._ot3_image = self._generate_image()
 
     def _generate_image(self) -> str:
         """Inner method for generating image.
@@ -78,6 +79,10 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
     def generate_image(self) -> str:
         """Generates value for image parameter."""
         return self._image
+
+    @property
+    def _image(self) -> str:
+        return self._ot3_image
 
     def is_tty(self) -> bool:
         """Generates value for tty parameter."""

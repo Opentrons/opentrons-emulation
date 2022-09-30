@@ -1,7 +1,15 @@
 """Module containing ConcreteInputServiceBuilder."""
-from typing import Any, Dict, List, Optional
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+)
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
@@ -17,7 +25,7 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     add_ot3_firmware_named_volumes,
     get_build_args,
 )
-
+from .abstract_service_builder import AbstractServiceBuilder
 from ...config_file_settings import OpentronsRepository
 from ...logging import InputLoggingClient
 from ...types.input_types import Containers
@@ -30,7 +38,6 @@ from ...utilities.hardware_utils import (
     is_remote_robot,
     is_robot,
 )
-from .abstract_service_builder import AbstractServiceBuilder
 
 
 class ConcreteInputServiceBuilder(AbstractServiceBuilder):
@@ -49,15 +56,14 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
         can_server_service_name: Optional[str],
     ) -> None:
         """Instantiates a ConcreteInputServiceBuilder object."""
-        super().__init__(config_model, global_settings)
+        super().__init__(config_model, global_settings, dev)
         self._container = container
         self._emulator_proxy_name = emulator_proxy_name
         self._smoothie_name = smoothie_name
         self._can_server_service_name = can_server_service_name
-        self._dev = dev
         self._container_name = self._internal_generate_container_name()
         self._logging_client = InputLoggingClient(self._container_name, self._dev)
-        self._image = self._generate_image()
+        self._input_image = self._generate_image()
         self._logging_client.log_container_name(
             self._container.id,
             self._container_name,
@@ -92,6 +98,10 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
     def generate_image(self) -> str:
         """Generates value for image parameter."""
         return f"{self._image}:latest"
+
+    @property
+    def _image(self) -> str:
+        return self._input_image
 
     def is_tty(self) -> bool:
         """Generates value for tty parameter."""

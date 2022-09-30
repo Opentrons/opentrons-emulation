@@ -2,7 +2,10 @@
 import json
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     SourceType,
@@ -21,9 +24,8 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     add_opentrons_named_volumes,
     get_build_args,
 )
-
-from ...logging import SmoothieLoggingClient
 from .abstract_service_builder import AbstractServiceBuilder
+from ...logging import SmoothieLoggingClient
 
 
 class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
@@ -38,11 +40,10 @@ class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
         dev: bool,
     ) -> None:
         """Instantiates a ConcreteSmoothieServiceBuilder object."""
-        super().__init__(config_model, global_settings)
-        self._dev = dev
+        super().__init__(config_model, global_settings, dev)
         self._ot2 = self.get_ot2(config_model)
         self._logging_client = SmoothieLoggingClient(self._dev)
-        self._image = self._generate_image()
+        self._smoothie_image = self._generate_image()
 
     def _generate_image(self) -> str:
         """Inner method for generating image.
@@ -76,6 +77,10 @@ class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
     def generate_image(self) -> str:
         """Generates value for image parameter."""
         return f"{self._image}:latest"
+
+    @property
+    def _image(self) -> str:
+        return self._smoothie_image
 
     def is_tty(self) -> bool:
         """Generates value for tty parameter."""

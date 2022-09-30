@@ -3,11 +3,24 @@
 from __future__ import annotations
 
 import pathlib
-from abc import ABC, abstractmethod
-from typing import Optional, Type, cast
+from abc import (
+    ABC,
+    abstractmethod,
+)
+from typing import (
+    Optional,
+    Type,
+    cast,
+)
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
-from emulation_system.compose_file_creator import BuildItem, Service
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
+from emulation_system.compose_file_creator import (
+    BuildItem,
+    Service,
+)
 from emulation_system.compose_file_creator.config_file_settings import (
     FileMount,
     Hardware,
@@ -70,12 +83,12 @@ class AbstractServiceBuilder(ABC):
         self,
         config_model: SystemConfigurationModel,
         global_settings: OpentronsEmulationConfiguration,
+        dev: bool
     ) -> None:
         """Defines parameters required for ALL concrete builders."""
         self._config_model = config_model
         self._global_settings = global_settings
-        self._image: str = NotImplemented
-        self._dev: bool = NotImplemented
+        self._dev = dev
 
     @staticmethod
     def _get_robot(
@@ -104,6 +117,11 @@ class AbstractServiceBuilder(ABC):
         robot = cls._get_robot(config_model, Hardware.OT3, OT3InputModel)
         assert is_ot3(robot)
         return robot
+
+    @property
+    @abstractmethod
+    def _image(self) -> str:
+        ...
 
     @staticmethod
     def _generate_container_name(

@@ -2,7 +2,10 @@
 
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     SourceType,
@@ -21,9 +24,8 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     add_opentrons_named_volumes,
     get_build_args,
 )
-
-from ...logging import CANServerLoggingClient
 from .abstract_service_builder import AbstractServiceBuilder
+from ...logging import CANServerLoggingClient
 
 
 class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
@@ -38,11 +40,10 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
         dev: bool,
     ) -> None:
         """Instantiates a ConcreteCANServerServiceBuilder object."""
-        super().__init__(config_model, global_settings)
-        self._dev = dev
+        super().__init__(config_model, global_settings, dev)
         self._logging_client = CANServerLoggingClient(self._dev)
         self._ot3 = self.get_ot3(config_model)
-        self._image = self._generate_image()
+        self._can_image = self._generate_image()
 
     def _generate_image(self) -> str:
         """Inner method for generating image.
@@ -77,6 +78,10 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
     def generate_image(self) -> str:
         """Generates value for image parameter."""
         return self._image
+
+    @property
+    def _image(self) -> str:
+        return self._can_image
 
     def is_tty(self) -> bool:
         """Generates value for tty parameter."""

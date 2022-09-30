@@ -2,7 +2,10 @@
 
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
 )
@@ -25,9 +28,8 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
 from emulation_system.compose_file_creator.utilities.shared_functions import (
     get_build_args,
 )
-
-from ...logging import EmulatorProxyLoggingClient
 from .abstract_service_builder import AbstractServiceBuilder
+from ...logging import EmulatorProxyLoggingClient
 
 
 class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
@@ -49,10 +51,9 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         dev: bool,
     ) -> None:
         """Instantiates a ConcreteEmulatorProxyServiceBuilder object."""
-        super().__init__(config_model, global_settings)
-        self._dev = dev
+        super().__init__(config_model, global_settings, dev)
         self._logging_client = EmulatorProxyLoggingClient(self._dev)
-        self._image = self._generate_image()
+        self._emulator_image = self._generate_image()
 
     def _generate_image(self) -> str:
         """Inner method for generating image.
@@ -83,6 +84,10 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
     def generate_image(self) -> str:
         """Generates value for image parameter."""
         return f"{self._image}:latest"
+
+    @property
+    def _image(self) -> str:
+        return self._emulator_image
 
     def is_tty(self) -> bool:
         """Generates value for tty parameter."""
