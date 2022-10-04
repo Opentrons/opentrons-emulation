@@ -260,3 +260,22 @@ format:
 .PHONY: test
 test:
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) test
+
+
+OT2SAMPLE ?= ot2_with_all_modules
+.PHONY: ot2
+ot2:
+	$(MAKE) setup
+	cp configuration_ci.json configuration.json
+	$(MAKE) check-remote-only file_path=./samples/ot2/"$(OT2SAMPLE)".yaml
+	$(MAKE) build file_path=./samples/ot2/"$(OT2SAMPLE)".yaml
+	$(MAKE) run file_path=./samples/ot2/"$(OT2SAMPLE)".yaml
+
+OT3SAMPLE ?= ot3_remote
+.PHONY: ot3
+ot3:
+	$(MAKE) setup
+	cp configuration_ci.json configuration.json
+	$(MAKE) check-remote-only file_path=./samples/ot3/"$(OT3SAMPLE)".yaml
+	$(MAKE) build file_path=./samples/ot3/"$(OT3SAMPLE)".yaml
+	$(MAKE) run file_path=./samples/ot3/"$(OT3SAMPLE)".yaml
