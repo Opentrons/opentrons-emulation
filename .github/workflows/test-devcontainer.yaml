@@ -21,6 +21,7 @@ jobs:
         uses: devcontainers/ci@v0.2
         with:
           imageName: ghcr.io/opentrons/opentrons-emulation-devcontainer
+          push: never
           runCmd: |
             make ot2
             make check-robot
