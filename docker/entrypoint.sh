@@ -19,7 +19,7 @@ build_ot3_firmware_simulators()
   (
     cd /ot3-firmware && \
     cmake --preset host-gcc10 && \
-    cmake --build --preset ot3-state-manager --target ot3-state-manager-setup && \
+    cmake --build --preset state-manager --target state-manager-setup && \
     cmake --build --preset=simulators -j $(expr $(nproc) - 1)
   )
 
@@ -31,7 +31,7 @@ build_ot3_firmware_single_simulator() {
   (
     cd /ot3-firmware && \
     cmake --preset host-gcc10 && \
-    cmake --build --preset ot3-state-manager --target ot3-state-manager-setup && \
+    cmake --build --preset state-manager --target state-manager-setup && \
     cmake --build ./build-host -j $(expr $(nproc) - 1) --target $1
     )
 }
