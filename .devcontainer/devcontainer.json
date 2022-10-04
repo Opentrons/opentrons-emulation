@@ -2,7 +2,8 @@
     "name": "opentrons-emulation-devcontainer",
     "build": {
         "dockerfile": "Dockerfile",
-        "cacheFrom": "ghcr.io/opentrons/opentron-emulation-devcontainer",
+        "context": "..",
+        "cacheFrom": "ghcr.io/opentrons/opentrons-emulation-devcontainer",
         "args": {
             "VARIANT": "3.10-bullseye",
             "USERNAME": "root"

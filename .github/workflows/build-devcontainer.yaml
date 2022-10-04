@@ -3,9 +3,7 @@ on: # Make sure the devcontainer changes are pushed on changes to main
   push:
     branches:
       - main
-      - "233-devcontainer"
-    paths:
-      - ".devcontainer/*"
+      - "233-devcontainer" # remove before merge
 
 concurrency: # One run of this workflow per branch.
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}

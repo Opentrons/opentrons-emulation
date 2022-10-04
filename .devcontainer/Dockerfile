@@ -40,3 +40,9 @@ RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=$POETRY_PATH pytho
     && pip install -U pip pipenv black pylint commitizen
 
 ENV PATH "$POETRY_PATH/bin:$PATH"
+
+COPY . /main_emulation
+
+WORKDIR /main_emulation
+
+RUN make setup
