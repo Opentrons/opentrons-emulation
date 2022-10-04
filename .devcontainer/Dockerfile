@@ -41,4 +41,8 @@ RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=$POETRY_PATH pytho
 
 ENV PATH "$POETRY_PATH/bin:$PATH"
 
+COPY emulation_system/ /workspaces/opentrons-emulation/emulation_system/
+
+WORKDIR /workspaces/opentrons-emulation/emulation_system/
+
 RUN make setup

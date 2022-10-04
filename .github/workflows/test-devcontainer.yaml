@@ -1,0 +1,26 @@
+name: "test-devcontainer"
+on:
+  pull_request:
+  push:
+    branches:
+      - "233-devcontainer" # remove before merge
+  workflow_dispatch:
+
+concurrency: # One run of this workflow per branch.
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (GitHub)
+        uses: actions/checkout@v3
+
+      - name: Build and run dev container task
+        uses: devcontainers/ci@v0.2
+        with:
+          imageName: ghcr.io/opentrons/opentrons-emulation-devcontainer
+          runCmd: |
+            make ot2
+            make check-robot

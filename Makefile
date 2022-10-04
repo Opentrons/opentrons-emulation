@@ -5,7 +5,7 @@ SUB = {SUB}
 EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system {SUB} -)
 DEV_EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system --dev {SUB} -)
 REMOTE_ONLY_EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system {SUB} - --remote-only)
-COMPOSE_RUN_COMMAND := docker-compose -f - up
+COMPOSE_RUN_COMMAND := docker-compose -f - up --remove-orphans
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
 COMPOSE_LOGS_COMMAND := docker-compose -f - logs -f
@@ -261,21 +261,26 @@ format:
 test:
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) test
 
+RUN_COMMAND := $(if $(CI),remove-build-run-detached,remove-build-run)
 
-OT2SAMPLE ?= ot2_with_all_modules
+OT2CONFIG ?= ./samples/ot2/ot2_with_all_modules.yaml
+
 .PHONY: ot2
 ot2:
 	$(MAKE) setup
 	cp configuration_ci.json configuration.json
-	$(MAKE) check-remote-only file_path=./samples/ot2/"$(OT2SAMPLE)".yaml
-	$(MAKE) build file_path=./samples/ot2/"$(OT2SAMPLE)".yaml
-	$(MAKE) run file_path=./samples/ot2/"$(OT2SAMPLE)".yaml
+	$(MAKE) check-remote-only file_path="$(OT2CONFIG)"
+	$(MAKE) $(RUN_COMMAND) file_path="$(OT2CONFIG)"
 
-OT3SAMPLE ?= ot3_remote
+OT3CONFIG ?= ./samples/ot3/ot3_remote.yaml
+
 .PHONY: ot3
 ot3:
 	$(MAKE) setup
 	cp configuration_ci.json configuration.json
-	$(MAKE) check-remote-only file_path=./samples/ot3/"$(OT3SAMPLE)".yaml
-	$(MAKE) build file_path=./samples/ot3/"$(OT3SAMPLE)".yaml
-	$(MAKE) run file_path=./samples/ot3/"$(OT3SAMPLE)".yaml
+	$(MAKE) check-remote-only file_path="$(OT3CONFIG)"
+	$(MAKE) $(RUN_COMMAND) file_path="$(OT3CONFIG)"
+
+.PHONY: check-robot
+check-robot:
+	curl -s --location --request GET 'http://localhost:31950/modules' --header 'opentrons-version: *' | json_pp -json_opt pretty,canonical
