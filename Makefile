@@ -281,6 +281,8 @@ ot3:
 	$(MAKE) check-remote-only file_path="$(OT3CONFIG)"
 	$(MAKE) $(RUN_COMMAND) file_path="$(OT3CONFIG)"
 
+ROBOT_HOST := $(if $(shell python ./scripts/docker_convenience_scripts/in_docker.py),host.docker.internal,localhost)
+
 .PHONY: check-robot
 check-robot:
-	curl -s --location --request GET 'http://localhost:31950/modules' --header 'opentrons-version: *' | json_pp -json_opt pretty,canonical
+	curl -s --location --request GET 'http://$(ROBOT_HOST):31950/modules' --header 'opentrons-version: *' | json_pp -json_opt pretty,canonical
