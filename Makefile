@@ -261,7 +261,6 @@ format:
 test:
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) test
 
-RUN_COMMAND := $(if $(CI),remove-build-run-detached,remove-build-run)
 
 OT2CONFIG ?= ./samples/ot2/ot2_with_all_modules.yaml
 
@@ -270,7 +269,7 @@ ot2:
 	$(MAKE) setup
 	cp configuration_ci.json configuration.json
 	$(MAKE) check-remote-only file_path="$(OT2CONFIG)"
-	$(MAKE) $(RUN_COMMAND) file_path="$(OT2CONFIG)"
+	$(MAKE) remove-build-run file_path="$(OT2CONFIG)"
 
 OT3CONFIG ?= ./samples/ot3/ot3_remote.yaml
 
@@ -279,10 +278,10 @@ ot3:
 	$(MAKE) setup
 	cp configuration_ci.json configuration.json
 	$(MAKE) check-remote-only file_path="$(OT3CONFIG)"
-	$(MAKE) $(RUN_COMMAND) file_path="$(OT3CONFIG)"
+	$(MAKE) remove-build-run file_path="$(OT3CONFIG)"
 
 ROBOT_HOST := $(if $(shell python ./scripts/docker_convenience_scripts/in_docker.py),host.docker.internal,localhost)
 
-.PHONY: check-robot
-check-robot:
+.PHONY: emulation-check
+emulation-check:
 	curl -s --location --request GET 'http://$(ROBOT_HOST):31950/modules' --header 'opentrons-version: *' | json_pp -json_opt pretty,canonical
