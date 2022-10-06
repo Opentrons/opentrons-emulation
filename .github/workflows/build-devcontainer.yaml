@@ -1,9 +1,9 @@
 name: "build-devcontainer"
 on: # Make sure the devcontainer changes are pushed on changes to main
   push:
-    branches:
-      - main
-      - "233-devcontainer" # remove before merge
+    tags:
+      - 'v*'
+  workflow_dispatch:
 
 concurrency: # One run of this workflow per branch.
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}

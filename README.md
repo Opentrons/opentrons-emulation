@@ -13,8 +13,10 @@ all these emulators together into systems.
   - [What is an Emulator?](#what-is-an-emulator)
   - [How do the Opentrons Emulators work?](#how-do-the-opentrons-emulators-work)
   - [Supported Hardware](#supported-hardware)
-  - [devcontainer](#devcontainer)
+  - [Development Container (devcontainer)](#development-container-devcontainer)
     - [Fastest path to ot2 or ot3 emulation](#fastest-path-to-ot2-or-ot3-emulation)
+      - [Still building...](#still-building)
+      - [Done!](#done)
       - [Video of the preceding 6 steps](#video-of-the-preceding-6-steps)
       - [Connect the Opentrons app](#connect-the-opentrons-app)
 - [Local setup](#local-setup)
@@ -95,21 +97,26 @@ The following hardware is supported:
 **Note: Since we are building from source code the hardware is whatever version the source is. Generally, this means the
 latest version. Unless you load a really old version, but no guarantees that a super old version will actually work.**
 
-## devcontainer
+## Development Container (devcontainer)
 
 A [devcontainer](https://containers.dev/) specification is provided and cached for this repository.
 
 ### Fastest path to ot2 or ot3 emulation
 
-> These steps will provide an emulator running the code in the default branches of the underlying repositories.
+> These steps will provide an emulator running code from the default branches of the underlying repositories.
 
 1. [Install Docker](#docker)
 1. [Install Visual Studio Code (VSCode)](https://code.visualstudio.com/Download)
 1. Click [![Open in VSCode Remote - Containers](https://img.shields.io/static/v1?label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Opentrons/opentrons-emulation)
 
-> It will take some minutes for the building of the devcontainer to complete. Click the `Starting Dev Container (show log)` alert at the bottom right to watch the progress.
+> It will take some minutes to build the devcontainer. Click the `Starting Dev Container (show log)` alert at the bottom right to watch the progress.
+
+#### Still building...
 
 ![Still building](https://user-images.githubusercontent.com/502770/194160391-b4113217-1357-44a5-adf2-82c46abb1bbb.png)
+
+
+#### Done!
 
 ![Done building](https://user-images.githubusercontent.com/502770/194160726-8e2063b2-124d-4029-ab48-600cf845d175.png)
 
@@ -117,8 +124,9 @@ A [devcontainer](https://containers.dev/) specification is provided and cached f
 1. Enter the command `make ot2` or `make ot3`
 1. Wait until the emulator is up
 1. Open a new terminal
-1. Enter the command `make check-robot`
-1. to shut down the emulated robot go back to the terminal where you entered  `make ot2` or `make ot3` and the logs are scrolling and press `ctrl` and `c` at the same time.
+1. Enter the command `make check-robot` to validate the robot is reachable
+1. To shut down the emulated robot go back to the terminal where you entered  `make ot2` or `make ot3` 
+   1. Click where logs are scrolling and press `ctrl` and `c` at the same time.
 
 #### Video of the preceding 6 steps
 
@@ -127,7 +135,7 @@ A [devcontainer](https://containers.dev/) specification is provided and cached f
 
 #### Connect the Opentrons app
 
-1. open your Opentrons app and have it look for the robot on `localhost`
+1. Open your Opentrons app and have it look for the robot on `localhost`
 
 <video src="https://user-images.githubusercontent.com/502770/194162290-48c370f9-2b1b-4a75-995b-d6f1dc2e39bb.mp4" data-canonical-src="https://user-images.githubusercontent.com/502770/194162290-48c370f9-2b1b-4a75-995b-d6f1dc2e39bb.mp4" controls="controls" muted="muted" class="d-block rounded-bottom-2 border-top width-fit" style="max-height:640px;"></video>
 
