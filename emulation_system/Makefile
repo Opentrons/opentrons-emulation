@@ -1,7 +1,12 @@
+.PHONY: update
+update:
+	poetry env use 3.10
+	poetry update
+	poetry install
+
 .PHONY: setup
 setup:
 	poetry env use 3.10
-	poetry update
 	poetry install
 
 .PHONY: clean
