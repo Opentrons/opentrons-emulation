@@ -1,8 +1,8 @@
 name: "build-devcontainer"
 on: # Make sure the devcontainer changes are pushed on changes to main
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
   workflow_dispatch:
 
 concurrency: # One run of this workflow per branch.
