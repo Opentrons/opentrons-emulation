@@ -38,6 +38,8 @@ def remote_source_latest(ot3_only: Dict[str, Any]) -> SystemConfigurationModel:
     """
     ot3_only["robot"]["source-type"] = "remote"
     ot3_only["robot"]["source-location"] = "latest"
+    ot3_only["robot"]["opentrons-hardware-source-type"] = "remote"
+    ot3_only["robot"]["opentrons-hardware-source-location"] = "latest"
     return parse_obj_as(SystemConfigurationModel, ot3_only)
 
 
@@ -50,12 +52,14 @@ def remote_source_commit_id(ot3_only: Dict[str, Any]) -> SystemConfigurationMode
     """
     ot3_only["robot"]["source-type"] = "remote"
     ot3_only["robot"]["source-location"] = FAKE_COMMIT_ID
+    ot3_only["robot"]["opentrons-hardware-source-type"] = "remote"
+    ot3_only["robot"]["opentrons-hardware-source-location"] = FAKE_COMMIT_ID
     return parse_obj_as(SystemConfigurationModel, ot3_only)
 
 
 @pytest.fixture
 def local_source(
-    ot3_only: Dict[str, Any], ot3_firmware_dir: str
+    ot3_only: Dict[str, Any], ot3_firmware_dir: str, opentrons_dir: str
 ) -> SystemConfigurationModel:
     """Gets SystemConfigurationModel.
 
@@ -64,6 +68,8 @@ def local_source(
     """
     ot3_only["robot"]["source-type"] = "local"
     ot3_only["robot"]["source-location"] = ot3_firmware_dir
+    ot3_only["robot"]["opentrons-hardware-source-type"] = "local"
+    ot3_only["robot"]["opentrons-hardware-source-location"] = opentrons_dir
 
     return parse_obj_as(SystemConfigurationModel, ot3_only)
 
@@ -199,16 +205,25 @@ def test_ot3_service_environment_variables(
 
 
 @pytest.mark.parametrize(
-    "config_model, expected_url",
+    "config_model, expected_firmware_url, expected_monorepo_url",
     [
-        (lazy_fixture("remote_source_latest"), lazy_fixture("ot3_firmware_head")),
-        (lazy_fixture("remote_source_commit_id"), lazy_fixture("ot3_firmware_commit")),
+        (
+            lazy_fixture("remote_source_latest"),
+            lazy_fixture("ot3_firmware_head"),
+            lazy_fixture("opentrons_head"),
+        ),
+        (
+            lazy_fixture("remote_source_commit_id"),
+            lazy_fixture("ot3_firmware_commit"),
+            lazy_fixture("opentrons_commit"),
+        ),
     ],
 )
 def test_ot3_service_remote(
     config_model: SystemConfigurationModel,
     testing_global_em_config: OpentronsEmulationConfiguration,
-    expected_url: str,
+    expected_firmware_url: str,
+    expected_monorepo_url: str,
 ) -> None:
     """Tests for values that are the same for all remote configurations of a Smoothie Service."""
     services = ServiceBuilderOrchestrator(
@@ -244,9 +259,14 @@ def test_ot3_service_remote(
     assert gripper.build.target == OT3GripperImages().remote_hardware_image_name
 
     for service in services:
-        assert get_source_code_build_args(service) == {
-            RepoToBuildArgMapping.OT3_FIRMWARE.value: expected_url
-        }
+        build_args = get_source_code_build_args(service)
+        ot3_firmware_build_arg = RepoToBuildArgMapping.OT3_FIRMWARE
+        monorepo_build_arg = RepoToBuildArgMapping.OPENTRONS
+
+        assert ot3_firmware_build_arg in build_args
+        assert monorepo_build_arg in build_args
+        assert build_args[ot3_firmware_build_arg] == expected_firmware_url
+        assert build_args[monorepo_build_arg] == expected_monorepo_url
         assert service.volumes is None
 
 
@@ -291,6 +311,7 @@ def test_ot3_services_local(
         assert build_args_are_none(service)
         volumes = service.volumes
         assert volumes is not None
+        assert len(volumes) == 6
         assert partial_string_in_mount("ot3-firmware:/ot3-firmware", volumes)
         assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", volumes)
         assert partial_string_in_mount(
@@ -299,3 +320,6 @@ def test_ot3_services_local(
         assert partial_string_in_mount(
             "ot3-firmware-stm32-tools:/ot3-firmware/stm32-tools", volumes
         )
+
+        assert partial_string_in_mount("opentrons:/opentrons", volumes)
+        assert partial_string_in_mount("opentrons-python-dist:/dist", volumes)
