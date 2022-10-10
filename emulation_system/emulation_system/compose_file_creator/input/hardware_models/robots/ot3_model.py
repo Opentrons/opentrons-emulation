@@ -1,10 +1,7 @@
 """OT-3 Module and it's attributes."""
 import os
 import pathlib
-from typing import (
-    List,
-    Optional,
-)
+from typing import List, Optional
 
 from pydantic import Field
 from typing_extensions import Literal
@@ -22,13 +19,12 @@ from emulation_system.compose_file_creator.config_file_settings import (
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
 )
-from emulation_system.consts import (
-    CAN_SERVER_MOUNT_NAME,
-    SOURCE_CODE_MOUNT_NAME,
-)
+from emulation_system.consts import CAN_SERVER_MOUNT_NAME, SOURCE_CODE_MOUNT_NAME
+
+from ..hardware_specific_attributes import HardwareSpecificAttributes
+
 # cannot import from . because of circular import issue
 from .robot_model import RobotInputModel
-from ..hardware_specific_attributes import HardwareSpecificAttributes
 
 
 class OT3Attributes(HardwareSpecificAttributes):
@@ -58,8 +54,12 @@ class OT3InputModel(RobotInputModel):
     can_server_source_type: SourceType = Field(alias="can-server-source-type")
     can_server_source_location: str = Field(alias="can-server-source-location")
 
-    opentrons_hardware_source_type: SourceType = Field(alias="opentrons-hardware-source-type")
-    opentrons_hardware_source_location: str = Field(alias="opentrons-hardware-source-location")
+    opentrons_hardware_source_type: SourceType = Field(
+        alias="opentrons-hardware-source-type"
+    )
+    opentrons_hardware_source_location: str = Field(
+        alias="opentrons-hardware-source-location"
+    )
 
     hardware_specific_attributes: OT3Attributes = Field(
         alias="hardware-specific-attributes", default=OT3Attributes()
@@ -101,9 +101,13 @@ class OT3InputModel(RobotInputModel):
         return super().is_remote and self.can_server_source_type == SourceType.REMOTE
 
     def get_mount_strings(self) -> List[str]:
+        """Returns list of mount strings for OT-3"""
         mount_strings = []
+
         if self.source_type == SourceType.LOCAL:
-            service_mount_path = os.path.basename(os.path.normpath(self.source_location))
+            service_mount_path = os.path.basename(
+                os.path.normpath(self.source_location)
+            )
             firmware_mount = DirectoryMount(
                 name=SOURCE_CODE_MOUNT_NAME,
                 type=MountTypes.DIRECTORY,
@@ -113,7 +117,9 @@ class OT3InputModel(RobotInputModel):
             mount_strings.append(firmware_mount.get_bind_mount_string())
 
         if self.opentrons_hardware_source_type == SourceType.LOCAL:
-            service_mount_path = os.path.basename(os.path.normpath(self.opentrons_hardware_source_location))
+            service_mount_path = os.path.basename(
+                os.path.normpath(self.opentrons_hardware_source_location)
+            )
             monorepo_mount = DirectoryMount(
                 name=SOURCE_CODE_MOUNT_NAME,
                 type=MountTypes.DIRECTORY,

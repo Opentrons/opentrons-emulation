@@ -345,7 +345,7 @@ An example dev workflow is as follows.
 ## Debugging Docker-Compose File Generation
 
 The generation of the docker-compose file is complex. Business logic is built into the code.
-Two log files are generated for any command that calls `generate-compose-file` so that the logic may be audited. 
+Two log files are generated for any command that calls `generate-compose-file` so that the logic may be audited.
 
 There are two versions of the log file:
 

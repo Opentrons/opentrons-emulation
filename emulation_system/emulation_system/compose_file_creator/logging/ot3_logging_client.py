@@ -2,7 +2,6 @@
 
 from typing import Optional
 
-from .abstract_logging_client import AbstractLoggingClient
 from ..types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
@@ -11,6 +10,7 @@ from ..types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
+from .abstract_logging_client import AbstractLoggingClient
 
 
 class OT3LoggingClient(AbstractLoggingClient):
