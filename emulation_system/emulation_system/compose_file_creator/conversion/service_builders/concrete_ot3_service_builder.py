@@ -99,7 +99,8 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         """Generates value for build parameter."""
         ot3_firmware_repo = OpentronsRepository.OT3_FIRMWARE
         monorepo = OpentronsRepository.OPENTRONS
-        build_args: Optional[IntermediateBuildArgs] = {}
+        build_args: IntermediateBuildArgs = {}
+
         if self._ot3.source_type == SourceType.REMOTE:
             ot3_firmware_build_args = get_build_args(
                 ot3_firmware_repo,
@@ -108,6 +109,7 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
                 self._global_settings.get_repo_head(ot3_firmware_repo),
             )
             build_args.update(ot3_firmware_build_args)
+
         if self._ot3.opentrons_hardware_source_type == SourceType.REMOTE:
             monorepo_build_args = get_build_args(
                 monorepo,
@@ -116,15 +118,19 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
                 self._global_settings.get_repo_head(monorepo),
             )
             build_args.update(monorepo_build_args)
-        else:
-            build_args = None
-        self._logging_client.log_build_args(build_args)
-        return build_args
+
+        args_to_pass = build_args if len(build_args) > 0 else None
+
+        self._logging_client.log_build_args(args_to_pass)
+        return args_to_pass
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        volumes: Optional[IntermediateVolumes] = []
-        if SourceType.LOCAL in [self._ot3.source_type, self._ot3.opentrons_hardware_source_type]:
+        volumes: IntermediateVolumes = []
+        if SourceType.LOCAL in [
+            self._ot3.source_type,
+            self._ot3.opentrons_hardware_source_type,
+        ]:
             volumes.append(self.ENTRYPOINT_MOUNT_STRING)
             volumes.extend(self._ot3.get_mount_strings())
 
@@ -134,10 +140,9 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
             if self._ot3.opentrons_hardware_source_type == SourceType.LOCAL:
                 add_opentrons_named_volumes(volumes)
 
-        else:
-            volumes = None
-        self._logging_client.log_volumes(volumes)
-        return volumes
+        arg_to_pass = volumes if len(volumes) > 0 else None
+        self._logging_client.log_volumes(arg_to_pass)
+        return arg_to_pass
 
     def generate_command(self) -> Optional[IntermediateCommand]:
         """Generates value for command parameter."""
