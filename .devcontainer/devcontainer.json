@@ -9,6 +9,7 @@
             "USERNAME": "root"
         }
     },
+    "remoteUser": "root",
     "mounts": [
         "source=commandhistory-oe,target=/commandhistory,type=volume",
         "source=extensions-oe,target=/root/.vscode-server/extensions,type=volume",
