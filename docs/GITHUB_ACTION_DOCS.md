@@ -49,7 +49,7 @@ The Python dependencies are cached between runs.
 on: [ pull_request, push ]
 jobs:
   setup-example:
-    runs-on: "ubuntu-18.04"
+    runs-on: "ubuntu-20.04"
     name: Setup Example
     steps:
 
@@ -77,7 +77,7 @@ useful when something goes wrong with the `setup` action and you want to rerun e
 on: [ pull_request, push ]
 jobs:
   setup-break-cache-example:
-    runs-on: "ubuntu-18.04"
+    runs-on: "ubuntu-20.04"
     name: Setup (Break Cache) Example
     steps:
 
@@ -106,7 +106,7 @@ The `setup-python-only` command only installs Python dependencies. Currently, th
 on: [ pull_request, push ]
 jobs:
   setup-python-only-example:
-    runs-on: "ubuntu-18.04"
+    runs-on: "ubuntu-20.04"
     name: Setup (Python Only) Example
     steps:
 
@@ -134,7 +134,7 @@ running this command. After the `run` command is finished, you should the contai
 on: [ pull_request, push ]
 jobs:
   run-example:
-    runs-on: "ubuntu-18.04"
+    runs-on: "ubuntu-20.04"
     name: Run Example
     steps:
 
@@ -172,7 +172,7 @@ or `setup-break-cache` before running this command.
 on: [ pull_request, push ]
 jobs:
   teardown-example:
-    runs-on: "ubuntu-18.04"
+    runs-on: "ubuntu-20.04"
     name: Teardown Example
     steps:
 
