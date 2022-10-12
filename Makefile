@@ -181,7 +181,7 @@ can-comm:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="can-server" \
-		| xargs -o -I{} docker exec -it {} poetry run python -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
+		| xargs -o -I{} docker exec -it {} python -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
 
 
 # Runs can monitor script against can_server
@@ -194,7 +194,7 @@ can-mon:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="can-server" \
-		| xargs -o -I{} docker exec -it {} poetry run python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
+		| xargs -o -I{} docker exec -it {} python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
 
 ###########################################
 ############### CI Commands ###############
