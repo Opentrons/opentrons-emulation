@@ -20,6 +20,8 @@ robot:
   robot-server-source-location: /home/derek-maggio/Documents/repos/opentrons
   can-server-source-type: local
   can-server-source-location: /home/derek-maggio/Documents/repos/opentrons
+  opentrons-hardware-source-type: local
+  opentrons-hardware-source-location: /home/derek-maggio/Documents/repos/opentrons 
   emulation-level: hardware
   exposed-port: 31950
   can-server-exposed-port: 9898
