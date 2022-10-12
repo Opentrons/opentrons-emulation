@@ -14,12 +14,6 @@ on:
       - '.github/workflows/emulation-system-lint-test.yaml'
       - './Makefile'
       - '*.md'
-  workflow_dispatch:
-    inputs:
-      cache-break:
-        description: Break the Cache
-        required: false
-        default: default
 
 defaults:
   run:
@@ -27,28 +21,23 @@ defaults:
 
 jobs:
   lint-test:
-    name: 'emulation-system linting and tests'
-    runs-on: 'ubuntu-20.04'
+    name: emulation-system linting and tests
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout opentrons-emulation repository
         uses: actions/checkout@v3
-        with:
-          ref: "release-v2.3.3"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@release-v2.3.3
-        with:
-          cache-break: ${{ github.event.inputs.cache-break }}
-          command: setup-python-only
+        run: make setup
 
-      - name: "Lint"
+      - name: Lint
         run: make lint
 
-      - name: "Test"
+      - name: Test
         run: make test
 
-      - name: 'Upload Coverage Report'
-        uses: 'codecov/codecov-action@v2'
+      - name: Upload Coverage Report
+        uses: codecov/codecov-action@v2
         with:
           files: ./g-code-testing/coverage.xml
           flags: g-code-testing
