@@ -41,8 +41,7 @@ class OT3LoggingClient(AbstractLoggingClient):
         else:
             tabbed_volumes = [f"\t{volume}" for volume in volumes]
             output = [
-                'Since "source-type" is "remote",'
-                "adding the following volumes and bind mounts:",
+                "Adding the following volumes and bind mounts:",
                 *tabbed_volumes,
             ]
         self._logging_console.h2_print("volumes")

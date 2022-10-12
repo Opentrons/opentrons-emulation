@@ -38,6 +38,8 @@ def robot_set_source_type_params(
         robot_server_source_location: str,
         can_server_source_type: Optional[SourceType],
         can_server_source_location: Optional[str],
+        opentrons_hardware_source_type: Optional[SourceType],
+        opentrons_hardware_source_location: Optional[str],
     ) -> RuntimeComposeFileModel:
         robot_dict["source-type"] = source_type
         robot_dict["source-location"] = source_location
@@ -50,6 +52,17 @@ def robot_set_source_type_params(
         ):
             robot_dict["can-server-source-type"] = can_server_source_type
             robot_dict["can-server-source-location"] = can_server_source_location
+
+        if (
+            opentrons_hardware_source_type is not None
+            and opentrons_hardware_source_location is not None
+        ):
+            robot_dict[
+                "opentrons-hardware-source-type"
+            ] = opentrons_hardware_source_type
+            robot_dict[
+                "opentrons-hardware-source-location"
+            ] = opentrons_hardware_source_location
 
         return convert_from_obj({"robot": robot_dict}, testing_global_em_config, False)
 
@@ -92,6 +105,8 @@ def ot3_remote_everything_latest(
         robot_server_source_location="latest",
         can_server_source_type=SourceType.REMOTE,
         can_server_source_location="latest",
+        opentrons_hardware_source_type=SourceType.REMOTE,
+        opentrons_hardware_source_location="latest",
     )
 
 
@@ -108,6 +123,8 @@ def ot3_remote_everything_commit_id(
         robot_server_source_location=FAKE_COMMIT_ID,
         can_server_source_type=SourceType.REMOTE,
         can_server_source_location=FAKE_COMMIT_ID,
+        opentrons_hardware_source_type=SourceType.REMOTE,
+        opentrons_hardware_source_location=FAKE_COMMIT_ID,
     )
 
 
@@ -124,8 +141,10 @@ def ot3_local_robot(
         source_location="latest",
         robot_server_source_type=SourceType.LOCAL,
         robot_server_source_location=opentrons_dir,
-        can_server_source_type="remote",
+        can_server_source_type=SourceType.REMOTE,
         can_server_source_location="latest",
+        opentrons_hardware_source_type=SourceType.REMOTE,
+        opentrons_hardware_source_location="latest",
     )
 
 
@@ -145,6 +164,8 @@ def ot3_local_source(
         robot_server_source_location="latest",
         can_server_source_type=SourceType.REMOTE,
         can_server_source_location="latest",
+        opentrons_hardware_source_type=SourceType.REMOTE,
+        opentrons_hardware_source_location="latest",
     )
 
 
@@ -163,6 +184,28 @@ def ot3_local_can(
         robot_server_source_location="latest",
         can_server_source_type=SourceType.LOCAL,
         can_server_source_location=opentrons_dir,
+        opentrons_hardware_source_type=SourceType.REMOTE,
+        opentrons_hardware_source_location="latest",
+    )
+
+
+@pytest.fixture
+def ot3_local_opentrons_hardware(
+    ot3_default: Dict[str, Any],
+    opentrons_dir: str,
+    robot_set_source_type_params: Callable,
+) -> RuntimeComposeFileModel:
+    """Get OT3 configured for local source and local robot source."""
+    return robot_set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.REMOTE,
+        source_location="latest",
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location="latest",
+        can_server_source_type=SourceType.REMOTE,
+        can_server_source_location="latest",
+        opentrons_hardware_source_type=SourceType.LOCAL,
+        opentrons_hardware_source_location=opentrons_dir,
     )
 
 
@@ -179,6 +222,8 @@ def ot2_remote_everything_latest(
         robot_server_source_location="latest",
         can_server_source_type=None,
         can_server_source_location=None,
+        opentrons_hardware_source_type=None,
+        opentrons_hardware_source_location=None,
     )
 
 
@@ -195,6 +240,8 @@ def ot2_remote_everything_commit_id(
         robot_server_source_location=FAKE_COMMIT_ID,
         can_server_source_type=None,
         can_server_source_location=None,
+        opentrons_hardware_source_type=None,
+        opentrons_hardware_source_location=None,
     )
 
 
@@ -213,6 +260,8 @@ def ot2_local_source(
         robot_server_source_location="latest",
         can_server_source_type=None,
         can_server_source_location=None,
+        opentrons_hardware_source_type=None,
+        opentrons_hardware_source_location=None,
     )
 
 
@@ -231,6 +280,8 @@ def ot2_local_robot(
         robot_server_source_location=opentrons_dir,
         can_server_source_type=None,
         can_server_source_location=None,
+        opentrons_hardware_source_type=None,
+        opentrons_hardware_source_location=None,
     )
 
 
@@ -447,6 +498,8 @@ def test_ot3_remote_everything_latest_build_args(
         assert (
             emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
         )
+        assert RepoToBuildArgMapping.OPENTRONS in emulator_build_args
+        assert emulator_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
 
 
 def test_ot3_remote_everything_commit_id_build_args(
@@ -483,6 +536,8 @@ def test_ot3_remote_everything_commit_id_build_args(
             emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE]
             == ot3_firmware_commit
         )
+        assert RepoToBuildArgMapping.OPENTRONS in emulator_build_args
+        assert emulator_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_commit
 
 
 def test_ot3_local_source_mounts(ot3_local_source: RuntimeComposeFileModel) -> None:
@@ -544,7 +599,11 @@ def test_ot3_local_source_build_args(
     assert can_server_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
 
     for emulator in emulators:
-        assert build_args_are_none(emulator)
+        emulator_build_args = get_source_code_build_args(emulator)
+        assert emulator_build_args is not None
+        assert RepoToBuildArgMapping.OPENTRONS in emulator_build_args
+        assert emulator_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
+        assert RepoToBuildArgMapping.OT3_FIRMWARE not in emulator_build_args
 
 
 def test_ot3_local_can_server_mounts(ot3_local_can: RuntimeComposeFileModel) -> None:
@@ -600,12 +659,15 @@ def test_ot3_local_can_server_build_args(
     assert build_args_are_none(can_server)
 
     for emulator in emulators:
+        print(emulator.container_name)
         emulator_build_args = get_source_code_build_args(emulator)
         assert emulator_build_args is not None
         assert RepoToBuildArgMapping.OT3_FIRMWARE in emulator_build_args
         assert (
             emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
         )
+        assert RepoToBuildArgMapping.OPENTRONS in emulator_build_args
+        assert emulator_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
 
 
 def test_ot3_local_robot_server_mounts(
@@ -671,6 +733,76 @@ def test_ot3_local_robot_server_build_args(
         assert (
             emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
         )
+        assert RepoToBuildArgMapping.OPENTRONS in emulator_build_args
+        assert emulator_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
+
+
+def test_ot3_local_opentrons_hardware_build_args(
+    ot3_local_opentrons_hardware: RuntimeComposeFileModel,
+    opentrons_head: str,
+    ot3_firmware_head: str,
+) -> None:
+    """Test build arguments when robot-server-source-type is set to local.
+
+    Confirm that robot server does not have any build arguments.
+    Confirm that can server is looking for the opentrons repo head.
+    Confirm that the emulators are looking for the ot3-firmware repo head.
+    """
+    robot_server = ot3_local_opentrons_hardware.robot_server
+    can_server = ot3_local_opentrons_hardware.can_server
+    emulators = ot3_local_opentrons_hardware.ot3_emulators
+
+    assert robot_server is not None
+    assert can_server is not None
+    assert emulators is not None
+
+    can_server_build_args = get_source_code_build_args(can_server)
+    robot_server_build_args = get_source_code_build_args(robot_server)
+
+    assert RepoToBuildArgMapping.OPENTRONS in robot_server_build_args
+    assert robot_server_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
+
+    assert RepoToBuildArgMapping.OPENTRONS in can_server_build_args
+    assert can_server_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
+
+    for emulator in emulators:
+        emulator_build_args = get_source_code_build_args(emulator)
+        assert emulator_build_args is not None
+        assert RepoToBuildArgMapping.OT3_FIRMWARE in emulator_build_args
+        assert (
+            emulator_build_args[RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_head
+        )
+        assert RepoToBuildArgMapping.OPENTRONS not in emulator_build_args
+
+
+def test_ot3_local_opentrons_hardware_mounts(
+    ot3_local_opentrons_hardware: RuntimeComposeFileModel,
+) -> None:
+    """Test mounts when robot-server-source-type is set to local.
+
+    Confirm that can server and emulators have no mounts.
+    Confirm that robot server has opentrons and entrypoint.sh mounted in.
+    """
+    robot_server = ot3_local_opentrons_hardware.robot_server
+    can_server = ot3_local_opentrons_hardware.can_server
+    emulators = ot3_local_opentrons_hardware.ot3_emulators
+
+    assert robot_server is not None
+    assert can_server is not None
+    assert emulators is not None
+
+    assert robot_server.volumes is None
+
+    assert can_server.volumes is None
+
+    assert ot3_local_opentrons_hardware.ot3_emulators is not None
+
+    for emulator in ot3_local_opentrons_hardware.ot3_emulators:
+        assert emulator.volumes is not None
+        assert len(emulator.volumes) == 3
+        assert partial_string_in_mount("opentrons:/opentrons", emulator.volumes)
+        assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", emulator.volumes)
+        assert partial_string_in_mount("opentrons-python-dist:/dist", emulator.volumes)
 
 
 @pytest.mark.parametrize(

@@ -124,12 +124,19 @@ ENV OPENTRONS_HARDWARE "can-server"
 
 FROM ghcr.io/opentrons/cpp-base:latest as ot3-firmware-source
 ARG FIRMWARE_SOURCE_DOWNLOAD_LOCATION
+ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION
+
 ADD $FIRMWARE_SOURCE_DOWNLOAD_LOCATION /ot3-firmware.zip
+ADD $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons.zip
+
 RUN (cd / &&  \
     unzip -q ot3-firmware.zip && \
     rm -f ot3-firmware.zip && \
     mv ot3-firmware* ot3-firmware)
-
+RUN (cd / &&  \
+    unzip -q opentrons.zip && \
+    rm -f opentrons.zip && \
+    mv opentrons* opentrons)
 
 ##################
 # modules-source #

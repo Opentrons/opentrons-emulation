@@ -136,6 +136,8 @@ def ot3_default(opentrons_dir: str) -> Dict[str, Any]:
         "robot-server-source-location": "latest",
         "can-server-source-type": "remote",
         "can-server-source-location": "latest",
+        "opentrons-hardware-source-type": "remote",
+        "opentrons-hardware-source-location": "latest",
         "exposed-port": 5000,
         "hardware-specific-attributes": {},
     }
