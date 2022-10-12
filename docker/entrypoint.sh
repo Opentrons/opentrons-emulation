@@ -137,13 +137,13 @@ case $FULL_COMMAND in
   # Firmware Level
 
   build-thermocycler-firmware|build-heater-shaker-firmware|build-magdeck-firmware|build-tempdeck-firmware|build-emulator-proxy|build-robot-server|build-common-firmware|build-smoothie|build-can-server)
-    pip uninstall --yes /dist/*
+    python -m pip uninstall --yes /dist/*
     (cd /opentrons/shared-data/python && python setup.py bdist_wheel -d /dist/)
     (cd /opentrons/api && python setup.py bdist_wheel -d /dist/)
     (cd /opentrons/notify-server && python setup.py bdist_wheel -d /dist/)
     (cd /opentrons/robot-server && python setup.py bdist_wheel -d /dist/)
     (cd /opentrons/hardware && python setup.py bdist_wheel -d /dist/)
-    pip install /dist/*
+    python -m pip install /dist/*
     ;;
 
   run-thermocycler-firmware)
