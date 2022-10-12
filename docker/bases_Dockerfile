@@ -70,9 +70,11 @@ RUN add-apt-repository ppa:deadsnakes/ppa && \
        	-y \
     	python3.10 \
     	python3.10-venv && \
-    rm -f /usr/bin/python /usr/bin/python3 && \
-	(cd /usr/bin/ && ln -s /usr/bin/python3.10 python) && \
-	(cd /usr/bin/ && ln -s /usr/bin/python3.10 python3)
+    (cd /usr/bin && \
+      rm -f python python3 && \
+	  ln -s /usr/bin/python3.10 python && \
+      ln -s /usr/bin/python3.10 python3 \
+    )
 
 
 ###############
