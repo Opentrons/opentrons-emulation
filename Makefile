@@ -172,7 +172,6 @@ load-container-names:
 ###########################################
 
 # Run can communication script against can_server
-# Note: uses pipenv since monorepo still uses pipenv
 .PHONY: can-comm
 can-comm:
 
@@ -186,7 +185,6 @@ can-comm:
 
 
 # Runs can monitor script against can_server
-# Note: uses pipenv since monorepo still uses pipenv
 .PHONY: can-mon
 can-mon:
 
