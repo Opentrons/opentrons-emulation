@@ -31,16 +31,16 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "ot3-firmware-header-creation-script-compatability-RQA-219"
+          ref: "fix-test-sample-files"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@ot3-firmware-header-creation-script-compatability-RQA-219
+        uses: Opentrons/opentrons-emulation@fix-test-sample-files
         with:
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup-python-only
 
       - name: YAML Substitution
-        uses: Opentrons/opentrons-emulation@ot3-firmware-header-creation-script-compatability-RQA-219
+        uses: Opentrons/opentrons-emulation@fix-test-sample-files
         with:
           command: yaml-sub
           substitutions: >-
