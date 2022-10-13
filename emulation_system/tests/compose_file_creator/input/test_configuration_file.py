@@ -19,7 +19,6 @@ from emulation_system.compose_file_creator.input.hardware_models import (
     TemperatureModuleInputModel,
     ThermocyclerModuleInputModel,
 )
-from emulation_system.consts import DEFAULT_DOCKER_COMPOSE_VERSION
 from tests.compose_file_creator.conftest import (
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,
@@ -50,13 +49,6 @@ def invalid_ot2_name(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
     """Dict with ot2 that has invalid name."""
     ot2_default["id"] = "Invalid Name"
     return {"robot": ot2_default}
-
-
-@pytest.fixture
-def version_defined(ot2_and_modules: Dict[str, Any]) -> Dict[str, Any]:
-    """Structure of SystemConfigurationModel with robot, modules, and version."""
-    ot2_and_modules["compose-file-version"] = "3.7"
-    return ot2_and_modules
 
 
 @pytest.fixture
@@ -230,21 +222,6 @@ def test_get_by_id(ot2_and_modules: Dict[str, Any]) -> None:
     assert isinstance(
         system_config.get_by_id(THERMOCYCLER_MODULE_ID), ThermocyclerModuleInputModel
     )
-
-
-@pytest.mark.parametrize(
-    "config", [lazy_fixture("ot2_and_modules"), lazy_fixture("null_everything")]
-)
-def test_default_version(config: Dict[str, Any]) -> None:
-    """Test that version is set to default when not specified."""
-    system_config = create_system_configuration(config)
-    assert system_config.compose_file_version == DEFAULT_DOCKER_COMPOSE_VERSION
-
-
-def test_overriding_version(version_defined: Dict[str, Any]) -> None:
-    """Test that version is overridden correctly."""
-    system_config = create_system_configuration(version_defined)
-    assert system_config.compose_file_version == "3.7"
 
 
 @pytest.mark.parametrize(

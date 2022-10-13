@@ -4,16 +4,9 @@ from __future__ import annotations
 from collections import Counter
 from typing import Dict, List, Mapping, Optional, cast
 
-from pydantic import (
-    BaseModel,
-    Field,
-    parse_file_as,
-    parse_obj_as,
-    root_validator,
-    validator,
-)
+from pydantic import BaseModel, Field, parse_file_as, parse_obj_as, root_validator
 
-from emulation_system.consts import DEFAULT_DOCKER_COMPOSE_VERSION, DEFAULT_NETWORK_NAME
+from emulation_system.consts import DEFAULT_NETWORK_NAME
 
 from ..config_file_settings import Hardware
 from ..errors import DuplicateHardwareNameError
@@ -28,7 +21,6 @@ class SystemConfigurationModel(BaseModel):
     Represents an entire system to be brought up.
     """
 
-    compose_file_version: Optional[str] = Field(alias="compose-file-version")
     system_unique_id: Optional[str] = Field(
         alias="system-unique-id", regex=r"^[A-Za-z0-9-]+$", min_length=1
     )
@@ -79,11 +71,6 @@ class SystemConfigurationModel(BaseModel):
             raise DuplicateHardwareNameError(duplicates)
 
         return values
-
-    @validator("compose_file_version", pre=True, always=True)
-    def set_default_version(cls, v: str) -> str:
-        """Sets default version if nothing is specified."""
-        return v or DEFAULT_DOCKER_COMPOSE_VERSION
 
     @property
     def modules_exist(self) -> bool:
