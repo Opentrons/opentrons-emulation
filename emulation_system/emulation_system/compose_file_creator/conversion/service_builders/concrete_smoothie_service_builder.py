@@ -2,7 +2,10 @@
 import json
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     SourceType,
@@ -13,6 +16,7 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateCommand,
     IntermediateDependsOn,
     IntermediateEnvironmentVariables,
+    IntermediateHealthcheck,
     IntermediateNetworks,
     IntermediatePorts,
     IntermediateVolumes,
@@ -21,9 +25,8 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     add_opentrons_named_volumes,
     get_build_args,
 )
-
-from ...logging import SmoothieLoggingClient
 from .abstract_service_builder import AbstractServiceBuilder
+from ...logging import SmoothieLoggingClient
 
 
 class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
@@ -91,6 +94,15 @@ class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
         networks = self._config_model.required_networks
         self._logging_client.log_networks(networks)
         return networks
+
+    def generate_healthcheck(self) -> IntermediateHealthcheck:
+        """Check to see if smoothie service has established connection to the emulator proxy."""
+        return IntermediateHealthcheck(
+            interval=10,
+            retries=6,
+            timeout=10,
+            command="netstat -nputw | grep -E '11000.*ESTABLISHED'",
+        )
 
     def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""

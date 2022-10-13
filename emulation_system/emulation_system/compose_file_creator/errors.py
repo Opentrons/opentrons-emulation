@@ -86,7 +86,7 @@ class IncorrectHardwareError(Exception):
 class HardwareDoesNotExistError(Exception):
     """Exception thrown when hardware does not exist."""
 
-    def __init__(self, specified_hardware: Hardware) -> None:
+    def __init__(self, specified_hardware: str) -> None:
         super().__init__(f"{specified_hardware} not defined.")
 
 

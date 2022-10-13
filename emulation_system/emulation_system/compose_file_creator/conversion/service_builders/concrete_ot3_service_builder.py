@@ -11,6 +11,7 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateCommand,
     IntermediateDependsOn,
     IntermediateEnvironmentVariables,
+    IntermediateHealthcheck,
     IntermediateNetworks,
     IntermediatePorts,
     IntermediateVolumes,
@@ -94,6 +95,15 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         networks = self._config_model.required_networks
         self._logging_client.log_networks(networks)
         return networks
+
+    def generate_healthcheck(self) -> IntermediateHealthcheck:
+        """Check to see if OT-3 service has established connection to CAN Service."""
+        return IntermediateHealthcheck(
+            interval=10,
+            retries=6,
+            timeout=10,
+            command="netstat -nputw | grep -E '9898.*ESTABLISHED'",
+        )
 
     def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""
