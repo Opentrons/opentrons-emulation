@@ -1,15 +1,7 @@
 """Module containing ConcreteInputServiceBuilder."""
-from typing import (
-    Any,
-    Dict,
-    List,
-    Optional,
-)
+from typing import Any, Dict, List, Optional
 
-from emulation_system import (
-    OpentronsEmulationConfiguration,
-    SystemConfigurationModel,
-)
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
@@ -26,7 +18,7 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     add_ot3_firmware_named_volumes,
     get_build_args,
 )
-from .abstract_service_builder import AbstractServiceBuilder
+
 from ...config_file_settings import OpentronsRepository
 from ...errors import HardwareDoesNotExistError
 from ...input.hardware_models import (
@@ -50,6 +42,7 @@ from ...utilities.hardware_utils import (
     is_temperature_module,
     is_thermocycler_module,
 )
+from .abstract_service_builder import AbstractServiceBuilder
 
 
 class ConcreteInputServiceBuilder(AbstractServiceBuilder):

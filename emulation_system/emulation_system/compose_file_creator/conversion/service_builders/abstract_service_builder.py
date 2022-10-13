@@ -3,24 +3,11 @@
 from __future__ import annotations
 
 import pathlib
-from abc import (
-    ABC,
-    abstractmethod,
-)
-from typing import (
-    Optional,
-    Type,
-    cast,
-)
+from abc import ABC, abstractmethod
+from typing import Optional, Type, cast
 
-from emulation_system import (
-    OpentronsEmulationConfiguration,
-    SystemConfigurationModel,
-)
-from emulation_system.compose_file_creator import (
-    BuildItem,
-    Service,
-)
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system.compose_file_creator import BuildItem, Service
 from emulation_system.compose_file_creator.config_file_settings import (
     FileMount,
     Hardware,
