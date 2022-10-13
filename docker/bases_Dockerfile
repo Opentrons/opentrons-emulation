@@ -61,6 +61,7 @@ RUN apt-get update \
       curl \
       git \
       libssl-dev \
+      net-tools \
       python3-dev \
       && rm -rf /var/lib/apt/lists/*
 RUN add-apt-repository ppa:deadsnakes/ppa && \
