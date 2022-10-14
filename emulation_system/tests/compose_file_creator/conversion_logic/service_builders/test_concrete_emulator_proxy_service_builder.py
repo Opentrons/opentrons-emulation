@@ -72,7 +72,7 @@ def test_simple_can_server_values(
     assert env_root is not None
     assert len(env_root.values()) == 4
     assert "OT_EMULATOR_heatershaker_proxy" in env_root
-    assert "OT_EMULATOR_magnetic_proxy" in env_root
+    assert "OT_EMULATOR_magdeck_proxy" in env_root
     assert "OT_EMULATOR_temperature_proxy" in env_root
     assert "OT_EMULATOR_thermocycler_proxy" in env_root
 
@@ -81,7 +81,7 @@ def test_simple_can_server_values(
         == '{"emulator_port": 10004, "driver_port": 11004}'
     )
     assert (
-        env_root["OT_EMULATOR_magnetic_proxy"]
+        env_root["OT_EMULATOR_magdeck_proxy"]
         == '{"emulator_port": 10002, "driver_port": 11002}'
     )
     assert (

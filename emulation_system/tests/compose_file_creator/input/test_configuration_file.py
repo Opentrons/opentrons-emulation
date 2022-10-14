@@ -55,7 +55,6 @@ def invalid_ot2_name(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
 def null_robot_with_modules(modules_only: Dict[str, Any]) -> Dict[str, Any]:
     """Structure of SystemConfigurationModel with modules and null robot."""
     modules_only["robot"] = None
-    modules_only["compose-file-version"] = None
     modules_only["system-unique-id"] = None
     return modules_only
 
@@ -64,7 +63,6 @@ def null_robot_with_modules(modules_only: Dict[str, Any]) -> Dict[str, Any]:
 def null_module_with_robot(ot2_only: Dict[str, Any]) -> Dict[str, Any]:
     """Structure of SystemConfigurationModel with modules and null robot."""
     ot2_only["modules"] = None
-    ot2_only["compose-file-version"] = None
     ot2_only["system-unique-id"] = None
     return ot2_only
 
@@ -73,7 +71,6 @@ def null_module_with_robot(ot2_only: Dict[str, Any]) -> Dict[str, Any]:
 def null_everything() -> Dict[str, None]:
     """Structure of SystemConfigurationModel with all values null."""
     return {
-        "compose-file-version": None,
         "robot": None,
         "modules": None,
         "system-unique-id": None,
