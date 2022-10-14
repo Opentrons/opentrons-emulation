@@ -2,7 +2,10 @@
 import json
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     SourceType,
@@ -22,15 +25,15 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     add_opentrons_named_volumes,
     get_build_args,
 )
-
-from ...logging import SmoothieLoggingClient
 from .abstract_service_builder import AbstractServiceBuilder
+from ...logging import SmoothieLoggingClient
 
 
 class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
     """Concrete implementation of AbstractServiceBuilder for building a Smoothie Service."""
 
     SMOOTHIE_NAME = "smoothie"
+    SMOOTHIE_DEFAULT_PORT = 11000
 
     def __init__(
         self,
@@ -99,7 +102,7 @@ class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
             interval=10,
             retries=6,
             timeout=10,
-            command="netstat -nputw | grep -E '11000.*ESTABLISHED'",
+            command=f"netstat -nputw | grep -E '{self.SMOOTHIE_DEFAULT_PORT}.*ESTABLISHED'",
         )
 
     def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
@@ -150,7 +153,7 @@ class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
         inner_env_vars = self._ot2.hardware_specific_attributes.dict()
-        inner_env_vars["port"] = 11000
+        inner_env_vars["port"] = self.SMOOTHIE_DEFAULT_PORT
         env_vars = {"OT_EMULATOR_smoothie": json.dumps(inner_env_vars)}
         self._logging_client.log_env_vars(env_vars)
         return env_vars

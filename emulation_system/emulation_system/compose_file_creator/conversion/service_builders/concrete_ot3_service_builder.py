@@ -98,11 +98,12 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
 
     def generate_healthcheck(self) -> IntermediateHealthcheck:
         """Check to see if OT-3 service has established connection to CAN Service."""
+        port = self._ot3.can_server_bound_port
         return IntermediateHealthcheck(
             interval=10,
             retries=6,
             timeout=10,
-            command="netstat -nputw | grep -E '9898.*ESTABLISHED'",
+            command=f"netstat -nputw | grep -E '{port}.*ESTABLISHED'",
         )
 
     def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
