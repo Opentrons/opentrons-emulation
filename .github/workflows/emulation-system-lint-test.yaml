@@ -33,10 +33,10 @@ jobs:
       - name: Checkout opentrons-emulation repository
         uses: actions/checkout@v3
         with:
-          ref: "fix-robot-server-not-getting-pipette-RQA-312"
+          ref: "add-healthchecks-RQA-312"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@fix-robot-server-not-getting-pipette-RQA-312
+        uses: Opentrons/opentrons-emulation@add-healthchecks-RQA-312
         with:
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup-python-only

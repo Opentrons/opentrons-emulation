@@ -115,7 +115,6 @@ A [devcontainer](https://containers.dev/) specification is provided and cached f
 
 ![Still building](https://user-images.githubusercontent.com/502770/194160391-b4113217-1357-44a5-adf2-82c46abb1bbb.png)
 
-
 #### Done!
 
 ![Done building](https://user-images.githubusercontent.com/502770/194160726-8e2063b2-124d-4029-ab48-600cf845d175.png)
@@ -125,7 +124,7 @@ A [devcontainer](https://containers.dev/) specification is provided and cached f
 1. Wait until the emulator is up
 1. Open a new terminal
 1. Enter the command `make check-robot` to validate the robot is reachable
-1. To shut down the emulated robot go back to the terminal where you entered  `make ot2` or `make ot3` 
+1. To shut down the emulated robot go back to the terminal where you entered  `make ot2` or `make ot3`
    1. Click where logs are scrolling and press `ctrl` and `c` at the same time.
 
 #### Video of the preceding 6 steps
