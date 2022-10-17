@@ -26,34 +26,18 @@ modules:
     source-type: remote
     source-location: latest
     emulation_level: hardware
-    module-env-vars:
-      hs_1: "hs"
-      hs_2: 1
-      hs_3: 1.1
   - id: t00-hot-to-handle
     hardware: thermocycler-module
     source-type: remote
     source-location: latest
     emulation_level: firmware
-    module-env-vars:
-      thermocycler_1: "thermocycler"
-      thermocycler_2: 2
-      thermocycler_3: 2.2
   - id: fatal-attraction
     hardware: magnetic-module
     source-type: remote
     source-location: latest
     emulation_level: firmware
-    module-env-vars:
-      magnetic_1: "magnetic"
-      magnetic_2: 3
-      magnetic_3: 3.3
   - id: temperamental
     hardware: temperature-module
     source-type: remote
     source-location: latest
     emulation_level: firmware
-    module-env-vars:
-      temperature_1: "temperature"
-      temperature_2: 4
-      temperature_3: 4.4

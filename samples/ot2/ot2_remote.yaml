@@ -21,11 +21,3 @@ robot:
   robot-server-source-location: latest
   emulation-level: firmware
   exposed-port: 31950
-  smoothie-env-vars:
-    smoothie_1: "tester"
-    smoothie_2: 3.0
-    smoothie_3: 5
-  robot-server-env-vars:
-    ot2_1: "ot2"
-    ot2_2: 5.0
-    ot2_3: 6
