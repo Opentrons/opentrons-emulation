@@ -7,6 +7,7 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateCommand,
     IntermediateDependsOn,
     IntermediateEnvironmentVariables,
+    IntermediateHealthcheck,
     IntermediateNetworks,
     IntermediatePorts,
     IntermediateVolumes,
@@ -19,16 +20,27 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
 )
 
 from ...config_file_settings import OpentronsRepository
+from ...errors import HardwareDoesNotExistError
+from ...input.hardware_models import (
+    HeaterShakerModuleInputModel,
+    MagneticModuleInputModel,
+    TemperatureModuleInputModel,
+    ThermocyclerModuleInputModel,
+)
 from ...logging import InputLoggingClient
 from ...types.input_types import Containers
 from ...utilities.hardware_utils import (
     is_hardware_emulation_level,
+    is_heater_shaker_module,
+    is_magnetic_module,
     is_module,
     is_ot2,
     is_ot3,
     is_remote_module,
     is_remote_robot,
     is_robot,
+    is_temperature_module,
+    is_thermocycler_module,
 )
 from .abstract_service_builder import AbstractServiceBuilder
 
@@ -107,6 +119,30 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
         networks = self._config_model.required_networks
         self._logging_client.log_networks(networks)
         return networks
+
+    def generate_healthcheck(self) -> IntermediateHealthcheck:
+        """Healthcheck generate for all input services."""
+        if is_robot(self._container):
+            # Confirms that the modules endpoint is available
+            command = "curl -s --location --request GET 'http://127.0.0.1:31950/modules' --header 'opentrons-version: *' || exit 1"
+        elif is_module(self._container):
+            if is_heater_shaker_module(self._container):
+                port = HeaterShakerModuleInputModel.proxy_info.emulator_port
+            elif is_magnetic_module(self._container):
+                port = MagneticModuleInputModel.proxy_info.emulator_port
+            elif is_thermocycler_module(self._container):
+                port = ThermocyclerModuleInputModel.proxy_info.emulator_port
+            elif is_temperature_module(self._container):
+                port = TemperatureModuleInputModel.proxy_info.emulator_port
+            else:
+                raise HardwareDoesNotExistError(self._container.hardware)
+            # Confirms that module is connect to emulator proxy
+            command = f"netstat -nputw | grep -E '{port}.*ESTABLISHED'"
+        else:
+            raise HardwareDoesNotExistError(self._container.hardware)
+        return IntermediateHealthcheck(
+            interval=10, retries=6, timeout=10, command=command
+        )
 
     def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""
@@ -208,7 +244,9 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
             temp_vars["OT_API_FF_enableOT3HardwareController"] = True
             temp_vars["OT3_CAN_DRIVER_interface"] = "opentrons_sock"
             temp_vars["OT3_CAN_DRIVER_host"] = self._can_server_service_name
-            temp_vars["OT3_CAN_DRIVER_port"] = 9898
+            temp_vars["OT3_CAN_DRIVER_port"] = self.get_ot3(
+                self._config_model
+            ).can_server_bound_port
 
         if is_module(self._container):
             temp_vars.update(self._container.get_serial_number_env_var())

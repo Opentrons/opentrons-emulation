@@ -18,6 +18,7 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateCommand,
     IntermediateDependsOn,
     IntermediateEnvironmentVariables,
+    IntermediateHealthcheck,
     IntermediateNetworks,
     IntermediatePorts,
     IntermediateVolumes,
@@ -99,6 +100,15 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         networks = self._config_model.required_networks
         self._logging_client.log_networks(networks)
         return networks
+
+    def generate_healthcheck(self) -> IntermediateHealthcheck:
+        """Check to see if emulator proxy service has started it's python service."""
+        return IntermediateHealthcheck(
+            interval=10,
+            retries=6,
+            timeout=10,
+            command="ps -eaf | grep 'python -m opentrons.hardware_control.emulation.app' | grep -v 'grep'",
+        )
 
     def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""

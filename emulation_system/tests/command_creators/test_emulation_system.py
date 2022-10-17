@@ -41,14 +41,18 @@ EXPECTED_YAML = convert_yaml(
         container_name: derek-emulator-proxy
         environment:
           OT_EMULATOR_heatershaker_proxy: '{"emulator_port": 10004, "driver_port": 11004}'
-          OT_EMULATOR_magnetic_proxy: '{"emulator_port": 10002, "driver_port": 11002}'
+          OT_EMULATOR_magdeck_proxy: '{"emulator_port": 10002, "driver_port": 11002}'
           OT_EMULATOR_temperature_proxy: '{"emulator_port": 10001, "driver_port": 11001}'
           OT_EMULATOR_thermocycler_proxy: '{"emulator_port": 10003, "driver_port": 11003}'
+        healthcheck:
+          interval: 10s
+          retries: 6
+          test: "ps -eaf | grep 'python -m opentrons.hardware_control.emulation.app' | grep -v 'grep'"
+          timeout: 10s
         image: emulator-proxy-remote:latest
         networks:
         - derek-local-network
         tty: true
-    version: '3.8'
     """
 )
 

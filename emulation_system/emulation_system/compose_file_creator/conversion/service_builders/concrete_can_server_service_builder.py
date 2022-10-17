@@ -13,6 +13,7 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateCommand,
     IntermediateDependsOn,
     IntermediateEnvironmentVariables,
+    IntermediateHealthcheck,
     IntermediateNetworks,
     IntermediatePorts,
     IntermediateVolumes,
@@ -92,6 +93,16 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
         networks = self._config_model.required_networks
         self._logging_client.log_networks(networks)
         return networks
+
+    def generate_healthcheck(self) -> IntermediateHealthcheck:
+        """Check to see if CAN service has established connections to ot3-services."""
+        port = self._ot3.can_server_bound_port
+        return IntermediateHealthcheck(
+            interval=10,
+            retries=6,
+            timeout=10,
+            command=f"netstat -nputw | grep -E '{port}.*ESTABLISHED'",
+        )
 
     def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""

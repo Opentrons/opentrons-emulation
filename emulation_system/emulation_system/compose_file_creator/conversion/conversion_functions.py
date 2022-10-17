@@ -40,7 +40,6 @@ def _convert(
     ).build_services()
     return RuntimeComposeFileModel(
         is_remote=config_model.is_remote,
-        version=config_model.compose_file_version,
         services=services,
         networks={
             network_name: Network() for network_name in config_model.required_networks

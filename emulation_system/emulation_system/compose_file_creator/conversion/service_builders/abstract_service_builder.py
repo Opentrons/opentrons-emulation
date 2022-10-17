@@ -27,6 +27,7 @@ from emulation_system.compose_file_creator.types.final_types import (
     ServiceCommand,
     ServiceContainerName,
     ServiceEnvironment,
+    ServiceHealthcheck,
     ServiceImage,
     ServicePorts,
     ServiceTTY,
@@ -38,6 +39,7 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateCommand,
     IntermediateDependsOn,
     IntermediateEnvironmentVariables,
+    IntermediateHealthcheck,
     IntermediateNetworks,
     IntermediatePorts,
     IntermediateVolumes,
@@ -147,6 +149,11 @@ class AbstractServiceBuilder(ABC):
         """Method to generate value for networks parameter for Service."""
         ...
 
+    @abstractmethod
+    def generate_healthcheck(self) -> IntermediateHealthcheck:
+        """Method to generate value for healthcheck parameter on Service."""
+        ...
+
     #############################################################
     # The following generate_* methods optionally return values #
     #############################################################
@@ -192,6 +199,8 @@ class AbstractServiceBuilder(ABC):
 
     def build_service(self) -> Service:
         """Method calling all generate* methods to build Service object."""
+        intermediate_healthcheck = self.generate_healthcheck()
+
         return Service(
             container_name=cast(ServiceContainerName, self.generate_container_name()),
             image=cast(ServiceImage, self.generate_image()),
@@ -203,4 +212,10 @@ class AbstractServiceBuilder(ABC):
             command=cast(ServiceCommand, self.generate_command()),
             networks=self.generate_networks(),
             depends_on=self.generate_depends_on(),
+            healthcheck=ServiceHealthcheck(
+                interval=f"{intermediate_healthcheck.interval}s",
+                retries=intermediate_healthcheck.retries,
+                timeout=f"{intermediate_healthcheck.timeout}s",
+                test=intermediate_healthcheck.command,
+            ),
         )

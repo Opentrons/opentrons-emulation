@@ -9,7 +9,7 @@ mypy hate everything you have ever done.
 from typing import List, Optional, Union
 
 from .. import BuildItem
-from ..output.compose_file_model import ListOrDict, Port, Volume1
+from ..output.compose_file_model import Healthcheck, ListOrDict, Port, Volume1
 
 # TODO: Need to figure out what to do with DependsOn and Networks
 #       In compose_file_model.py they implement constr which mypy does not like.
@@ -23,3 +23,4 @@ ServiceImage = Optional[str]
 ServiceBuild = Optional[Union[str, BuildItem]]
 ServiceTTY = Optional[bool]
 ServiceCommand = Optional[Union[str, List[str]]]
+ServiceHealthcheck = Healthcheck
