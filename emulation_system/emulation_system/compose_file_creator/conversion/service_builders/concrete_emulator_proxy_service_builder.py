@@ -10,6 +10,7 @@ from emulation_system.compose_file_creator.images import EmulatorProxyImages
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
     MagneticModuleInputModel,
+    RobotInputModel,
     TemperatureModuleInputModel,
     ThermocyclerModuleInputModel,
 )
@@ -153,5 +154,10 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
             for module in self.MODULE_TYPES
             for env_var_name, env_var_value in module.get_proxy_info_env_var().items()  # type: ignore [attr-defined]
         }
+
+        assert issubclass(self._config_model.robot.__class__, RobotInputModel)
+        if self._config_model.robot.emulator_proxy_env_vars is not None:
+            env_vars.update(self._config_model.robot.emulator_proxy_env_vars)
+
         self._logging_client.log_env_vars(env_vars)
         return env_vars

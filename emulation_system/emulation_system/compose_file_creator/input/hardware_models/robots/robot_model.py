@@ -15,6 +15,9 @@ from emulation_system.compose_file_creator.config_file_settings import (
     SourceType,
 )
 from emulation_system.compose_file_creator.images import get_image_name
+from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateEnvironmentVariables,
+)
 from emulation_system.consts import ROBOT_SERVER_MOUNT_NAME
 
 from ..hardware_model import HardwareModel
@@ -28,8 +31,15 @@ class RobotInputModel(HardwareModel):
 
     exposed_port: int = Field(..., alias="exposed-port")
     bound_port: int
-    robot_server_source_type: SourceType = Field(alias="robot-server-source-type")
-    robot_server_source_location: str = Field(alias="robot-server-source-location")
+    robot_server_source_type: SourceType = Field(..., alias="robot-server-source-type")
+    robot_server_source_location: str = Field(..., alias="robot-server-source-location")
+
+    robot_server_env_vars: IntermediateEnvironmentVariables | None = Field(
+        alias="robot-server-env-vars"
+    )
+    emulator_proxy_env_vars: IntermediateEnvironmentVariables | None = Field(
+        alias="emulator-proxy-env-vars"
+    )
 
     @validator("robot_server_source_location")
     def robot_server_check_source_location(cls, v: str, values: Dict[str, Any]) -> str:

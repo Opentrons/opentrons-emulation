@@ -1,5 +1,5 @@
 """Module containing ConcreteInputServiceBuilder."""
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator.types.intermediate_types import (
@@ -226,7 +226,7 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
-        temp_vars: Dict[str, Any] = {}
+        temp_vars: IntermediateEnvironmentVariables = {}
 
         if is_robot(self._container) and self._emulator_proxy_name is not None:
             temp_vars[
@@ -241,6 +241,7 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
             ] = f"socket://{self._smoothie_name}:11000"
 
         if is_ot3(self._container):
+            assert self._can_server_service_name is not None
             temp_vars["OT_API_FF_enableOT3HardwareController"] = True
             temp_vars["OT3_CAN_DRIVER_interface"] = "opentrons_sock"
             temp_vars["OT3_CAN_DRIVER_host"] = self._can_server_service_name
@@ -248,9 +249,17 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
                 self._config_model
             ).can_server_bound_port
 
+        if (
+            is_ot3(self._container) or is_ot2(self._container)
+        ) and self._container.robot_server_env_vars is not None:
+            temp_vars.update(self._container.robot_server_env_vars)
+
         if is_module(self._container):
             temp_vars.update(self._container.get_serial_number_env_var())
             temp_vars.update(self._container.get_proxy_info_env_var())
+
+        if is_module(self._container) and self._container.module_env_vars is not None:
+            temp_vars.update(self._container.module_env_vars)
 
         env_vars = None if len(temp_vars) == 0 else temp_vars
         self._logging_client.log_env_vars(env_vars)

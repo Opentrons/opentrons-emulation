@@ -23,6 +23,7 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     get_build_args,
 )
 
+from ...input.hardware_models import OT2InputModel
 from ...logging import SmoothieLoggingClient
 from .abstract_service_builder import AbstractServiceBuilder
 
@@ -152,6 +153,13 @@ class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
         """Generates value for environment parameter."""
         inner_env_vars = self._ot2.hardware_specific_attributes.dict()
         inner_env_vars["port"] = self.SMOOTHIE_DEFAULT_PORT
-        env_vars = {"OT_EMULATOR_smoothie": json.dumps(inner_env_vars)}
+        env_vars: IntermediateEnvironmentVariables = {
+            "OT_EMULATOR_smoothie": json.dumps(inner_env_vars)
+        }
+
+        assert isinstance(self._config_model.robot, OT2InputModel)
+        if self._config_model.robot.smoothie_env_vars is not None:
+            env_vars.update(self._config_model.robot.smoothie_env_vars)
+
         self._logging_client.log_env_vars(env_vars)
         return env_vars
