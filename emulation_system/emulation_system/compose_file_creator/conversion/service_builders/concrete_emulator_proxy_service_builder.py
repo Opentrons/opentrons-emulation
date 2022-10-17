@@ -155,9 +155,10 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
             for env_var_name, env_var_value in module.get_proxy_info_env_var().items()  # type: ignore [attr-defined]
         }
 
-        assert issubclass(self._config_model.robot.__class__, RobotInputModel)
-        if self._config_model.robot.emulator_proxy_env_vars is not None:
-            env_vars.update(self._config_model.robot.emulator_proxy_env_vars)
+        if self._config_model.robot is not None:
+            assert issubclass(self._config_model.robot.__class__, RobotInputModel)
+            if self._config_model.robot.emulator_proxy_env_vars is not None:
+                env_vars.update(self._config_model.robot.emulator_proxy_env_vars)
 
         self._logging_client.log_env_vars(env_vars)
         return env_vars
