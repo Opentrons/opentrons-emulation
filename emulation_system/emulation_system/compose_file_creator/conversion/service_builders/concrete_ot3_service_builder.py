@@ -22,7 +22,7 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     get_build_args,
 )
 
-from ...images import OT3PipettesImages
+from ...images import OT3GripperImages, OT3PipettesImages
 from ...logging import OT3LoggingClient
 from .abstract_service_builder import AbstractServiceBuilder
 from .service_info import ServiceInfo
@@ -177,7 +177,7 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         """Generates value for environment parameter."""
         env_vars = {"CAN_SERVER_HOST": self._can_server_service_name}
 
-        if isinstance(self._service_info.image, OT3PipettesImages):
+        if isinstance(self._service_info.image, (OT3PipettesImages, OT3GripperImages)):
             env_vars["EEPROM_FILENAME"] = "eeprom.bin"
 
         self._logging_client.log_env_vars(env_vars)
