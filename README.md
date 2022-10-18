@@ -9,7 +9,7 @@
 Opentrons has various software emulations of their hardware. This repository defines a framework to dynamically connect
 all these emulators together into systems.
 
-- [BREAKING CHANGES](#breaking-changes)
+- [:rotating_light: BREAKING CHANGES :rotating_light:](#breaking-changes)
   - [Upgrading from v2 to v3](#upgrading-from-v2-to-v3)
 - [What is an Emulator?](#what-is-an-emulator-)
 - [How do the Opentrons Emulators work?](#how-do-the-opentrons-emulators-work-)
@@ -61,7 +61,7 @@ linkStyle 1 stroke:#00ff00,stroke-width:2px,color:white;
 
 ```
 
-## BREAKING CHANGES
+## :rotating_light: BREAKING CHANGES :rotating_light:
 
 Any breaking changes will be listed here.
 

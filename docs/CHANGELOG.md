@@ -1,8 +1,8 @@
-# Opentrons Emulation Release Notes
+# Opentrons Emulation Changelog
 
 ## v3.0.0 (2022-10-18)
 
-### !!! Breaking Changes !!!
+### :rotating_light: Breaking Changes :rotating_light:
 
 - All `robot` blocks of type `ot3` now require `opentrons-hardware-source-location` and
   `opentrons-hardware-source-type` fields.
