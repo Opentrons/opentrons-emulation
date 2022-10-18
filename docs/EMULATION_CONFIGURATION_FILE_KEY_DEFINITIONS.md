@@ -322,6 +322,24 @@ modules:
 ## Specifying Custom Environment Variables
 
 All containers can accept custom environment variable designations through the configuration file.
+Each env variable is equivalant to running `export <env_var_name>=<env_var_value>`.
+
+For example, the following yaml:
+
+```yaml
+robot-server-env-vars:
+  ROBOT_NICKNAME: "otie"
+  DATADOG_PATH: "/home/datadog/"
+```
+
+is equivalant to opening a shell in the `robot-server` and running
+
+```shell
+export ROBOT_NICKNAME="otie"
+export DATADOG_PATH="/home/datadog/"
+```
+
+**FIELD BREAKDOWN**
 
 | Container Name       | Variable Name           | Block to Add to | Required Hardware Value |
 | -------------------- | ----------------------- | --------------- | ----------------------- |
