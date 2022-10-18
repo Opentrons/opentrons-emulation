@@ -1,19 +1,64 @@
 # Opentrons Emulation Release Notes
 
-## v2.3.3 (2022-08-12)
+## v3.0.0 (2022-10-18)
+
+### !!! Breaking Changes !!!
+
+- All `robot` blocks of type `ot3` now require `opentrons-hardware-source-location` and
+  `opentrons-hardware-source-type` fields.
 
 ### Bug Fixes
 
-- Fix load-container-names Makefile command [\[PR #172\]](https://github.com/Opentrons/opentrons-emulation/pull/172)
+- Fix `load-container-names` Makefile command [\[PR #172\]](https://github.com/Opentrons/opentrons-emulation/pull/172)
+- Fix not appending `local-network` to local network name when `system_unique_id`
+  exists. [\[PR #185\]](https://github.com/Opentrons/opentrons-emulation/pull/185)
+- Fix `can-mon` and `can-comm` Makefile
+  commands [\[PR #197\]](https://github.com/Opentrons/opentrons-emulation/pull/197)
+- Fix broken "Test Sample Files" Github Action [\[PR #200\]](https://github.com/Opentrons/opentrons-emulation/pull/200)
+- Fix OT-3 gripper and pipette containers not starting due to `EEPROM_FILENAME` environment variable not being set
+  [\[PR #185\]](https://github.com/Opentrons/opentrons-emulation/pull/185)
+  [\[PR #204\]](https://github.com/Opentrons/opentrons-emulation/pull/204)
 
 ### Features
 
 - Firmware Level Heater-Shaker Emulation [\[PR #173\]](https://github.com/Opentrons/opentrons-emulation/pull/173)
+- Add `dev` Makefile commands that combine `bases_Dockerfile` and `Dockerfile` together to allow for testing changes in
+  `bases_Dockerfile`
+  . [\[PR #180\]](https://github.com/Opentrons/opentrons-emulation/pull/180) [\[DOCS\]](https://github.com/Opentrons/opentrons-emulation/tree/release-v3.0.0#how-to-modify-dockerfiles)
+- Add compose file generation logs [\[PR #184\]](https://github.com/Opentrons/opentrons-emulation/pull/184)
+  [\[PR #185\]](https://github.com/Opentrons/opentrons-emulation/pull/185)
+  [\[PR #190\]](https://github.com/Opentrons/opentrons-emulation/pull/190)
+  [\[PR #191\]](https://github.com/Opentrons/opentrons-emulation/pull/191)
+  [\[DOCS\]](https://github.com/Opentrons/opentrons-emulation/blob/release-v3.0.0/README.md#debugging-docker-compose-file-generation)
+- Add VSCode devcontainer support [\[PR #193\]](https://github.com/Opentrons/opentrons-emulation/pull/193)
+  [\[PR #195\]](https://github.com/Opentrons/opentrons-emulation/pull/195) [\[DOCS\]](https://github.com/Opentrons/opentrons-emulation/blob/release-v3.0.0/README.md#development-container-devcontainer)
+- Add support for [state manager in ot3-firmware](https://github.com/Opentrons/ot3-firmware/tree/main/state_manager)
+  [\[PR #194\]](https://github.com/Opentrons/opentrons-emulation/pull/194)
+- Add healthchecks to all emulation containers [\[PR #202\]](https://github.com/Opentrons/opentrons-emulation/pull/202)
+- Add support for declaring environment variables on any emulation
+  container [\[PR #203\]](https://github.com/Opentrons/opentrons-emulation/pull/203) [\[DOCS\]](https://github.com/Opentrons/opentrons-emulation/blob/release-v3.0.0/docs/EMULATION_CONFIGURATION_FILE_KEY_DEFINITIONS.md#specifying-custom-environment-variables)
 
 ### Chores
 
 - Update Github Action OS's from Ubuntu 18.04 to Ubuntu
   20.04 [\[PR #175\]](https://github.com/Opentrons/opentrons-emulation/pull/175)
+- Add `opentrons-hardware-source-type` and `opentrons-hardware-source-location` to necessary sample files.
+  [\[PR #184\]](https://github.com/Opentrons/opentrons-emulation/pull/184)
+  [\[PR #198\]](https://github.com/Opentrons/opentrons-emulation/pull/198)
+
+### Refactor
+
+- Switch to use [poetry](https://python-poetry.org/) for building instead of
+  pipenv [\[PR #180\]](https://github.com/Opentrons/opentrons-emulation/pull/180)
+- Refactor all calls to `pip` to call using `python` built into
+  containers [\[PR #197\]](https://github.com/Opentrons/opentrons-emulation/pull/197)
+- Symlink `python` and `python3` commands to version of python installed by Dockerfile.
+  [\[PR #197\]](https://github.com/Opentrons/opentrons-emulation/pull/197)
+- Make `cpp-base` inherit from `python-base` inside
+  of `bases_Dockerfile` ([For state manager compatability](https://github.com/Opentrons/ot3-firmware/tree/main/state_manager))
+  [\[PR #197\]](https://github.com/Opentrons/opentrons-emulation/pull/197)
+
+______________________________________________________________________
 
 ## v2.3.2 (2022-07-08)
 
@@ -30,6 +75,8 @@
 - Update
   README [\[PR #166\]](https://github.com/Opentrons/opentrons-emulation/pull/166) [\[PR #170\]](https://github.com/Opentrons/opentrons-emulation/pull/170)
 
+______________________________________________________________________
+
 ## v2.3.1 (2022-04-01)
 
 ### Bug Fixes
@@ -43,6 +90,8 @@
 ### Chores
 
 - Update pipenv and pyenv steps in README [\[PR #161\]](https://github.com/Opentrons/opentrons-emulation/pull/161)
+
+______________________________________________________________________
 
 ## v2.3.0 (2022-04-01)
 
@@ -58,6 +107,8 @@
 ### Chores
 
 - None
+
+______________________________________________________________________
 
 ## v2.2.0 (2022-03-29)
 
@@ -98,6 +149,8 @@
 - Add status badges to README [\[PR #150\]](https://github.com/Opentrons/opentrons-emulation/pull/150)
 - Add release workflow documentation [\[PR #150\]](https://github.com/Opentrons/opentrons-emulation/pull/152)
 - Add Thermocycler Gen2 support [\[PR #154\]](https://github.com/Opentrons/opentrons-emulation/pull/152)
+
+______________________________________________________________________
 
 ## v2.1.0 (2022-03-21)
 
