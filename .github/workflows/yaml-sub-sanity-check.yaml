@@ -31,16 +31,16 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "fix-test-sample-files-RQA-311"
+          ref: "release-v3.0.0"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@fix-test-sample-files-RQA-311
+        uses: Opentrons/opentrons-emulation@release-v3.0.0
         with:
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup-python-only
 
       - name: YAML Substitution
-        uses: Opentrons/opentrons-emulation@fix-test-sample-files-RQA-311
+        uses: Opentrons/opentrons-emulation@release-v3.0.0
         with:
           command: yaml-sub
           substitutions: >-
