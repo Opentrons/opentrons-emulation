@@ -11,6 +11,9 @@ from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     Hardware,
 )
+from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateEnvironmentVariables,
+)
 
 from ..hardware_model import EmulationLevelNotSupportedError, HardwareModel
 
@@ -42,6 +45,10 @@ class ModuleInputModel(HardwareModel):
     )
     proxy_info: ClassVar[ProxyInfoModel] = Field(
         alias="proxy-info", allow_mutation=False
+    )
+
+    module_env_vars: IntermediateEnvironmentVariables | None = Field(
+        alias="module-env-vars"
     )
 
     def _get_firmware_serial_number_env_var(self) -> Dict[str, str]:

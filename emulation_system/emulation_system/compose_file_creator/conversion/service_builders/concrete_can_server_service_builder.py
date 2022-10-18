@@ -23,6 +23,7 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     get_build_args,
 )
 
+from ...input.hardware_models import OT3InputModel
 from ...logging import CANServerLoggingClient
 from .abstract_service_builder import AbstractServiceBuilder
 
@@ -151,6 +152,10 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
-        env_vars = None
+        env_vars: IntermediateEnvironmentVariables | None = None
+        assert isinstance(self._config_model.robot, OT3InputModel)
+        if self._config_model.robot.can_server_env_vars is not None:
+            env_vars = self._config_model.robot.can_server_env_vars
+
         self._logging_client.log_env_vars(env_vars)
         return env_vars

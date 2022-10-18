@@ -22,7 +22,15 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     get_build_args,
 )
 
-from ...images import OT3GripperImages, OT3PipettesImages
+from ...images import (
+    OT3BootloaderImages,
+    OT3GantryXImages,
+    OT3GantryYImages,
+    OT3GripperImages,
+    OT3HeadImages,
+    OT3PipettesImages,
+)
+from ...input.hardware_models import OT3InputModel
 from ...logging import OT3LoggingClient
 from .abstract_service_builder import AbstractServiceBuilder
 from .service_info import ServiceInfo
@@ -64,6 +72,25 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         assert image_name is not None
         self._logging_client.log_image_name(image_name, source_type, "source-type")
         return image_name
+
+    def __get_custom_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
+        image = self._service_info.image
+        env_vars: IntermediateEnvironmentVariables | None = None
+        assert isinstance(self._config_model.robot, OT3InputModel)
+        match image:
+            case OT3PipettesImages():
+                env_vars = self._config_model.robot.pipettes_env_vars
+            case OT3GripperImages():
+                env_vars = self._config_model.robot.gripper_env_vars
+            case OT3HeadImages():
+                env_vars = self._config_model.robot.head_env_vars
+            case OT3GantryXImages():
+                env_vars = self._config_model.robot.gantry_x_env_vars
+            case OT3GantryYImages():
+                env_vars = self._config_model.robot.gantry_y_env_vars
+            case OT3BootloaderImages():
+                env_vars = self._config_model.robot.bootloader_env_vars
+        return env_vars
 
     def generate_container_name(self) -> str:
         """Generates value for container_name parameter."""
@@ -175,10 +202,16 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
-        env_vars = {"CAN_SERVER_HOST": self._can_server_service_name}
+        env_vars: IntermediateEnvironmentVariables = {
+            "CAN_SERVER_HOST": self._can_server_service_name
+        }
 
         if isinstance(self._service_info.image, (OT3PipettesImages, OT3GripperImages)):
             env_vars["EEPROM_FILENAME"] = "eeprom.bin"
+
+        custom_env_vars = self.__get_custom_env_vars()
+        if custom_env_vars is not None:
+            env_vars.update(custom_env_vars)
 
         self._logging_client.log_env_vars(env_vars)
         return env_vars

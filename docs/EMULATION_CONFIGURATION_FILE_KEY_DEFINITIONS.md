@@ -21,6 +21,7 @@ The following paramteters are available for usage in the emulation configuration
     - [Pipettes](#pipettes)
       - [Available Pipette Models:](#available-pipette-models-)
     - [Temperature Model for Thermocycler and Temperature Modules](#temperature-model-for-thermocycler-and-temperature-modules)
+  - [Specifying Custom Environment Variables](#specifying-custom-environment-variables)
 
 ## Universal Parameters
 
@@ -316,4 +317,157 @@ modules:
       temperature:
         starting: 27
         degrees-per-tick: 2.3
+```
+
+## Specifying Custom Environment Variables
+
+All containers can accept custom environment variable designations through the configuration file.
+Each env variable is equivalant to running `export <env_var_name>=<env_var_value>`.
+
+For example, the following yaml:
+
+```yaml
+robot-server-env-vars:
+  ROBOT_NICKNAME: "otie"
+  DATADOG_PATH: "/home/datadog/"
+```
+
+is equivalant to opening a shell in the `robot-server` and running
+
+```shell
+export ROBOT_NICKNAME="otie"
+export DATADOG_PATH="/home/datadog/"
+```
+
+**FIELD BREAKDOWN**
+
+| Container Name       | Variable Name           | Block to Add to | Required Hardware Value |
+| -------------------- | ----------------------- | --------------- | ----------------------- |
+| robot-server         | robot-server-env-vars   | `robot`         | `ot2` `ot3`             |
+| emulator-proxy       | emulator-proxy-env-vars | `robot`         | `ot2` `ot3`             |
+| smoothie             | smoothie-env-vars       | `robot`         | `ot2`                   |
+| ot3-pipettes         | pipettes-env-vars       | `robot`         | `ot3`                   |
+| ot3-gripper          | gripper-env-vars        | `robot`         | `ot3`                   |
+| ot3-head             | head-env-vars           | `robot`         | `ot3`                   |
+| ot3-gantry-x         | gantry-x-env-vars       | `robot`         | `ot3`                   |
+| ot3-gantry-y         | gantry-y-env-vars       | `robot`         | `ot3`                   |
+| ot3-bootloader       | bootloader-env-vars     | `robot`         | `ot3`                   |
+| ot3-can-server       | can-server-env-vars     | `robot`         | `ot3`                   |
+| heater-shaker-module | module-env-vars         | `modules`       | `heater-shaker-module`  |
+| temperature-module   | module-env-vars         | `modules`       | `temperature-module`    |
+| thermocycler-module  | module-env-vars         | `modules`       | `thermocycler-module`   |
+| temperature-module   | module-env-vars         | `modules`       | `temperature-module`    |
+
+```yaml
+# OT-2 Example
+
+robot:
+  id: otie
+  hardware: ot2
+  source-type: remote
+  source-location: latest
+  emulation-level: firmware
+  robot-server-source-type: remote
+  robot-server-source-location: latest
+  exposed-port: 31950
+  smoothie-env-vars:
+    smoothie_1: "tester"
+    smoothie_2: 3.0
+    smoothie_3: 5
+  robot-server-env-vars:
+    ot2_1: "ot2"
+    ot2_2: 5.0
+    ot2_3: 6
+modules:
+  - id: shakey-and-warm
+    hardware: heater-shaker-module
+    source-type: remote
+    source-location: latest
+    emulation_level: hardware
+    module-env-vars:
+      hs_1: "hs"
+      hs_2: 1
+      hs_3: 1.1
+  - id: t00-hot-to-handle
+    hardware: thermocycler-module
+    source-type: remote
+    source-location: latest
+    emulation_level: firmware
+    module-env-vars:
+      thermocycler_1: "thermocycler"
+      thermocycler_2: 2
+      thermocycler_3: 2.2
+  - id: fatal-attraction
+    hardware: magnetic-module
+    source-type: remote
+    source-location: latest
+    emulation_level: firmware
+    module-env-vars:
+      magnetic_1: "magnetic"
+      magnetic_2: 3
+      magnetic_3: 3.3
+  - id: temperamental
+    hardware: temperature-module
+    source-type: remote
+    source-location: latest
+    emulation_level: firmware
+    module-env-vars:
+      temperature_1: "temperature"
+      temperature_2: 4
+      temperature_3: 4.4
+```
+
+```yaml
+# OT-3 Example
+
+robot:
+  id: otie
+  hardware: ot3
+  source-type: remote
+  source-location: latest
+  robot-server-source-type: remote
+  robot-server-source-location: latest
+  can-server-source-type: remote
+  can-server-source-location: latest
+  opentrons-hardware-source-type: remote
+  opentrons-hardware-source-location: latest
+  emulation-level: hardware
+  exposed-port: 31950
+  can-server-exposed-port: 9898
+  robot-server-env-vars:
+    ot3_1: "ot3"
+    ot3_2: 6
+    ot3_3: 7.542564
+  can-server-env-vars:
+    test_1: 1
+    test_2: "test 2"
+    test_3: 3.3
+  emulator-proxy-env-vars:
+    emulator_proxy_1: 2
+    emulator_proxy_2: "A test"
+    emulator_proxy_3: 5.5
+  gripper-env-vars:
+    gripper_1: 3
+    gripper_2: "gripper"
+    gripper_3: 7.7
+  head-env-vars:
+    head_1: 4
+    head_2: "head"
+    head_3: 1.1
+  gantry-x-env-vars:
+    gantry_x_1: 5
+    gantry_x_2: "gantry x"
+    gantry_x_3: 4.4
+  gantry-y-env-vars:
+    gantry_y_1: 6
+    gantry_y_2: "gantry y"
+    gantry_y_3: 4.23
+  bootloader-env-vars:
+    bootloader_1: 7
+    bootloader_2: "bootloader"
+    bootloader_3: 7.632
+  pipettes-env-vars:
+    pipettes_1: 8
+    pipettes_2: "pipettes"
+    pipettes_3: 4.657468
 ```

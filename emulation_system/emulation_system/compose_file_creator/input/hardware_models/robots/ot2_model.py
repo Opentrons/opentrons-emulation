@@ -9,6 +9,9 @@ from emulation_system.compose_file_creator.config_file_settings import (
     PipetteSettings,
     SourceRepositories,
 )
+from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateEnvironmentVariables,
+)
 
 from ..hardware_specific_attributes import HardwareSpecificAttributes
 
@@ -42,3 +45,6 @@ class OT2InputModel(RobotInputModel):
     )
     emulation_level: Literal[EmulationLevels.FIRMWARE] = Field(alias="emulation-level")
     bound_port: int = Field(alias="bound-port", default=31950)
+    smoothie_env_vars: IntermediateEnvironmentVariables | None = Field(
+        alias="smoothie-env-vars"
+    )

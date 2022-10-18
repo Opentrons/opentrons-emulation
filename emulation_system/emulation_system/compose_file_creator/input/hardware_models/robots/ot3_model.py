@@ -17,6 +17,7 @@ from emulation_system.compose_file_creator.config_file_settings import (
     SourceType,
 )
 from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateEnvironmentVariables,
     IntermediatePorts,
 )
 from emulation_system.consts import CAN_SERVER_MOUNT_NAME, SOURCE_CODE_MOUNT_NAME
@@ -68,6 +69,28 @@ class OT3InputModel(RobotInputModel):
     bound_port: int = Field(alias="bound-port", default=31950)
     can_server_exposed_port: Optional[int] = Field(alias="can-server-exposed-port")
     can_server_bound_port: int = Field(alias="can-server-bound-port", default=9898)
+
+    can_server_env_vars: IntermediateEnvironmentVariables | None = Field(
+        alias="can-server-env-vars"
+    )
+    gripper_env_vars: IntermediateEnvironmentVariables | None = Field(
+        alias="gripper-env-vars"
+    )
+    gantry_x_env_vars: IntermediateEnvironmentVariables | None = Field(
+        alias="gantry-x-env-vars"
+    )
+    gantry_y_env_vars: IntermediateEnvironmentVariables | None = Field(
+        alias="gantry-y-env-vars"
+    )
+    pipettes_env_vars: IntermediateEnvironmentVariables | None = Field(
+        alias="pipettes-env-vars"
+    )
+    head_env_vars: IntermediateEnvironmentVariables | None = Field(
+        alias="head-env-vars"
+    )
+    bootloader_env_vars: IntermediateEnvironmentVariables | None = Field(
+        alias="bootloader-env-vars"
+    )
 
     def get_can_mount_strings(self) -> List[str]:
         """Get mount strings for can service."""
