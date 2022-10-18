@@ -264,7 +264,9 @@ make can-mon file_path=samples/ot3/ot3_remote.yaml
 
 **Video Walkthrough for Mac / Linux setup**
 
-[Video from Derek Maggio on setting up the emulator](https://drive.google.com/file/d/1ftq5MsOYZJY2gy9aGKYvK86O_9n6HZ4w/view)
+
+https://user-images.githubusercontent.com/20705756/196447148-32ed25b1-412b-4dfd-a42a-229d665c7931.mp4
+
 
 ## Makefile Commands
 
