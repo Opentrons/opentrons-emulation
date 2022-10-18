@@ -185,9 +185,9 @@ def test_ot3_service_environment_variables(
     gripper = get_ot3_service(services, OT3Hardware.GRIPPER)
     pipettes = get_ot3_service(services, OT3Hardware.PIPETTES)
 
-    not_pipette_services = [head, gantry_x, gantry_y, bootloader, gripper]
+    not_pipette_or_gripper_services = [head, gantry_x, gantry_y, bootloader]
 
-    for service in not_pipette_services:
+    for service in not_pipette_or_gripper_services:
         service_env = service.environment
         assert service_env is not None
         env_root = cast(Dict[str, Any], service_env.__root__)
@@ -195,13 +195,14 @@ def test_ot3_service_environment_variables(
         assert len(env_root.values()) == 1
         assert "CAN_SERVER_HOST" in env_root
 
-    pipette_service_env = pipettes.environment
-    assert pipette_service_env is not None
-    pipette_env_root = cast(Dict[str, Any], pipette_service_env.__root__)
-    assert pipette_env_root is not None
-    assert len(pipette_env_root.values()) == 2
-    assert "CAN_SERVER_HOST" in pipette_env_root
-    assert "EEPROM_FILENAME" in pipette_env_root
+    for service in [pipettes, gripper]:
+        service_env = service.environment
+        assert service_env is not None
+        env_root = cast(Dict[str, Any], service_env.__root__)
+        assert env_root is not None
+        assert len(env_root.values()) == 2
+        assert "CAN_SERVER_HOST" in env_root
+        assert "EEPROM_FILENAME" in env_root
 
 
 @pytest.mark.parametrize(
