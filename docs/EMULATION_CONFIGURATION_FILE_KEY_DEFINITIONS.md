@@ -172,6 +172,28 @@ If you are using `local` type, specify a path to the source on your system.
 
 Any commit IDs or local bindings should be to the [monorepo](https://github.com/Opentrons/opentrons)
 
+### Opentrons Hardware Source Type
+
+**Parameter Value:** `opentrons-hardware-source-type`
+
+**Description:** Same as `source-type` but specifies what the opentrons-hardware package will be using for source.
+
+**Acceptable Values:** `remote` `local`
+
+### Opentrons Hardware Source Location
+
+**Parameter Value:** `opentrons-hardware-source-location`
+
+**Description:** Same as `source-location` but specifies what the system should look for source code for the
+opentrons-hardware package.
+
+If you are using `remote` type, you can either specify `latest` to pull the latest committed version from the master
+branch, or specify a full commit sha to pull.
+
+If you are using `local` type, specify a path to the source on your system.
+
+Any commit IDs or local bindings should be to the [monorepo](https://github.com/Opentrons/opentrons)
+
 ## Hardware Specific Attributes
 
 **Parameter Value:** `hardware-specific-attributes`

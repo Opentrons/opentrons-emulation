@@ -9,17 +9,19 @@
 Opentrons has various software emulations of their hardware. This repository defines a framework to dynamically connect
 all these emulators together into systems.
 
-- [Opentrons Emulation](#opentrons-emulation)
-  - [What is an Emulator?](#what-is-an-emulator)
-  - [How do the Opentrons Emulators work?](#how-do-the-opentrons-emulators-work)
-  - [Supported Hardware](#supported-hardware)
-  - [Development Container (devcontainer)](#development-container-devcontainer)
-    - [Fastest path to ot2 or ot3 emulation](#fastest-path-to-ot2-or-ot3-emulation)
-      - [Still building...](#still-building)
-      - [Done!](#done)
-      - [Video of the preceding 6 steps](#video-of-the-preceding-6-steps)
-      - [Connect the Opentrons app](#connect-the-opentrons-app)
-- [Local setup](#local-setup)
+- [BREAKING CHANGES](#breaking-changes)
+  - [Upgrading from v2 to v3](#upgrading-from-v2-to-v3)
+- [What is an Emulator?](#what-is-an-emulator-)
+- [How do the Opentrons Emulators work?](#how-do-the-opentrons-emulators-work-)
+- [Supported Hardware](#supported-hardware)
+- [Development Container (devcontainer)](#development-container--devcontainer-)
+  - [Fastest path to ot2 or ot3 emulation](#fastest-path-to-ot2-or-ot3-emulation)
+    - [Still building...](#still-building)
+    - [Done!](#done-)
+    - [Video of the preceding 6 steps](#video-of-the-preceding-6-steps)
+    - [Connect the Opentrons app](#connect-the-opentrons-app)
+
+* [Local setup](#local-setup)
   - [Required Software](#required-software)
     - [Docker](#docker)
     - [Docker-Compose](#docker-compose)
@@ -38,7 +40,7 @@ all these emulators together into systems.
   - [Architecture Diagrams](#architecture-diagrams)
   - [Github Action](#github-action)
   - [How To Modify Dockerfiles](#how-to-modify-dockerfiles)
-- [Debugging](#debugging)
+* [Debugging](#debugging)
   - [Debugging Docker-Compose File Generation](#debugging-docker-compose-file-generation)
 
 ```mermaid
@@ -58,6 +60,17 @@ linkStyle 1 stroke:#00ff00,stroke-width:2px,color:white;
 
 
 ```
+
+## BREAKING CHANGES
+
+Any breaking changes will be listed here.
+
+### Upgrading from v2 to v3
+
+Any `robot` block with a `hardware` value of `ot3` now **_REQUIRES_** that `opentrons-hardware-source-type` and
+`opentrons-hardware-source-location` be defined.
+See [docs](https://github.com/Opentrons/opentrons-emulation/blob/release-v3.0.0/docs/EMULATION_CONFIGURATION_FILE_KEY_DEFINITIONS.md#ot3-specific-parameters)
+and [examples](https://github.com/Opentrons/opentrons-emulation/tree/release-v3.0.0/samples/ot3)
 
 ## What is an Emulator?
 
@@ -107,9 +120,12 @@ A [devcontainer](https://containers.dev/) specification is provided and cached f
 
 1. [Install Docker](#docker)
 1. [Install Visual Studio Code (VSCode)](https://code.visualstudio.com/Download)
-1. Click [![Open in VSCode Remote - Containers](https://img.shields.io/static/v1?label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Opentrons/opentrons-emulation)
+1.
 
-> It will take some minutes to build the devcontainer. Click the `Starting Dev Container (show log)` alert at the bottom right to watch the progress.
+Click [![Open in VSCode Remote - Containers](https://img.shields.io/static/v1?label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Opentrons/opentrons-emulation)
+
+> It will take some minutes to build the devcontainer. Click the `Starting Dev Container (show log)` alert at the bottom
+> right to watch the progress.
 
 #### Still building...
 
@@ -138,7 +154,8 @@ A [devcontainer](https://containers.dev/) specification is provided and cached f
 
 <video src="https://user-images.githubusercontent.com/502770/194162290-48c370f9-2b1b-4a75-995b-d6f1dc2e39bb.mp4" data-canonical-src="https://user-images.githubusercontent.com/502770/194162290-48c370f9-2b1b-4a75-995b-d6f1dc2e39bb.mp4" controls="controls" muted="muted" class="d-block rounded-bottom-2 border-top width-fit" style="max-height:640px;"></video>
 
-> The devcontainer makes local setup unnecessary except for developers doing complex changes to this repository or needing to inject on disk code.
+> The devcontainer makes local setup unnecessary except for developers doing complex changes to this repository or
+> needing to inject on disk code.
 
 # Local setup
 
@@ -162,14 +179,14 @@ Install the following software:
 1. [Poetry Installed Globally](https://python-poetry.org/docs/master/#installing-with-the-official-installer)
    1. Run `curl -sSL https://install.python-poetry.org | python3 -`
 
-### [Pyenv](https://github.com/pyenv/pyenv) and Python
+### Pyenv and Python
 
 <details>
    <summary>Click To Expand Detailed Instructions</summary>
 
 **Setup (Mac)**
 
-1. Install pyenv using brew
+1. Install [pyenv](https://github.com/pyenv/pyenv) using brew
 
 ```
 brew update
@@ -418,4 +435,5 @@ There are two versions of the log file:
 - **Raw Text File:** `opentrons-emulation/compose_file_creator_log.txt`
 - **Rich Text File:** `opentrons-emulation/compose_file_creator_log.html`
 
-The `.txt` file may be viewed in any text editor. The `.html` file may be viewed in a text editor that supports html rendering or in a browser.
+The `.txt` file may be viewed in any text editor. The `.html` file may be viewed in a text editor that supports html
+rendering or in a browser.
