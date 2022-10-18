@@ -18,6 +18,8 @@
 - Fix OT-3 gripper and pipette containers not starting due to `EEPROM_FILENAME` environment variable not being set
   [\[PR #185\]](https://github.com/Opentrons/opentrons-emulation/pull/185)
   [\[PR #204\]](https://github.com/Opentrons/opentrons-emulation/pull/204)
+- Fix bad shell syntax in
+  get_untranslated_arch.sh [\[PR #182\]](https://github.com/Opentrons/opentrons-emulation/pull/182)
 
 ### Features
 
