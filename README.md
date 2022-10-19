@@ -2,8 +2,8 @@
 
 [![Open in VSCode Remote - Containers](https://img.shields.io/static/v1?label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Opentrons/opentrons-emulation)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Opentrons/opentrons-emulation)
-![GitHub Pipenv locked Python version](https://img.shields.io/github/pipenv/locked/python-version/Opentrons/opentrons-emulation)
 ![GitHub](https://img.shields.io/github/license/Opentrons/opentrons-emulation)
+![GitHub top language](https://img.shields.io/github/languages/top/Opentrons/opentrons-emulation)
 ![GitHub repo size](https://img.shields.io/github/repo-size/Opentrons/opentrons-emulation)
 
 Opentrons has various software emulations of their hardware. This repository defines a framework to dynamically connect
@@ -361,9 +361,7 @@ make can-mon file_path=samples/ot3/ot3_remote.yaml
 
 **Video Walkthrough for Mac / Linux setup**
 
-
 https://user-images.githubusercontent.com/20705756/196447148-32ed25b1-412b-4dfd-a42a-229d665c7931.mp4
-
 
 ## Makefile Commands
 
