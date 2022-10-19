@@ -174,15 +174,13 @@ Install the following software:
 1. Mac Instructions: Installed when you install Docker
 1. [Linux Instructions](https://docs.docker.com/compose/install/)
 
-### Poetry
-
-1. [Poetry Installed Globally](https://python-poetry.org/docs/master/#installing-with-the-official-installer)
-   1. Run `curl -sSL https://install.python-poetry.org | python3 -`
-
 ### Pyenv and Python
 
+You are required to have python 3.10.
+It is highly reccomended to use pyenv for installing python.
+
 <details>
-   <summary>Click To Expand Detailed Instructions</summary>
+   <summary>Click To Expand Detailed pyenv/python installation Instructions</summary>
 
 **Setup (Mac)**
 
@@ -196,7 +194,8 @@ brew install pyenv
 2. Configure your shell env
 
 ```
-echo 'eval "$(pyenv init --path)"' >> ~/.zprofile
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
+echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
 echo 'eval "$(pyenv init -)"' >> ~/.zshrc
 ```
 
@@ -217,16 +216,17 @@ brew install openssl readline sqlite3 xz zlib
    ```
    1. Configure your shell env
       ```
-       sed -Ei -e '/^([^#]|$)/ {a \
-       export PYENV_ROOT="$HOME/.pyenv"`
-       a \
-       export PATH="$PYENV_ROOT/bin:$PATH"
-       a \
-       ' -e ':a' -e '$!{n;ba};}' ~/.profile
-       echo 'eval "$(pyenv init --path)"' >>~/.profile
-       echo 'eval "$(pyenv init -)"' >> ~/.bashrc`
+       echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+       echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+       echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+       echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.profile
+       echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.profile
+       echo 'eval "$(pyenv init -)"' >> ~/.profile
       ```
-   1. Restart your terminal
+   1. Restart your shell
+      ```
+      exec $SHELL 
+      ```
    1. Install Python Build Dependencies
       ```
       sudo apt-get update
@@ -254,11 +254,11 @@ brew install openssl readline sqlite3 xz zlib
 **Installing Python**
 
 1. Run `pyenv install --list` to get a list of all available Python versions.
-   1. Choose the latest 3.10 version. For the purpose of this document we will say the latest version is `3.10.4`
-   1. Run `pyenv install 3.10.4` to install Python
-   1. Run `pyenv global 3.10.4`  to set the system version to 3.10.4
+   1. Choose the latest 3.10 version. For the purpose of this document we will say the latest version is `3.10.8`
+   1. Run `pyenv install 3.10.8` to install Python
+   1. Run `pyenv global 3.10.8`  to set the system version to 3.10.8
    1. Verify that you are running the correct Python version by running `pyenv version`
-      1. It should say `3.10.4` (set by /something/something/something/pyenv/version)
+      1. It should say `3.10.8` (set by /something/something/something/pyenv/version)
 
 **Troubleshooting**
 
@@ -267,7 +267,7 @@ _Problem_
 When trying to run `pyenv install 3.10.x` you get
 
 ```bash
-✘ Failed... Something went wrong... python-build: definition not found: 3.10.4
+✘ Failed... Something went wrong... python-build: definition not found: 3.10.8
 ```
 
 _Soulution_
@@ -275,6 +275,15 @@ _Soulution_
 You need to update pyenv. Follow [these](https://github.com/pyenv/pyenv#upgrading) instructions. Then try again.
 
 </details>
+
+### Poetry
+
+1. [Poetry Installed Globally](https://python-poetry.org/docs/master/#installing-with-the-official-installer)
+   1. Run `curl -sSL https://install.python-poetry.org | python3 -`
+   1. Add poetry dir to `PATH` environment variable
+      3\. (Mac) `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc`
+      4\. (Linux) `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile`.
+      Note: On Linux this might already be on your path variable.
 
 ## Initial Configuration
 
