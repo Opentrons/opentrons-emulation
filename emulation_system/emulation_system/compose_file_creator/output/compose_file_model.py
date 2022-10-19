@@ -5,9 +5,20 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+    Union,
+)
 
-from pydantic import BaseModel, Extra, Field, constr
+from pydantic import (
+    BaseModel,
+    Extra,
+    Field,
+    constr,
+)
 
 
 class Config1(BaseModel):
@@ -149,7 +160,7 @@ class Healthcheck(BaseModel):
 
     disable: Optional[bool]
     interval: Optional[str]
-    retries: Optional[float]
+    retries: Optional[int]
     test: Optional[Union[str, List[str]]]
     timeout: Optional[str]
     start_period: Optional[str]
@@ -285,7 +296,8 @@ class External3(BaseModel):
 
 
 class ListOrDict(BaseModel):
-    __root__: Union[Dict[constr(regex=r'.+'), Optional[Union[str, float, bool]]], List[str]]  # type: ignore [valid-type]
+    __root__: Union[
+        Dict[constr(regex=r'.+'), Optional[Union[str, float, bool]]], List[str]]  # type: ignore [valid-type]
 
 
 class BlkioLimit(BaseModel):
@@ -472,7 +484,8 @@ class Service(BaseModel):
     cpus: Optional[Union[float, str]]
     cpuset: Optional[str]
     credential_spec: Optional[CredentialSpec]
-    depends_on: Optional[Union[List[str], Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), DependsOn]]]  # type: ignore [valid-type]
+    depends_on: Optional[
+        Union[List[str], Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), DependsOn]]]  # type: ignore [valid-type]
     device_cgroup_rules: Optional[List[str]]
     devices: Optional[List[str]]
     dns: Optional[StringOrList]
@@ -502,7 +515,8 @@ class Service(BaseModel):
     mem_swappiness: Optional[int]
     memswap_limit: Optional[Union[float, str]]
     network_mode: Optional[str]
-    networks: Optional[Union[List[str], Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), Optional[Network1]]]]  # type: ignore [valid-type]
+    networks: Optional[
+        Union[List[str], Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), Optional[Network1]]]]  # type: ignore [valid-type]
     oom_kill_disable: Optional[bool]
     oom_score_adj: Optional[int] = Field(None, ge=-1000.0, le=1000.0)
     pid: Optional[Optional[str]]
@@ -538,7 +552,10 @@ class ComposeSpecification(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    version: Optional[str] = Field(None, description='Version of the Compose specification used. Tools not implementing required version MUST reject the configuration file.')
+    version: Optional[str] = Field(
+        None,
+        description='Version of the Compose specification used. Tools not implementing required version MUST reject the configuration file.'
+        )
     services: Optional[Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), Service]]  # type: ignore [valid-type]
     networks: Optional[Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), Network]]  # type: ignore [valid-type]
     volumes: Optional[Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), Volume]]  # type: ignore [valid-type]

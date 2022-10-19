@@ -57,6 +57,9 @@ ENV OPENTRONS_HARDWARE "ot3-gripper-hardware"
 FROM python-base-with-rebuild-script as thermocycler-firmware-local
 ENV OPENTRONS_HARDWARE "thermocycler-firmware"
 
+FROM python-base-with-rebuild-script as heater-shaker-firmware-local
+ENV OPENTRONS_HARDWARE "heatershaker-firmware"
+
 FROM python-base-with-rebuild-script as magdeck-firmware-local
 ENV OPENTRONS_HARDWARE "magdeck-firmware"
 
@@ -121,12 +124,19 @@ ENV OPENTRONS_HARDWARE "can-server"
 
 FROM ghcr.io/opentrons/cpp-base:latest as ot3-firmware-source
 ARG FIRMWARE_SOURCE_DOWNLOAD_LOCATION
+ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION
+
 ADD $FIRMWARE_SOURCE_DOWNLOAD_LOCATION /ot3-firmware.zip
+ADD $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons.zip
+
 RUN (cd / &&  \
     unzip -q ot3-firmware.zip && \
     rm -f ot3-firmware.zip && \
     mv ot3-firmware* ot3-firmware)
-
+RUN (cd / &&  \
+    unzip -q opentrons.zip && \
+    rm -f opentrons.zip && \
+    mv opentrons* opentrons)
 
 ##################
 # modules-source #
@@ -192,7 +202,7 @@ RUN /entrypoint.sh build
 FROM ghcr.io/opentrons/python-base:latest as firmware-common
 RUN mkdir /dist
 COPY --from=python-emulator-builder /dist/* /dist/
-RUN pip install /dist/*
+RUN python -m pip install /dist/*
 
 ##############################################################
 #                       REMOTE TARGETS                       #
@@ -267,6 +277,11 @@ ENTRYPOINT ["/entrypoint.sh", "run"]
 
 FROM firmware-common as thermocycler-firmware-remote
 ENV OPENTRONS_HARDWARE "thermocycler-firmware"
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
+FROM firmware-common as heater-shaker-firmware-remote
+ENV OPENTRONS_HARDWARE "heater-shaker-firmware"
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 

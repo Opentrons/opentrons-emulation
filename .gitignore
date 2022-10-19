@@ -28,3 +28,9 @@ coverage.xml
 
 # vscode
 .vscode
+
+# Generated Dockerfile for development
+docker/dev_Dockerfile
+
+compose_file_creator_log.html
+compose_file_creator_log.txt

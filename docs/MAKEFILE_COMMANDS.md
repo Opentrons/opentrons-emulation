@@ -237,3 +237,32 @@ ______________________________________________________________________
 **Commands:** `test`
 
 **Example:** `make test`
+
+### ot2
+
+**Description:** One command to do all steps necessary to bring up an ot2 using the default code from GitHub.
+
+**Commands:** `ot2`
+
+**Example:**
+`make ot2`
+`make ot2 OT2CONFIG=./samples/ot2/ot2_and_2_heater_shakers.yaml`
+
+### ot3
+
+**Description:** One command to do all steps necessary to bring up an ot3 using the default code from GitHub.
+
+**Commands:** `ot3`
+
+**Example:**
+`make ot3`
+`make ot3 OT3CONFIG=./samples/ot3/ot3_remote.yaml`
+
+### emulation-check
+
+**Description:** Run a curl command to retrieve module information verifying that the emulation is running.
+
+**Commands:** `emulation-check`
+
+**Example:**
+`make emulation-check`

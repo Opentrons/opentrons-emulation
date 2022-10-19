@@ -2,9 +2,7 @@
 import abc
 import argparse
 
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
+from emulation_system import OpentronsEmulationConfiguration
 
 
 class AbstractParser(abc.ABC):

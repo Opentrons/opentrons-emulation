@@ -4,16 +4,13 @@ from typing import Any, Dict, cast
 
 import pytest
 
+from emulation_system import OpentronsEmulationConfiguration
+from emulation_system.compose_file_creator import Service
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    Network,
-    Service,
-)
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
+from emulation_system.compose_file_creator.output.compose_file_model import Network
+from emulation_system.consts import DEFAULT_NETWORK_NAME
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,
@@ -35,7 +32,9 @@ def with_system_unique_id_services(
     """Get services from with_system_unique_id."""
     return cast(
         Dict[str, Service],
-        convert_from_obj(with_system_unique_id, testing_global_em_config).services,
+        convert_from_obj(
+            with_system_unique_id, testing_global_em_config, False
+        ).services,
     )
 
 
@@ -81,7 +80,7 @@ def test_service_local_network_with_system_unique_id(
     """Verify local network on individual services are correct."""
     modded_service_name = f"{SYSTEM_UNIQUE_ID}-{service_name}"
     assert with_system_unique_id_services[modded_service_name].networks == [
-        SYSTEM_UNIQUE_ID
+        f"{SYSTEM_UNIQUE_ID}-{DEFAULT_NETWORK_NAME}"
     ]
 
 
@@ -91,5 +90,5 @@ def test_top_level_network_with_system_unique_id(
 ) -> None:
     """Verify top level network is correct."""
     assert convert_from_obj(
-        with_system_unique_id, testing_global_em_config
-    ).networks == {SYSTEM_UNIQUE_ID: Network()}
+        with_system_unique_id, testing_global_em_config, False
+    ).networks == {f"{SYSTEM_UNIQUE_ID}-{DEFAULT_NETWORK_NAME}": Network()}

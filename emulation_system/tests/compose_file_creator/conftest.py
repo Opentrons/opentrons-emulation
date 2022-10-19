@@ -4,7 +4,7 @@ from typing import Any, Dict
 import py
 import pytest
 
-from emulation_system.compose_file_creator.settings.config_file_settings import (
+from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     Hardware,
     SourceType,
@@ -136,6 +136,8 @@ def ot3_default(opentrons_dir: str) -> Dict[str, Any]:
         "robot-server-source-location": "latest",
         "can-server-source-type": "remote",
         "can-server-source-location": "latest",
+        "opentrons-hardware-source-type": "remote",
+        "opentrons-hardware-source-location": "latest",
         "exposed-port": 5000,
         "hardware-specific-attributes": {},
     }
@@ -191,6 +193,16 @@ def ot3_and_modules(
 
 @pytest.fixture
 def with_system_unique_id(ot2_and_modules: Dict[str, Any]) -> Dict[str, Any]:
-    """Structure of SystemConfigurationModel with robot, modules, and system-unique-id."""  # noqa: E501
+    """Structure of SystemConfigurationModel with robot, modules, and system-unique-id."""
     ot2_and_modules["system-unique-id"] = SYSTEM_UNIQUE_ID
     return ot2_and_modules
+
+
+@pytest.fixture
+def ot3_firmware_dir(tmpdir: py.path.local) -> str:
+    """Get path to temporary opentrons-modules directory.
+
+    Note that this variable is scoped to the test. So if you call the fixture from
+    different places in the test the variable will be the same.
+    """
+    return str(tmpdir.mkdir("ot3-firmware"))

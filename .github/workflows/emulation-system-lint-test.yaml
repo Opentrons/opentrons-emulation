@@ -1,7 +1,7 @@
 # This workflow runs test and lint on branch pushes that touch the
 # emulation-system project.
 
-name: 'emulation-system Lint & Test'
+name: emulation-system Lint & Test
 
 on:
   push:
@@ -27,28 +27,28 @@ defaults:
 
 jobs:
   lint-test:
-    name: 'emulation-system linting and tests'
-    runs-on: 'ubuntu-18.04'
+    name: emulation-system linting and tests
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout opentrons-emulation repository
         uses: actions/checkout@v3
         with:
-          ref: "release-v2.3.2"
+          ref: main
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@release-v2.3.2
+        uses: Opentrons/opentrons-emulation@main
         with:
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup-python-only
 
-      - name: "Lint"
+      - name: Lint
         run: make lint
 
-      - name: "Test"
+      - name: Test
         run: make test
 
-      - name: 'Upload Coverage Report'
-        uses: 'codecov/codecov-action@v2'
+      - name: Upload Coverage Report
+        uses: codecov/codecov-action@v3
         with:
           files: ./g-code-testing/coverage.xml
           flags: g-code-testing

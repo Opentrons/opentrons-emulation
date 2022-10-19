@@ -47,6 +47,7 @@ LABEL opentons-emulation.description=$DESCRIPTION
 
 ENV DEBIAN_FRONTEND noninteractive
 
+SHELL ["/bin/bash", "-c"]
 RUN rm -rf /var/lib/apt/lists/*
 RUN echo "Updating apt" && apt-get update > /dev/null
 RUN apt-get update \
@@ -60,21 +61,56 @@ RUN apt-get update \
       curl \
       git \
       libssl-dev \
+      net-tools \
+      python3-dev \
       && rm -rf /var/lib/apt/lists/*
 RUN add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install \
     	--no-install-recommends \
        	-y \
-    	python3.7
-RUN (cd /usr/bin/ && ln -s /usr/bin/python3.7 python)
+    	python3.10 \
+    	python3.10-venv && \
+    (cd /usr/bin && \
+      rm -f python python3 && \
+	  ln -s /usr/bin/python3.10 python && \
+      ln -s /usr/bin/python3.10 python3 \
+    )
+
+
+###############
+# python-base #
+###############
+
+FROM ubuntu-base as python-base
+
+ENV NODE_VERSION 14
+ENV OT_PYTHON "/usr/bin/python3.10"
+
+RUN apt-get update && \
+    apt-get install \
+    --no-install-recommends \
+    -y \
+    libudev-dev \
+    libsystemd-dev \
+    python3-dev \
+    pkgconf \
+    libpython3.10-dev
+
+RUN python -m ensurepip --upgrade && \
+    python -m pip install --upgrade pip setuptools wheel && \
+    python -m pip install pipenv
+
+
+RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -
+RUN apt-get install -y nodejs && npm install --global yarn
 
 
 ############
 # cpp-base #
 ############
 
-FROM ubuntu-base as cpp-base
+FROM python-base as cpp-base
 RUN apt-get update && \
     apt-get install \
     --no-install-recommends \
@@ -84,7 +120,6 @@ RUN apt-get update && \
     gcc-10 \
     g++-10 \
     lsb-release \
-    python3.7-venv \
     > /dev/null
 
 RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2-linux-x86_64.tar.gz && \
@@ -92,27 +127,3 @@ RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.2
     rm cmake-3.21.2-linux-x86_64.tar.gz && \
     mv cmake-3.21.2-linux-x86_64 cmake && \
     (cd /usr/bin/ && ln -s /cmake/bin/cmake cmake)
-
-###############
-# python-base #
-###############
-
-FROM ubuntu-base as python-base
-
-RUN apt-get update && \
-    apt-get install \
-    --no-install-recommends \
-    -y \
-    pipenv \
-    libudev-dev \
-    libsystemd-dev \
-    python3-dev \
-    pkgconf \
-    libpython3.7-dev \
-    pip
-
-ENV NODE_VERSION 14
-ENV OT_PYTHON "/usr/bin/python3.7"
-
-RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -
-RUN apt-get install -y nodejs && npm install --global yarn

@@ -6,7 +6,19 @@ import pytest
 from pydantic import ValidationError, parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
+from emulation_system.compose_file_creator.config_file_settings import (
+    DirectoryMount,
+    EmulationLevels,
+    FileMount,
+    Hardware,
+    Mount,
+    SourceType,
+)
 from emulation_system.compose_file_creator.errors import InvalidRemoteSourceError
+from emulation_system.compose_file_creator.images import (
+    ImageNotDefinedError,
+    get_image_name,
+)
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
 )
@@ -15,19 +27,7 @@ from emulation_system.compose_file_creator.input.hardware_models.hardware_model 
     MountNotFoundError,
     NoMountsDefinedError,
 )
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    SOURCE_CODE_MOUNT_NAME,
-    DirectoryMount,
-    EmulationLevels,
-    FileMount,
-    Hardware,
-    Mount,
-    SourceType,
-)
-from emulation_system.compose_file_creator.settings.images import (
-    ImageNotDefinedError,
-    get_image_name,
-)
+from emulation_system.consts import SOURCE_CODE_MOUNT_NAME
 
 CONFIGURATIONS = [
     # OT2
@@ -72,13 +72,13 @@ CONFIGURATIONS = [
         Hardware.HEATER_SHAKER_MODULE,
         EmulationLevels.FIRMWARE,
         SourceType.LOCAL,
-        None,
+        "heater-shaker-firmware-local",
     ],
     [
         Hardware.HEATER_SHAKER_MODULE,
         EmulationLevels.FIRMWARE,
         SourceType.REMOTE,
-        None,
+        "heater-shaker-firmware-remote",
     ],
     # Temperature Module
     [
@@ -220,7 +220,7 @@ def test_getting_image(
     source_type: SourceType,
     expected_image: Optional[str],
 ) -> None:
-    """Confirm that correct image is returned, otherwise config exception is thrown if image is not defined."""  # noqa: E501
+    """Confirm that correct image is returned, otherwise config exception is thrown if image is not defined."""
     if expected_image is None:
         with pytest.raises(ImageNotDefinedError):
             get_image_name(hardware, source_type, emulation_level)

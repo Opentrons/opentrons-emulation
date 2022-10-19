@@ -3,21 +3,13 @@ from typing import Any, Dict, List, cast
 
 import pytest
 
+from emulation_system import OpentronsEmulationConfiguration
+from emulation_system.compose_file_creator import BuildItem, Service
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import (
-    BuildItem,
-    Network,
-    Service,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    DEFAULT_NETWORK_NAME,
-)
-from emulation_system.consts import DOCKERFILE_DIR_LOCATION
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
+from emulation_system.compose_file_creator.output.compose_file_model import Network
+from emulation_system.consts import DEFAULT_NETWORK_NAME, DOCKERFILE_DIR_LOCATION
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,
@@ -32,23 +24,8 @@ from tests.compose_file_creator.conversion_logic.conftest import (
     SERVICE_NAMES,
 )
 
-
-@pytest.fixture
-def version_only() -> Dict[str, Any]:
-    """Input file with only a compose-file-version specified."""
-    return {"compose-file-version": "4.0"}
-
-
 # TODO: Add following tests:
 #   - CAN network is created on OT3 breakout
-
-
-def test_version(
-    version_only: Dict[str, str],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Confirms that version is set correctly on compose file."""
-    assert convert_from_obj(version_only, testing_global_em_config).version == "4.0"
 
 
 def test_service_keys(
@@ -121,9 +98,9 @@ def test_top_level_network(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Verify top level network is correct."""
-    assert convert_from_obj(ot2_and_modules, testing_global_em_config).networks == {
-        DEFAULT_NETWORK_NAME: Network()
-    }
+    assert convert_from_obj(
+        ot2_and_modules, testing_global_em_config, False
+    ).networks == {DEFAULT_NETWORK_NAME: Network()}
 
 
 def test_robot_port(robot_with_mount_and_modules_services: Dict[str, Any]) -> None:
@@ -135,10 +112,10 @@ def test_can_server_port_exposed(
     ot3_default: Dict[str, Any],
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
-    """Confirm that when can-server-exposed-port is specified, ports are added to the can-server"""  # noqa: E501
+    """Confirm that when can-server-exposed-port is specified, ports are added to the can-server"""
     ot3_default["can-server-exposed-port"] = 9898
     runtime_compose_file_model = convert_from_obj(
-        {"robot": ot3_default}, testing_global_em_config
+        {"robot": ot3_default}, testing_global_em_config, False
     )
     can_server = runtime_compose_file_model.can_server
     assert can_server is not None
@@ -149,8 +126,10 @@ def test_can_server_port_exposed(
 def test_can_server_port_not_exposed(
     ot3_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
 ) -> None:
-    """Confirm that when can-server-exposed-port is not specified, ports are not added to the can-server"""  # noqa: E501
-    runtime_compose_file_model = convert_from_obj(ot3_only, testing_global_em_config)
+    """Confirm that when can-server-exposed-port is not specified, ports are not added to the can-server"""
+    runtime_compose_file_model = convert_from_obj(
+        ot3_only, testing_global_em_config, False
+    )
     can_server = runtime_compose_file_model.can_server
     assert can_server is not None
     assert can_server.ports is None

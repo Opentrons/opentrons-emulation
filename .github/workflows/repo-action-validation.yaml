@@ -31,24 +31,24 @@ jobs:
           'ot2/ot2_with_all_modules.yaml',
           'ot3/ot3_remote.yaml',
         ]
-    runs-on: "ubuntu-18.04"
+    runs-on: "ubuntu-20.04"
     name: Opentrons Emulation Sanity Check (${{ matrix.file }})
     steps:
 
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "release-v2.3.2"
+          ref: "main"
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@release-v2.3.2
+        uses: Opentrons/opentrons-emulation@main
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup
 
       - name: Run Emulation
-        uses: Opentrons/opentrons-emulation@release-v2.3.2
+        uses: Opentrons/opentrons-emulation@main
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           command: run
@@ -60,7 +60,7 @@ jobs:
         run: "curl --request GET --header 'opentrons-version: *' http://localhost:31950/modules"
 
       - name: Teardown Emulation
-        uses: Opentrons/opentrons-emulation@release-v2.3.2
+        uses: Opentrons/opentrons-emulation@main
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           command: teardown

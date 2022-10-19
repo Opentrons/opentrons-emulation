@@ -5,11 +5,9 @@ from typing import Any, Dict
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
+from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
-)
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
 )
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
@@ -59,7 +57,7 @@ def test_robots_only_emulator_proxy_in_depends_on(
     Have to check for membership in list because depends_on will have the smoothie
     dependency for OT2
     """
-    services = convert_from_obj(config, testing_global_em_config).services
+    services = convert_from_obj(config, testing_global_em_config, dev=False).services
     assert services is not None
     depends_on = services[service_id].depends_on
     assert isinstance(depends_on, list)

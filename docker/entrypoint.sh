@@ -16,14 +16,22 @@ if [ "$COMMAND" != "build" ] && [ "$COMMAND" != "run" ] && [ "$COMMAND" != "stop
 fi
 
 build_ot3_firmware_simulators()
-  (cd /ot3-firmware && cmake --preset host-gcc10 && cmake --build --preset=simulators -j $(expr $(nproc) - 1))
+  (
+    cd /ot3-firmware && \
+    cmake --preset host-gcc10 && \
+    cmake --build --preset=simulators -j $(expr $(nproc) - 1)
+  )
 
 build_module_simulator() {
   (cd /opentrons-modules && cmake --preset=stm32-host-gcc10 . && cmake --build ./build-stm32-host -j $(expr $(nproc) - 1) --target $1)
 }
 
 build_ot3_firmware_single_simulator() {
-  (cd /ot3-firmware && cmake --preset host-gcc10 && cmake --build ./build-host -j $(expr $(nproc) - 1) --target $1)
+  (
+    cd /ot3-firmware && \
+    cmake --preset host-gcc10 && \
+    cmake --build ./build-host -j $(expr $(nproc) - 1) --target $1
+    )
 }
 
 kill_process() {
@@ -128,36 +136,39 @@ case $FULL_COMMAND in
 
   # Firmware Level
 
-  build-thermocycler-firmware|build-magdeck-firmware|build-tempdeck-firmware|build-emulator-proxy|build-robot-server|build-common-firmware|build-smoothie|build-can-server)
-    pip uninstall --yes /dist/*
-    (cd /opentrons/shared-data/python && python3 setup.py bdist_wheel -d /dist/)
-    (cd /opentrons/api && python3 setup.py bdist_wheel -d /dist/)
-    (cd /opentrons/notify-server && python3 setup.py bdist_wheel -d /dist/)
-    (cd /opentrons/robot-server && python3 setup.py bdist_wheel -d /dist/)
-    (cd /opentrons/hardware && python3 setup.py bdist_wheel -d /dist/)
-    pip install /dist/*
+  build-thermocycler-firmware|build-heater-shaker-firmware|build-magdeck-firmware|build-tempdeck-firmware|build-emulator-proxy|build-robot-server|build-common-firmware|build-smoothie|build-can-server)
+    python -m pip uninstall --yes /dist/*
+    (cd /opentrons/shared-data/python && python setup.py bdist_wheel -d /dist/)
+    (cd /opentrons/api && python setup.py bdist_wheel -d /dist/)
+    (cd /opentrons/notify-server && python setup.py bdist_wheel -d /dist/)
+    (cd /opentrons/robot-server && python setup.py bdist_wheel -d /dist/)
+    (cd /opentrons/hardware && python setup.py bdist_wheel -d /dist/)
+    python -m pip install /dist/*
     ;;
 
   run-thermocycler-firmware)
-    bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_module_emulator thermocycler $OTHER_ARGS"
+    bash -c "python -m opentrons.hardware_control.emulation.scripts.run_module_emulator thermocycler $OTHER_ARGS"
+    ;;
+  run-heater-shaker-firmware)
+    bash -c "python -m opentrons.hardware_control.emulation.scripts.run_module_emulator heatershaker $OTHER_ARGS"
     ;;
   run-tempdeck-firmware)
-    bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_module_emulator tempdeck $OTHER_ARGS"
+    bash -c "python -m opentrons.hardware_control.emulation.scripts.run_module_emulator tempdeck $OTHER_ARGS"
     ;;
   run-magdeck-firmware)
-    bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_module_emulator magdeck $OTHER_ARGS"
+    bash -c "python -m opentrons.hardware_control.emulation.scripts.run_module_emulator magdeck $OTHER_ARGS"
     ;;
   run-robot-server)
     bash -c "uvicorn "robot_server:app" --host 0.0.0.0 --port 31950 --ws wsproto"
     ;;
   run-emulator-proxy)
-    python3 -m opentrons.hardware_control.emulation.app
+    python -m opentrons.hardware_control.emulation.app
     ;;
   run-smoothie)
-    bash -c "python3 -m opentrons.hardware_control.emulation.scripts.run_smoothie"
+    bash -c "python -m opentrons.hardware_control.emulation.scripts.run_smoothie"
     ;;
   run-can-server)
-    bash -c "python3 -m opentrons_hardware.scripts.sim_socket_can"
+    bash -c "python -m opentrons_hardware.scripts.sim_socket_can"
     ;;
 
   stop-thermocycler-firmware|stop-tempdeck-firmware|stop-magdeck-firmware)

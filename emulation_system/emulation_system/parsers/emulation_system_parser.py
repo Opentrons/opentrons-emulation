@@ -1,12 +1,11 @@
 """Parser for virtual-machine sub-command."""
 import argparse
 
-from emulation_system.commands.emulation_system_command import EmulationSystemCommand
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
-from emulation_system.parser_utils import get_formatter
-from emulation_system.parsers.abstract_parser import AbstractParser
+from emulation_system import OpentronsEmulationConfiguration
+from emulation_system.commands import EmulationSystemCommand
+
+from .abstract_parser import AbstractParser
+from .parser_utils import get_formatter
 
 
 class EmulationSystemParser(AbstractParser):
@@ -44,4 +43,8 @@ class EmulationSystemParser(AbstractParser):
 
         subparser.add_argument(
             "--remote-only", action="store_true", help="Allow only remote source-types"
+        )
+
+        subparser.add_argument(
+            "--dev", action="store_true", help="Create dev compose file"
         )

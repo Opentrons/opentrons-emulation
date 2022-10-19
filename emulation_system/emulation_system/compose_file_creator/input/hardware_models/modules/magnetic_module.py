@@ -4,20 +4,15 @@ from typing import ClassVar, List, Optional
 from pydantic import Field
 from typing_extensions import Literal
 
-from emulation_system.compose_file_creator.input.hardware_models.hardware_specific_attributes import (  # noqa: E501
-    HardwareSpecificAttributes,
-)
-from emulation_system.compose_file_creator.input.hardware_models.modules.module_model import (  # noqa: E501
-    FirmwareSerialNumberModel,
-    ModuleInputModel,
-    ProxyInfoModel,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
+from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     Hardware,
     OpentronsRepository,
     SourceRepositories,
 )
+
+from ..hardware_specific_attributes import HardwareSpecificAttributes
+from .module_model import FirmwareSerialNumberModel, ModuleInputModel, ProxyInfoModel
 
 
 class MagneticModuleAttributes(HardwareSpecificAttributes):
@@ -42,7 +37,7 @@ class MagneticModuleInputModel(ModuleInputModel):
         model="mag_deck_v20", version="2.0.0", env_var_name="OT_EMULATOR_magdeck"
     )
     proxy_info: ClassVar[ProxyInfoModel] = ProxyInfoModel(
-        env_var_name="OT_EMULATOR_magnetic_proxy",
+        env_var_name="OT_EMULATOR_magdeck_proxy",
         emulator_port=10002,
         driver_port=11002,
     )

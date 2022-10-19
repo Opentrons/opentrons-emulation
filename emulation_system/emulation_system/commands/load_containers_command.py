@@ -10,16 +10,13 @@ from typing import cast
 
 import yaml
 
+from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.commands.emulation_system_command import (
     STDIN_NAME,
     InvalidFileExtensionException,
 )
-from emulation_system.compose_file_creator.conversion.conversion_functions import (
-    convert_from_obj,
-)
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
+
+from ..compose_file_creator.conversion.conversion_functions import convert_from_obj
 
 
 @dataclass
@@ -53,7 +50,7 @@ class LoadContainersCommand:
             )
         stdin_content = self.input_path.read().strip()
         parsed_content = yaml.safe_load(stdin_content)
-        system = convert_from_obj(parsed_content, self.settings)
+        system = convert_from_obj(parsed_content, self.settings, False)
         print(
             " ".join(
                 cast(str, container.container_name)

@@ -7,14 +7,15 @@ from typing import ClassVar, Dict, Optional
 
 from pydantic import BaseModel, Field
 
-from emulation_system.compose_file_creator.input.hardware_models.hardware_model import (
-    EmulationLevelNotSupportedError,
-    HardwareModel,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
+from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     Hardware,
 )
+from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateEnvironmentVariables,
+)
+
+from ..hardware_model import EmulationLevelNotSupportedError, HardwareModel
 
 
 class FirmwareSerialNumberModel(BaseModel):
@@ -46,6 +47,10 @@ class ModuleInputModel(HardwareModel):
         alias="proxy-info", allow_mutation=False
     )
 
+    module_env_vars: IntermediateEnvironmentVariables | None = Field(
+        alias="module-env-vars"
+    )
+
     def _get_firmware_serial_number_env_var(self) -> Dict[str, str]:
         """Builds firmware level serial number environment variable."""
         if self.firmware_serial_number_info is None:
@@ -56,7 +61,11 @@ class ModuleInputModel(HardwareModel):
             "version": self.firmware_serial_number_info.version,
         }
 
-        if self.hardware in [Hardware.THERMOCYCLER_MODULE, Hardware.TEMPERATURE_MODULE]:
+        if self.hardware in [
+            Hardware.THERMOCYCLER_MODULE,
+            Hardware.TEMPERATURE_MODULE,
+            Hardware.HEATER_SHAKER_MODULE,
+        ]:
             value.update(self.hardware_specific_attributes.dict())
 
         return {self.firmware_serial_number_info.env_var_name: json.dumps(value)}

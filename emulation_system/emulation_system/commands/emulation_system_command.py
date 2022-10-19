@@ -9,13 +9,11 @@ from dataclasses import dataclass
 
 import yaml
 
-from emulation_system.compose_file_creator.conversion.conversion_functions import (
-    convert_from_obj,
-)
-from emulation_system.compose_file_creator.errors import NotRemoteOnlyError
-from emulation_system.opentrons_emulation_configuration import (
-    OpentronsEmulationConfiguration,
-)
+from emulation_system import OpentronsEmulationConfiguration
+
+from ..compose_file_creator.conversion.conversion_functions import convert_from_obj
+from ..compose_file_creator.errors import NotRemoteOnlyError
+from ..compose_file_creator.logging.console import logging_console
 
 STDIN_NAME = "<stdin>"
 STDOUT_NAME = "<stdout>"
@@ -32,6 +30,7 @@ class EmulationSystemCommand:
     input_path: io.TextIOWrapper
     output_path: io.TextIOWrapper
     remote_only: bool
+    dev: bool
     settings: OpentronsEmulationConfiguration
 
     @classmethod
@@ -43,6 +42,7 @@ class EmulationSystemCommand:
             input_path=args.input_path,
             output_path=args.output_path,
             remote_only=args.remote_only,
+            dev=args.dev,
             settings=settings,
         )
 
@@ -56,9 +56,10 @@ class EmulationSystemCommand:
             )
         stdin_content = self.input_path.read().strip()
         parsed_content = yaml.safe_load(stdin_content)
-        converted_object = convert_from_obj(parsed_content, self.settings)
+        converted_object = convert_from_obj(parsed_content, self.settings, self.dev)
 
         if self.remote_only and not converted_object.is_remote:
             raise NotRemoteOnlyError
 
         self.output_path.write(converted_object.to_yaml())
+        logging_console.save_log()

@@ -4,25 +4,15 @@ from __future__ import annotations
 from collections import Counter
 from typing import Dict, List, Mapping, Optional, cast
 
-from pydantic import (
-    BaseModel,
-    Field,
-    parse_file_as,
-    parse_obj_as,
-    root_validator,
-    validator,
-)
+from pydantic import BaseModel, Field, parse_file_as, parse_obj_as, root_validator
 
-from emulation_system.compose_file_creator.errors import DuplicateHardwareNameError
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    DEFAULT_DOCKER_COMPOSE_VERSION,
-    Hardware,
-)
-from emulation_system.compose_file_creator.settings.custom_types import (
-    Containers,
-    Modules,
-    Robots,
-)
+from emulation_system.consts import DEFAULT_NETWORK_NAME
+
+from ..config_file_settings import Hardware
+from ..errors import DuplicateHardwareNameError
+from ..types.input_types import Containers, Modules, Robots
+from ..types.intermediate_types import IntermediateNetworks
+from .hardware_models import OT2InputModel, OT3InputModel
 
 
 class SystemConfigurationModel(BaseModel):
@@ -31,7 +21,6 @@ class SystemConfigurationModel(BaseModel):
     Represents an entire system to be brought up.
     """
 
-    compose_file_version: Optional[str] = Field(alias="compose-file-version")
     system_unique_id: Optional[str] = Field(
         alias="system-unique-id", regex=r"^[A-Za-z0-9-]+$", min_length=1
     )
@@ -83,11 +72,6 @@ class SystemConfigurationModel(BaseModel):
 
         return values
 
-    @validator("compose_file_version", pre=True, always=True)
-    def set_default_version(cls, v: str) -> str:
-        """Sets default version if nothing is specified."""
-        return v or DEFAULT_DOCKER_COMPOSE_VERSION
-
     @property
     def modules_exist(self) -> bool:
         """Returns True if modules were defined in config file, False if not."""
@@ -108,7 +92,11 @@ class SystemConfigurationModel(BaseModel):
     @property
     def can_network_name(self) -> str:
         """Returns name of CAN network."""
-        return f"{self.system_unique_id}-CAN"
+        return (
+            f"{self.system_unique_id}-can-network"
+            if self.system_unique_id is not None
+            else "can-network"
+        )
 
     @property
     def containers(self) -> Mapping[str, Containers]:
@@ -130,7 +118,7 @@ class SystemConfigurationModel(BaseModel):
 
     @property
     def is_remote(self) -> bool:
-        """Checks if all modules are robots are remote."""
+        """Checks if all modules and robots are remote."""
         robot_is_remote = self.robot.is_remote if self.robot is not None else True
         modules_are_remote = (
             all(module.is_remote for module in self.modules)
@@ -139,6 +127,31 @@ class SystemConfigurationModel(BaseModel):
         )
 
         return robot_is_remote and modules_are_remote
+
+    @property
+    def required_networks(self) -> IntermediateNetworks:
+        """Get required networks to create for system."""
+        local_network_name = (
+            DEFAULT_NETWORK_NAME
+            if self.system_unique_id is None
+            else f"{self.system_unique_id}-{DEFAULT_NETWORK_NAME}"
+        )
+
+        required_networks = [cast(str, local_network_name)]
+        if self.requires_can_network:
+            required_networks.append(self.can_network_name)
+
+        return IntermediateNetworks(required_networks)
+
+    @property
+    def has_ot2(self) -> bool:
+        """Whether, robot is an OT-2."""
+        return self.robot is not None and isinstance(self.robot, OT2InputModel)
+
+    @property
+    def has_ot3(self) -> bool:
+        """Whether, robot is an OT-3."""
+        return self.robot is not None and isinstance(self.robot, OT3InputModel)
 
     @classmethod
     def from_file(cls, file_path: str) -> SystemConfigurationModel:

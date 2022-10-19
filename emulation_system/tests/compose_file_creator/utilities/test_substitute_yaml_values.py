@@ -27,6 +27,8 @@ def remote_only_ot3() -> str:
                 "source-location": "latest",
                 "robot-server-source-type": "remote",
                 "robot-server-source-location": "latest",
+                "opentrons-hardware-source-type": "remote",
+                "opentrons-hardware-source-location": "latest",
                 "can-server-source-type": "remote",
                 "can-server-source-location": "latest",
                 "exposed-port": 31950,

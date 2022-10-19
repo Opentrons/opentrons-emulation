@@ -10,19 +10,14 @@ import pytest
 from pydantic import ValidationError
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
+from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator.errors import DuplicateHardwareNameError
-from emulation_system.compose_file_creator.input.configuration_file import (
-    SystemConfigurationModel,
-)
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
     MagneticModuleInputModel,
     OT2InputModel,
     TemperatureModuleInputModel,
     ThermocyclerModuleInputModel,
-)
-from emulation_system.compose_file_creator.settings.config_file_settings import (
-    DEFAULT_DOCKER_COMPOSE_VERSION,
 )
 from tests.compose_file_creator.conftest import (
     HEATER_SHAKER_MODULE_ID,
@@ -57,17 +52,9 @@ def invalid_ot2_name(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
 
 
 @pytest.fixture
-def version_defined(ot2_and_modules: Dict[str, Any]) -> Dict[str, Any]:
-    """Structure of SystemConfigurationModel with robot, modules, and version."""
-    ot2_and_modules["compose-file-version"] = "3.7"
-    return ot2_and_modules
-
-
-@pytest.fixture
 def null_robot_with_modules(modules_only: Dict[str, Any]) -> Dict[str, Any]:
     """Structure of SystemConfigurationModel with modules and null robot."""
     modules_only["robot"] = None
-    modules_only["compose-file-version"] = None
     modules_only["system-unique-id"] = None
     return modules_only
 
@@ -76,7 +63,6 @@ def null_robot_with_modules(modules_only: Dict[str, Any]) -> Dict[str, Any]:
 def null_module_with_robot(ot2_only: Dict[str, Any]) -> Dict[str, Any]:
     """Structure of SystemConfigurationModel with modules and null robot."""
     ot2_only["modules"] = None
-    ot2_only["compose-file-version"] = None
     ot2_only["system-unique-id"] = None
     return ot2_only
 
@@ -85,7 +71,6 @@ def null_module_with_robot(ot2_only: Dict[str, Any]) -> Dict[str, Any]:
 def null_everything() -> Dict[str, None]:
     """Structure of SystemConfigurationModel with all values null."""
     return {
-        "compose-file-version": None,
         "robot": None,
         "modules": None,
         "system-unique-id": None,
@@ -94,7 +79,7 @@ def null_everything() -> Dict[str, None]:
 
 @pytest.fixture
 def with_invalid_system_unique_id(ot2_and_modules: Dict[str, Any]) -> Dict[str, Any]:
-    """Structure of SystemConfigurationModel with robot, modules, and an invalid system-unique-id."""  # noqa: E501
+    """Structure of SystemConfigurationModel with robot, modules, and an invalid system-unique-id."""
     ot2_and_modules["system-unique-id"] = "I aM uNiQuE bUt InVaLiD"
     return ot2_and_modules
 
@@ -140,7 +125,7 @@ def create_system_configuration(obj: Dict) -> SystemConfigurationModel:
     ],
 )
 def test_duplicate_names(config: Dict[str, Any]) -> None:
-    """Confirm that ValidationError is thrown when a robot and module have the same name."""  # noqa: E501
+    """Confirm that ValidationError is thrown when a robot and module have the same name."""
     print(config)
     with pytest.raises(DuplicateHardwareNameError) as err:
         create_system_configuration(config)
@@ -152,7 +137,7 @@ def test_duplicate_names(config: Dict[str, Any]) -> None:
 
 
 def test_invalid_container_name(invalid_ot2_name: Dict[str, Any]) -> None:
-    """Confirm that ValidationError is thrown when a robot and module have the same name."""  # noqa: E501
+    """Confirm that ValidationError is thrown when a robot and module have the same name."""
     with pytest.raises(ValidationError) as err:
         create_system_configuration(invalid_ot2_name)
     expected_error_text = ".*string does not match regex.*"
@@ -234,21 +219,6 @@ def test_get_by_id(ot2_and_modules: Dict[str, Any]) -> None:
     assert isinstance(
         system_config.get_by_id(THERMOCYCLER_MODULE_ID), ThermocyclerModuleInputModel
     )
-
-
-@pytest.mark.parametrize(
-    "config", [lazy_fixture("ot2_and_modules"), lazy_fixture("null_everything")]
-)
-def test_default_version(config: Dict[str, Any]) -> None:
-    """Test that version is set to default when not specified."""
-    system_config = create_system_configuration(config)
-    assert system_config.compose_file_version == DEFAULT_DOCKER_COMPOSE_VERSION
-
-
-def test_overriding_version(version_defined: Dict[str, Any]) -> None:
-    """Test that version is overridden correctly."""
-    system_config = create_system_configuration(version_defined)
-    assert system_config.compose_file_version == "3.7"
 
 
 @pytest.mark.parametrize(
