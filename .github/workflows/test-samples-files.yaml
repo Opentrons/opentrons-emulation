@@ -33,6 +33,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: opentrons-emulation
+          ref: ${{ github.sha }}
 
       - name: Checkout Monorepo
         uses: actions/checkout@v3
