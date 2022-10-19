@@ -34,7 +34,7 @@ jobs:
       - name: Checkout opentrons-emulation repository
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.ref_name }}
+          ref: ${{ github.sha }}
 
       # Only change `main` in Opentrons/opentrons-emulation@main
       # if making changes to .github/actions or action.yaml
