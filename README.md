@@ -10,38 +10,38 @@ Opentrons has various software emulations of their hardware. This repository def
 all these emulators together into systems.
 
 - [:rotating_light: BREAKING CHANGES :rotating_light:](#breaking-changes)
-    - [Upgrading from v2 to v3](#upgrading-from-v2-to-v3)
+  - [Upgrading from v2 to v3](#upgrading-from-v2-to-v3)
 - [What is an Emulator?](#what-is-an-emulator-)
 - [How do the Opentrons Emulators work?](#how-do-the-opentrons-emulators-work-)
 - [Supported Hardware](#supported-hardware)
 - [Development Container (devcontainer)](#development-container--devcontainer-)
-    - [Fastest path to ot2 or ot3 emulation](#fastest-path-to-ot2-or-ot3-emulation)
-        - [Still building...](#still-building)
-        - [Done!](#done-)
-        - [Video of the preceding 6 steps](#video-of-the-preceding-6-steps)
-        - [Connect the Opentrons app](#connect-the-opentrons-app)
+  - [Fastest path to ot2 or ot3 emulation](#fastest-path-to-ot2-or-ot3-emulation)
+    - [Still building...](#still-building)
+    - [Done!](#done-)
+    - [Video of the preceding 6 steps](#video-of-the-preceding-6-steps)
+    - [Connect the Opentrons app](#connect-the-opentrons-app)
 
 * [Local setup](#local-setup)
-    - [Required Software](#required-software)
-        - [Docker](#docker)
-        - [Docker-Compose](#docker-compose)
-        - [Poetry](#poetry)
-        - [Pyenv and Python](#pyenv-and-python)
-    - [Initial Configuration](#initial-configuration)
-    - [Quick Setup](#quick-setup)
-        - [OT2 With All Modules](#ot2-with-all-modules)
-        - [OT3](#ot3)
-    - [Makefile Commands](#makefile-commands)
-    - [Building Your Own Configuration Files](#building-your-own-configuration-files)
-    - [Setting Up For Local Development](#setting-up-for-local-development)
-        - [CPX Setup](#cpx-setup)
-        - [OT3 Firmware Development Setup](#ot3-firmware-development-setup)
-        - [Apps and UI Setup](#apps-and-ui-setup)
-    - [Architecture Diagrams](#architecture-diagrams)
-    - [Github Action](#github-action)
-    - [How To Modify Dockerfiles](#how-to-modify-dockerfiles)
+  - [Required Software](#required-software)
+    - [Docker](#docker)
+    - [Docker-Compose](#docker-compose)
+    - [Poetry](#poetry)
+    - [Pyenv and Python](#pyenv-and-python)
+  - [Initial Configuration](#initial-configuration)
+  - [Quick Setup](#quick-setup)
+    - [OT2 With All Modules](#ot2-with-all-modules)
+    - [OT3](#ot3)
+  - [Makefile Commands](#makefile-commands)
+  - [Building Your Own Configuration Files](#building-your-own-configuration-files)
+  - [Setting Up For Local Development](#setting-up-for-local-development)
+    - [CPX Setup](#cpx-setup)
+    - [OT3 Firmware Development Setup](#ot3-firmware-development-setup)
+    - [Apps and UI Setup](#apps-and-ui-setup)
+  - [Architecture Diagrams](#architecture-diagrams)
+  - [Github Action](#github-action)
+  - [How To Modify Dockerfiles](#how-to-modify-dockerfiles)
 * [Debugging](#debugging)
-    - [Debugging Docker-Compose File Generation](#debugging-docker-compose-file-generation)
+  - [Debugging Docker-Compose File Generation](#debugging-docker-compose-file-generation)
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'edgeLabelBackground': '#808080'}}}%%
@@ -141,7 +141,7 @@ Click [![Open in VSCode Remote - Containers](https://img.shields.io/static/v1?la
 1. Open a new terminal
 1. Enter the command `make check-robot` to validate the robot is reachable
 1. To shut down the emulated robot go back to the terminal where you entered  `make ot2` or `make ot3`
-    1. Click where logs are scrolling and press `ctrl` and `c` at the same time.
+   1. Click where logs are scrolling and press `ctrl` and `c` at the same time.
 
 #### Video of the preceding 6 steps
 
@@ -170,7 +170,7 @@ Run `git clone https://github.com/Opentrons/opentrons-emulation.git`
 ### Docker
 
 1. [Mac Instructions](https://docs.docker.com/desktop/mac/install/)
-    1. Make sure that you have rosetta installed if you are running on an M1 Mac, `softwareupdate --install-rosetta`
+   1. Make sure that you have rosetta installed if you are running on an M1 Mac, `softwareupdate --install-rosetta`
 1. [Linux Instructions](https://docs.docker.com/engine/install/#server)
 
 ### Docker-Compose
@@ -204,7 +204,7 @@ echo 'eval "$(pyenv init -)"' >> ~/.zshrc
 ```
 
 3. Restart your terminal
-    1. Install Python Build Dependencies
+   1. Install Python Build Dependencies
 
 ```
 brew install openssl readline sqlite3 xz zlib
@@ -218,51 +218,51 @@ brew install openssl readline sqlite3 xz zlib
    ```
    git clone https://github.com/pyenv/pyenv.git ~/.pyenv
    ```
-    1. Configure your shell env
-       ```
-        echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
-        echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
-        echo 'eval "$(pyenv init -)"' >> ~/.bashrc
-        echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.profile
-        echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.profile
-        echo 'eval "$(pyenv init -)"' >> ~/.profile
-       ```
-    1. Restart your shell
-       ```
-       exec $SHELL 
-       ```
-    1. Install Python Build Dependencies
-       ```
-       sudo apt-get update
-       sudo apt-get install \
-       make \
-       build-essential \
-       libssl-dev \
-       zlib1g-dev \
-       libbz2-dev \
-       libreadline-dev \
-       libsqlite3-dev \
-       wget \
-       curl \
-       llvm \
-       libncursesw5-dev \
-       xz-utils \
-       tk-dev \
-       libxml2-dev \
-       libxmlsec1-dev \
-       libffi-dev \
-       liblzma-dev
-       ```
-    1. Pyenv is now ready to use
+   1. Configure your shell env
+      ```
+       echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+       echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+       echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+       echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.profile
+       echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.profile
+       echo 'eval "$(pyenv init -)"' >> ~/.profile
+      ```
+   1. Restart your shell
+      ```
+      exec $SHELL 
+      ```
+   1. Install Python Build Dependencies
+      ```
+      sudo apt-get update
+      sudo apt-get install \
+      make \
+      build-essential \
+      libssl-dev \
+      zlib1g-dev \
+      libbz2-dev \
+      libreadline-dev \
+      libsqlite3-dev \
+      wget \
+      curl \
+      llvm \
+      libncursesw5-dev \
+      xz-utils \
+      tk-dev \
+      libxml2-dev \
+      libxmlsec1-dev \
+      libffi-dev \
+      liblzma-dev
+      ```
+   1. Pyenv is now ready to use
 
 **Installing Python**
 
 1. Run `pyenv install --list` to get a list of all available Python versions.
-    1. Choose the latest 3.10 version. For the purpose of this document we will say the latest version is `3.10.8`
-    1. Run `pyenv install 3.10.8` to install Python
-    1. Run `pyenv global 3.10.8`  to set the system version to 3.10.8
-    1. Verify that you are running the correct Python version by running `pyenv version`
-        1. It should say `3.10.8` (set by /something/something/something/pyenv/version)
+   1. Choose the latest 3.10 version. For the purpose of this document we will say the latest version is `3.10.8`
+   1. Run `pyenv install 3.10.8` to install Python
+   1. Run `pyenv global 3.10.8`  to set the system version to 3.10.8
+   1. Verify that you are running the correct Python version by running `pyenv version`
+      1. It should say `3.10.8` (set by /something/something/something/pyenv/version)
 
 **Troubleshooting**
 
@@ -283,11 +283,11 @@ You need to update pyenv. Follow [these](https://github.com/pyenv/pyenv#upgradin
 ### Poetry
 
 1. [Poetry Installed Globally](https://python-poetry.org/docs/master/#installing-with-the-official-installer)
-    1. Run `curl -sSL https://install.python-poetry.org | python3 -`
-    1. Add poetry dir to `PATH` environment variable
-       3\. (Mac) `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc`
-       4\. (Linux) `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile`.
-       Note: On Linux this might already be on your path variable.
+   1. Run `curl -sSL https://install.python-poetry.org | python3 -`
+   1. Add poetry dir to `PATH` environment variable
+      3\. (Mac) `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc`
+      4\. (Linux) `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile`.
+      Note: On Linux this might already be on your path variable.
 
 ## Initial Configuration
 
