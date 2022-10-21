@@ -8,7 +8,7 @@ if [ "${ARCH}" == "arm64" ]; then
   # Rosetta emulates a x86_64 architecture and then Docker uses that
   # Docker thinks it should be trying to build against an arm64 arch. So we have to override it.
   echo "On arm64 specifying platform in build command."
-  docker buildx bake --file ${FILE_PATH} --set *.platform=linux/x86_64
+  docker buildx bake --file ${FILE_PATH}
 else
   docker buildx bake --file ${FILE_PATH}
 fi
