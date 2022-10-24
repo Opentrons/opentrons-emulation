@@ -202,7 +202,7 @@ RUN /entrypoint.sh build
 FROM ghcr.io/opentrons/python-base:latest as firmware-common
 RUN mkdir /dist
 COPY --from=python-emulator-builder /dist/* /dist/
-RUN python -m pip install /dist/*
+RUN pip install /dist/*
 
 ##############################################################
 #                       REMOTE TARGETS                       #
