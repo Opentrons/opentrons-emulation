@@ -220,49 +220,49 @@ RUN python -m pip install /dist/*
 # Each Hardware Production Target should copy the executable from the Executable Builder target
 # Each Hardware Production Target should have a corresponding Executable Builder target
 
-FROM ghcr.io/opentrons/ubuntu-base:latest as ot3-pipettes-hardware-remote
+FROM ghcr.io/opentrons/ubuntu-base-${TARGETARCH}:latest as ot3-pipettes-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-pipettes-hardware"
 COPY --from=ot3-firmware-builder /pipettes-simulator /pipettes-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ghcr.io/opentrons/ubuntu-base:latest as ot3-head-hardware-remote
+FROM ghcr.io/opentrons/ubuntu-base-${TARGETARCH}:latest as ot3-head-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-head-hardware"
 COPY --from=ot3-firmware-builder /head-simulator /head-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ghcr.io/opentrons/ubuntu-base:latest as ot3-gantry-x-hardware-remote
+FROM ghcr.io/opentrons/ubuntu-base-${TARGETARCH}:latest as ot3-gantry-x-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-gantry-x-hardware"
 COPY --from=ot3-firmware-builder /gantry-x-simulator /gantry-x-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ghcr.io/opentrons/ubuntu-base:latest as ot3-gantry-y-hardware-remote
+FROM ghcr.io/opentrons/ubuntu-base-${TARGETARCH}:latest as ot3-gantry-y-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-gantry-y-hardware"
 COPY --from=ot3-firmware-builder /gantry-y-simulator /gantry-y-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ghcr.io/opentrons/ubuntu-base:latest as ot3-bootloader-hardware-remote
+FROM ghcr.io/opentrons/ubuntu-base-${TARGETARCH}:latest as ot3-bootloader-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-bootloader-hardware"
 COPY --from=ot3-firmware-builder /bootloader-simulator /bootloader-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ghcr.io/opentrons/ubuntu-base:latest as ot3-gripper-hardware-remote
+FROM ghcr.io/opentrons/ubuntu-base-${TARGETARCH}:latest as ot3-gripper-hardware-remote
 ENV OPENTRONS_HARDWARE "ot3-gripper-hardware"
 COPY --from=ot3-firmware-builder /gripper-simulator /gripper-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ghcr.io/opentrons/ubuntu-base:latest as heater-shaker-hardware-remote
+FROM ghcr.io/opentrons/ubuntu-base-${TARGETARCH}:latest as heater-shaker-hardware-remote
 ENV OPENTRONS_HARDWARE "heater-shaker-hardware"
 COPY --from=heater-shaker-builder /heater-shaker-simulator /heater-shaker-simulator
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh", "run"]
 
-FROM ghcr.io/opentrons/ubuntu-base:latest as thermocycler-hardware-remote
+FROM ghcr.io/opentrons/ubuntu-base-${TARGETARCH}:latest as thermocycler-hardware-remote
 ENV OPENTRONS_HARDWARE "thermocycler-hardware"
 COPY --from=thermocycler-builder /thermocycler-gen2-simulator /thermocycler-gen2-simulator
 COPY entrypoint.sh /entrypoint.sh

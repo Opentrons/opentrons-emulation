@@ -10,6 +10,7 @@ COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
 COMPOSE_LOGS_COMMAND := docker-compose -f - logs -f
 COMPOSE_RESTART_COMMAND := docker-compose -f - restart --timeout 1
+BUILD_COMMAND := docker buildx bake --file ~/tmp-compose.yaml
 
 abs_path := $(realpath ${file_path})
 
@@ -46,7 +47,7 @@ build:
 
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
 	@$(MAKE) --no-print-directory --quiet generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
-	./scripts/makefile/helper_scripts/build.sh ~/tmp-compose.yaml
+	@$(BUILD_COMMAND)
 	@rm ~/tmp-compose.yaml
 
 # Builds generated development Docker-Compose file's necessary images using docker buildx
@@ -54,8 +55,9 @@ build:
 dev-build:
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
 	@$(MAKE) --no-print-directory --quiet dev-generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
-	./scripts/makefile/helper_scripts/build.sh ~/tmp-compose.yaml
-#	@rm ~/tmp-compose.yaml ./docker/dev_Dockerfile
+	@$(BUILD_COMMAND)
+	@rm ~/tmp-compose.yaml
+
 
 # Creates and starts Docker Containers from generated Docker-Compose file
 # Outputs logs to stdout
