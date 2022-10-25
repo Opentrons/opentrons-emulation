@@ -16,6 +16,7 @@ MODDED_BASES_DOCKERFILE=`sed \
 
 MODDED_DOCKERFILE=`sed \
   -e 's;ghcr.io/opentrons/ubuntu-base-${TARGETARCH}:latest;ubuntu-base-dev-'${arch_to_use}';g' \
+  -e 's;ghcr.io/opentrons/cpp-base-${TARGETARCH}:latest;cpp-base-dev-'${arch_to_use}';g' \
   -e "s;ghcr.io/opentrons/python-base:latest;python-base-dev;g" \
   -e "s;ghcr.io/opentrons/cpp-base:latest;cpp-base-dev;g" \
   ${SCRIPT_DIR}/../../docker/Dockerfile`

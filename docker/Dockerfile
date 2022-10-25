@@ -7,7 +7,7 @@
 # entrypoint.sh should also be bind-mounted in so do not copy it in either
 # Make sure to include the OPENTRONS_HARDWARE env variable
 
-FROM ghcr.io/opentrons/cpp-base:latest as cpp-base-with-rebuild-script
+FROM ghcr.io/opentrons/cpp-base-${TARGETARCH}:latest as cpp-base-with-rebuild-script
 COPY rebuild.sh /rebuild.sh
 ENTRYPOINT ["/rebuild.sh"]
 
@@ -122,7 +122,7 @@ ENV OPENTRONS_HARDWARE "can-server"
 # ot3-firmware-source #
 #######################
 
-FROM ghcr.io/opentrons/cpp-base:latest as ot3-firmware-source
+FROM ghcr.io/opentrons/cpp-base-${TARGETARCH}:latest as ot3-firmware-source
 ARG FIRMWARE_SOURCE_DOWNLOAD_LOCATION
 ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION
 
@@ -142,7 +142,7 @@ RUN (cd / &&  \
 # modules-source #
 ##################
 
-FROM ghcr.io/opentrons/cpp-base:latest as opentrons-modules-source
+FROM ghcr.io/opentrons/cpp-base-${TARGETARCH}:latest as opentrons-modules-source
 ARG MODULE_SOURCE_DOWNLOAD_LOCATION
 ADD $MODULE_SOURCE_DOWNLOAD_LOCATION /opentrons-modules.zip
 RUN (cd / &&  \
