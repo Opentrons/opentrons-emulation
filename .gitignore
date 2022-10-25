@@ -12,9 +12,6 @@ vagrant/.vagrant/
 # Runtime python files
 __pycache__/
 
-# Configuration File
-configuration.json
-
 # Generated Vagrant Settings File
 vagrant/settings.json
 

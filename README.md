@@ -163,6 +163,10 @@ Click [![Open in VSCode Remote - Containers](https://img.shields.io/static/v1?la
 
 Install the following software:
 
+### opentrons-emulation Git Repo
+
+Run `git clone https://github.com/Opentrons/opentrons-emulation.git`
+
 ### Docker
 
 1. [Mac Instructions](https://docs.docker.com/desktop/mac/install/)
@@ -281,16 +285,14 @@ You need to update pyenv. Follow [these](https://github.com/pyenv/pyenv#upgradin
 1. [Poetry Installed Globally](https://python-poetry.org/docs/master/#installing-with-the-official-installer)
    1. Run `curl -sSL https://install.python-poetry.org | python3 -`
    1. Add poetry dir to `PATH` environment variable
-      3\. (Mac) `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc`
-      4\. (Linux) `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile`.
-      Note: On Linux this might already be on your path variable.
+      1. **Mac** - `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc`
+      1. **Linux** - `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile`.
+         Note: On Linux this might already be on your path variable.
 
 ## Initial Configuration
 
-1. In the root of the repository, create to `configuration.json` from `configuration_sample.json`
-   1. `cp configuration_sample.json configuration.json`
-1. You can leave everything default.
-   1. TODO: `global-settings`, `virtual-machine-settings`, and `aws-ecr-settings` will be removed in future releases
+Now that all the dependencies are installed you can setup the repo.
+
 1. Run `make setup`
 
 ## Quick Setup
