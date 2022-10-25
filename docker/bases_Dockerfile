@@ -44,6 +44,7 @@ LABEL opentons-emulation.url=$URL
 LABEL opentons-emulation.vendor=$VENDOR
 LABEL opentons-emulation.docker_cmd=$DOCKER_CMD
 LABEL opentons-emulation.description=$DESCRIPTION
+LABEL org.opencontainers.image.source=https://github.com/Opentrons/opentrons-emulation
 
 ENV DEBIAN_FRONTEND noninteractive
 
