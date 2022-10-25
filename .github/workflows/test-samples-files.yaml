@@ -14,6 +14,7 @@ on:
       - 'emulation_system/**'
       - 'samples/**'
       - '.github/workflows/test-samples-files.yaml'
+      - '.github/actions/**'
       - 'scripts/makefile/helper_scripts/**'
       - 'docker/**'
       - './Makefile'
