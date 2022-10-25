@@ -121,7 +121,7 @@ RUN apt-get install -y nodejs && npm install --global yarn
 # cpp-base #
 ############
 
-FROM python-base as cpp-base-pacakges
+FROM python-base as cpp-base-packages
 RUN apt-get update && \
     apt-get install \
     --no-install-recommends \
@@ -136,7 +136,7 @@ RUN apt-get update && \
     valgrind \
     > /dev/null
 
-FROM cpp-base-pacakges as cpp-base-arm64
+FROM cpp-base-packages as cpp-base-arm64
 
 RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2-linux-aarch64.tar.gz && \
     tar -zxf cmake-3.21.2-linux-aarch64.tar.gz && \
@@ -144,7 +144,7 @@ RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.2
     mv cmake-3.21.2-linux-aarch64 cmake && \
     (cd /usr/bin/ && ln -s /cmake/bin/cmake cmake)
 
-FROM cpp-base-pacakges as cpp-base-amd64
+FROM cpp-base-packages as cpp-base-amd64
 
 RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2-linux-x86_64.tar.gz && \
     tar -zxf cmake-3.21.2-linux-x86_64.tar.gz && \
