@@ -66,6 +66,9 @@ RUN apt-get update \
       gpg-agent \
       nano \
       && rm -rf /var/lib/apt/lists/*
+
+# In Ubuntu 22.04, python 3.10 is provided directly through apt, and is fact
+# not provided by the deadsnakes ppa
 RUN apt-get update && \
     apt-get install \
     	--no-install-recommends \
