@@ -34,10 +34,10 @@ jobs:
       - name: Checkout opentrons-emulation repository
         uses: actions/checkout@v3
         with:
-          ref: main
+          ref: multi-arch-builds-RQA-335
 
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@main
+        uses: Opentrons/opentrons-emulation@multi-arch-builds-RQA-335
         with:
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup-python-only
