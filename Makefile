@@ -5,14 +5,14 @@ SUB = {SUB}
 EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system {SUB} -)
 DEV_EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system --dev {SUB} -)
 REMOTE_ONLY_EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system {SUB} - --remote-only)
-COMPOSE_RUN_COMMAND := docker-compose -f - up --remove-orphans
+COMPOSE_RUN_COMMAND := DOCKER_BUILDKIT=1 docker-compose -f - up --remove-orphans
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
 COMPOSE_LOGS_COMMAND := docker-compose -f - logs -f
 COMPOSE_RESTART_COMMAND := docker-compose -f - restart --timeout 1
-BUILD_COMMAND := docker buildx bake --file ~/tmp-compose.yaml
-BUILD_PRINT_ALL_COMMAND := docker buildx bake --file ~/tmp-compose.yaml --progress plain
-BUILD_PRINT_ALL_NO_CACHE_COMMAND := docker buildx bake --file ~/tmp-compose.yaml --progress plain --no-cache
+BUILD_COMMAND := docker buildx bake --load --file ~/tmp-compose.yaml
+BUILD_PRINT_ALL_COMMAND := docker buildx bake --load --file ~/tmp-compose.yaml --progress plain
+BUILD_PRINT_ALL_NO_CACHE_COMMAND := docker buildx bake --load --file ~/tmp-compose.yaml --progress plain --no-cache
 
 abs_path := $(realpath ${file_path})
 
