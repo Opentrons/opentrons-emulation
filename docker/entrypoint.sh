@@ -129,6 +129,9 @@ case $FULL_COMMAND in
   run-ot3-gripper-hardware)
     /gripper-simulator
     ;;
+  run-ot3-state-manager)
+    (cd /ot3-firmware/state_manager && ../stm32-tools/poetry/bin/poetry run python3 -m state_manager.state_manager --right-pipette P1000-multi-96 localhost 8088)
+    ;;
 
   stop-ot3-gantry-y-hardware|stop-heater-shaker-hardware|stop-thermocycler-hardware|stop-ot3-pipettes-hardware|stop-ot3-head-hardware|stop-ot3-gantry-x-hardware)
     kill_process $OPENTRONS_HARDWARE

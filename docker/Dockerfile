@@ -192,6 +192,11 @@ ENV OPENTRONS_HARDWARE "common-ot3-firmware"
 COPY entrypoint.sh /entrypoint.sh
 RUN /entrypoint.sh build
 
+FROM ot3-firmware-builder as ot3-state-manager
+ENV OPENTRONS_HARDWARE "ot3-state-manager"
+COPY entrypoint.sh /entrypoint.sh
+RUN /entrypoint.sh run
+
 ##################
 # Firmware Common #
 ##################
