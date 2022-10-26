@@ -11,8 +11,6 @@ COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
 COMPOSE_LOGS_COMMAND := docker-compose -f - logs -f
 COMPOSE_RESTART_COMMAND := docker-compose -f - restart --timeout 1
 BUILD_COMMAND := docker buildx bake --load --file ~/tmp-compose.yaml
-BUILD_PRINT_ALL_COMMAND := docker buildx bake --load --file ~/tmp-compose.yaml --progress plain
-BUILD_PRINT_ALL_NO_CACHE_COMMAND := docker buildx bake --load --file ~/tmp-compose.yaml --progress plain --no-cache
 
 abs_path := $(realpath ${file_path})
 
@@ -65,7 +63,7 @@ build-print:
 
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
 	@$(MAKE) --no-print-directory --quiet generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
-	@$(BUILD_PRINT_ALL_COMMAND)
+	@$(BUILD_COMMAND) --progress plain
 	@rm ~/tmp-compose.yaml
 
 # Builds generated development Docker-Compose file's necessary images using docker buildx
@@ -73,7 +71,7 @@ build-print:
 dev-build-print:
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
 	@$(MAKE) --no-print-directory --quiet dev-generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
-	@$(BUILD_PRINT_ALL_COMMAND)
+	@$(BUILD_COMMAND) --progress plain
 	@rm ~/tmp-compose.yaml
 
 .PHONY: build-print-no-cache
@@ -81,7 +79,7 @@ build-print-no-cache:
 
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
 	@$(MAKE) --no-print-directory --quiet generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
-	@$(BUILD_PRINT_ALL_NO_CACHE_COMMAND)
+	@$(BUILD_COMMAND) --progress plain --no-cache
 	@rm ~/tmp-compose.yaml
 
 # Builds generated development Docker-Compose file's necessary images using docker buildx
@@ -89,7 +87,7 @@ build-print-no-cache:
 dev-build-print-no-cache:
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
 	@$(MAKE) --no-print-directory --quiet dev-generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
-	@$(BUILD_PRINT_ALL_NO_CACHE_COMMAND)
+	@$(BUILD_COMMAND) --progress plain --no-cache
 	@rm ~/tmp-compose.yaml
 
 
