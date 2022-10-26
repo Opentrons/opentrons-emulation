@@ -301,7 +301,6 @@ OT2CONFIG ?= ./samples/ot2/ot2_with_all_modules.yaml
 .PHONY: ot2
 ot2:
 	$(MAKE) setup
-	cp configuration_ci.json configuration.json
 	$(MAKE) check-remote-only file_path="$(OT2CONFIG)"
 	$(MAKE) remove-build-run file_path="$(OT2CONFIG)"
 
@@ -310,7 +309,6 @@ OT3CONFIG ?= ./samples/ot3/ot3_remote.yaml
 .PHONY: ot3
 ot3:
 	$(MAKE) setup
-	cp configuration_ci.json configuration.json
 	$(MAKE) check-remote-only file_path="$(OT3CONFIG)"
 	$(MAKE) remove-build-run file_path="$(OT3CONFIG)"
 
