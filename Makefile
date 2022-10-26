@@ -201,7 +201,7 @@ load-container-names:
 
 	$(if $(file_path),,$(error file_path variable required))
 	$(if $(filter),,$(error filter variable required))
-	@(cd ./emulation_system && poetry run python main.py lc "${abs_path}" "${filter}")
+	@(cd ./emulation_system && poetry run python3 main.py lc "${abs_path}" "${filter}")
 
 ###########################################
 ########## OT3 Specific Commands ##########
@@ -217,7 +217,7 @@ can-comm:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="can-server" \
-		| xargs -o -I{} docker exec -it {} python -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
+		| xargs -o -I{} docker exec -it {} python3 -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
 
 
 # Runs can monitor script against can_server
@@ -230,7 +230,7 @@ can-mon:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="can-server" \
-		| xargs -o -I{} docker exec -it {} python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
+		| xargs -o -I{} docker exec -it {} python3 -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
 
 ###########################################
 ############### CI Commands ###############
