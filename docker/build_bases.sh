@@ -10,40 +10,79 @@ BRANCH_NAME=$1
 
 if [[ "${BRANCH_NAME}" =~ release-v.* ]]; then
   docker buildx build \
-  --file ./bases_Dockerfile \
-  --target ubuntu-base \
   --push \
-  --tag ghcr.io/opentrons/ubuntu-base:latest \
-  --tag ghcr.io/opentrons/ubuntu-base:${BRANCH_NAME} \
+  --file ./bases_Dockerfile \
+  --target ubuntu-base-amd64 \
+  --platform=linux/amd64 \
+  --tag ghcr.io/opentrons/ubuntu-base-amd64:latest \
+  --tag ghcr.io/opentrons/ubuntu-base-amd64:${BRANCH_NAME} \
   .
   docker buildx build \
-  --file ./bases_Dockerfile \
-  --target cpp-base \
   --push \
-  --tag ghcr.io/opentrons/cpp-base:latest \
-  --tag ghcr.io/opentrons/cpp-base:${BRANCH_NAME} \
+  --file ./bases_Dockerfile \
+  --target ubuntu-base-arm64 \
+  --platform=linux/arm64 \
+  --tag ghcr.io/opentrons/ubuntu-base-arm64:latest \
+  --tag ghcr.io/opentrons/ubuntu-base-arm64:${BRANCH_NAME} \
   .
   docker buildx build \
+  --push \
+  --file ./bases_Dockerfile \
+  --target cpp-base-amd64 \
+  --platform=linux/amd64 \
+  --tag ghcr.io/opentrons/cpp-base-amd64:latest \
+  --tag ghcr.io/opentrons/cpp-base-amd64:${BRANCH_NAME} \
+  .
+  docker buildx build \
+  --push \
+  --file ./bases_Dockerfile \
+  --target cpp-base-arm64 \
+  --platform=linux/arm64 \
+  --tag ghcr.io/opentrons/cpp-base-arm64:latest \
+  --tag ghcr.io/opentrons/cpp-base-arm64:${BRANCH_NAME} \
+  .
+  docker buildx build \
+  --push \
   --file ./bases_Dockerfile \
   --target python-base \
-  --push \
+  --platform=linux/amd64,linux/arm64 \
   --tag ghcr.io/opentrons/python-base:latest \
   --tag ghcr.io/opentrons/python-base:${BRANCH_NAME} \
   .
 else
-  docker buildx build \
+    docker buildx build \
+    --push \
   --file ./bases_Dockerfile \
-  --target ubuntu-base \
-  --push \
-  --tag ghcr.io/opentrons/ubuntu-base:latest .
+  --target ubuntu-base-amd64 \
+  --platform=linux/amd64 \
+  --tag ghcr.io/opentrons/ubuntu-base-amd64:latest \
+  .
   docker buildx build \
+  --push \
   --file ./bases_Dockerfile \
-  --target cpp-base \
-  --push \
-  --tag ghcr.io/opentrons/cpp-base:latest .
+  --target ubuntu-base-arm64 \
+  --platform=linux/arm64 \
+  --tag ghcr.io/opentrons/ubuntu-base-arm64:latest \
+  .
   docker buildx build \
+  --push \
+  --file ./bases_Dockerfile \
+  --target cpp-base-amd64 \
+  --platform=linux/amd64 \
+  --tag ghcr.io/opentrons/cpp-base-amd64:latest \
+  .
+  docker buildx build \
+  --push \
+  --file ./bases_Dockerfile \
+  --target cpp-base-arm64 \
+  --platform=linux/arm64 \
+  --tag ghcr.io/opentrons/cpp-base-arm64:latest \
+  .
+  docker buildx build \
+  --push \
   --file ./bases_Dockerfile \
   --target python-base \
-  --push \
-  --tag ghcr.io/opentrons/python-base:latest .
+  --platform=linux/amd64,linux/arm64 \
+  --tag ghcr.io/opentrons/python-base:latest \
+  .
 fi

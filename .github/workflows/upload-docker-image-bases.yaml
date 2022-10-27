@@ -7,10 +7,8 @@ on:
     branches:
       - 'main'
       - 'release-*'
-    paths:
-      - '.github/workflows/upload-docker-image-bases.yaml'
-      - 'docker/bases_Dockerfile'
-      - 'docker/build_bases.sh'
+    tags:
+      - 'v**'
   workflow_dispatch:
 
 jobs:
@@ -23,6 +21,12 @@ jobs:
 
       - name: Log in to registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Install QEMU emulators
+        run: docker run -i --rm --privileged tonistiigi/binfmt --install all
+
+      - name: Create and use multi-platform builder
+        run: docker buildx create --name emulation_builder --platform linux/arm64,linux/amd64 --driver docker-container --bootstrap --use
 
       - name: Build and push images
         run: make push-docker-image-bases branch_name="${{ github.ref_name }}"

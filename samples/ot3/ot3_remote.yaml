@@ -15,7 +15,7 @@ robot:
   id: otie
   hardware: ot3
   source-type: remote
-  source-location: latest
+  source-location: 815fb55e80656db10e6a3ecdefe7522a034446da
   robot-server-source-type: remote
   robot-server-source-location: latest
   can-server-source-type: remote

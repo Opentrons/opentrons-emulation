@@ -5,11 +5,12 @@ SUB = {SUB}
 EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system {SUB} -)
 DEV_EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system --dev {SUB} -)
 REMOTE_ONLY_EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system {SUB} - --remote-only)
-COMPOSE_RUN_COMMAND := docker-compose -f - up --remove-orphans
+COMPOSE_RUN_COMMAND := DOCKER_BUILDKIT=1 docker-compose -f - up --remove-orphans
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
 COMPOSE_LOGS_COMMAND := docker-compose -f - logs -f
 COMPOSE_RESTART_COMMAND := docker-compose -f - restart --timeout 1
+BUILD_COMMAND := docker buildx bake --load --file ~/tmp-compose.yaml
 
 abs_path := $(realpath ${file_path})
 
@@ -46,7 +47,7 @@ build:
 
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
 	@$(MAKE) --no-print-directory --quiet generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
-	./scripts/makefile/helper_scripts/build.sh ~/tmp-compose.yaml
+	@$(BUILD_COMMAND)
 	@rm ~/tmp-compose.yaml
 
 # Builds generated development Docker-Compose file's necessary images using docker buildx
@@ -54,8 +55,41 @@ build:
 dev-build:
 	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
 	@$(MAKE) --no-print-directory --quiet dev-generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
-	./scripts/makefile/helper_scripts/build.sh ~/tmp-compose.yaml
-#	@rm ~/tmp-compose.yaml ./docker/dev_Dockerfile
+	@$(BUILD_COMMAND)
+	@rm ~/tmp-compose.yaml
+
+.PHONY: build-print
+build-print:
+
+	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
+	@$(MAKE) --no-print-directory --quiet generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
+	@$(BUILD_COMMAND) --progress plain
+	@rm ~/tmp-compose.yaml
+
+# Builds generated development Docker-Compose file's necessary images using docker buildx
+.PHONY: dev-build-print
+dev-build-print:
+	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
+	@$(MAKE) --no-print-directory --quiet dev-generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
+	@$(BUILD_COMMAND) --progress plain
+	@rm ~/tmp-compose.yaml
+
+.PHONY: build-print-no-cache
+build-print-no-cache:
+
+	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
+	@$(MAKE) --no-print-directory --quiet generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
+	@$(BUILD_COMMAND) --progress plain --no-cache
+	@rm ~/tmp-compose.yaml
+
+# Builds generated development Docker-Compose file's necessary images using docker buildx
+.PHONY: dev-build-print-no-cache
+dev-build-print-no-cache:
+	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
+	@$(MAKE) --no-print-directory --quiet dev-generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
+	@$(BUILD_COMMAND) --progress plain --no-cache
+	@rm ~/tmp-compose.yaml
+
 
 # Creates and starts Docker Containers from generated Docker-Compose file
 # Outputs logs to stdout
@@ -165,7 +199,7 @@ load-container-names:
 
 	$(if $(file_path),,$(error file_path variable required))
 	$(if $(filter),,$(error filter variable required))
-	@(cd ./emulation_system && poetry run python main.py lc "${abs_path}" "${filter}")
+	@(cd ./emulation_system && poetry run python3 main.py lc "${abs_path}" "${filter}")
 
 ###########################################
 ########## OT3 Specific Commands ##########
@@ -181,7 +215,7 @@ can-comm:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="can-server" \
-		| xargs -o -I{} docker exec -it {} python -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
+		| xargs -o -I{} docker exec -it {} python3 -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
 
 
 # Runs can monitor script against can_server
@@ -194,7 +228,7 @@ can-mon:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="can-server" \
-		| xargs -o -I{} docker exec -it {} python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
+		| xargs -o -I{} docker exec -it {} python3 -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
 
 ###########################################
 ############### CI Commands ###############
@@ -267,7 +301,6 @@ OT2CONFIG ?= ./samples/ot2/ot2_with_all_modules.yaml
 .PHONY: ot2
 ot2:
 	$(MAKE) setup
-	cp configuration_ci.json configuration.json
 	$(MAKE) check-remote-only file_path="$(OT2CONFIG)"
 	$(MAKE) remove-build-run file_path="$(OT2CONFIG)"
 
@@ -276,7 +309,6 @@ OT3CONFIG ?= ./samples/ot3/ot3_remote.yaml
 .PHONY: ot3
 ot3:
 	$(MAKE) setup
-	cp configuration_ci.json configuration.json
 	$(MAKE) check-remote-only file_path="$(OT3CONFIG)"
 	$(MAKE) remove-build-run file_path="$(OT3CONFIG)"
 

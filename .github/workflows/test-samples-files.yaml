@@ -14,6 +14,7 @@ on:
       - 'emulation_system/**'
       - 'samples/**'
       - '.github/workflows/test-samples-files.yaml'
+      - '.github/actions/**'
       - 'scripts/makefile/helper_scripts/**'
       - 'docker/**'
       - './Makefile'
@@ -60,10 +61,6 @@ jobs:
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
           make setup
-        working-directory: ./opentrons-emulation
-
-      - name: Build Configuration File
-        run: cp configuration_sample.json configuration.json
         working-directory: ./opentrons-emulation
 
       - name: Test All Samples

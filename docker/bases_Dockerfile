@@ -22,7 +22,7 @@
 # ubuntu-base #
 ###############
 
-FROM ubuntu:20.04 as ubuntu-base
+FROM --platform=${BUILDPLATFORM} ubuntu:22.04 as ubuntu-base-amd64
 # Only need to fill out these args, in CI builds to push images to AWS ECR.
 # Don't bother when you are doing manual builds. It will break your cache and your
 # build will take forever
@@ -44,6 +44,7 @@ LABEL opentons-emulation.url=$URL
 LABEL opentons-emulation.vendor=$VENDOR
 LABEL opentons-emulation.docker_cmd=$DOCKER_CMD
 LABEL opentons-emulation.description=$DESCRIPTION
+LABEL org.opencontainers.image.source=https://github.com/Opentrons/opentrons-emulation
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -63,26 +64,39 @@ RUN apt-get update \
       libssl-dev \
       net-tools \
       python3-dev \
+      gpg-agent \
+      nano \
       && rm -rf /var/lib/apt/lists/*
-RUN add-apt-repository ppa:deadsnakes/ppa && \
-    apt-get update && \
+
+# In Ubuntu 22.04, python 3.10 is provided directly through apt, and is fact
+# not provided by the deadsnakes ppa
+RUN apt-get update && \
     apt-get install \
     	--no-install-recommends \
        	-y \
     	python3.10 \
-    	python3.10-venv && \
-    (cd /usr/bin && \
-      rm -f python python3 && \
-	  ln -s /usr/bin/python3.10 python && \
-      ln -s /usr/bin/python3.10 python3 \
-    )
+    	python3.10-venv
 
+RUN add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get update && \
+     apt-get install \
+    	--no-install-recommends \
+       	-y \
+    	python3.8 \
+    	python3.8-venv
+
+FROM ubuntu-base-amd64 as ubuntu-base-arm64
+
+# Compatability for linux/arm64
+RUN apt-get update && apt-get install -y libtinfo5 libc6-amd64-cross zlib1g
+RUN ln -s /usr/x86_64-linux-gnu/lib64/ /lib64
+ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/lib64:/usr/x86_64-linux-gnu/lib:/usr/lib/aarch64-linux-gnu"
 
 ###############
 # python-base #
 ###############
-
-FROM ubuntu-base as python-base
+ARG TARGETARCH
+FROM ubuntu-base-${TARGETARCH} as python-base
 
 ENV NODE_VERSION 14
 ENV OT_PYTHON "/usr/bin/python3.10"
@@ -95,11 +109,12 @@ RUN apt-get update && \
     libsystemd-dev \
     python3-dev \
     pkgconf \
-    libpython3.10-dev
+    libpython3.10-dev \
+    libpython3.8-dev \
+    python3-pip
 
-RUN python -m ensurepip --upgrade && \
-    python -m pip install --upgrade pip setuptools wheel && \
-    python -m pip install pipenv
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install pipenv
 
 
 RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -
@@ -110,7 +125,7 @@ RUN apt-get install -y nodejs && npm install --global yarn
 # cpp-base #
 ############
 
-FROM python-base as cpp-base
+FROM python-base as cpp-base-packages
 RUN apt-get update && \
     apt-get install \
     --no-install-recommends \
@@ -120,7 +135,20 @@ RUN apt-get update && \
     gcc-10 \
     g++-10 \
     lsb-release \
+    libc6-dbg \
+    gdb \
+    valgrind \
     > /dev/null
+
+FROM cpp-base-packages as cpp-base-arm64
+
+RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2-linux-aarch64.tar.gz && \
+    tar -zxf cmake-3.21.2-linux-aarch64.tar.gz && \
+    rm cmake-3.21.2-linux-aarch64.tar.gz && \
+    mv cmake-3.21.2-linux-aarch64 cmake && \
+    (cd /usr/bin/ && ln -s /cmake/bin/cmake cmake)
+
+FROM cpp-base-packages as cpp-base-amd64
 
 RUN wget -q https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2-linux-x86_64.tar.gz && \
     tar -zxf cmake-3.21.2-linux-x86_64.tar.gz && \

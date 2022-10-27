@@ -22,10 +22,6 @@ runs:
       with:
         cache-break: ${{ inputs.cache-break }}
 
-    - name: Create configuration.json
-      run: cp configuration_ci.json configuration.json
-      shell: bash
-
     - name: Validate Configuration File is Remote Only
       run: make check-remote-only file_path=${{ inputs.input-file }}
       shell: bash
