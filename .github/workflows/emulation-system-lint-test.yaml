@@ -34,8 +34,10 @@ jobs:
       - name: Checkout opentrons-emulation repository
         uses: actions/checkout@v3
         with:
-          ref: multi-arch-builds-RQA-335
+          ref: ${{ github.sha }}
 
+      # Only change `main` in Opentrons/opentrons-emulation@main
+      # if making changes to .github/actions or action.yaml
       - name: Setup Emulation
         uses: Opentrons/opentrons-emulation@multi-arch-builds-RQA-335
         with:

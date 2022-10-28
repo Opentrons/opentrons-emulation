@@ -38,8 +38,10 @@ jobs:
       - name: Checkout opentrons-emulation
         uses: actions/checkout@v3
         with:
-          ref: "multi-arch-builds-RQA-335"
+          ref: ${{ github.sha }}
 
+      # Only change `main` in Opentrons/opentrons-emulation@main
+      # if making changes to .github/actions or action.yaml
       - name: Setup Emulation
         uses: Opentrons/opentrons-emulation@multi-arch-builds-RQA-335
         with:
@@ -47,6 +49,8 @@ jobs:
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup
 
+      # Only change `main` in Opentrons/opentrons-emulation@main
+      # if making changes to .github/actions or action.yaml
       - name: Run Emulation
         uses: Opentrons/opentrons-emulation@multi-arch-builds-RQA-335
         with:
@@ -59,6 +63,8 @@ jobs:
       - name: Test Emulation
         run: "curl --request GET --header 'opentrons-version: *' http://localhost:31950/modules"
 
+      # Only change `main` in Opentrons/opentrons-emulation@main
+      # if making changes to .github/actions or action.yaml
       - name: Teardown Emulation
         uses: Opentrons/opentrons-emulation@multi-arch-builds-RQA-335
         with:
