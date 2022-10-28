@@ -72,7 +72,9 @@ class ServiceBuilderOrchestrator:
             self._config_model, self._global_settings, self._dev
         ).build_service()
 
-    def _build_ot3_services(self, can_server_service_name: str) -> List[Service]:
+    def _build_ot3_services(
+        self, can_server_service_name: str, state_manager_name: str
+    ) -> List[Service]:
         """Generates OT-3 Firmware Services."""
         return [
             ConcreteOT3ServiceBuilder(
@@ -80,6 +82,7 @@ class ServiceBuilderOrchestrator:
                 self._global_settings,
                 self._dev,
                 can_server_service_name,
+                state_manager_name,
                 service_info,
             ).build_service()
             for service_info in self.OT3_SERVICES_TO_CREATE
@@ -131,6 +134,7 @@ class ServiceBuilderOrchestrator:
 
         ot3_services = self._build_ot3_services(
             can_server_service_name,
+            ot3_state_manager_service_name
         )
         self._services[can_server_service_name] = can_server_service
         self._services[ot3_state_manager_service_name] = ot3_state_manager_service

@@ -1,7 +1,10 @@
 """Module containing ConcreteOT3ServiceBuilder class."""
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     SourceType,
@@ -21,7 +24,9 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     add_ot3_firmware_named_volumes,
     get_build_args,
 )
-
+from emulation_system.consts import OT3_STATE_MANAGER_BOUND_PORT
+from .abstract_service_builder import AbstractServiceBuilder
+from .service_info import ServiceInfo
 from ...images import (
     OT3BootloaderImages,
     OT3GantryXImages,
@@ -32,8 +37,6 @@ from ...images import (
 )
 from ...input.hardware_models import OT3InputModel
 from ...logging import OT3LoggingClient
-from .abstract_service_builder import AbstractServiceBuilder
-from .service_info import ServiceInfo
 
 
 class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
@@ -45,11 +48,13 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         global_settings: OpentronsEmulationConfiguration,
         dev: bool,
         can_server_service_name: str,
+        state_manager_name: str,
         service_info: ServiceInfo,
     ) -> None:
         """Instantiates a ConcreteOT3ServiceBuilder object."""
         super().__init__(config_model, global_settings, dev)
         self._can_server_service_name = can_server_service_name
+        self._state_manager_name = state_manager_name
         self._service_info = service_info
         self._ot3 = self.get_ot3(config_model)
         self._logging_client = OT3LoggingClient(service_info.container_name, self._dev)
@@ -203,8 +208,11 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
         env_vars: IntermediateEnvironmentVariables = {
-            "CAN_SERVER_HOST": self._can_server_service_name
+            "CAN_SERVER_HOST": self._can_server_service_name,
         }
+        if not isinstance(self._service_info.image, OT3BootloaderImages):
+            env_vars["STATE_MANAGER_HOST"] = self._state_manager_name
+            env_vars["STATE_MANAGER_PORT"] = OT3_STATE_MANAGER_BOUND_PORT
 
         if isinstance(self._service_info.image, (OT3PipettesImages, OT3GripperImages)):
             env_vars["EEPROM_FILENAME"] = "eeprom.bin"
