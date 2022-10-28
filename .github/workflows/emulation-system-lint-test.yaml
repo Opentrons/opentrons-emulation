@@ -39,7 +39,7 @@ jobs:
       # Only change `main` in Opentrons/opentrons-emulation@main
       # if making changes to .github/actions or action.yaml
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@multi-arch-builds-RQA-335
+        uses: Opentrons/opentrons-emulation@main
         with:
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup-python-only

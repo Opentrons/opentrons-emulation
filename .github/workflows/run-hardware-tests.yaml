@@ -54,7 +54,7 @@ jobs:
       # Only change `main` in Opentrons/opentrons-emulation@main
       # if making changes to .github/actions or action.yaml
       - name: Setup opentrons-emulation project
-        uses: Opentrons/opentrons-emulation@multi-arch-builds-RQA-335
+        uses: Opentrons/opentrons-emulation@main
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           cache-break: ${{ github.event.inputs.cache-break }}
@@ -63,7 +63,7 @@ jobs:
       # Only change `main` in Opentrons/opentrons-emulation@main
       # if making changes to .github/actions or action.yaml
       - name: Run emulated system
-        uses: Opentrons/opentrons-emulation@multi-arch-builds-RQA-335
+        uses: Opentrons/opentrons-emulation@main
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           command: run
@@ -77,7 +77,7 @@ jobs:
       # Only change `main` in Opentrons/opentrons-emulation@main
       # if making changes to .github/actions or action.yaml
       - name: Teardown emulation
-        uses: Opentrons/opentrons-emulation@multi-arch-builds-RQA-335
+        uses: Opentrons/opentrons-emulation@main
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           command: teardown

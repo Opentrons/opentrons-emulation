@@ -43,7 +43,7 @@ jobs:
       # Only change `main` in Opentrons/opentrons-emulation@main
       # if making changes to .github/actions or action.yaml
       - name: Setup Emulation
-        uses: Opentrons/opentrons-emulation@multi-arch-builds-RQA-335
+        uses: Opentrons/opentrons-emulation@main
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           cache-break: ${{ github.event.inputs.cache-break }}
@@ -52,7 +52,7 @@ jobs:
       # Only change `main` in Opentrons/opentrons-emulation@main
       # if making changes to .github/actions or action.yaml
       - name: Run Emulation
-        uses: Opentrons/opentrons-emulation@multi-arch-builds-RQA-335
+        uses: Opentrons/opentrons-emulation@main
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           command: run
@@ -66,7 +66,7 @@ jobs:
       # Only change `main` in Opentrons/opentrons-emulation@main
       # if making changes to .github/actions or action.yaml
       - name: Teardown Emulation
-        uses: Opentrons/opentrons-emulation@multi-arch-builds-RQA-335
+        uses: Opentrons/opentrons-emulation@main
         with:
           input-file: ${PWD}/samples/${{ matrix.file }}
           command: teardown
