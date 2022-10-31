@@ -35,6 +35,8 @@ ARG URL
 ARG VENDOR
 ARG DOCKER_CMD
 ARG DESCRIPTION
+ARG MONOREPO_PYTHON="python3.7"
+ARG STATE_MANAGER_PYTHON="python3.8"
 
 LABEL opentrons-emulation.trigger=$TRIGGER
 LABEL opentrons-emulation.build_date=$BUILD_DATE
@@ -79,11 +81,20 @@ RUN apt-get update && \
 
 RUN add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
-     apt-get install \
+    apt-get install \
     	--no-install-recommends \
        	-y \
+    	python3.7 \
+    	python3.7-venv \
     	python3.8 \
     	python3.8-venv
+
+RUN ( \
+    cd /usr/bin && \
+    ln -s ${STATE_MANAGER_PYTHON} state_manager_python && \
+    ln -s ${MONOREPO_PYTHON} monorepo_python \
+    )
+
 
 FROM ubuntu-base-amd64 as ubuntu-base-arm64
 
@@ -99,7 +110,6 @@ ARG TARGETARCH
 FROM ubuntu-base-${TARGETARCH} as python-base
 
 ENV NODE_VERSION 14
-ENV OT_PYTHON "/usr/bin/python3.10"
 
 RUN apt-get update && \
     apt-get install \
@@ -111,10 +121,11 @@ RUN apt-get update && \
     pkgconf \
     libpython3.10-dev \
     libpython3.8-dev \
+    libpython3.7-dev \
     python3-pip
 
-RUN pip install --upgrade pip setuptools wheel && \
-    pip install pipenv
+RUN monorepo_python -m pip install --upgrade pip setuptools wheel && \
+    monorepo_python -m pip install pipenv
 
 
 RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -
