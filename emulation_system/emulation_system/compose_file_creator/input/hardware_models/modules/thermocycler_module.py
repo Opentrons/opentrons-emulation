@@ -1,5 +1,9 @@
 """Model and attributes for Thermocycler Module."""
-from typing import ClassVar, List, Optional
+from typing import (
+    ClassVar,
+    List,
+    Optional,
+)
 
 from pydantic import Field
 from typing_extensions import Literal
@@ -11,9 +15,12 @@ from emulation_system.compose_file_creator.config_file_settings import (
     SourceRepositories,
     TemperatureModelSettings,
 )
-
+from .module_model import (
+    FirmwareSerialNumberModel,
+    ModuleInputModel,
+    ProxyInfoModel,
+)
 from ..hardware_specific_attributes import HardwareSpecificAttributes
-from .module_model import FirmwareSerialNumberModel, ModuleInputModel, ProxyInfoModel
 
 
 class ThermocyclerModuleAttributes(HardwareSpecificAttributes):
@@ -64,8 +71,7 @@ class ThermocyclerModuleInputModel(ModuleInputModel):
     ) -> Optional[List[str]]:
         """Get command for heater shaker when it is being emulated at hardware level."""
         return [
-            "--socket",
-            f"http://{emulator_proxy_name}:{self.proxy_info.emulator_port}",
+            f"--socket http://{emulator_proxy_name}:{self.proxy_info.emulator_port}",
         ]
 
     def get_firmware_level_command(
