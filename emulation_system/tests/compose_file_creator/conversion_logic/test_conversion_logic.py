@@ -1,15 +1,26 @@
 """Tests for converting input file to DockerComposeFile."""
-from typing import Any, Dict, List, cast
+from typing import (
+    Any,
+    Dict,
+    List,
+    cast,
+)
 
 import pytest
 
 from emulation_system import OpentronsEmulationConfiguration
-from emulation_system.compose_file_creator import BuildItem, Service
+from emulation_system.compose_file_creator import (
+    BuildItem,
+    Service,
+)
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import Network
-from emulation_system.consts import DEFAULT_NETWORK_NAME, DOCKERFILE_DIR_LOCATION
+from emulation_system.consts import (
+    DEFAULT_NETWORK_NAME,
+    DOCKERFILE_DIR_LOCATION,
+)
 from tests.compose_file_creator.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,
@@ -23,6 +34,7 @@ from tests.compose_file_creator.conversion_logic.conftest import (
     CONTAINER_NAME_TO_IMAGE,
     SERVICE_NAMES,
 )
+
 
 # TODO: Add following tests:
 #   - CAN network is created on OT3 breakout
@@ -57,8 +69,8 @@ def test_service_container_name(
 ) -> None:
     """Verify container name matches service name."""
     assert (
-        robot_with_mount_and_modules_services[service_name].container_name
-        == service_name
+            robot_with_mount_and_modules_services[service_name].container_name
+            == service_name
     )
 
 
@@ -68,8 +80,8 @@ def test_service_image(
 ) -> None:
     """Verify image name is correct."""
     assert (
-        robot_with_mount_and_modules_services[service_name].image
-        == f"{CONTAINER_NAME_TO_IMAGE[service_name]}:latest"
+            robot_with_mount_and_modules_services[service_name].image
+            == f"{CONTAINER_NAME_TO_IMAGE[service_name]}:latest"
     )
 
 
@@ -138,7 +150,7 @@ def test_can_server_port_not_exposed(
 @pytest.mark.parametrize(
     "service_name, expected_value",
     [
-        [THERMOCYCLER_MODULE_ID, ["--socket", f"http://{EMULATOR_PROXY_ID}:10003"]],
+        [THERMOCYCLER_MODULE_ID, ["--socket http://{EMULATOR_PROXY_ID}:10003"]],
         [TEMPERATURE_MODULE_ID, [EMULATOR_PROXY_ID]],
         [MAGNETIC_MODULE_ID, [EMULATOR_PROXY_ID]],
         [HEATER_SHAKER_MODULE_ID, ["--socket", f"http://{EMULATOR_PROXY_ID}:10004"]],
