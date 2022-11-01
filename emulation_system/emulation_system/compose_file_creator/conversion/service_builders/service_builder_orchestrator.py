@@ -1,23 +1,9 @@
 """Module containing ServiceBuilderOrchestrator class."""
-from typing import (
-    List,
-    Optional,
-)
+from typing import List, Optional
 
-from emulation_system import (
-    OpentronsEmulationConfiguration,
-    SystemConfigurationModel,
-)
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import Service
-from . import (
-    ConcreteCANServerServiceBuilder,
-    ConcreteEmulatorProxyServiceBuilder,
-    ConcreteInputServiceBuilder,
-    ConcreteOT3ServiceBuilder,
-    ConcreteOT3StateManagerBuilder,
-    ConcreteSmoothieServiceBuilder,
-)
-from .service_info import ServiceInfo
+
 from ...config_file_settings import OT3Hardware
 from ...images import (
     OT3BootloaderImages,
@@ -28,6 +14,15 @@ from ...images import (
     OT3PipettesImages,
 )
 from ...types.intermediate_types import DockerServices
+from . import (
+    ConcreteCANServerServiceBuilder,
+    ConcreteEmulatorProxyServiceBuilder,
+    ConcreteInputServiceBuilder,
+    ConcreteOT3ServiceBuilder,
+    ConcreteOT3StateManagerBuilder,
+    ConcreteSmoothieServiceBuilder,
+)
+from .service_info import ServiceInfo
 
 
 class ServiceBuilderOrchestrator:
@@ -90,9 +85,7 @@ class ServiceBuilderOrchestrator:
 
     def _build_ot3_state_manager_service(self) -> Service:
         return ConcreteOT3StateManagerBuilder(
-            self._config_model,
-            self._global_settings,
-            self._dev
+            self._config_model, self._global_settings, self._dev
         ).build_service()
 
     def _build_input_services(
@@ -133,8 +126,7 @@ class ServiceBuilderOrchestrator:
         assert ot3_state_manager_service_name is not None
 
         ot3_services = self._build_ot3_services(
-            can_server_service_name,
-            ot3_state_manager_service_name
+            can_server_service_name, ot3_state_manager_service_name
         )
         self._services[can_server_service_name] = can_server_service
         self._services[ot3_state_manager_service_name] = ot3_state_manager_service

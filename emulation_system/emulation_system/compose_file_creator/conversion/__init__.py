@@ -16,6 +16,5 @@ __all__ = [
     "ConcreteSmoothieServiceBuilder",
     "ConcreteOT3ServiceBuilder",
     "ConcreteInputServiceBuilder",
-    "ConcreteOT3StateManagerBuilder"
-
+    "ConcreteOT3StateManagerBuilder",
 ]

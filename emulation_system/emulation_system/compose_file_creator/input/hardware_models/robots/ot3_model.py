@@ -1,10 +1,7 @@
 """OT-3 Module and it's attributes."""
 import os
 import pathlib
-from typing import (
-    List,
-    Optional,
-)
+from typing import List, Optional
 
 from pydantic import Field
 from typing_extensions import Literal
@@ -28,9 +25,11 @@ from emulation_system.consts import (
     OT3_STATE_MANAGER_BOUND_PORT,
     SOURCE_CODE_MOUNT_NAME,
 )
+
+from ..hardware_specific_attributes import HardwareSpecificAttributes
+
 # cannot import from . because of circular import issue
 from .robot_model import RobotInputModel
-from ..hardware_specific_attributes import HardwareSpecificAttributes
 
 
 class OT3Attributes(HardwareSpecificAttributes):
@@ -75,8 +74,7 @@ class OT3InputModel(RobotInputModel):
     can_server_exposed_port: Optional[int] = Field(alias="can-server-exposed-port")
     can_server_bound_port: int = Field(alias="can-server-bound-port", default=9898)
     ot3_state_manager_exposed_port: int = Field(
-        alias="ot3-state-manager-exposed-port",
-        default=OT3_STATE_MANAGER_BOUND_PORT
+        alias="ot3-state-manager-exposed-port", default=OT3_STATE_MANAGER_BOUND_PORT
     )
 
     can_server_env_vars: IntermediateEnvironmentVariables | None = Field(
@@ -131,7 +129,9 @@ class OT3InputModel(RobotInputModel):
         )
 
     def get_ot3_state_manager_bound_port(self) -> IntermediatePorts:
-        return [f"{self.ot3_state_manager_exposed_port}:{OT3_STATE_MANAGER_BOUND_PORT}/udp"]
+        return [
+            f"{self.ot3_state_manager_exposed_port}:{OT3_STATE_MANAGER_BOUND_PORT}/udp"
+        ]
 
     @property
     def is_remote(self) -> bool:
