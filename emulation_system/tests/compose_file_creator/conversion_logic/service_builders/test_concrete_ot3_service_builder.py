@@ -1,23 +1,12 @@
 """Tests to confirm that ConcreteOT3ServiceBuilder builds the CAN Server Service correctly."""
-from typing import (
-    Any,
-    Dict,
-    List,
-    cast,
-)
+from typing import Any, Dict, List, cast
 
 import pytest
 from pydantic import parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system import (
-    OpentronsEmulationConfiguration,
-    SystemConfigurationModel,
-)
-from emulation_system.compose_file_creator import (
-    BuildItem,
-    Service,
-)
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system.compose_file_creator import BuildItem, Service
 from emulation_system.compose_file_creator.config_file_settings import (
     OT3Hardware,
     RepoToBuildArgMapping,
@@ -31,10 +20,7 @@ from emulation_system.compose_file_creator.images import (
     OT3HeadImages,
     OT3PipettesImages,
 )
-from emulation_system.consts import (
-    DEV_DOCKERFILE_NAME,
-    DOCKERFILE_NAME,
-)
+from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
 from tests.compose_file_creator.conversion_logic.conftest import (
     FAKE_COMMIT_ID,
     build_args_are_none,
@@ -239,14 +225,14 @@ def test_ot3_service_environment_variables(
     "config_model, expected_firmware_url, expected_monorepo_url",
     [
         (
-                lazy_fixture("remote_source_latest"),
-                lazy_fixture("ot3_firmware_head"),
-                lazy_fixture("opentrons_head"),
+            lazy_fixture("remote_source_latest"),
+            lazy_fixture("ot3_firmware_head"),
+            lazy_fixture("opentrons_head"),
         ),
         (
-                lazy_fixture("remote_source_commit_id"),
-                lazy_fixture("ot3_firmware_commit"),
-                lazy_fixture("opentrons_commit"),
+            lazy_fixture("remote_source_commit_id"),
+            lazy_fixture("ot3_firmware_commit"),
+            lazy_fixture("opentrons_commit"),
         ),
     ],
 )

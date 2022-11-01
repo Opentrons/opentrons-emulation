@@ -129,6 +129,10 @@ class OT3InputModel(RobotInputModel):
         )
 
     def get_ot3_state_manager_bound_port(self) -> IntermediatePorts:
+        """Get OT-3 State Manager bound port.
+
+        Note that it is UDP protocol.
+        """
         return [
             f"{self.ot3_state_manager_exposed_port}:{OT3_STATE_MANAGER_BOUND_PORT}/udp"
         ]

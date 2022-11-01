@@ -1,9 +1,6 @@
 """Test docker-compose healthcheck fields for all emulators."""
 
-from typing import (
-    Any,
-    Dict,
-)
+from typing import Any, Dict
 
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
@@ -26,10 +23,10 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 )
 
 MODULE_IMAGE_NAMES = (
-        HeaterShakerModuleImages().get_image_names()
-        + MagneticModuleImages().get_image_names()
-        + TemperatureModuleImages().get_image_names()
-        + ThermocyclerModuleImages().get_image_names()
+    HeaterShakerModuleImages().get_image_names()
+    + MagneticModuleImages().get_image_names()
+    + TemperatureModuleImages().get_image_names()
+    + ThermocyclerModuleImages().get_image_names()
 )
 
 
@@ -43,8 +40,8 @@ def test_ot3_services_heathcheck(
         service
         for service in services.values()
         if service.image is not None
-           and "state-manager" not in service.image
-           and ("ot3" in service.image or "can-server" in service.image)
+        and "state-manager" not in service.image
+        and ("ot3" in service.image or "can-server" in service.image)
     ]
     assert len(services_to_check) == 7
     for service in services_to_check:
@@ -75,8 +72,8 @@ def test_emulator_proxy_heathcheck(
         assert healthcheck.interval == "10s"
         assert healthcheck.timeout == "10s"
         assert (
-                healthcheck.test
-                == "ps -eaf | grep 'python -m opentrons.hardware_control.emulation.app' | grep -v 'grep'"
+            healthcheck.test
+            == "ps -eaf | grep 'python -m opentrons.hardware_control.emulation.app' | grep -v 'grep'"
         )
         assert healthcheck.start_period is None
         assert healthcheck.disable is None
@@ -123,8 +120,8 @@ def test_robot_server_healthcheck(
         assert healthcheck.interval == "10s"
         assert healthcheck.timeout == "10s"
         assert (
-                healthcheck.test
-                == "curl -s --location --request GET 'http://127.0.0.1:31950/modules' --header 'opentrons-version: *' || exit 1"
+            healthcheck.test
+            == "curl -s --location --request GET 'http://127.0.0.1:31950/modules' --header 'opentrons-version: *' || exit 1"
         )
         assert healthcheck.start_period is None
         assert healthcheck.disable is None
@@ -158,7 +155,7 @@ def test_modules_healthcheck(
         service
         for service in services.values()
         if service.image is not None
-           and service.image.replace(":latest", "") in MODULE_IMAGE_NAMES
+        and service.image.replace(":latest", "") in MODULE_IMAGE_NAMES
     ]
     assert len(services_to_check) == 4
 
