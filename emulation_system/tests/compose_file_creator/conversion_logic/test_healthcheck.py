@@ -40,6 +40,7 @@ def test_ot3_services_heathcheck(
         service
         for service in services.values()
         if service.image is not None
+        and "state-manager" not in service.image
         and ("ot3" in service.image or "can-server" in service.image)
     ]
     assert len(services_to_check) == 7

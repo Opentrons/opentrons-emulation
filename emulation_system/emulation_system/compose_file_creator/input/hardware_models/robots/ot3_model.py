@@ -20,7 +20,11 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateEnvironmentVariables,
     IntermediatePorts,
 )
-from emulation_system.consts import CAN_SERVER_MOUNT_NAME, SOURCE_CODE_MOUNT_NAME
+from emulation_system.consts import (
+    CAN_SERVER_MOUNT_NAME,
+    OT3_STATE_MANAGER_BOUND_PORT,
+    SOURCE_CODE_MOUNT_NAME,
+)
 
 from ..hardware_specific_attributes import HardwareSpecificAttributes
 
@@ -69,6 +73,9 @@ class OT3InputModel(RobotInputModel):
     bound_port: int = Field(alias="bound-port", default=31950)
     can_server_exposed_port: Optional[int] = Field(alias="can-server-exposed-port")
     can_server_bound_port: int = Field(alias="can-server-bound-port", default=9898)
+    ot3_state_manager_exposed_port: int = Field(
+        alias="ot3-state-manager-exposed-port", default=OT3_STATE_MANAGER_BOUND_PORT
+    )
 
     can_server_env_vars: IntermediateEnvironmentVariables | None = Field(
         alias="can-server-env-vars"
@@ -90,6 +97,9 @@ class OT3InputModel(RobotInputModel):
     )
     bootloader_env_vars: IntermediateEnvironmentVariables | None = Field(
         alias="bootloader-env-vars"
+    )
+    state_manager_env_vars: IntermediateEnvironmentVariables | None = Field(
+        alias="state-manager-env-vars"
     )
 
     def get_can_mount_strings(self) -> List[str]:
@@ -117,6 +127,15 @@ class OT3InputModel(RobotInputModel):
             if self.can_server_exposed_port is not None
             else None
         )
+
+    def get_ot3_state_manager_bound_port(self) -> IntermediatePorts:
+        """Get OT-3 State Manager bound port.
+
+        Note that it is UDP protocol.
+        """
+        return [
+            f"{self.ot3_state_manager_exposed_port}:{OT3_STATE_MANAGER_BOUND_PORT}/udp"
+        ]
 
     @property
     def is_remote(self) -> bool:

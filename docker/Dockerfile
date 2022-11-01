@@ -212,6 +212,11 @@ RUN pip install /dist/*
 # Make sure to include the OPENTRONS_HARDWARE env variable
 # Each Remote Target should copy in entrypoint.sh
 
+FROM ot3-firmware-builder as ot3-state-manager
+ENV OPENTRONS_HARDWARE "ot3-state-manager"
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "run"]
+
 #############################
 # Hardware Remote Emulators #
 #############################

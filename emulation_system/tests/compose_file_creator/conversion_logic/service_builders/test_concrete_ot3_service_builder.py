@@ -103,7 +103,9 @@ def test_simple_ot3_values(
     """Tests for values that are the same for all configurations of a Smoothie Service."""
     services = ServiceBuilderOrchestrator(
         config_model, testing_global_em_config, dev
-    )._build_ot3_services(can_server_service_name="can-server")
+    )._build_ot3_services(
+        can_server_service_name="can-server", state_manager_name="state-manager"
+    )
 
     expected_dockerfile_name = DEV_DOCKERFILE_NAME if dev else DOCKERFILE_NAME
 
@@ -140,7 +142,9 @@ def test_ot3_service_container_names_values(
     """Tests for container name for all configurations of a Smoothie Service."""
     services = ServiceBuilderOrchestrator(
         config_model, testing_global_em_config, dev
-    )._build_ot3_services(can_server_service_name="can-server")
+    )._build_ot3_services(
+        can_server_service_name="can-server", state_manager_name="state-manager"
+    )
 
     # The number of items in ServiceBuilderOrchestrator.OT3_SERVICES_TO_CREATE
     assert len(services) == 6
@@ -174,7 +178,9 @@ def test_ot3_service_environment_variables(
     """Tests for values that are the same for all configurations of a Smoothie Service."""
     services = ServiceBuilderOrchestrator(
         config_model, testing_global_em_config, dev=True
-    )._build_ot3_services(can_server_service_name="can-server")
+    )._build_ot3_services(
+        can_server_service_name="can-server", state_manager_name="state-manager"
+    )
 
     # The number of items in ServiceBuilderOrchestrator.OT3_SERVICES_TO_CREATE
     assert len(services) == 6
@@ -185,24 +191,34 @@ def test_ot3_service_environment_variables(
     gripper = get_ot3_service(services, OT3Hardware.GRIPPER)
     pipettes = get_ot3_service(services, OT3Hardware.PIPETTES)
 
-    not_pipette_or_gripper_services = [head, gantry_x, gantry_y, bootloader]
+    not_pipette_or_gripper_services = [head, gantry_x, gantry_y]
 
     for service in not_pipette_or_gripper_services:
         service_env = service.environment
         assert service_env is not None
         env_root = cast(Dict[str, Any], service_env.__root__)
         assert env_root is not None
-        assert len(env_root.values()) == 1
+        assert len(env_root.values()) == 3
         assert "CAN_SERVER_HOST" in env_root
+        assert "STATE_MANAGER_HOST" in env_root
+        assert "STATE_MANAGER_PORT" in env_root
 
     for service in [pipettes, gripper]:
         service_env = service.environment
         assert service_env is not None
         env_root = cast(Dict[str, Any], service_env.__root__)
         assert env_root is not None
-        assert len(env_root.values()) == 2
+        assert len(env_root.values()) == 4
         assert "CAN_SERVER_HOST" in env_root
         assert "EEPROM_FILENAME" in env_root
+        assert "STATE_MANAGER_HOST" in env_root
+        assert "STATE_MANAGER_PORT" in env_root
+
+    bootloader_service_env = bootloader.environment
+    assert bootloader_service_env is not None
+    bootloader_env_root = cast(Dict[str, Any], bootloader_service_env.__root__)
+    assert len(bootloader_env_root.values()) == 1
+    assert "CAN_SERVER_HOST" in env_root
 
 
 @pytest.mark.parametrize(
@@ -229,7 +245,9 @@ def test_ot3_service_remote(
     """Tests for values that are the same for all remote configurations of a Smoothie Service."""
     services = ServiceBuilderOrchestrator(
         config_model, testing_global_em_config, dev=True
-    )._build_ot3_services(can_server_service_name="can-server")
+    )._build_ot3_services(
+        can_server_service_name="can-server", state_manager_name="state-manager"
+    )
     assert len(services) == 6
     head = get_ot3_service(services, OT3Hardware.HEAD)
     pipettes = get_ot3_service(services, OT3Hardware.PIPETTES)
@@ -278,7 +296,9 @@ def test_ot3_services_local(
     """Test for values for local configuration of a Smoothie Service."""
     services = ServiceBuilderOrchestrator(
         local_source, testing_global_em_config, dev=True
-    )._build_ot3_services(can_server_service_name="can-server")
+    )._build_ot3_services(
+        can_server_service_name="can-server", state_manager_name="state-manager"
+    )
     assert len(services) == 6
     head = get_ot3_service(services, OT3Hardware.HEAD)
     pipettes = get_ot3_service(services, OT3Hardware.PIPETTES)
