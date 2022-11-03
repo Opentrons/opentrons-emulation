@@ -133,7 +133,7 @@ case $FULL_COMMAND in
     # 9999 is the hardcoded state manager port
     (
       cd /ot3-firmware/state_manager && \
-      ../stm32-tools/poetry/bin/poetry run python3 -m state_manager.state_manager --right-pipette P1000-multi-96 localhost 9999
+      ../stm32-tools/poetry/bin/poetry run python3 -m state_manager.state_manager --right-pipette P1000-multi-96 0.0.0.0 9999
     )
     ;;
 
