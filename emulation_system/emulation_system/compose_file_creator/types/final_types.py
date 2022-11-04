@@ -6,7 +6,7 @@ Do not use these types when implementing business logic, they suck, and it makes
 mypy hate everything you have ever done.
 """
 
-from typing import Dict, List, Optional, Union
+from typing import List, TypeAlias
 
 from .. import BuildItem
 from ..output.compose_file_model import (
@@ -20,13 +20,13 @@ from ..output.compose_file_model import (
 # TODO: Need to figure out what to do with DependsOn and Networks
 #       In compose_file_model.py they implement constr which mypy does not like.
 
-ServiceVolumes = Optional[List[Union[str, Volume1]]]
-ServicePorts = Optional[List[Union[float, str, Port]]]
-ServiceEnvironment = Optional[ListOrDict]
-ServiceContainerName = Optional[str]
-ServiceImage = Optional[str]
-ServiceBuild = Optional[Union[str, BuildItem]]
-ServiceTTY = Optional[bool]
-ServiceCommand = Optional[Union[str, List[str]]]
-ServiceHealthcheck = Healthcheck
-ServiceDependsOn = Optional[Dict[str, DependsOn]]
+ServiceVolumes: TypeAlias = List[str | Volume1] | None
+ServicePorts: TypeAlias = List[float | str | Port] | None
+ServiceEnvironment: TypeAlias = ListOrDict | None
+ServiceContainerName: TypeAlias = str | None
+ServiceImage: TypeAlias = str | None
+ServiceBuild: TypeAlias = str | BuildItem | None
+ServiceTTY: TypeAlias = bool | None
+ServiceCommand: TypeAlias = str | List[str] | None
+ServiceHealthcheck: TypeAlias = Healthcheck
+ServiceDependsOn: TypeAlias = dict[str, DependsOn] | None

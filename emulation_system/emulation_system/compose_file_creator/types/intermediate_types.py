@@ -1,7 +1,6 @@
 """Intermediate types that will be used for composing RuntimeComposeModel."""
 from dataclasses import dataclass
 from enum import Enum
-from typing import Union
 
 from emulation_system.compose_file_creator import Service
 
@@ -31,7 +30,7 @@ DockerServices = dict[str, Service]
 IntermediateNetworks = list[str]
 IntermediateVolumes = list[str]
 IntermediatePorts = list[str]
-IntermediateEnvironmentVariables = dict[str, Union[str, int, float]]
+IntermediateEnvironmentVariables = dict[str, str | int | float]
 IntermediateDependsOn = dict[str, DependsOnConditions]
 IntermediateCommand = list[str]
 IntermediateBuildArgs = dict[str, str]
