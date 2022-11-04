@@ -51,7 +51,7 @@ class DependsOn(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    condition: Condition
+    condition: str
 
 
 class Extend(BaseModel):
@@ -555,7 +555,7 @@ class ComposeSpecification(BaseModel):
     version: Optional[str] = Field(
         None,
         description='Version of the Compose specification used. Tools not implementing required version MUST reject the configuration file.'
-        )
+    )
     services: Optional[Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), Service]]  # type: ignore [valid-type]
     networks: Optional[Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), Network]]  # type: ignore [valid-type]
     volumes: Optional[Dict[constr(regex=r'^[a-zA-Z0-9._-]+$'), Volume]]  # type: ignore [valid-type]

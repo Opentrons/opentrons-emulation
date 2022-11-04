@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pathlib
 from abc import ABC, abstractmethod
-from typing import Optional, Type, cast
+from typing import Dict, Optional, Type, cast, overload
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem, Service
@@ -26,6 +26,7 @@ from emulation_system.compose_file_creator.types.final_types import (
     ServiceBuild,
     ServiceCommand,
     ServiceContainerName,
+    ServiceDependsOn,
     ServiceEnvironment,
     ServiceHealthcheck,
     ServiceImage,
@@ -35,6 +36,7 @@ from emulation_system.compose_file_creator.types.final_types import (
 )
 from emulation_system.compose_file_creator.types.input_types import Robots
 from emulation_system.compose_file_creator.types.intermediate_types import (
+    DependsOnConditions,
     IntermediateBuildArgs,
     IntermediateCommand,
     IntermediateDependsOn,
@@ -129,6 +131,30 @@ class AbstractServiceBuilder(ABC):
         )
         return container_name
 
+    @overload
+    @staticmethod
+    def _cast_depends_on(
+        depends_on: Dict[str, DependsOnConditions]
+    ) -> ServiceDependsOn:
+        ...
+
+    @overload
+    @staticmethod
+    def _cast_depends_on(depends_on: None) -> None:
+        ...
+
+    @staticmethod
+    def _cast_depends_on(
+        depends_on: Dict[str, DependsOnConditions] | None
+    ) -> Optional[ServiceDependsOn]:
+        final_val: Optional[ServiceDependsOn] = None
+        if depends_on is not None:
+            final_val = cast(
+                ServiceDependsOn,
+                {key: {"condition": value.value} for key, value in depends_on.items()},
+            )
+        return final_val
+
     @abstractmethod
     def generate_container_name(self) -> str:
         """Method to generate value for container_name parameter for Service."""
@@ -211,7 +237,12 @@ class AbstractServiceBuilder(ABC):
             environment=cast(ServiceEnvironment, self.generate_env_vars()),
             command=cast(ServiceCommand, self.generate_command()),
             networks=self.generate_networks(),
-            depends_on=self.generate_depends_on(),
+            # Have to call with AbstractServiceBuilder instead of self due to
+            # https://github.com/python/mypy/issues/7781
+            # It seems like the issue is fixed, just hasn't made it into a mypy release yet
+            depends_on=AbstractServiceBuilder._cast_depends_on(
+                self.generate_depends_on()
+            ),
             healthcheck=ServiceHealthcheck(
                 interval=f"{intermediate_healthcheck.interval}s",
                 retries=intermediate_healthcheck.retries,
