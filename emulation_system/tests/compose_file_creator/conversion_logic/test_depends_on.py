@@ -1,6 +1,9 @@
 """Tests related to depends_on property of services."""
 
-from typing import Any, Dict
+from typing import (
+    Any,
+    Dict,
+)
 
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
@@ -35,8 +38,8 @@ def test_emulator_proxy_in_depends_on(
 ) -> None:
     """Confirm that modules depend on emulator proxy."""
     assert (
-        EMULATOR_PROXY_ID
-        in robot_with_mount_and_modules_services[service_name].depends_on
+            EMULATOR_PROXY_ID
+            in robot_with_mount_and_modules_services[service_name].depends_on
     )
 
 
@@ -60,5 +63,5 @@ def test_robots_only_emulator_proxy_in_depends_on(
     services = convert_from_obj(config, testing_global_em_config, dev=False).services
     assert services is not None
     depends_on = services[service_id].depends_on
-    assert isinstance(depends_on, list)
+    assert isinstance(depends_on, dict)
     assert EMULATOR_PROXY_ID in depends_on

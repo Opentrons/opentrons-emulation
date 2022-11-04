@@ -75,7 +75,7 @@ class InputLoggingClient(AbstractLoggingClient):
         if depends_on is None:
             output = ["No depends_on will be added."]
         else:
-            tabbed_depends_on = [f'\t"{depends_on}"' for depends_on in depends_on]
+            tabbed_depends_on = [f'\t"{name}"' for name in depends_on.keys()]
             output = [
                 "Adding the following depends_on:",
                 *tabbed_depends_on,

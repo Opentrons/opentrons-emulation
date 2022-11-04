@@ -26,6 +26,7 @@ from emulation_system.compose_file_creator.types.final_types import (
     ServiceBuild,
     ServiceCommand,
     ServiceContainerName,
+    ServiceDependsOn,
     ServiceEnvironment,
     ServiceHealthcheck,
     ServiceImage,
@@ -129,6 +130,17 @@ class AbstractServiceBuilder(ABC):
         )
         return container_name
 
+    def _cast_depends_on(
+        self, depends_on: Optional[IntermediateDependsOn]
+    ) -> Optional[ServiceDependsOn]:
+        final_val: Optional[ServiceDependsOn] = None
+        if depends_on is not None:
+            final_val = cast(
+                ServiceDependsOn,
+                {key: {"condition": value.value} for key, value in depends_on.items()},
+            )
+        return final_val
+
     @abstractmethod
     def generate_container_name(self) -> str:
         """Method to generate value for container_name parameter for Service."""
@@ -211,7 +223,7 @@ class AbstractServiceBuilder(ABC):
             environment=cast(ServiceEnvironment, self.generate_env_vars()),
             command=cast(ServiceCommand, self.generate_command()),
             networks=self.generate_networks(),
-            depends_on=self.generate_depends_on(),
+            depends_on=self._cast_depends_on(self.generate_depends_on()),
             healthcheck=ServiceHealthcheck(
                 interval=f"{intermediate_healthcheck.interval}s",
                 retries=intermediate_healthcheck.retries,

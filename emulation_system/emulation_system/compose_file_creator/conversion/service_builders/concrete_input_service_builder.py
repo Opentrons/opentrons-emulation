@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator.types.intermediate_types import (
+    DependsOnConditions,
     IntermediateBuildArgs,
     IntermediateCommand,
     IntermediateDependsOn,
@@ -213,12 +214,12 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
 
     def generate_depends_on(self) -> Optional[IntermediateDependsOn]:
         """Generates value for depends_on parameter."""
-        dependencies = []
+        dependencies = IntermediateDependsOn()
         if self._emulator_proxy_name is not None:
-            dependencies.append(self._emulator_proxy_name)
+            dependencies[self._emulator_proxy_name] = DependsOnConditions.HEALTHY
 
         if self._smoothie_name is not None and is_ot2(self._container):
-            dependencies.append(self._smoothie_name)
+            dependencies[self._smoothie_name] = DependsOnConditions.STARTED
 
         deps = dependencies if len(dependencies) != 0 else None
         self._logging_client.log_depends_on(deps)
