@@ -8,7 +8,7 @@ fi
 
 BRANCH_NAME=$1
 
-if [[ "${BRANCH_NAME}" =~ release-v.* ]]; then
+if [[ "${BRANCH_NAME}" =~ v.* ]]; then
   docker buildx build \
   --push \
   --file ./bases_Dockerfile \
