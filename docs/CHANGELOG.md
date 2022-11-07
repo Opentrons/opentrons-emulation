@@ -1,5 +1,58 @@
 # Opentrons Emulation Changelog
 
+## v3.0.1 (2022-11-07)
+
+### :rotating_light: v2 -> v3 Breaking Changes :rotating_light:
+
+- All `robot` blocks of type `ot3` now require `opentrons-hardware-source-location` and
+  `opentrons-hardware-source-type` fields.
+
+### Bug Fixes
+
+- Fix `ubuntu-base-arm64` being built against `x86_64`
+  [\[PR #212\]](https://github.com/Opentrons/opentrons-emulation/pull/212)
+  [\[RQA-339\]](https://opentrons.atlassian.net/browse/RQA-339)
+- Add OT-3 State Manager to opentrons-emulation
+  [\[PR #214\]](https://github.com/Opentrons/opentrons-emulation/pull/214)
+  [\[RQA-337\]](https://opentrons.atlassian.net/browse/RQA-337)
+- Specify correct python version for `can-comm` and `can-mon`
+  [\[PR #219\]](https://github.com/Opentrons/opentrons-emulation/pull/219)
+- Fix State Manager IP specification
+  [\[PR #220\]](https://github.com/Opentrons/opentrons-emulation/pull/220)
+- Make containers wait for emulation-proxy to be healthy before starting
+  [\[PR #221\]](https://github.com/Opentrons/opentrons-emulation/pull/221)
+  [\[RQA-340\]](https://opentrons.atlassian.net/browse/RQA-340)
+
+### Features
+
+- Add ARM build and Docker Image for `opentrons-emulation`
+  [\[PR #209\]](https://github.com/Opentrons/opentrons-emulation/pull/209)
+  [\[RQA-335\]](https://opentrons.atlassian.net/browse/RQA-335)
+- Add start, stop, build-no-cache, and dev-build-no-cache commands to Makefile
+  [\[PR #217\]](https://github.com/Opentrons/opentrons-emulation/pull/217)
+  [\[RQA-348\]](https://opentrons.atlassian.net/browse/RQA-348)
+- Allow for custom naming of robot
+  [\[PR #218\]](https://github.com/Opentrons/opentrons-emulation/pull/218)
+  [\[PR #11653\]](https://github.com/Opentrons/opentrons/pull/11653)
+  [\[RQA-349\]](https://opentrons.atlassian.net/browse/RQA-349)
+
+### Chores
+
+- Remove broken pipenv badge [\[PR #206\]](https://github.com/Opentrons/opentrons-emulation/pull/206)
+- Clean up docs [\[PR #208\]](https://github.com/Opentrons/opentrons-emulation/pull/208)
+- Build monorepo against Python 3.7
+  [\[PR #216\]](https://github.com/Opentrons/opentrons-emulation/pull/216)
+  [\[RQA-345\]](https://opentrons.atlassian.net/browse/RQA-345)
+- Update Makefile docs
+  [\[PR #217\]](https://github.com/Opentrons/opentrons-emulation/pull/217)
+  [\[RQA-351\]](https://opentrons.atlassian.net/browse/RQA-351)
+
+### Refactor
+
+- Fix Github Action reference logic
+  [\[PR #213\]](https://github.com/Opentrons/opentrons-emulation/pull/213)
+  [\[RQA-336\]](https://opentrons.atlassian.net/browse/RQA-336)
+
 ## v3.0.0 (2022-10-18)
 
 ### :rotating_light: Breaking Changes :rotating_light:
