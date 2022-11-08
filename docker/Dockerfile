@@ -7,22 +7,14 @@
 # entrypoint.sh should also be bind-mounted in so do not copy it in either
 # Make sure to include the OPENTRONS_HARDWARE env variable
 
-FROM ghcr.io/opentrons/cpp-base-${TARGETARCH}:latest as cpp-base-with-rebuild-script
-COPY rebuild.sh /rebuild.sh
-ENTRYPOINT ["/rebuild.sh"]
-
-FROM ghcr.io/opentrons/python-base:latest as python-base-with-rebuild-script
-COPY rebuild.sh /rebuild.sh
-ENTRYPOINT ["/rebuild.sh"]
-
 ############################
 # Hardware Local Emulators #
 ############################
 
-FROM cpp-base-with-rebuild-script as heater-shaker-hardware-local
+FROM ghcr.io/opentrons/cpp-base-${TARGETARCH} as heater-shaker-hardware-local
 ENV OPENTRONS_HARDWARE "heater-shaker-hardware"
 
-FROM cpp-base-with-rebuild-script as thermocycler-hardware-local
+FROM ghcr.io/opentrons/cpp-base-${TARGETARCH} as thermocycler-hardware-local
 ENV OPENTRONS_HARDWARE "thermocycler-hardware"
 
 # Do not use common-ot3-firmware as value for OPENTRONS_HARDWARE
@@ -32,50 +24,50 @@ ENV OPENTRONS_HARDWARE "thermocycler-hardware"
 # Instead specify the individual piece of firware as the hardware. This will cause only the container to only build
 # and move firmware for itself. Eliminating the issue of them clobbering each other
 
-FROM cpp-base-with-rebuild-script as ot3-pipettes-hardware-local
+FROM ghcr.io/opentrons/cpp-base-${TARGETARCH} as ot3-pipettes-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-pipettes-hardware"
 
-FROM cpp-base-with-rebuild-script as ot3-head-hardware-local
+FROM ghcr.io/opentrons/cpp-base-${TARGETARCH} as ot3-head-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-head-hardware"
 
-FROM cpp-base-with-rebuild-script as ot3-gantry-x-hardware-local
+FROM ghcr.io/opentrons/cpp-base-${TARGETARCH} as ot3-gantry-x-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-gantry-x-hardware"
 
-FROM cpp-base-with-rebuild-script as ot3-gantry-y-hardware-local
+FROM ghcr.io/opentrons/cpp-base-${TARGETARCH} as ot3-gantry-y-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-gantry-y-hardware"
 
-FROM cpp-base-with-rebuild-script as ot3-bootloader-hardware-local
+FROM ghcr.io/opentrons/cpp-base-${TARGETARCH} as ot3-bootloader-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-bootloader-hardware"
 
-FROM cpp-base-with-rebuild-script as ot3-gripper-hardware-local
+FROM ghcr.io/opentrons/cpp-base-${TARGETARCH} as ot3-gripper-hardware-local
 ENV OPENTRONS_HARDWARE "ot3-gripper-hardware"
 
 ############################
 # Firmware Local Emulators #
 ############################
 
-FROM python-base-with-rebuild-script as thermocycler-firmware-local
+FROM ghcr.io/opentrons/python-base:latest as thermocycler-firmware-local
 ENV OPENTRONS_HARDWARE "thermocycler-firmware"
 
-FROM python-base-with-rebuild-script as heater-shaker-firmware-local
+FROM ghcr.io/opentrons/python-base:latest as heater-shaker-firmware-local
 ENV OPENTRONS_HARDWARE "heatershaker-firmware"
 
-FROM python-base-with-rebuild-script as magdeck-firmware-local
+FROM ghcr.io/opentrons/python-base:latest as magdeck-firmware-local
 ENV OPENTRONS_HARDWARE "magdeck-firmware"
 
-FROM python-base-with-rebuild-script as tempdeck-firmware-local
+FROM ghcr.io/opentrons/python-base:latest as tempdeck-firmware-local
 ENV OPENTRONS_HARDWARE "tempdeck-firmware"
 
-FROM python-base-with-rebuild-script as emulator-proxy-local
+FROM ghcr.io/opentrons/python-base:latest as emulator-proxy-local
 ENV OPENTRONS_HARDWARE "emulator-proxy"
 
-FROM python-base-with-rebuild-script as robot-server-local
+FROM ghcr.io/opentrons/python-base:latest as robot-server-local
 ENV OPENTRONS_HARDWARE "robot-server"
 
-FROM python-base-with-rebuild-script as smoothie-local
+FROM ghcr.io/opentrons/python-base:latest as smoothie-local
 ENV OPENTRONS_HARDWARE "smoothie"
 
-FROM python-base-with-rebuild-script as can-server-local
+FROM ghcr.io/opentrons/python-base:latest as can-server-local
 ENV OPENTRONS_HARDWARE "can-server"
 
 
