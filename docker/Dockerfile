@@ -7,6 +7,9 @@
 # entrypoint.sh should also be bind-mounted in so do not copy it in either
 # Make sure to include the OPENTRONS_HARDWARE env variable
 
+FROM ghcr.io/opentrons/cpp-base-${TARGETARCH} as local-ot3-firmware-builder
+COPY entrypoints/local_ot3_firmware_builder.sh /build.sh
+
 ############################
 # Hardware Local Emulators #
 ############################
