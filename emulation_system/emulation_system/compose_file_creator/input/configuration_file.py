@@ -167,12 +167,9 @@ class SystemConfigurationModel(BaseModel):
     @property
     def local_ot3_builder_required(self) -> bool:
         """Whether or not a local-ot3-firmware-builder container is required."""
-        req: bool
         if self.robot is None:
-            req = False
-        else:
-            req = is_ot3(self.robot) and self.robot.source_type == SourceType.LOCAL
-        return req
+            return False
+        return is_ot3(self.robot) and self.robot.source_type == SourceType.LOCAL
 
     @property
     def local_opentrons_modules_builder_required(self) -> bool:
