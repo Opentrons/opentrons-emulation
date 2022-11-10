@@ -1,5 +1,5 @@
 """Module containing ConcreteOT3ServiceBuilder class."""
-from typing import Optional
+from typing import List, Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator.types.intermediate_types import (
@@ -95,10 +95,16 @@ class ConcreteLocalOT3FirmwareBuilderBuilder(AbstractServiceBuilder):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        mount_strings = [
-            member.generate_executable_storage_volume_string()
-            for member in OT3Hardware.__members__.values()
-        ]
+        mount_strings: List[str] = []
+        if self._ot3.source_type == SourceType.REMOTE:
+            mount_strings.extend(
+                [
+                    member.generate_executable_storage_volume_string()
+                    for member in OT3Hardware.__members__.values()
+                ]
+            )
+
+        # TODO: Add executable volume string for monorepo if opentrons-hardware-source-type is local
         mount_strings.extend(self._ot3.get_mount_strings())
         return mount_strings
 
