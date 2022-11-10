@@ -96,7 +96,7 @@ class ConcreteLocalOT3FirmwareBuilderBuilder(AbstractServiceBuilder):
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
         mount_strings: List[str] = []
-        if self._ot3.source_type == SourceType.REMOTE:
+        if self._ot3.source_type == SourceType.LOCAL:
             mount_strings.extend(
                 [
                     member.generate_executable_storage_volume_string()
