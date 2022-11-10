@@ -7,9 +7,6 @@
 # entrypoint.sh should also be bind-mounted in so do not copy it in either
 # Make sure to include the OPENTRONS_HARDWARE env variable
 
-FROM ghcr.io/opentrons/cpp-base-${TARGETARCH} as local-ot3-firmware-builder
-COPY entrypoints/local_ot3_firmware_builder.sh /build.sh
-
 ############################
 # Hardware Local Emulators #
 ############################
@@ -118,8 +115,8 @@ ENV OPENTRONS_HARDWARE "can-server"
 #######################
 
 FROM ghcr.io/opentrons/cpp-base-${TARGETARCH}:latest as ot3-firmware-source
-ARG FIRMWARE_SOURCE_DOWNLOAD_LOCATION
-ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION
+ARG FIRMWARE_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/ot3-firmware/archive/refs/heads/main.zip"
+ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip"
 
 ADD $FIRMWARE_SOURCE_DOWNLOAD_LOCATION /ot3-firmware.zip
 ADD $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons.zip
@@ -133,12 +130,16 @@ RUN (cd / &&  \
     rm -f opentrons.zip && \
     mv opentrons* opentrons)
 
+
+FROM ot3-firmware-source as local-ot3-firmware-builder
+COPY entrypoints/local_ot3_firmware_builder.sh /build.sh
+
 ##################
 # modules-source #
 ##################
 
 FROM ghcr.io/opentrons/cpp-base-${TARGETARCH}:latest as opentrons-modules-source
-ARG MODULE_SOURCE_DOWNLOAD_LOCATION
+ARG MODULE_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip"
 ADD $MODULE_SOURCE_DOWNLOAD_LOCATION /opentrons-modules.zip
 RUN (cd / &&  \
     unzip -q opentrons-modules.zip && \
@@ -150,7 +151,7 @@ RUN (cd / &&  \
 ####################
 
 FROM ghcr.io/opentrons/python-base:latest as opentrons-source
-ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION
+ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip"
 ADD $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons.zip
 RUN (cd / &&  \
     unzip -q opentrons.zip && \
