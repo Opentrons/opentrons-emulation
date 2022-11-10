@@ -1,9 +1,13 @@
 """Module containing ConcreteOT3ServiceBuilder class."""
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
+    SourceType,
 )
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
@@ -18,7 +22,6 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
 from emulation_system.compose_file_creator.utilities.shared_functions import (
     get_build_args,
 )
-
 from .abstract_service_builder import AbstractServiceBuilder
 
 
@@ -79,24 +82,25 @@ class ConcreteOT3StateManagerBuilder(AbstractServiceBuilder):
         ot3_firmware_repo = OpentronsRepository.OT3_FIRMWARE
         monorepo = OpentronsRepository.OPENTRONS
         build_args: IntermediateBuildArgs = {}
+        if self._ot3.source_type == SourceType.REMOTE:
+            ot3_firmware_build_args = get_build_args(
+                ot3_firmware_repo,
+                self._ot3.source_location,
+                self._global_settings.get_repo_commit(ot3_firmware_repo),
+                self._global_settings.get_repo_head(ot3_firmware_repo),
+            )
+            build_args.update(ot3_firmware_build_args)
 
-        ot3_firmware_build_args = get_build_args(
-            ot3_firmware_repo,
-            self._ot3.source_location,
-            self._global_settings.get_repo_commit(ot3_firmware_repo),
-            self._global_settings.get_repo_head(ot3_firmware_repo),
-        )
-        build_args.update(ot3_firmware_build_args)
+        if self._ot3.opentrons_hardware_source_type == SourceType.REMOTE:
+            monorepo_build_args = get_build_args(
+                monorepo,
+                self._ot3.opentrons_hardware_source_location,
+                self._global_settings.get_repo_commit(monorepo),
+                self._global_settings.get_repo_head(monorepo),
+            )
+            build_args.update(monorepo_build_args)
 
-        monorepo_build_args = get_build_args(
-            monorepo,
-            self._ot3.opentrons_hardware_source_location,
-            self._global_settings.get_repo_commit(monorepo),
-            self._global_settings.get_repo_head(monorepo),
-        )
-        build_args.update(monorepo_build_args)
-
-        return build_args
+        return build_args if len(build_args) > 0 else None
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
