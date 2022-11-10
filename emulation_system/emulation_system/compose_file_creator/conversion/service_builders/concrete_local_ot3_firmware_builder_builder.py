@@ -1,10 +1,7 @@
 """Module containing ConcreteOT3ServiceBuilder class."""
 from typing import Optional
 
-from emulation_system import (
-    OpentronsEmulationConfiguration,
-    SystemConfigurationModel,
-)
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
@@ -15,16 +12,13 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from .abstract_service_builder import AbstractServiceBuilder
-from ...config_file_settings import (
-    OT3Hardware,
-    OpentronsRepository,
-    SourceType,
-)
+
+from ...config_file_settings import OpentronsRepository, OT3Hardware, SourceType
 from ...utilities.shared_functions import get_build_args
+from .abstract_service_builder import AbstractServiceBuilder
 
 
-class ConcreateLocalOT3FirmwareBuilderBuilder(AbstractServiceBuilder):
+class ConcreteLocalOT3FirmwareBuilderBuilder(AbstractServiceBuilder):
     """Concrete implementation of AbstractServiceBuilder for building local-ot3-firmware-builder Service."""
 
     IMAGE_NAME = "local-ot3-firmware-builder"
