@@ -157,6 +157,15 @@ class ServiceBuilderOrchestrator:
             assert service.container_name is not None
             self._services[service.container_name] = service
 
+    def __add_local_ot3_builder(self) -> None:
+        print("Local ot3-firmware builder required")
+
+    def __add_local_opentrons_modules_builder(self) -> None:
+        print("Local opentrons-modules builder required")
+
+    def __add_local_monorepo_builder(self) -> None:
+        print("Local monorepo builder required")
+
     def build_services(self) -> DockerServices:
         """Build services."""
         emulator_proxy_name = self.__add_emulator_proxy_service()
@@ -169,5 +178,13 @@ class ServiceBuilderOrchestrator:
         self.__add_input_services(
             emulator_proxy_name, smoothie_name, can_server_service_name
         )
+        if self._config_model.local_ot3_builder_required:
+            self.__add_local_ot3_builder()
+
+        if self._config_model.local_opentrons_modules_builder_required:
+            self.__add_local_opentrons_modules_builder()
+
+        if self._config_model.local_monorepo_builder_required:
+            self.__add_local_monorepo_builder()
 
         return DockerServices(self._services)

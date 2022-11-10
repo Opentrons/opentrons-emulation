@@ -8,10 +8,11 @@ from pydantic import BaseModel, Field, parse_file_as, parse_obj_as, root_validat
 
 from emulation_system.consts import DEFAULT_NETWORK_NAME
 
-from ..config_file_settings import Hardware
+from ..config_file_settings import EmulationLevels, Hardware, SourceType
 from ..errors import DuplicateHardwareNameError
 from ..types.input_types import Containers, Modules, Robots
 from ..types.intermediate_types import IntermediateNetworks
+from ..utilities.hardware_utils import is_ot2, is_ot3
 from .hardware_models import OT2InputModel, OT3InputModel
 
 
@@ -162,3 +163,67 @@ class SystemConfigurationModel(BaseModel):
     def from_dict(cls, obj: Dict) -> SystemConfigurationModel:
         """Parse from dict."""
         return parse_obj_as(cls, obj)
+
+    @property
+    def local_ot3_builder_required(self) -> bool:
+        """Whether or not a local-ot3-firmware-builder container is required."""
+        if self.robot is None:
+            return False
+        return is_ot3(self.robot) and self.robot.source_type == SourceType.LOCAL
+
+    @property
+    def local_opentrons_modules_builder_required(self) -> bool:
+        """Whether or not a local-opentrons-modules-builder container is required."""
+        if self.modules is None:
+            return False
+        return any(
+            [
+                module.emulation_level == EmulationLevels.HARDWARE
+                and module.source_type == SourceType.LOCAL
+                for module in self.modules
+            ]
+        )
+
+    @property
+    def local_monorepo_builder_required(self) -> bool:
+        """Whether or not a local-monorepo-builder container is required."""
+        # emulator-proxy cannot be local as of 11/8/2022, including the variable
+        # so it is clear that evaluating the source-type of emulator proxy was not missed
+        local_emulator_proxy = False
+        local_can_server = (
+            self.robot is not None
+            and is_ot3(self.robot)
+            and self.robot.can_server_source_type == SourceType.LOCAL
+        )
+        local_opentrons_hardware = (
+            self.robot is not None
+            and is_ot3(self.robot)
+            and self.robot.opentrons_hardware_source_type == SourceType.LOCAL
+        )
+        local_smoothie = (
+            self.robot is not None
+            and is_ot2(self.robot)
+            and self.robot.source_type == SourceType.LOCAL
+        )
+        local_modules = self.modules is not None and any(
+            (
+                module.emulation_level == EmulationLevels.FIRMWARE
+                and module.source_type == SourceType.LOCAL
+            )
+            for module in self.modules
+        )
+        local_robot_server = (
+            self.robot is not None
+            and self.robot.robot_server_source_type == SourceType.LOCAL
+        )
+
+        return any(
+            [
+                local_emulator_proxy,
+                local_can_server,
+                local_opentrons_hardware,
+                local_smoothie,
+                local_modules,
+                local_robot_server,
+            ]
+        )

@@ -1,14 +1,17 @@
 """Conftest for conversion logic."""
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, Callable, Dict, List, Optional, Union, cast
 
 import py
 import pytest
+from pydantic import parse_obj_as
 
-from emulation_system import OpentronsEmulationConfiguration
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem, Service
 from emulation_system.compose_file_creator.config_file_settings import (
+    EmulationLevels,
     MountTypes,
     OpentronsRepository,
+    SourceType,
 )
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
@@ -125,3 +128,410 @@ def ot3_firmware_commit(
     return testing_global_em_config.get_repo_commit(
         OpentronsRepository.OT3_FIRMWARE
     ).replace("{{commit-sha}}", FAKE_COMMIT_ID)
+
+
+@pytest.fixture
+def robot_set_source_type_params(
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> Callable:
+    """Create a runnable fixture that builds a RuntimeComposeFileModel."""
+
+    def robot_set_source_type_params(
+        robot_dict: Dict[str, Any],
+        source_type: SourceType,
+        source_location: str,
+        robot_server_source_type: SourceType,
+        robot_server_source_location: str,
+        can_server_source_type: Optional[SourceType],
+        can_server_source_location: Optional[str],
+        opentrons_hardware_source_type: Optional[SourceType],
+        opentrons_hardware_source_location: Optional[str],
+    ) -> Dict[str, Any]:
+        robot_dict["source-type"] = source_type
+        robot_dict["source-location"] = source_location
+        robot_dict["robot-server-source-type"] = robot_server_source_type
+        robot_dict["robot-server-source-location"] = robot_server_source_location
+
+        if (
+            can_server_source_type is not None
+            and can_server_source_location is not None
+        ):
+            robot_dict["can-server-source-type"] = can_server_source_type
+            robot_dict["can-server-source-location"] = can_server_source_location
+
+        if (
+            opentrons_hardware_source_type is not None
+            and opentrons_hardware_source_location is not None
+        ):
+            robot_dict[
+                "opentrons-hardware-source-type"
+            ] = opentrons_hardware_source_type
+            robot_dict[
+                "opentrons-hardware-source-location"
+            ] = opentrons_hardware_source_location
+        return {"robot": robot_dict}
+
+    return robot_set_source_type_params
+
+
+@pytest.fixture
+def module_set_source_type_params(
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> Callable:
+    """Create a runnable fixture that builds a RuntimeComposeFileModel."""
+
+    def module_set_source_type_params(
+        module_dict: Dict[str, Any],
+        source_type: SourceType,
+        source_location: str,
+        emulation_level: EmulationLevels,
+    ) -> SystemConfigurationModel:
+        module_dict["source-type"] = source_type
+        module_dict["source-location"] = source_location
+        module_dict["emulation-level"] = emulation_level
+        return parse_obj_as(SystemConfigurationModel, {"modules": [module_dict]})
+
+    return module_set_source_type_params
+
+
+@pytest.fixture
+def ot3_remote_everything_latest(
+    ot3_default: Dict[str, Any], robot_set_source_type_params: Callable
+) -> Dict[str, Any]:
+    """Get OT3 configured for local source and local robot source."""
+    return robot_set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.REMOTE,
+        source_location="latest",
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location="latest",
+        can_server_source_type=SourceType.REMOTE,
+        can_server_source_location="latest",
+        opentrons_hardware_source_type=SourceType.REMOTE,
+        opentrons_hardware_source_location="latest",
+    )
+
+
+@pytest.fixture
+def ot3_remote_everything_commit_id(
+    ot3_default: Dict[str, Any], robot_set_source_type_params: Callable
+) -> Dict[str, Any]:
+    """Get OT3 configured for local source and local robot source."""
+    return robot_set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.REMOTE,
+        source_location=FAKE_COMMIT_ID,
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location=FAKE_COMMIT_ID,
+        can_server_source_type=SourceType.REMOTE,
+        can_server_source_location=FAKE_COMMIT_ID,
+        opentrons_hardware_source_type=SourceType.REMOTE,
+        opentrons_hardware_source_location=FAKE_COMMIT_ID,
+    )
+
+
+@pytest.fixture
+def ot3_local_source(
+    ot3_default: Dict[str, Any],
+    opentrons_dir: str,
+    ot3_firmware_dir: str,
+    robot_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get OT3 configured for local source and local robot source."""
+    return robot_set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.LOCAL,
+        source_location=ot3_firmware_dir,
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location="latest",
+        can_server_source_type=SourceType.REMOTE,
+        can_server_source_location="latest",
+        opentrons_hardware_source_type=SourceType.REMOTE,
+        opentrons_hardware_source_location="latest",
+    )
+
+
+@pytest.fixture
+def ot3_local_can(
+    ot3_default: Dict[str, Any],
+    opentrons_dir: str,
+    robot_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get OT3 configured for local source and local robot source."""
+    return robot_set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.REMOTE,
+        source_location="latest",
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location="latest",
+        can_server_source_type=SourceType.LOCAL,
+        can_server_source_location=opentrons_dir,
+        opentrons_hardware_source_type=SourceType.REMOTE,
+        opentrons_hardware_source_location="latest",
+    )
+
+
+@pytest.fixture
+def ot3_local_robot(
+    ot3_default: Dict[str, Any],
+    opentrons_dir: str,
+    robot_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get OT3 configured for local source and local robot source."""
+    return robot_set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.REMOTE,
+        source_location="latest",
+        robot_server_source_type=SourceType.LOCAL,
+        robot_server_source_location=opentrons_dir,
+        can_server_source_type=SourceType.REMOTE,
+        can_server_source_location="latest",
+        opentrons_hardware_source_type=SourceType.REMOTE,
+        opentrons_hardware_source_location="latest",
+    )
+
+
+@pytest.fixture
+def ot3_local_opentrons_hardware(
+    ot3_default: Dict[str, Any],
+    opentrons_dir: str,
+    robot_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get OT3 configured for local source and local robot source."""
+    return robot_set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.REMOTE,
+        source_location="latest",
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location="latest",
+        can_server_source_type=SourceType.REMOTE,
+        can_server_source_location="latest",
+        opentrons_hardware_source_type=SourceType.LOCAL,
+        opentrons_hardware_source_location=opentrons_dir,
+    )
+
+
+@pytest.fixture
+def ot2_remote_everything_latest(
+    ot2_default: Dict[str, Any], robot_set_source_type_params: Callable
+) -> Dict[str, Any]:
+    """Get OT3 configured for local source and local robot source."""
+    return robot_set_source_type_params(
+        robot_dict=ot2_default,
+        source_type=SourceType.REMOTE,
+        source_location="latest",
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location="latest",
+        can_server_source_type=None,
+        can_server_source_location=None,
+        opentrons_hardware_source_type=None,
+        opentrons_hardware_source_location=None,
+    )
+
+
+@pytest.fixture
+def ot2_remote_everything_commit_id(
+    ot2_default: Dict[str, Any], robot_set_source_type_params: Callable
+) -> Dict[str, Any]:
+    """Get OT3 configured for local source and local robot source."""
+    return robot_set_source_type_params(
+        robot_dict=ot2_default,
+        source_type=SourceType.REMOTE,
+        source_location=FAKE_COMMIT_ID,
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location=FAKE_COMMIT_ID,
+        can_server_source_type=None,
+        can_server_source_location=None,
+        opentrons_hardware_source_type=None,
+        opentrons_hardware_source_location=None,
+    )
+
+
+@pytest.fixture
+def ot2_local_source(
+    ot2_default: Dict[str, Any],
+    opentrons_dir: str,
+    robot_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get OT3 configured for local source and local robot source."""
+    return robot_set_source_type_params(
+        robot_dict=ot2_default,
+        source_type=SourceType.LOCAL,
+        source_location=opentrons_dir,
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location="latest",
+        can_server_source_type=None,
+        can_server_source_location=None,
+        opentrons_hardware_source_type=None,
+        opentrons_hardware_source_location=None,
+    )
+
+
+@pytest.fixture
+def ot2_local_robot(
+    ot2_default: Dict[str, Any],
+    opentrons_dir: str,
+    robot_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get OT3 configured for local source and local robot source."""
+    return robot_set_source_type_params(
+        robot_dict=ot2_default,
+        source_type=SourceType.REMOTE,
+        source_location="latest",
+        robot_server_source_type=SourceType.LOCAL,
+        robot_server_source_location=opentrons_dir,
+        can_server_source_type=None,
+        can_server_source_location=None,
+        opentrons_hardware_source_type=None,
+        opentrons_hardware_source_location=None,
+    )
+
+
+@pytest.fixture
+def heater_shaker_module_hardware_local(
+    heater_shaker_module_default: Dict[str, Any],
+    opentrons_modules_dir: str,
+    module_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for local source."""
+    return module_set_source_type_params(
+        module_dict=heater_shaker_module_default,
+        source_type="local",
+        source_location=opentrons_modules_dir,
+        emulation_level="hardware",
+    )
+
+
+@pytest.fixture
+def heater_shaker_module_hardware_remote(
+    heater_shaker_module_default: Dict[str, Any],
+    opentrons_modules_dir: str,
+    module_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for remote source."""
+    return module_set_source_type_params(
+        module_dict=heater_shaker_module_default,
+        source_type="remote",
+        source_location="latest",
+        emulation_level="hardware",
+    )
+
+
+@pytest.fixture
+def thermocycler_module_firmware_local(
+    thermocycler_module_default: Dict[str, Any],
+    opentrons_dir: str,
+    module_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for local source."""
+    return module_set_source_type_params(
+        module_dict=thermocycler_module_default,
+        source_type="local",
+        source_location=opentrons_dir,
+        emulation_level="firmware",
+    )
+
+
+@pytest.fixture
+def thermocycler_module_hardware_local(
+    thermocycler_module_default: Dict[str, Any],
+    opentrons_modules_dir: str,
+    module_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for local source."""
+    return module_set_source_type_params(
+        module_dict=thermocycler_module_default,
+        source_type="local",
+        source_location=opentrons_modules_dir,
+        emulation_level="hardware",
+    )
+
+
+@pytest.fixture
+def thermocycler_module_firmware_remote(
+    thermocycler_module_default: Dict[str, Any],
+    opentrons_dir: str,
+    module_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for remote source."""
+    return module_set_source_type_params(
+        module_dict=thermocycler_module_default,
+        source_type="remote",
+        source_location="latest",
+        emulation_level="firmware",
+    )
+
+
+@pytest.fixture
+def thermocycler_module_hardware_remote(
+    thermocycler_module_default: Dict[str, Any],
+    opentrons_modules_dir: str,
+    module_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for remote source."""
+    return module_set_source_type_params(
+        module_dict=thermocycler_module_default,
+        source_type="remote",
+        source_location="latest",
+        emulation_level="hardware",
+    )
+
+
+@pytest.fixture
+def temperature_module_firmware_local(
+    temperature_module_default: Dict[str, Any],
+    opentrons_dir: str,
+    module_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for local source."""
+    return module_set_source_type_params(
+        module_dict=temperature_module_default,
+        source_type="local",
+        source_location=opentrons_dir,
+        emulation_level="firmware",
+    )
+
+
+@pytest.fixture
+def temperature_module_firmware_remote(
+    temperature_module_default: Dict[str, Any],
+    opentrons_dir: str,
+    module_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for remote source."""
+    return module_set_source_type_params(
+        module_dict=temperature_module_default,
+        source_type="remote",
+        source_location="latest",
+        emulation_level="firmware",
+    )
+
+
+@pytest.fixture
+def magnetic_module_firmware_remote(
+    magnetic_module_default: Dict[str, Any],
+    opentrons_dir: str,
+    module_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for remote source."""
+    return module_set_source_type_params(
+        module_dict=magnetic_module_default,
+        source_type="remote",
+        source_location="latest",
+        emulation_level="firmware",
+    )
+
+
+@pytest.fixture
+def magnetic_module_firmware_local(
+    magnetic_module_default: Dict[str, Any],
+    opentrons_dir: str,
+    module_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for local source."""
+    return module_set_source_type_params(
+        module_dict=magnetic_module_default,
+        source_type="local",
+        source_location=opentrons_dir,
+        emulation_level="firmware",
+    )
