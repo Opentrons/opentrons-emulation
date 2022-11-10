@@ -22,7 +22,6 @@ from emulation_system.compose_file_creator.images import (
 )
 from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
 from tests.compose_file_creator.conversion_logic.conftest import (
-    FAKE_COMMIT_ID,
     build_args_are_none,
     get_source_code_build_args,
     partial_string_in_mount,
@@ -30,48 +29,37 @@ from tests.compose_file_creator.conversion_logic.conftest import (
 
 
 @pytest.fixture
-def remote_source_latest(ot3_only: Dict[str, Any]) -> SystemConfigurationModel:
+def remote_source_latest(
+    ot3_remote_everything_latest: Dict[str, Any]
+) -> SystemConfigurationModel:
     """Gets SystemConfigurationModel.
 
     source-type is set to remote.
     source-location is set to latest.
     """
-    ot3_only["robot"]["source-type"] = "remote"
-    ot3_only["robot"]["source-location"] = "latest"
-    ot3_only["robot"]["opentrons-hardware-source-type"] = "remote"
-    ot3_only["robot"]["opentrons-hardware-source-location"] = "latest"
-    return parse_obj_as(SystemConfigurationModel, ot3_only)
+    return parse_obj_as(SystemConfigurationModel, ot3_remote_everything_latest)
 
 
 @pytest.fixture
-def remote_source_commit_id(ot3_only: Dict[str, Any]) -> SystemConfigurationModel:
+def remote_source_commit_id(
+    ot3_remote_everything_commit_id: Dict[str, Any]
+) -> SystemConfigurationModel:
     """Gets SystemConfigurationModel.
 
     source-type is set to remote.
     source-location is set a commit id.
     """
-    ot3_only["robot"]["source-type"] = "remote"
-    ot3_only["robot"]["source-location"] = FAKE_COMMIT_ID
-    ot3_only["robot"]["opentrons-hardware-source-type"] = "remote"
-    ot3_only["robot"]["opentrons-hardware-source-location"] = FAKE_COMMIT_ID
-    return parse_obj_as(SystemConfigurationModel, ot3_only)
+    return parse_obj_as(SystemConfigurationModel, ot3_remote_everything_commit_id)
 
 
 @pytest.fixture
-def local_source(
-    ot3_only: Dict[str, Any], ot3_firmware_dir: str, opentrons_dir: str
-) -> SystemConfigurationModel:
+def local_source(ot3_local_everything: Dict[str, Any]) -> SystemConfigurationModel:
     """Gets SystemConfigurationModel.
 
     source-type is set to local.
     source-location is set to a monorepo dir.
     """
-    ot3_only["robot"]["source-type"] = "local"
-    ot3_only["robot"]["source-location"] = ot3_firmware_dir
-    ot3_only["robot"]["opentrons-hardware-source-type"] = "local"
-    ot3_only["robot"]["opentrons-hardware-source-location"] = opentrons_dir
-
-    return parse_obj_as(SystemConfigurationModel, ot3_only)
+    return parse_obj_as(SystemConfigurationModel, ot3_local_everything)
 
 
 def get_ot3_service(service_list: List[Service], hardware: OT3Hardware) -> Service:
