@@ -15,6 +15,7 @@ from ...images import (
 )
 from ...types.intermediate_types import DockerServices
 from . import (
+    ConcreateLocalOT3FirmwareBuilderBuilder,
     ConcreteCANServerServiceBuilder,
     ConcreteEmulatorProxyServiceBuilder,
     ConcreteInputServiceBuilder,
@@ -158,7 +159,11 @@ class ServiceBuilderOrchestrator:
             self._services[service.container_name] = service
 
     def __add_local_ot3_builder(self) -> None:
-        print("Local ot3-firmware builder required")
+        local_ot3_builder = ConcreateLocalOT3FirmwareBuilderBuilder(
+            self._config_model, self._global_settings, self._dev
+        ).build_service()
+        assert local_ot3_builder.container_name is not None
+        self._services[local_ot3_builder.container_name] = local_ot3_builder
 
     def __add_local_opentrons_modules_builder(self) -> None:
         print("Local opentrons-modules builder required")

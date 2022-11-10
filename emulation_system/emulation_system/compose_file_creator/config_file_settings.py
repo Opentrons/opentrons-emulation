@@ -29,6 +29,25 @@ class OT3Hardware(str, Enum):
     BOOTLOADER = "ot3-bootloader"
     GRIPPER = "ot3-gripper"
 
+    def _remove_prefix(self) -> str:
+        return self.value.replace("ot3-", "")
+
+    def _to_volume_name(self) -> str:
+        switch_dashes_to_underscores = self._remove_prefix().replace("-", "_")
+        return f"{switch_dashes_to_underscores}_executable"
+
+    def _to_volume_path(self) -> str:
+        switch_dashes_to_underscores = self._remove_prefix().replace("-", "_")
+        return f"/volumes/{switch_dashes_to_underscores}/"
+
+    def to_simulator_name(self) -> str:
+        """Generates simulator name."""
+        return f"{self._remove_prefix()}-simulator."
+
+    def generate_executable_storage_volume_string(self) -> str:
+        """Generates volume string for local-ot3-firmware-builder."""
+        return f"{self._to_volume_name()}:{self._to_volume_path()}"
+
 
 class EmulationLevels(str, Enum):
     """The emulation level of the emulator."""
