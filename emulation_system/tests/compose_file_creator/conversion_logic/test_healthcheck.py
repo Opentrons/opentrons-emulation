@@ -41,6 +41,7 @@ def test_ot3_services_heathcheck(
         for service in services.values()
         if service.image is not None
         and "state-manager" not in service.image
+        and "local-ot3-firmware-builder" not in service.image
         and ("ot3" in service.image or "can-server" in service.image)
     ]
     assert len(services_to_check) == 7
@@ -75,6 +76,28 @@ def test_emulator_proxy_heathcheck(
             healthcheck.test
             == "ps -eaf | grep 'python -m opentrons.hardware_control.emulation.app' | grep -v 'grep'"
         )
+        assert healthcheck.start_period is None
+        assert healthcheck.disable is None
+
+
+def test_local_ot3_firmware_builder_heathcheck(
+    ot3_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
+) -> None:
+    """Confirm emulator proxy healthcheck is configured correctly."""
+    services = convert_from_obj(ot3_only, testing_global_em_config, False).services
+    assert services is not None
+    services_to_check = [
+        service
+        for service in services.values()
+        if service.image is not None and "local-ot3-firmware-builder" in service.image
+    ]
+    assert len(services_to_check) == 1
+    for service in services_to_check:
+        healthcheck = service.healthcheck
+        assert healthcheck is not None
+        assert healthcheck.interval == "10s"
+        assert healthcheck.timeout == "10s"
+        assert healthcheck.test == "(cd /ot3-firmware) && (cd /opentrons)"
         assert healthcheck.start_period is None
         assert healthcheck.disable is None
 

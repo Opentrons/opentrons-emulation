@@ -1,11 +1,7 @@
 """Module containing ConcreteOT3ServiceBuilder class."""
-from typing import Optional
+from typing import List, Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
-from emulation_system.compose_file_creator.config_file_settings import (
-    OpentronsRepository,
-    SourceType,
-)
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
@@ -16,17 +12,16 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.compose_file_creator.utilities.shared_functions import (
-    get_build_args,
-)
 
+from ...config_file_settings import OpentronsRepository, OT3Hardware, SourceType
+from ...utilities.shared_functions import get_build_args
 from .abstract_service_builder import AbstractServiceBuilder
 
 
-class ConcreteOT3StateManagerBuilder(AbstractServiceBuilder):
-    """Concrete implementation of AbstractServiceBuilder for building OT-3 State Manager Service."""
+class ConcreteLocalOT3FirmwareBuilderBuilder(AbstractServiceBuilder):
+    """Concrete implementation of AbstractServiceBuilder for building local-ot3-firmware-builder Service."""
 
-    IMAGE_NAME = "ot3-state-manager"
+    IMAGE_NAME = "local-ot3-firmware-builder"
     CONTAINER_NAME = IMAGE_NAME
 
     def __init__(
@@ -37,7 +32,7 @@ class ConcreteOT3StateManagerBuilder(AbstractServiceBuilder):
     ) -> None:
         """Instantiates a ConcreteOT3ServiceBuilder object."""
         super().__init__(config_model, global_settings, dev)
-        self._ot3 = self.get_ot3(config_model)
+        self._ot3 = self.get_ot3(self._config_model)
 
     @property
     def _image(self) -> str:
@@ -57,8 +52,7 @@ class ConcreteOT3StateManagerBuilder(AbstractServiceBuilder):
 
     def is_tty(self) -> bool:
         """Generates value for tty parameter."""
-        tty = True
-        return tty
+        return True
 
     def generate_networks(self) -> IntermediateNetworks:
         """Generates value for networks parameter."""
@@ -66,13 +60,12 @@ class ConcreteOT3StateManagerBuilder(AbstractServiceBuilder):
         return networks
 
     def generate_healthcheck(self) -> IntermediateHealthcheck:
-        """Check to see if OT-3 service has established connection to CAN Service."""
-        port = self._ot3.can_server_bound_port
+        """Check to see if ot3-firmware and monorepo exist."""
         return IntermediateHealthcheck(
             interval=10,
             retries=6,
             timeout=10,
-            command=f"netstat -nputw | grep -E '{port}.*ESTABLISHED'",
+            command="(cd /ot3-firmware) && (cd /opentrons)",
         )
 
     def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
@@ -102,27 +95,31 @@ class ConcreteOT3StateManagerBuilder(AbstractServiceBuilder):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        return None
+        mount_strings: List[str] = []
+        if self._ot3.source_type == SourceType.LOCAL:
+            mount_strings.extend(
+                [
+                    member.generate_executable_storage_volume_string()
+                    for member in OT3Hardware.__members__.values()
+                ]
+            )
+
+        # TODO: Add executable volume string for monorepo if opentrons-hardware-source-type is local
+        mount_strings.extend(self._ot3.get_mount_strings())
+        return mount_strings
 
     def generate_command(self) -> Optional[IntermediateCommand]:
         """Generates value for command parameter."""
-        command = None
-        return command
+        return None
 
     def generate_ports(self) -> Optional[IntermediatePorts]:
         """Generates value for ports parameter."""
-        return self._ot3.get_ot3_state_manager_bound_port()
+        return None
 
     def generate_depends_on(self) -> Optional[IntermediateDependsOn]:
         """Generates value for depends_on parameter."""
-        depends_on = None
-
-        return depends_on
+        return None
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
-        return (
-            self._ot3.state_manager_env_vars
-            if self._ot3.state_manager_env_vars is not None
-            else None
-        )
+        return None

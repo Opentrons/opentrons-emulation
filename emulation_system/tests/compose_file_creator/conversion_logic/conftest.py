@@ -233,7 +233,6 @@ def ot3_remote_everything_commit_id(
 @pytest.fixture
 def ot3_local_source(
     ot3_default: Dict[str, Any],
-    opentrons_dir: str,
     ot3_firmware_dir: str,
     robot_set_source_type_params: Callable,
 ) -> Dict[str, Any]:
@@ -248,6 +247,26 @@ def ot3_local_source(
         can_server_source_location="latest",
         opentrons_hardware_source_type=SourceType.REMOTE,
         opentrons_hardware_source_location="latest",
+    )
+
+
+@pytest.fixture
+def ot3_remote_source_local_opentrons_hardware(
+    ot3_default: Dict[str, Any],
+    opentrons_dir: str,
+    robot_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get OT3 configured for local source and local robot source."""
+    return robot_set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.REMOTE,
+        source_location="latest",
+        robot_server_source_type=SourceType.REMOTE,
+        robot_server_source_location="latest",
+        can_server_source_type=SourceType.REMOTE,
+        can_server_source_location="latest",
+        opentrons_hardware_source_type=SourceType.LOCAL,
+        opentrons_hardware_source_location=opentrons_dir,
     )
 
 
@@ -288,6 +307,27 @@ def ot3_local_robot(
         can_server_source_location="latest",
         opentrons_hardware_source_type=SourceType.REMOTE,
         opentrons_hardware_source_location="latest",
+    )
+
+
+@pytest.fixture
+def ot3_local_everything(
+    ot3_default: Dict[str, Any],
+    opentrons_dir: str,
+    ot3_firmware_dir: str,
+    robot_set_source_type_params: Callable,
+) -> Dict[str, Any]:
+    """Get OT3 configured for local source and local robot source."""
+    return robot_set_source_type_params(
+        robot_dict=ot3_default,
+        source_type=SourceType.LOCAL,
+        source_location=ot3_firmware_dir,
+        robot_server_source_type=SourceType.LOCAL,
+        robot_server_source_location=opentrons_dir,
+        can_server_source_type=SourceType.LOCAL,
+        can_server_source_location=opentrons_dir,
+        opentrons_hardware_source_type=SourceType.LOCAL,
+        opentrons_hardware_source_location=opentrons_dir,
     )
 
 
