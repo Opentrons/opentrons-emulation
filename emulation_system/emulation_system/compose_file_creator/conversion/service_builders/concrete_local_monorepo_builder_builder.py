@@ -12,7 +12,7 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.consts import MONOREPO_NAME_VOLUME_STRING
+from emulation_system.consts import MONOREPO_NAMED_VOLUME_STRING
 
 from ...images import LocalMonorepoBuilderImage
 from ...utilities.shared_functions import get_build_args
@@ -30,7 +30,6 @@ class ConcreteLocalMonorepoBuilderBuilder(AbstractServiceBuilder):
     ) -> None:
         """Instantiates a ConcreteOT3ServiceBuilder object."""
         super().__init__(config_model, global_settings, dev)
-        self._ot3 = self.get_ot3(self._config_model)
 
     @property
     def _image(self) -> str:
@@ -75,7 +74,7 @@ class ConcreteLocalMonorepoBuilderBuilder(AbstractServiceBuilder):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        return [self.ENTRYPOINT_MOUNT_STRING, MONOREPO_NAME_VOLUME_STRING]
+        return [self.ENTRYPOINT_MOUNT_STRING, MONOREPO_NAMED_VOLUME_STRING]
 
     def generate_command(self) -> Optional[IntermediateCommand]:
         """Generates value for command parameter."""

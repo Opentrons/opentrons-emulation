@@ -35,4 +35,4 @@ DEFAULT_DOCKER_COMPOSE_VERSION = "3.8"
 DEFAULT_NETWORK_NAME = "local-network"
 COMMIT_SHA_REGEX = r"^[0-9a-f]{40}"
 
-MONOREPO_NAME_VOLUME_STRING = "monorepo-wheels:/dist"
+MONOREPO_NAMED_VOLUME_STRING = "monorepo-wheels:/dist"

@@ -12,7 +12,7 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.consts import MONOREPO_NAME_VOLUME_STRING
+from emulation_system.consts import MONOREPO_NAMED_VOLUME_STRING
 from emulation_system.source import Source
 
 from ...config_file_settings import OpentronsRepository
@@ -112,7 +112,7 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
         volumes = [self.ENTRYPOINT_MOUNT_STRING]
 
         if source.repo == OpentronsRepository.OPENTRONS or is_robot(self._container):
-            volumes.append(MONOREPO_NAME_VOLUME_STRING)
+            volumes.append(MONOREPO_NAMED_VOLUME_STRING)
         elif source.repo == OpentronsRepository.OPENTRONS_MODULES:
             print("Need to implement")
 

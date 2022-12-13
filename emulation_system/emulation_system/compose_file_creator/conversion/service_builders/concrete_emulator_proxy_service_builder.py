@@ -20,7 +20,7 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.consts import MONOREPO_NAME_VOLUME_STRING
+from emulation_system.consts import MONOREPO_NAMED_VOLUME_STRING
 
 from ...images import EmulatorProxyImage
 from ...logging import EmulatorProxyLoggingClient
@@ -107,7 +107,7 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        return [self.ENTRYPOINT_MOUNT_STRING, MONOREPO_NAME_VOLUME_STRING]
+        return [self.ENTRYPOINT_MOUNT_STRING, MONOREPO_NAMED_VOLUME_STRING]
 
     def generate_command(self) -> Optional[IntermediateCommand]:
         """Generates value for command parameter."""
