@@ -6,18 +6,19 @@ from emulation_system.compose_file_creator import Service
 
 from ...config_file_settings import OT3Hardware
 from ...images import (
-    OT3BootloaderImages,
-    OT3GantryXImages,
-    OT3GantryYImages,
-    OT3GripperImages,
-    OT3HeadImages,
-    OT3PipettesImages,
+    OT3BootloaderImage,
+    OT3GantryXImage,
+    OT3GantryYImage,
+    OT3GripperImage,
+    OT3HeadImage,
+    OT3PipettesImage,
 )
 from ...types.intermediate_types import DockerServices
 from . import (
     ConcreteCANServerServiceBuilder,
     ConcreteEmulatorProxyServiceBuilder,
     ConcreteInputServiceBuilder,
+    ConcreteLocalMonorepoBuilderBuilder,
     ConcreteLocalOT3FirmwareBuilderBuilder,
     ConcreteOT3ServiceBuilder,
     ConcreteOT3StateManagerBuilder,
@@ -30,12 +31,12 @@ class ServiceBuilderOrchestrator:
     """Class that client uses to interface with builders."""
 
     OT3_SERVICES_TO_CREATE = [
-        ServiceInfo(OT3HeadImages(), OT3Hardware.HEAD),
-        ServiceInfo(OT3PipettesImages(), OT3Hardware.PIPETTES),
-        ServiceInfo(OT3GantryXImages(), OT3Hardware.GANTRY_X),
-        ServiceInfo(OT3GantryYImages(), OT3Hardware.GANTRY_Y),
-        ServiceInfo(OT3BootloaderImages(), OT3Hardware.BOOTLOADER),
-        ServiceInfo(OT3GripperImages(), OT3Hardware.GRIPPER),
+        ServiceInfo(OT3HeadImage(), OT3Hardware.HEAD),
+        ServiceInfo(OT3PipettesImage(), OT3Hardware.PIPETTES),
+        ServiceInfo(OT3GantryXImage(), OT3Hardware.GANTRY_X),
+        ServiceInfo(OT3GantryYImage(), OT3Hardware.GANTRY_Y),
+        ServiceInfo(OT3BootloaderImage(), OT3Hardware.BOOTLOADER),
+        ServiceInfo(OT3GripperImage(), OT3Hardware.GRIPPER),
     ]
 
     def __init__(
@@ -166,10 +167,14 @@ class ServiceBuilderOrchestrator:
         self._services[local_ot3_builder.container_name] = local_ot3_builder
 
     def __add_local_opentrons_modules_builder(self) -> None:
-        print("Local opentrons-modules builder required")
+        print("opentrons-modules builder required")
 
     def __add_local_monorepo_builder(self) -> None:
-        print("Local monorepo builder required")
+        local_monorepo_builder = ConcreteLocalMonorepoBuilderBuilder(
+            self._config_model, self._global_settings, self._dev
+        ).build_service()
+        assert local_monorepo_builder.container_name is not None
+        self._services[local_monorepo_builder.container_name] = local_monorepo_builder
 
     def build_services(self) -> DockerServices:
         """Build services."""

@@ -3,11 +3,7 @@
 from typing import Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
-from emulation_system.compose_file_creator.config_file_settings import (
-    OpentronsRepository,
-    SourceType,
-)
-from emulation_system.compose_file_creator.images import CANServerImages
+from emulation_system.compose_file_creator.images import CANServerImage
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
@@ -18,10 +14,7 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.compose_file_creator.utilities.shared_functions import (
-    add_opentrons_named_volumes,
-    get_build_args,
-)
+from emulation_system.consts import MONOREPO_NAME_VOLUME_STRING
 
 from ...input.hardware_models import OT3InputModel
 from ...logging import CANServerLoggingClient
@@ -41,6 +34,7 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
     ) -> None:
         """Instantiates a ConcreteCANServerServiceBuilder object."""
         super().__init__(config_model, global_settings, dev)
+        self._global_settings = global_settings
         self._logging_client = CANServerLoggingClient(self._dev)
         self._ot3 = self.get_ot3(config_model)
         self._can_image = self._generate_image()
@@ -53,15 +47,10 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
         This prevents, primarily, logging happening twice, but also the increased
         overhead of calculating the same thing twice.
         """
-        source_type = self._ot3.can_server_source_type
-        image_name = (
-            CANServerImages().local_firmware_image_name
-            if source_type == SourceType.LOCAL
-            else CANServerImages().remote_firmware_image_name
-        )
-        self._logging_client.log_image_name(
-            image_name, source_type, "can-server-source-type"
-        )
+        image_name = CANServerImage().image_name
+        # self._logging_client.log_image_name(
+        #     image_name, source_type, "can-server-source-type"
+        # )
         return image_name
 
     def generate_container_name(self) -> str:
@@ -95,42 +84,17 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
         self._logging_client.log_networks(networks)
         return networks
 
-    def generate_healthcheck(self) -> IntermediateHealthcheck:
+    def generate_healthcheck(self) -> Optional[IntermediateHealthcheck]:
         """Check to see if CAN service has established connections to ot3-services."""
-        port = self._ot3.can_server_bound_port
-        return IntermediateHealthcheck(
-            interval=10,
-            retries=6,
-            timeout=10,
-            command=f"netstat -nputw | grep -E '{port}.*ESTABLISHED'",
-        )
+        return None
 
     def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""
-        repo = OpentronsRepository.OPENTRONS
-        if self._ot3.can_server_source_type == SourceType.REMOTE:
-            build_args = get_build_args(
-                repo,
-                self._ot3.can_server_source_location,
-                self._global_settings.get_repo_commit(repo),
-                self._global_settings.get_repo_head(repo),
-            )
-
-        else:
-            build_args = None
-        self._logging_client.log_build_args(build_args)
-        return build_args
+        return None
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        if self._ot3.can_server_source_type == SourceType.LOCAL:
-            volumes = [self.ENTRYPOINT_MOUNT_STRING]
-            volumes.extend(self._ot3.get_can_mount_strings())
-            add_opentrons_named_volumes(volumes)
-        else:
-            volumes = None
-        self._logging_client.log_volumes(volumes)
-        return volumes
+        return [self.ENTRYPOINT_MOUNT_STRING, MONOREPO_NAME_VOLUME_STRING]
 
     def generate_command(self) -> Optional[IntermediateCommand]:
         """Generates value for command parameter."""

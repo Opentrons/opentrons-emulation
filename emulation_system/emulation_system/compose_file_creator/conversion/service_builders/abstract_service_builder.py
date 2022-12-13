@@ -55,7 +55,13 @@ from emulation_system.consts import (
     DOCKERFILE_DIR_LOCATION,
     DOCKERFILE_NAME,
     ENTRYPOINT_FILE_LOCATION,
-    ENTRYPOINT_MOUNT_NAME,
+    LOCAL_OT3_FIRMWARE_BUILDER_SCRIPT_NAME,
+    LOCAL_OT3_FIRMWARE_BUILDER_SCRIPT_PATH,
+)
+from emulation_system.source import (
+    MonorepoSource,
+    OpentronsModulesSource,
+    OT3FirmwareSource,
 )
 
 
@@ -63,7 +69,6 @@ class AbstractServiceBuilder(ABC):
     """Abstract class defining all necessary functions to build a service."""
 
     ENTRYPOINT_MOUNT_STRING = FileMount(
-        name=ENTRYPOINT_MOUNT_NAME,
         type=MountTypes.FILE,
         source_path=pathlib.Path(ENTRYPOINT_FILE_LOCATION),
         mount_path="/entrypoint.sh",
@@ -95,6 +100,18 @@ class AbstractServiceBuilder(ABC):
             raise IncorrectHardwareError(robot.hardware, hardware)
         return robot
 
+    @property
+    def _ot3_source(self) -> OT3FirmwareSource:
+        return self._config_model.ot3_firmware_source
+
+    @property
+    def _monorepo_source(self) -> MonorepoSource:
+        return self._config_model.monorepo_source
+
+    @property
+    def _opentrons_modules_source(self) -> OpentronsModulesSource:
+        return self._config_model.opentrons_modules_source
+
     @classmethod
     def get_ot2(cls, config_model: SystemConfigurationModel) -> OT2InputModel:
         """Checks for OT-2 object in SystemConfigurationModel and returns it."""
@@ -108,6 +125,10 @@ class AbstractServiceBuilder(ABC):
         robot = cls._get_robot(config_model, Hardware.OT3, OT3InputModel)
         assert is_ot3(robot)
         return robot
+
+    @classmethod
+    def get_local_ot3_firmware_builder_script_mount_string(cls) -> str:
+        return f"{LOCAL_OT3_FIRMWARE_BUILDER_SCRIPT_PATH}:/{LOCAL_OT3_FIRMWARE_BUILDER_SCRIPT_NAME}"
 
     @property
     @abstractmethod
@@ -176,7 +197,7 @@ class AbstractServiceBuilder(ABC):
         ...
 
     @abstractmethod
-    def generate_healthcheck(self) -> IntermediateHealthcheck:
+    def generate_healthcheck(self) -> Optional[IntermediateHealthcheck]:
         """Method to generate value for healthcheck parameter on Service."""
         ...
 
@@ -248,5 +269,7 @@ class AbstractServiceBuilder(ABC):
                 retries=intermediate_healthcheck.retries,
                 timeout=f"{intermediate_healthcheck.timeout}s",
                 test=intermediate_healthcheck.command,
-            ),
+            )
+            if intermediate_healthcheck is not None
+            else None,
         )

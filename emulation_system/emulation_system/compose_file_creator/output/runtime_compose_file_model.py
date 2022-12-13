@@ -6,7 +6,7 @@ import yaml
 from emulation_system.compose_file_creator import BuildItem, Service
 from emulation_system.compose_file_creator.container_filters import ContainerFilters
 
-from ..images import Images
+from ..images import FirmwareAndHardwareImages, SingleImage
 
 # Have to ignore attr-defined errors from mypy because we are calling type: ignore at
 # the top of compose_file_model. This causes mypy to think that ComposeSpecification
@@ -33,7 +33,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
 
     def _search_for_services(
         self,
-        images_to_search_for: List[Type[Images]],
+        images_to_search_for: List[Type[FirmwareAndHardwareImages | SingleImage]],
         inverse: bool = False,
         only_local: bool = False
     ) -> Optional[List[Service]]:
@@ -109,6 +109,22 @@ class RuntimeComposeFileModel(ComposeSpecification):
         return service_list[0] if len(service_list) > 0 else None
 
     @property
+    def ot3_gripper_emulator(self) -> Optional[Service]:
+        """Returns OT3 Gripper service if one exists."""
+        service_list = self.load_containers_by_filter(
+            ContainerFilters.OT3_GRIPPER.filter_name
+        )
+        return service_list[0] if len(service_list) > 0 else None
+
+    @property
+    def ot3_bootloader_emulator(self) -> Optional[Service]:
+        """Returns OT3 Pipette service if one exists."""
+        service_list = self.load_containers_by_filter(
+            ContainerFilters.OT3_BOOTLOADER.filter_name
+        )
+        return service_list[0] if len(service_list) > 0 else None
+
+    @property
     def ot3_head_emulator(self) -> Optional[Service]:
         """Returns OT3 Head service if one exists."""
         service_list = self.load_containers_by_filter(
@@ -129,6 +145,22 @@ class RuntimeComposeFileModel(ComposeSpecification):
         """Returns OT3 Gantry Y service if one exists."""
         service_list = self.load_containers_by_filter(
             ContainerFilters.OT3_GANTRY_Y.filter_name
+        )
+        return service_list[0] if len(service_list) > 0 else None
+
+    @property
+    def ot3_state_manager(self) -> Optional[Service]:
+        """Returns OT3 State Manager service if one exists."""
+        service_list = self.load_containers_by_filter(
+            ContainerFilters.OT3_STATE_MANAGER.filter_name
+        )
+        return service_list[0] if len(service_list) > 0 else None
+
+    @property
+    def local_ot3_firmware_builder(self) -> Optional[Service]:
+        """Returns Local ot3-firmware Builder service if one exists."""
+        service_list = self.load_containers_by_filter(
+            ContainerFilters.LOCAL_OT3_FIRMWARE_BUILDER.filter_name
         )
         return service_list[0] if len(service_list) > 0 else None
 

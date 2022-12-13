@@ -3,10 +3,6 @@
 from typing import Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
-from emulation_system.compose_file_creator.config_file_settings import (
-    OpentronsRepository,
-)
-from emulation_system.compose_file_creator.images import EmulatorProxyImages
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
     MagneticModuleInputModel,
@@ -24,10 +20,9 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.compose_file_creator.utilities.shared_functions import (
-    get_build_args,
-)
+from emulation_system.consts import MONOREPO_NAME_VOLUME_STRING
 
+from ...images import EmulatorProxyImage
 from ...logging import EmulatorProxyLoggingClient
 from .abstract_service_builder import AbstractServiceBuilder
 
@@ -63,7 +58,7 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         This prevents, primarily, logging happening twice, but also the increased
         overhead of calculating the same thing twice.
         """
-        image_name = EmulatorProxyImages().remote_firmware_image_name
+        image_name = EmulatorProxyImage().image_name
         # Passing blank strings because EmulatorProxyLoggingClient overrides
         # LoggingClient's log_image_name method, but doesn't need the last 2 parameters.
         # But those parameters need to be there to match the parent's signature.
@@ -102,32 +97,17 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         self._logging_client.log_networks(networks)
         return networks
 
-    def generate_healthcheck(self) -> IntermediateHealthcheck:
+    def generate_healthcheck(self) -> Optional[IntermediateHealthcheck]:
         """Check to see if emulator proxy service has started it's python service."""
-        return IntermediateHealthcheck(
-            interval=10,
-            retries=6,
-            timeout=10,
-            command="ps -eaf | grep 'python -m opentrons.hardware_control.emulation.app' | grep -v 'grep'",
-        )
+        return None
 
     def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""
-        repo = OpentronsRepository.OPENTRONS
-        build_args = get_build_args(
-            repo,
-            "latest",
-            self._global_settings.get_repo_commit(repo),
-            self._global_settings.get_repo_head(repo),
-        )
-        self._logging_client.log_build_args(build_args)
-        return build_args
+        return None
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        volumes = None
-        self._logging_client.log_volumes(volumes)
-        return volumes
+        return [self.ENTRYPOINT_MOUNT_STRING, MONOREPO_NAME_VOLUME_STRING]
 
     def generate_command(self) -> Optional[IntermediateCommand]:
         """Generates value for command parameter."""

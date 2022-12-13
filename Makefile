@@ -9,7 +9,7 @@ COMPOSE_RUN_COMMAND := DOCKER_BUILDKIT=1 docker-compose -f - up --remove-orphans
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_START_COMMAND := docker-compose -f - start
 COMPOSE_STOP_COMMAND := docker-compose -f - stop
-COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
+COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force && docker volume prune -f
 COMPOSE_LOGS_COMMAND := docker-compose -f - logs -f
 COMPOSE_RESTART_COMMAND := docker-compose -f - restart --timeout 1
 BUILD_COMMAND := docker buildx bake --load --file ~/tmp-compose.yaml

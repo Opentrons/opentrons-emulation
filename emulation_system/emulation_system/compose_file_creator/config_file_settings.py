@@ -38,15 +38,18 @@ class OT3Hardware(str, Enum):
 
     def _to_volume_path(self) -> str:
         switch_dashes_to_underscores = self._remove_prefix().replace("-", "_")
-        return f"/volumes/{switch_dashes_to_underscores}/"
+        return f"/volumes/{switch_dashes_to_underscores}_volume/"
 
     def to_simulator_name(self) -> str:
         """Generates simulator name."""
-        return f"{self._remove_prefix()}-simulator."
+        return f"{self._remove_prefix()}-simulator"
 
     def generate_executable_storage_volume_string(self) -> str:
         """Generates volume string for local-ot3-firmware-builder."""
         return f"{self._to_volume_name()}:{self._to_volume_path()}"
+
+    def generate_emulator_volume_string(self) -> str:
+        return f"{self._to_volume_name()}:/executable"
 
 
 class EmulationLevels(str, Enum):
@@ -106,6 +109,20 @@ class RepoToBuildArgMapping(str, Enum):
     OT3_FIRMWARE = "FIRMWARE_SOURCE_DOWNLOAD_LOCATION"
     OPENTRONS_MODULES = "MODULE_SOURCE_DOWNLOAD_LOCATION"
 
+    @staticmethod
+    def get_mapping(repo: OpentronsRepository) -> "RepoToBuildArgMapping":
+        mapping: RepoToBuildArgMapping
+        match repo:
+            case OpentronsRepository.OPENTRONS:
+                mapping = RepoToBuildArgMapping.OPENTRONS
+            case OpentronsRepository.OT3_FIRMWARE:
+                mapping = RepoToBuildArgMapping.OT3_FIRMWARE
+            case OpentronsRepository.OPENTRONS_MODULES:
+                mapping = RepoToBuildArgMapping.OPENTRONS_MODULES
+            case _:
+                raise ValueError(f"Opentrons repository {repo.value} is not valid.")
+        return mapping
+
 
 class SourceRepositories(BaseModel):
     """Stores names of source code repos for each piece of hardware."""
@@ -124,7 +141,6 @@ class MountTypes(str, Enum):
 class Mount(BaseModel):
     """Contains infomation about a single extra bind mount."""
 
-    name: str = Field(..., regex=r"^[A-Z0-9_]+$")
     type: str
     mount_path: str = Field(..., alias="mount-path")
     source_path: Union[DirectoryPath, FilePath] = Field(..., alias="source-path")

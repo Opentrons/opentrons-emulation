@@ -1,6 +1,6 @@
 """Tests to confirm that ConcreteSmoothieServiceBuilder builds the CAN Server Service correctly."""
 import json
-from typing import Any, Dict, cast
+from typing import Any, Callable, Dict, cast
 
 import pytest
 from pydantic import parse_obj_as
@@ -18,7 +18,6 @@ from emulation_system.compose_file_creator.conversion import (
 from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
 from tests.compose_file_creator.conversion_logic.conftest import (
-    FAKE_COMMIT_ID,
     build_args_are_none,
     get_source_code_build_args,
     partial_string_in_mount,
@@ -26,49 +25,30 @@ from tests.compose_file_creator.conversion_logic.conftest import (
 
 
 @pytest.fixture
-def remote_source_latest(ot2_only: Dict[str, Any]) -> SystemConfigurationModel:
-    """Gets SystemConfigurationModel.
-
-    source-type is set to remote.
-    source-location is set to latest.
-    """
-    ot2_only["robot"]["source-type"] = "remote"
-    ot2_only["robot"]["source-location"] = "latest"
-    return parse_obj_as(SystemConfigurationModel, ot2_only)
-
-
-@pytest.fixture
-def remote_source_commit_id(ot2_only: Dict[str, Any]) -> SystemConfigurationModel:
-    """Gets SystemConfigurationModel.
-
-    source-type is set to remote.
-    source-location is set a commit id.
-    """
-    ot2_only["robot"]["source-type"] = "remote"
-    ot2_only["robot"]["source-location"] = FAKE_COMMIT_ID
-    return parse_obj_as(SystemConfigurationModel, ot2_only)
-
-
-@pytest.fixture
-def local_source(
-    ot2_only: Dict[str, Any], opentrons_dir: str
-) -> SystemConfigurationModel:
+def local_source(make_config: Callable) -> Dict[str, Any]:
     """Gets SystemConfigurationModel.
 
     source-type is set to local.
     source-location is set to a monorepo dir.
     """
-    ot2_only["robot"]["source-type"] = "local"
-    ot2_only["robot"]["source-location"] = opentrons_dir
+    return make_config(robot="ot2", monorepo_source="path")
 
-    return parse_obj_as(SystemConfigurationModel, ot2_only)
+
+@pytest.fixture
+def remote_source_commit_id(make_config: Callable) -> Dict[str, Any]:
+    """Gets SystemConfigurationModel.
+
+    source-type is set to local.
+    source-location is set to a monorepo dir.
+    """
+    return make_config(robot="ot2", monorepo_source="commit_id")
 
 
 @pytest.mark.parametrize(
-    "config_model, dev",
+    "model_dict, dev",
     [
-        (lazy_fixture("remote_source_latest"), True),
-        (lazy_fixture("remote_source_latest"), False),
+        (lazy_fixture("ot2_only"), True),
+        (lazy_fixture("ot2_only"), False),
         (lazy_fixture("remote_source_commit_id"), True),
         (lazy_fixture("remote_source_commit_id"), False),
         (lazy_fixture("local_source"), True),
@@ -76,11 +56,12 @@ def local_source(
     ],
 )
 def test_simple_smoothie_values(
-    config_model: SystemConfigurationModel,
+    model_dict: Dict[str, Any],
     dev: bool,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Tests for values that are the same for all configurations of a Smoothie Service."""
+    config_model = parse_obj_as(SystemConfigurationModel, model_dict)
     service = ConcreteSmoothieServiceBuilder(
         config_model, testing_global_em_config, dev=dev
     ).build_service()
@@ -160,8 +141,6 @@ def test_smoothie_local(
     assert service.build.target == "smoothie-local"
     assert build_args_are_none(service)
 
-    volumes = service.volumes
-    assert volumes is not None
-    assert partial_string_in_mount("opentrons:/opentrons", volumes)
-    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", volumes)
-    assert partial_string_in_mount("opentrons-python-dist:/dist", volumes)
+    assert partial_string_in_mount("opentrons:/opentrons", service)
+    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", service)
+    assert partial_string_in_mount("opentrons-python-dist:/dist", service)

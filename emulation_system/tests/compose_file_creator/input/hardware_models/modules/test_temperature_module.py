@@ -12,41 +12,33 @@ from emulation_system.compose_file_creator.config_file_settings import (
 from emulation_system.compose_file_creator.input.hardware_models import (
     TemperatureModuleInputModel,
 )
-from tests.compose_file_creator.conftest import (
-    TEMPERATURE_MODULE_EMULATION_LEVEL,
-    TEMPERATURE_MODULE_ID,
-    TEMPERATURE_MODULE_SOURCE_TYPE,
-)
+from tests.compose_file_creator.conftest import TEMPERATURE_MODULE_EMULATION_LEVEL
 
 
 @pytest.fixture
-def temperature_module_set_temp(
-    temperature_module_default: Dict[str, Any]
-) -> Dict[str, Any]:
+def temperature_module_set_temp(temperature_model: Dict[str, Any]) -> Dict[str, Any]:
     """Temperature module with user-specified temperature settings."""
-    temperature_module_default["hardware-specific-attributes"]["temperature"] = {
+    temperature_model["hardware-specific-attributes"]["temperature"] = {
         "degrees-per-tick": 5.0,
         "starting": 20.0,
     }
-    return temperature_module_default
+    return temperature_model
 
 
 @pytest.fixture
 def temperature_module_bad_emulation_level(
-    temperature_module_default: Dict[str, Any]
+    temperature_model: Dict[str, Any]
 ) -> Dict[str, Any]:
     """Return temperature module configuration with an invalid emulation level."""
-    temperature_module_default["emulation-level"] = EmulationLevels.HARDWARE.value
-    return temperature_module_default
+    temperature_model["emulation-level"] = EmulationLevels.HARDWARE.value
+    return temperature_model
 
 
-def test_default_temperature_module(temperature_module_default: Dict[str, Any]) -> None:
+def test_default_temperature_module(temperature_model: Dict[str, Any]) -> None:
     """Confirm Temperature Module is parsed correctly and defaults are applied."""
-    therm = parse_obj_as(TemperatureModuleInputModel, temperature_module_default)
+    therm = parse_obj_as(TemperatureModuleInputModel, temperature_model)
     assert therm.hardware == Hardware.TEMPERATURE_MODULE.value
-    assert therm.id == TEMPERATURE_MODULE_ID
     assert therm.emulation_level == TEMPERATURE_MODULE_EMULATION_LEVEL
-    assert therm.source_type == TEMPERATURE_MODULE_SOURCE_TYPE
     assert therm.hardware_specific_attributes.temperature.degrees_per_tick == 2.0
     assert therm.hardware_specific_attributes.temperature.starting == 23.0
 
@@ -60,9 +52,7 @@ def test_temperature_module_with_temp(
     """
     therm = parse_obj_as(TemperatureModuleInputModel, temperature_module_set_temp)
     assert therm.hardware == Hardware.TEMPERATURE_MODULE.value
-    assert therm.id == TEMPERATURE_MODULE_ID
     assert therm.emulation_level == TEMPERATURE_MODULE_EMULATION_LEVEL
-    assert therm.source_type == TEMPERATURE_MODULE_SOURCE_TYPE
     assert therm.hardware_specific_attributes.temperature.degrees_per_tick == 5.0
     assert therm.hardware_specific_attributes.temperature.starting == 20.0
 
@@ -77,10 +67,8 @@ def test_temperature_module_with_bad_emulation_level(
         )
 
 
-def test_temperature_module_source_repos(
-    temperature_module_default: Dict[str, Any]
-) -> None:
+def test_temperature_module_source_repos(temperature_model: Dict[str, Any]) -> None:
     """Confirm that defined source repos are correct."""
-    temp = parse_obj_as(TemperatureModuleInputModel, temperature_module_default)
+    temp = parse_obj_as(TemperatureModuleInputModel, temperature_model)
     assert temp.source_repos.firmware_repo_name == OpentronsRepository.OPENTRONS
     assert temp.source_repos.hardware_repo_name is None

@@ -13,12 +13,12 @@ from emulation_system.compose_file_creator.config_file_settings import (
 )
 from emulation_system.compose_file_creator.conversion import ServiceBuilderOrchestrator
 from emulation_system.compose_file_creator.images import (
-    OT3BootloaderImages,
-    OT3GantryXImages,
-    OT3GantryYImages,
-    OT3GripperImages,
-    OT3HeadImages,
-    OT3PipettesImages,
+    OT3BootloaderImage,
+    OT3GantryXImage,
+    OT3GantryYImage,
+    OT3GripperImage,
+    OT3HeadImage,
+    OT3PipettesImage,
 )
 from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
 from tests.compose_file_creator.conversion_logic.conftest import (
@@ -244,12 +244,12 @@ def test_ot3_service_remote(
     bootloader = get_ot3_service(services, OT3Hardware.BOOTLOADER)
     gripper = get_ot3_service(services, OT3Hardware.GRIPPER)
 
-    assert head.image == OT3HeadImages().remote_hardware_image_name
-    assert pipettes.image == OT3PipettesImages().remote_hardware_image_name
-    assert gantry_x.image == OT3GantryXImages().remote_hardware_image_name
-    assert gantry_y.image == OT3GantryYImages().remote_hardware_image_name
-    assert bootloader.image == OT3BootloaderImages().remote_hardware_image_name
-    assert gripper.image == OT3GripperImages().remote_hardware_image_name
+    assert head.image == OT3HeadImage().image_name
+    assert pipettes.image == OT3PipettesImage().image_name
+    assert gantry_x.image == OT3GantryXImage().image_name
+    assert gantry_y.image == OT3GantryYImage().image_name
+    assert bootloader.image == OT3BootloaderImage().image_name
+    assert gripper.image == OT3GripperImage().image_name
 
     assert isinstance(head.build, BuildItem)
     assert isinstance(pipettes.build, BuildItem)
@@ -258,12 +258,12 @@ def test_ot3_service_remote(
     assert isinstance(bootloader.build, BuildItem)
     assert isinstance(gripper.build, BuildItem)
 
-    assert head.build.target == OT3HeadImages().remote_hardware_image_name
-    assert pipettes.build.target == OT3PipettesImages().remote_hardware_image_name
-    assert gantry_x.build.target == OT3GantryXImages().remote_hardware_image_name
-    assert gantry_y.build.target == OT3GantryYImages().remote_hardware_image_name
-    assert bootloader.build.target == OT3BootloaderImages().remote_hardware_image_name
-    assert gripper.build.target == OT3GripperImages().remote_hardware_image_name
+    assert head.build.target == OT3HeadImage().image_name
+    assert pipettes.build.target == OT3PipettesImage().image_name
+    assert gantry_x.build.target == OT3GantryXImage().image_name
+    assert gantry_y.build.target == OT3GantryYImage().image_name
+    assert bootloader.build.target == OT3BootloaderImage().image_name
+    assert gripper.build.target == OT3GripperImage().image_name
 
     for service in services:
         build_args = get_source_code_build_args(service)
@@ -295,12 +295,12 @@ def test_ot3_services_local(
     bootloader = get_ot3_service(services, OT3Hardware.BOOTLOADER)
     gripper = get_ot3_service(services, OT3Hardware.GRIPPER)
 
-    assert head.image == OT3HeadImages().local_hardware_image_name
-    assert pipettes.image == OT3PipettesImages().local_hardware_image_name
-    assert gantry_x.image == OT3GantryXImages().local_hardware_image_name
-    assert gantry_y.image == OT3GantryYImages().local_hardware_image_name
-    assert bootloader.image == OT3BootloaderImages().local_hardware_image_name
-    assert gripper.image == OT3GripperImages().local_hardware_image_name
+    assert head.image == OT3HeadImage().image_name
+    assert pipettes.image == OT3PipettesImage().image_name
+    assert gantry_x.image == OT3GantryXImage().image_name
+    assert gantry_y.image == OT3GantryYImage().image_name
+    assert bootloader.image == OT3BootloaderImage().image_name
+    assert gripper.image == OT3GripperImage().image_name
 
     assert isinstance(head.build, BuildItem)
     assert isinstance(pipettes.build, BuildItem)
@@ -309,26 +309,26 @@ def test_ot3_services_local(
     assert isinstance(bootloader.build, BuildItem)
     assert isinstance(gripper.build, BuildItem)
 
-    assert head.build.target == OT3HeadImages().local_hardware_image_name
-    assert pipettes.build.target == OT3PipettesImages().local_hardware_image_name
-    assert gantry_x.build.target == OT3GantryXImages().local_hardware_image_name
-    assert gantry_y.build.target == OT3GantryYImages().local_hardware_image_name
-    assert bootloader.build.target == OT3BootloaderImages().local_hardware_image_name
-    assert gripper.build.target == OT3GripperImages().local_hardware_image_name
+    assert head.build.target == OT3HeadImage().image_name
+    assert pipettes.build.target == OT3PipettesImage().image_name
+    assert gantry_x.build.target == OT3GantryXImage().image_name
+    assert gantry_y.build.target == OT3GantryYImage().image_name
+    assert bootloader.build.target == OT3BootloaderImage().image_name
+    assert gripper.build.target == OT3GripperImage().image_name
 
     for service in services:
         assert build_args_are_none(service)
         volumes = service.volumes
         assert volumes is not None
         assert len(volumes) == 6
-        assert partial_string_in_mount("ot3-firmware:/ot3-firmware", volumes)
-        assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", volumes)
+        assert partial_string_in_mount("ot3-firmware:/ot3-firmware", service)
+        assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", service)
         assert partial_string_in_mount(
-            "ot3-firmware-build-host:/ot3-firmware/build-host", volumes
+            "ot3-firmware-build-host:/ot3-firmware/build-host", service
         )
         assert partial_string_in_mount(
-            "ot3-firmware-stm32-tools:/ot3-firmware/stm32-tools", volumes
+            "ot3-firmware-stm32-tools:/ot3-firmware/stm32-tools", service
         )
 
-        assert partial_string_in_mount("opentrons:/opentrons", volumes)
-        assert partial_string_in_mount("opentrons-python-dist:/dist", volumes)
+        assert partial_string_in_mount("opentrons:/opentrons", service)
+        assert partial_string_in_mount("opentrons-python-dist:/dist", service)

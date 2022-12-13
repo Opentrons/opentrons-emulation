@@ -4,7 +4,7 @@ import argparse
 import json
 import sys
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 import yaml
 from pydantic import parse_obj_as
@@ -17,9 +17,9 @@ from emulation_system import SystemConfigurationModel
 class Substitution:
     """Definition of what to substitute in yaml file."""
 
-    service_name: str
     value_to_replace: str
     replacement_value: str
+    service_name: Optional[str] = None
 
 
 @dataclass
@@ -37,8 +37,13 @@ class YamlSubstitution:
 
         copied_model = deepcopy(system_config)
         for sub in self.subs:
+            obj_to_replace_on = (
+                copied_model.get_by_id(sub.service_name)
+                if sub.service_name is not None
+                else copied_model
+            )
             setattr(
-                copied_model.get_by_id(sub.service_name),
+                obj_to_replace_on,
                 sub.value_to_replace.replace("-", "_"),
                 sub.replacement_value,
             )

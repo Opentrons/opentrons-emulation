@@ -3,8 +3,7 @@
 Note: Do not need to test matching module names because module names cannot be the same
 by definition of dict.
 """
-import pathlib
-from typing import Any, Dict
+from typing import Any, Callable, Dict
 
 import pytest
 from pydantic import ValidationError
@@ -30,41 +29,63 @@ from tests.compose_file_creator.conftest import (
 
 
 @pytest.fixture
-def matching_module_names(magnetic_module_default: Dict[str, Any]) -> Dict[str, Any]:
+def matching_module_names(make_config: Callable) -> Dict[str, Any]:
     """Dict with matching moudle names."""
-    return {"modules": [magnetic_module_default, magnetic_module_default]}
+    config = make_config(modules={"magnetic-module": 1})
+    config["modules"].extend(config["modules"])
+    return config
 
 
 @pytest.fixture
-def matching_robot_and_module_names(
-    magnetic_module_default: Dict[str, Any], ot2_default: Dict[str, Any]
-) -> Dict[str, Any]:
+def matching_robot_and_module_names(make_config: Callable) -> Dict[str, Any]:
     """Dict with matching robot and module name."""
-    ot2_default["id"] = MAGNETIC_MODULE_ID
-    return {"robot": ot2_default, "modules": [magnetic_module_default]}
+    config = make_config(robot="ot2", modules={"magnetic-module": 1})
+    config["robot"]["id"] = config["modules"][0]["id"]
+    return config
 
 
 @pytest.fixture
-def invalid_ot2_name(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
+def invalid_ot2_name(make_config: Callable) -> Dict[str, Any]:
     """Dict with ot2 that has invalid name."""
-    ot2_default["id"] = "Invalid Name"
-    return {"robot": ot2_default}
+    config = make_config(robot="ot2")
+    config["robot"]["id"] = "Invalid Name"
+    return config
 
 
 @pytest.fixture
-def null_robot_with_modules(modules_only: Dict[str, Any]) -> Dict[str, Any]:
+def null_robot_with_modules(make_config: Callable) -> Dict[str, Any]:
     """Structure of SystemConfigurationModel with modules and null robot."""
-    modules_only["robot"] = None
-    modules_only["system-unique-id"] = None
-    return modules_only
+    config = make_config(
+        robot="ot2",
+        modules={
+            "magnetic-module": 1,
+            "temperature-module": 1,
+            "thermocycler-module": 1,
+            "heater-shaker-module": 1,
+        },
+        system_unique_id="test",
+    )
+    config["robot"] = None
+    config["system-unique-id"] = None
+    return config
 
 
 @pytest.fixture
-def null_module_with_robot(ot2_only: Dict[str, Any]) -> Dict[str, Any]:
+def null_module_with_robot(make_config: Callable) -> Dict[str, Any]:
     """Structure of SystemConfigurationModel with modules and null robot."""
-    ot2_only["modules"] = None
-    ot2_only["system-unique-id"] = None
-    return ot2_only
+    config = make_config(
+        robot="ot2",
+        modules={
+            "magnetic-module": 1,
+            "temperature-module": 1,
+            "thermocycler-module": 1,
+            "heater-shaker-module": 1,
+        },
+        system_unique_id="test",
+    )
+    config["modules"] = None
+    config["system-unique-id"] = None
+    return config
 
 
 @pytest.fixture
@@ -78,38 +99,20 @@ def null_everything() -> Dict[str, None]:
 
 
 @pytest.fixture
-def with_invalid_system_unique_id(ot2_and_modules: Dict[str, Any]) -> Dict[str, Any]:
+def with_invalid_system_unique_id(make_config: Callable) -> Dict[str, Any]:
     """Structure of SystemConfigurationModel with robot, modules, and an invalid system-unique-id."""
-    ot2_and_modules["system-unique-id"] = "I aM uNiQuE bUt InVaLiD"
-    return ot2_and_modules
-
-
-@pytest.fixture
-def ot2_with_mounts(tmp_path: pathlib.Path, ot2_default: Dict) -> Dict:
-    """Configuration of a robot with extra bind mounts."""
-    datadog_dir = tmp_path / "Datadog"
-    datadog_dir.mkdir()
-    datadog_file = datadog_dir / "log.txt"
-    datadog_file.write_text("test")
-
-    log_dir = tmp_path / "Log"
-    log_dir.mkdir()
-
-    ot2_default["robot"][OT2_ID]["extra-mounts"] = [
-        {
-            "name": "DATADOG",
-            "source-path": str(datadog_file),
-            "mount-path": "/datadog/log.txt",
-            "type": "file",
+    config = make_config(
+        robot="ot2",
+        modules={
+            "magnetic-module": 1,
+            "temperature-module": 1,
+            "thermocycler-module": 1,
+            "heater-shaker-module": 1,
         },
-        {
-            "name": "LOG_FILES",
-            "source-path": str(log_dir),
-            "mount-path": "/var/log/opentrons/",
-            "type": "directory",
-        },
-    ]
-    return ot2_default
+        system_unique_id="test",
+    )
+    config["system-unique-id"] = "I aM uNiQuE bUt InVaLiD"
+    return config
 
 
 def create_system_configuration(obj: Dict) -> SystemConfigurationModel:
@@ -126,7 +129,6 @@ def create_system_configuration(obj: Dict) -> SystemConfigurationModel:
 )
 def test_duplicate_names(config: Dict[str, Any]) -> None:
     """Confirm that ValidationError is thrown when a robot and module have the same name."""
-    print(config)
     with pytest.raises(DuplicateHardwareNameError) as err:
         create_system_configuration(config)
     expected_error_text = (
@@ -189,35 +191,44 @@ def test_robot_exists_is_false(config: Dict[str, Any]) -> None:
 def test_containers_property(ot2_and_modules: Dict[str, Any]) -> None:
     """Test the containers property is constructed correctly."""
     containers = create_system_configuration(ot2_and_modules).containers
+    magnetic_module_id = f"{MAGNETIC_MODULE_ID}-1"
+    temperature_module_id = f"{TEMPERATURE_MODULE_ID}-1"
+    thermocycler_module_id = f"{THERMOCYCLER_MODULE_ID}-1"
+    heater_shaker_module_id = f"{HEATER_SHAKER_MODULE_ID}-1"
+
     assert set(containers.keys()) == {
         OT2_ID,
-        MAGNETIC_MODULE_ID,
-        TEMPERATURE_MODULE_ID,
-        THERMOCYCLER_MODULE_ID,
-        HEATER_SHAKER_MODULE_ID,
+        magnetic_module_id,
+        temperature_module_id,
+        thermocycler_module_id,
+        heater_shaker_module_id,
     }
     assert isinstance(containers[OT2_ID], OT2InputModel)
-    assert isinstance(containers[MAGNETIC_MODULE_ID], MagneticModuleInputModel)
-    assert isinstance(containers[TEMPERATURE_MODULE_ID], TemperatureModuleInputModel)
-    assert isinstance(containers[THERMOCYCLER_MODULE_ID], ThermocyclerModuleInputModel)
-    assert isinstance(containers[HEATER_SHAKER_MODULE_ID], HeaterShakerModuleInputModel)
+    assert isinstance(containers[magnetic_module_id], MagneticModuleInputModel)
+    assert isinstance(containers[temperature_module_id], TemperatureModuleInputModel)
+    assert isinstance(containers[thermocycler_module_id], ThermocyclerModuleInputModel)
+    assert isinstance(containers[heater_shaker_module_id], HeaterShakerModuleInputModel)
 
 
 def test_get_by_id(ot2_and_modules: Dict[str, Any]) -> None:
     """Test that loading containers by id works correctly."""
     system_config = create_system_configuration(ot2_and_modules)
+    magnetic_module_id = f"{MAGNETIC_MODULE_ID}-1"
+    temperature_module_id = f"{TEMPERATURE_MODULE_ID}-1"
+    thermocycler_module_id = f"{THERMOCYCLER_MODULE_ID}-1"
+    heater_shaker_module_id = f"{HEATER_SHAKER_MODULE_ID}-1"
     assert isinstance(system_config.get_by_id(OT2_ID), OT2InputModel)
     assert isinstance(
-        system_config.get_by_id(HEATER_SHAKER_MODULE_ID), HeaterShakerModuleInputModel
+        system_config.get_by_id(heater_shaker_module_id), HeaterShakerModuleInputModel
     )
     assert isinstance(
-        system_config.get_by_id(MAGNETIC_MODULE_ID), MagneticModuleInputModel
+        system_config.get_by_id(magnetic_module_id), MagneticModuleInputModel
     )
     assert isinstance(
-        system_config.get_by_id(TEMPERATURE_MODULE_ID), TemperatureModuleInputModel
+        system_config.get_by_id(temperature_module_id), TemperatureModuleInputModel
     )
     assert isinstance(
-        system_config.get_by_id(THERMOCYCLER_MODULE_ID), ThermocyclerModuleInputModel
+        system_config.get_by_id(thermocycler_module_id), ThermocyclerModuleInputModel
     )
 
 

@@ -7,19 +7,21 @@ from typing import List, Type
 
 from .errors import InvalidFilterError
 from .images import (
-    CANServerImages,
-    EmulatorProxyImages,
+    CANServerImage,
+    EmulatorProxyImage,
+    FirmwareAndHardwareImages,
     HeaterShakerModuleImages,
-    Images,
+    LocalOT3FirmwareBuilderImage,
     MagneticModuleImages,
-    OT3BootloaderImages,
-    OT3GantryXImages,
-    OT3GantryYImages,
-    OT3GripperImages,
-    OT3HeadImages,
-    OT3PipettesImages,
-    RobotServerImages,
-    SmoothieImages,
+    OT3BootloaderImage,
+    OT3GantryXImage,
+    OT3GantryYImage,
+    OT3GripperImage,
+    OT3HeadImage,
+    OT3PipettesImage,
+    OT3StateManagerImage,
+    RobotServerImage,
+    SmoothieImage,
     TemperatureModuleImages,
     ThermocyclerModuleImages,
 )
@@ -32,17 +34,22 @@ class ContainerFilters(Enum):
     MAGNETIC_MODULE = ("magnetic-module", [MagneticModuleImages])
     THERMOCYCLER_MODULE = ("thermocycler-module", [ThermocyclerModuleImages])
     TEMPERATURE_MODULE = ("temperature-module", [TemperatureModuleImages])
-    EMULATOR_PROXY = ("emulator-proxy", [EmulatorProxyImages])
+    EMULATOR_PROXY = ("emulator-proxy", [EmulatorProxyImage])
 
-    SMOOTHIE = ("smoothie", [SmoothieImages])
+    SMOOTHIE = ("smoothie", [SmoothieImage])
 
-    CAN_SERVER = ("can-server", [CANServerImages])
-    OT3_GANTRY_X = ("ot3-gantry-x", [OT3GantryXImages])
-    OT3_GANTRY_Y = ("ot3-gantry-y", [OT3GantryYImages])
-    OT3_HEAD = ("ot3-head", [OT3HeadImages])
-    OT3_PIPETTES = ("ot3-pipettes", [OT3PipettesImages])
-    OT3_BOOTLOADER = ("ot3-bootloader", [OT3BootloaderImages])
-    OT3_GRIPPER = ("ot3-gripper", [OT3GripperImages])
+    CAN_SERVER = ("can-server", [CANServerImage])
+    OT3_GANTRY_X = ("ot3-gantry-x", [OT3GantryXImage])
+    OT3_GANTRY_Y = ("ot3-gantry-y", [OT3GantryYImage])
+    OT3_HEAD = ("ot3-head", [OT3HeadImage])
+    OT3_PIPETTES = ("ot3-pipettes", [OT3PipettesImage])
+    OT3_BOOTLOADER = ("ot3-bootloader", [OT3BootloaderImage])
+    OT3_GRIPPER = ("ot3-gripper", [OT3GripperImage])
+    OT3_STATE_MANAGER = ("ot3-state-manager", [OT3StateManagerImage])
+    LOCAL_OT3_FIRMWARE_BUILDER = (
+        "local-ot3-firmware-builder",
+        [LocalOT3FirmwareBuilderImage],
+    )
 
     MODULES = (
         "modules",
@@ -56,38 +63,41 @@ class ContainerFilters(Enum):
     FIRMWARE = (
         "firmware",
         [
-            OT3GantryXImages,
-            OT3GantryYImages,
-            OT3HeadImages,
-            OT3PipettesImages,
-            OT3BootloaderImages,
-            OT3GripperImages,
-            SmoothieImages,
+            OT3GantryXImage,
+            OT3GantryYImage,
+            OT3HeadImage,
+            OT3PipettesImage,
+            OT3BootloaderImage,
+            OT3GripperImage,
+            SmoothieImage,
         ],
     )
-    ROBOT_SERVER = ("robot-server", [RobotServerImages])
+    ROBOT_SERVER = ("robot-server", [RobotServerImage])
 
     ALL = (
         "all",
         [
-            CANServerImages,
-            EmulatorProxyImages,
+            CANServerImage,
+            EmulatorProxyImage,
             HeaterShakerModuleImages,
             MagneticModuleImages,
-            OT3GantryXImages,
-            OT3GantryYImages,
-            OT3HeadImages,
-            OT3PipettesImages,
-            OT3BootloaderImages,
-            OT3GripperImages,
-            RobotServerImages,
-            SmoothieImages,
+            OT3GantryXImage,
+            OT3GantryYImage,
+            OT3HeadImage,
+            OT3PipettesImage,
+            OT3BootloaderImage,
+            OT3GripperImage,
+            RobotServerImage,
+            SmoothieImage,
             TemperatureModuleImages,
             ThermocyclerModuleImages,
+            OT3StateManagerImage,
         ],
     )
 
-    def __init__(self, filter_name: str, images: List[Type[Images]] = []) -> None:
+    def __init__(
+        self, filter_name: str, images: List[Type[FirmwareAndHardwareImages]] = []
+    ) -> None:
         self.filter_name = filter_name
         self.images = images
 

@@ -19,11 +19,11 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
     convert_from_obj,
 )
 from emulation_system.compose_file_creator.images import (
-    OT3GantryXImages,
-    OT3GantryYImages,
-    OT3HeadImages,
-    OT3PipettesImages,
-    SmoothieImages,
+    OT3GantryXImage,
+    OT3GantryYImage,
+    OT3HeadImage,
+    OT3PipettesImage,
+    SmoothieImage,
 )
 from tests.compose_file_creator.conftest import EMULATOR_PROXY_ID, SMOOTHIE_ID
 from tests.compose_file_creator.conversion_logic.conftest import partial_string_in_mount
@@ -93,7 +93,7 @@ def test_smoothie_with_local_source(
     services = convert_from_obj(ot2_only, testing_global_em_config, False).services
     assert services is not None
     smoothie = services[SMOOTHIE_ID]
-    assert smoothie.image == f"{SmoothieImages().local_firmware_image_name}:latest"
+    assert smoothie.image == f"{SmoothieImage().image_name}:latest"
     smoothie_mounts = smoothie.volumes
     assert smoothie_mounts is not None
     assert len(smoothie_mounts) > 0
@@ -110,17 +110,17 @@ def test_smoothie_with_remote_source(
     ).services
     assert services is not None
     smoothie = services[SMOOTHIE_ID]
-    assert smoothie.image == f"{SmoothieImages().remote_firmware_image_name}:latest"
+    assert smoothie.image == f"{SmoothieImage().image_name}:latest"
     assert smoothie.volumes is None
 
 
 @pytest.mark.parametrize(
     "container_name, expected_image_name",
     [
-        [OT3Hardware.PIPETTES.value, OT3PipettesImages().local_hardware_image_name],
-        [OT3Hardware.HEAD.value, OT3HeadImages().local_hardware_image_name],
-        [OT3Hardware.GANTRY_X.value, OT3GantryXImages().local_hardware_image_name],
-        [OT3Hardware.GANTRY_Y.value, OT3GantryYImages().local_hardware_image_name],
+        [OT3Hardware.PIPETTES.value, OT3PipettesImage().image_name],
+        [OT3Hardware.HEAD.value, OT3HeadImage().image_name],
+        [OT3Hardware.GANTRY_X.value, OT3GantryXImage().image_name],
+        [OT3Hardware.GANTRY_Y.value, OT3GantryYImage().image_name],
     ],
 )
 def test_local_ot3_services_created(
@@ -137,5 +137,5 @@ def test_local_ot3_services_created(
     service = services[container_name]
     assert service.image == expected_image_name
 
-    partial_string_in_mount("entrypoint.sh:/entrypoint.sh", service.volumes)
-    partial_string_in_mount("ot3-firmware:/ot3-firmware", service.volumes)
+    partial_string_in_mount("entrypoint.sh:/entrypoint.sh", service)
+    partial_string_in_mount("ot3-firmware:/ot3-firmware", service)

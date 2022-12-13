@@ -55,44 +55,13 @@ case $FULL_COMMAND in
   # and choosing which executeable is sent to which container
   build-common-ot3-firmware)
     build_ot3_firmware_simulators
-    cp /ot3-firmware/build-host/pipettes/simulator/pipettes-single-simulator /pipettes-simulator
-    cp /ot3-firmware/build-host/head/simulator/head-simulator /head-simulator
-    cp /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /gantry-x-simulator
-    cp /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /gantry-y-simulator
-    cp /ot3-firmware/build-host/bootloader/simulator/bootloader-simulator /bootloader-simulator
-    cp /ot3-firmware/build-host/gripper/simulator/gripper-simulator /gripper-simulator
-    ;;
-
-  # TODO: Figure out why below ot3 builders are failing if I build just the single simulator and not all of them.
-
-  build-ot3-gantry-x-hardware)
-    build_ot3_firmware_simulators
-    cp /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /gantry-x-simulator
-    ;;
-
-  build-ot3-gantry-y-hardware)
-    build_ot3_firmware_simulators
-    cp /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /gantry-y-simulator
-    ;;
-
-  build-ot3-head-hardware)
-    build_ot3_firmware_simulators
-    cp /ot3-firmware/build-host/head/simulator/head-simulator /head-simulator
-    ;;
-
-  build-ot3-pipettes-hardware)
-    build_ot3_firmware_simulators
-    cp /ot3-firmware/build-host/pipettes/simulator/pipettes-single-simulator /pipettes-simulator
-    ;;
-
-  build-ot3-bootloader-hardware)
-    build_ot3_firmware_simulators
-    cp /ot3-firmware/build-host/bootloader/simulator/bootloader-simulator /bootloader-simulator
-    ;;
-
-  build-ot3-gripper-hardware)
-    build_ot3_firmware_simulators
-    cp /ot3-firmware/build-host/gripper/simulator/gripper-simulator /gripper-simulator
+    mkdir /executable
+    cp /ot3-firmware/build-host/pipettes/simulator/pipettes-single-simulator /executable/pipettes-simulator
+    cp /ot3-firmware/build-host/head/simulator/head-simulator /executable/head-simulator
+    cp /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /executable/gantry-x-simulator
+    cp /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /executable/gantry-y-simulator
+    cp /ot3-firmware/build-host/bootloader/simulator/bootloader-simulator /executable/bootloader-simulator
+    cp /ot3-firmware/build-host/gripper/simulator/gripper-simulator /executable/gripper-simulator
     ;;
 
   run-heater-shaker-hardware)
@@ -103,22 +72,22 @@ case $FULL_COMMAND in
     ;;
 
   run-ot3-pipettes-hardware)
-    /pipettes-simulator
+    /executable/pipettes-simulator
     ;;
   run-ot3-head-hardware)
-    /head-simulator
+    /executable/head-simulator
     ;;
   run-ot3-gantry-x-hardware)
-    /gantry-x-simulator
+    /executable/gantry-x-simulator
     ;;
   run-ot3-gantry-y-hardware)
-    /gantry-y-simulator
+    /executable/gantry-y-simulator
     ;;
   run-ot3-bootloader-hardware)
-    /bootloader-simulator
+    /executable/bootloader-simulator
     ;;
   run-ot3-gripper-hardware)
-    /gripper-simulator
+    /executable/gripper-simulator
     ;;
   run-ot3-state-manager)
     # 9999 is the hardcoded state manager port

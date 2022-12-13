@@ -1,159 +1,155 @@
 """Mapping for getting image names for hardware."""
+from dataclasses import dataclass
 from typing import List, Optional
 
-from pydantic import BaseModel
 from typing_extensions import Literal
 
-from .config_file_settings import EmulationLevels, Hardware, SourceType
+from .config_file_settings import EmulationLevels, Hardware
 from .errors import ImageNotDefinedError
 
 
-class Images(BaseModel):
+@dataclass
+class FirmwareAndHardwareImages:
     """Stores names of images for each piece of hardware."""
 
-    local_firmware_image_name: Optional[str]
-    local_hardware_image_name: Optional[str]
-    remote_firmware_image_name: Optional[str]
-    remote_hardware_image_name: Optional[str]
+    firmware_image_name: Optional[str]
+    hardware_image_name: Optional[str]
 
     def get_image_names(self) -> List[str]:
         """Get list of image names for image."""
         return [
             image_name
-            for image_name in [
-                self.local_firmware_image_name,
-                self.local_hardware_image_name,
-                self.remote_firmware_image_name,
-                self.remote_hardware_image_name,
-            ]
+            for image_name in [self.firmware_image_name, self.hardware_image_name]
             if image_name is not None
         ]
 
 
-class HeaterShakerModuleImages(Images):
+@dataclass
+class SingleImage:
+    image_name: str
+
+
+@dataclass
+class HeaterShakerModuleImages(FirmwareAndHardwareImages):
     """Image names for Heater-Shaker."""
 
-    local_firmware_image_name: str = "heater-shaker-firmware-local"
-    local_hardware_image_name: str = "heater-shaker-hardware-local"
-    remote_firmware_image_name: str = "heater-shaker-firmware-remote"
-    remote_hardware_image_name: str = "heater-shaker-hardware-remote"
+    firmware_image_name: str = "heater-shaker-firmware"
+    hardware_image_name: str = "heater-shaker-hardware"
 
 
-class MagneticModuleImages(Images):
+@dataclass
+class MagneticModuleImages(FirmwareAndHardwareImages):
     """Image names for Magnetic Module."""
 
-    local_firmware_image_name: str = "magdeck-firmware-local"
-    local_hardware_image_name: Literal[None] = None
-    remote_firmware_image_name: str = "magdeck-firmware-remote"
-    remote_hardware_image_name: Literal[None] = None
+    firmware_image_name: str = "magdeck-firmware"
+    hardware_image_name: Literal[None] = None
 
 
-class TemperatureModuleImages(Images):
+@dataclass
+class TemperatureModuleImages(FirmwareAndHardwareImages):
     """Image names for Temperature Module."""
 
-    local_firmware_image_name: str = "tempdeck-firmware-local"
-    local_hardware_image_name: Literal[None] = None
-    remote_firmware_image_name: str = "tempdeck-firmware-remote"
-    remote_hardware_image_name: Literal[None] = None
+    firmware_image_name: str = "tempdeck-firmware"
+    hardware_image_name: Literal[None] = None
 
 
-class ThermocyclerModuleImages(Images):
+@dataclass
+class ThermocyclerModuleImages(FirmwareAndHardwareImages):
     """Image names for Magnetic Module."""
 
-    local_firmware_image_name: str = "thermocycler-firmware-local"
-    local_hardware_image_name: str = "thermocycler-hardware-local"
-    remote_firmware_image_name: str = "thermocycler-firmware-remote"
-    remote_hardware_image_name: str = "thermocycler-hardware-remote"
+    firmware_image_name: str = "thermocycler-firmware"
+    hardware_image_name: str = "thermocycler-hardware"
 
 
-class RobotServerImages(Images):
-    """Image names for Magnetic Module."""
+@dataclass
+class RobotServerImage(SingleImage):
+    """Image name for Robot Server."""
 
-    local_firmware_image_name: str = "robot-server-local"
-    local_hardware_image_name: str = "robot-server-local"
-    remote_firmware_image_name: str = "robot-server-remote"
-    remote_hardware_image_name: str = "robot-server-remote"
+    image_name: str = "robot-server"
 
 
-class EmulatorProxyImages(Images):
-    """Image names for Emulator Proxy."""
+@dataclass
+class EmulatorProxyImage(SingleImage):
+    """Image name for Emulator Proxy."""
 
-    local_firmware_image_name: str = "emulator-proxy-local"
-    local_hardware_image_name: Literal[None] = None
-    remote_firmware_image_name: str = "emulator-proxy-remote"
-    remote_hardware_image_name: Literal[None] = None
+    image_name: str = "emulator-proxy"
 
 
-class SmoothieImages(Images):
+@dataclass
+class SmoothieImage(SingleImage):
     """Image names for Smoothie."""
 
-    local_firmware_image_name: str = "smoothie-local"
-    local_hardware_image_name: Literal[None] = None
-    remote_firmware_image_name: str = "smoothie-remote"
-    remote_hardware_image_name: Literal[None] = None
+    image_name: str = "smoothie"
 
 
-class OT3PipettesImages(Images):
+@dataclass
+class OT3PipettesImage(SingleImage):
     """Image names for OT3 Pipettes."""
 
-    local_firmware_image_name: Literal[None] = None
-    local_hardware_image_name: str = "ot3-pipettes-hardware-local"
-    remote_firmware_image_name: Literal[None] = None
-    remote_hardware_image_name: str = "ot3-pipettes-hardware-remote"
+    image_name: str = "ot3-pipettes-hardware"
 
 
-class OT3HeadImages(Images):
+@dataclass
+class OT3HeadImage(SingleImage):
     """Image names for OT3 Pipettes."""
 
-    local_firmware_image_name: Literal[None] = None
-    local_hardware_image_name: str = "ot3-head-hardware-local"
-    remote_firmware_image_name: Literal[None] = None
-    remote_hardware_image_name: str = "ot3-head-hardware-remote"
+    image_name: str = "ot3-head-hardware"
 
 
-class OT3GantryXImages(Images):
+@dataclass
+class OT3GantryXImage(SingleImage):
     """Image names for OT3 Pipettes."""
 
-    local_firmware_image_name: Literal[None] = None
-    local_hardware_image_name: str = "ot3-gantry-x-hardware-local"
-    remote_firmware_image_name: Literal[None] = None
-    remote_hardware_image_name: str = "ot3-gantry-x-hardware-remote"
+    image_name: str = "ot3-gantry-x-hardware"
 
 
-class OT3GantryYImages(Images):
+@dataclass
+class OT3GantryYImage(SingleImage):
     """Image names for OT3 Pipettes."""
 
-    local_firmware_image_name: Literal[None] = None
-    local_hardware_image_name: str = "ot3-gantry-y-hardware-local"
-    remote_firmware_image_name: Literal[None] = None
-    remote_hardware_image_name: str = "ot3-gantry-y-hardware-remote"
+    image_name: str = "ot3-gantry-y-hardware"
 
 
-class OT3BootloaderImages(Images):
+@dataclass
+class OT3BootloaderImage(SingleImage):
     """Image names for OT3 Bootloader."""
 
-    local_firmware_image_name: Literal[None] = None
-    local_hardware_image_name: str = "ot3-bootloader-hardware-local"
-    remote_firmware_image_name: Literal[None] = None
-    remote_hardware_image_name: str = "ot3-bootloader-hardware-remote"
+    image_name: str = "ot3-bootloader-hardware"
 
 
-class OT3GripperImages(Images):
+@dataclass
+class OT3GripperImage(SingleImage):
     """Image names for OT3 Bootloader."""
 
-    local_firmware_image_name: Literal[None] = None
-    local_hardware_image_name: str = "ot3-gripper-hardware-local"
-    remote_firmware_image_name: Literal[None] = None
-    remote_hardware_image_name: str = "ot3-gripper-hardware-remote"
+    image_name: str = "ot3-gripper-hardware"
 
 
-class CANServerImages(Images):
+@dataclass
+class OT3StateManagerImage(SingleImage):
+    """Image names for OT3 Bootloader."""
+
+    image_name: str = "ot3-state-manager"
+
+
+@dataclass
+class LocalOT3FirmwareBuilderImage(SingleImage):
+    """Image names for OT3 Bootloader."""
+
+    image_name: str = "local-ot3-firmware-builder"
+
+
+@dataclass
+class LocalMonorepoBuilderImage(SingleImage):
+    """Image names for OT3 Bootloader."""
+
+    image_name: str = "local-monorepo-builder"
+
+
+@dataclass
+class CANServerImage(SingleImage):
     """Image names for CAN server."""
 
-    local_firmware_image_name: str = "can-server-local"
-    local_hardware_image_name: Literal[None] = None
-    remote_firmware_image_name: str = "can-server-remote"
-    remote_hardware_image_name: Literal[None] = None
+    image_name: str = "can-server"
 
 
 IMAGE_MAPPING = {
@@ -161,30 +157,26 @@ IMAGE_MAPPING = {
     Hardware.MAGNETIC_MODULE.value: MagneticModuleImages(),
     Hardware.THERMOCYCLER_MODULE.value: ThermocyclerModuleImages(),
     Hardware.TEMPERATURE_MODULE.value: TemperatureModuleImages(),
-    # TODO: Will need to update OT2 to use Smoothie image once it is created
-    Hardware.OT2.value: RobotServerImages(),
-    # TODO: Will need to update OT3 to use OT3 image once it is created
-    Hardware.OT3.value: RobotServerImages(),
+    Hardware.OT2.value: RobotServerImage(),
+    Hardware.OT3.value: RobotServerImage(),
 }
 
 
-def get_image_name(
-    hardware: str, source_type: SourceType, emulation_level: EmulationLevels
-) -> str:
+def get_image_name(hardware: str, emulation_level: EmulationLevels) -> str:
     """Load image name."""
-    image_class = IMAGE_MAPPING[hardware]
-    comp_tuple = (source_type, emulation_level)
-
-    if comp_tuple == (SourceType.REMOTE, EmulationLevels.HARDWARE):
-        image_name = image_class.remote_hardware_image_name
-    elif comp_tuple == (SourceType.REMOTE, EmulationLevels.FIRMWARE):
-        image_name = image_class.remote_firmware_image_name
-    elif comp_tuple == (SourceType.LOCAL, EmulationLevels.HARDWARE):
-        image_name = image_class.local_hardware_image_name
-    else:  # (SourceType.LOCAL, EmulationLevels.FIRMWARE)
-        image_name = image_class.local_firmware_image_name
+    image_class: FirmwareAndHardwareImages | SingleImage | None = IMAGE_MAPPING[
+        hardware
+    ]
+    image_name: str | None
+    if issubclass(image_class.__class__, SingleImage):
+        image_name = image_class.image_name
+    else:
+        if emulation_level == EmulationLevels.HARDWARE:
+            image_name = image_class.hardware_image_name
+        else:
+            image_name = image_class.firmware_image_name
 
     if image_name is None:
-        raise ImageNotDefinedError(emulation_level, source_type, hardware)
+        raise ImageNotDefinedError(emulation_level, hardware)
 
     return image_name

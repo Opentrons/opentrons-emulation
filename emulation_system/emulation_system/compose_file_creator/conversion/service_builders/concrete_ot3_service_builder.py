@@ -2,10 +2,6 @@
 from typing import Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
-from emulation_system.compose_file_creator.config_file_settings import (
-    OpentronsRepository,
-    SourceType,
-)
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
@@ -16,20 +12,15 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.compose_file_creator.utilities.shared_functions import (
-    add_opentrons_named_volumes,
-    add_ot3_firmware_named_volumes,
-    get_build_args,
-)
 from emulation_system.consts import OT3_STATE_MANAGER_BOUND_PORT
 
 from ...images import (
-    OT3BootloaderImages,
-    OT3GantryXImages,
-    OT3GantryYImages,
-    OT3GripperImages,
-    OT3HeadImages,
-    OT3PipettesImages,
+    OT3BootloaderImage,
+    OT3GantryXImage,
+    OT3GantryYImage,
+    OT3GripperImage,
+    OT3HeadImage,
+    OT3PipettesImage,
 )
 from ...input.hardware_models import OT3InputModel
 from ...logging import OT3LoggingClient
@@ -55,7 +46,7 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         self._state_manager_name = state_manager_name
         self._service_info = service_info
         self._ot3 = self.get_ot3(config_model)
-        self._logging_client = OT3LoggingClient(service_info.container_name, self._dev)
+        self._logging_client = OT3LoggingClient(service_info.ot3_hardware, self._dev)
         self._ot3_image = self._generate_image()
 
     def _generate_image(self) -> str:
@@ -66,14 +57,7 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         This prevents, primarily, logging happening twice, but also the increased
         overhead of calculating the same thing twice.
         """
-        source_type = self._ot3.source_type
-        image_name = (
-            self._service_info.image.local_hardware_image_name
-            if source_type == SourceType.LOCAL
-            else self._service_info.image.remote_hardware_image_name
-        )
-        assert image_name is not None
-        self._logging_client.log_image_name(image_name, source_type, "source-type")
+        image_name = self._service_info.image.image_name
         return image_name
 
     def __get_custom_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
@@ -81,17 +65,17 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         env_vars: IntermediateEnvironmentVariables | None = None
         assert isinstance(self._config_model.robot, OT3InputModel)
         match image:
-            case OT3PipettesImages():
+            case OT3PipettesImage():
                 env_vars = self._config_model.robot.pipettes_env_vars
-            case OT3GripperImages():
+            case OT3GripperImage():
                 env_vars = self._config_model.robot.gripper_env_vars
-            case OT3HeadImages():
+            case OT3HeadImage():
                 env_vars = self._config_model.robot.head_env_vars
-            case OT3GantryXImages():
+            case OT3GantryXImage():
                 env_vars = self._config_model.robot.gantry_x_env_vars
-            case OT3GantryYImages():
+            case OT3GantryYImage():
                 env_vars = self._config_model.robot.gantry_y_env_vars
-            case OT3BootloaderImages():
+            case OT3BootloaderImage():
                 env_vars = self._config_model.robot.bootloader_env_vars
         return env_vars
 
@@ -99,10 +83,10 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         """Generates value for container_name parameter."""
         system_unique_id = self._config_model.system_unique_id
         container_name = super()._generate_container_name(
-            self._service_info.container_name, system_unique_id
+            self._service_info.ot3_hardware, system_unique_id
         )
         self._logging_client.log_container_name(
-            self._service_info.container_name, container_name, system_unique_id
+            self._service_info.ot3_hardware, container_name, system_unique_id
         )
         return container_name
 
@@ -126,64 +110,24 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         self._logging_client.log_networks(networks)
         return networks
 
-    def generate_healthcheck(self) -> IntermediateHealthcheck:
+    def generate_healthcheck(self) -> Optional[IntermediateHealthcheck]:
         """Check to see if OT-3 service has established connection to CAN Service."""
-        port = self._ot3.can_server_bound_port
-        return IntermediateHealthcheck(
-            interval=10,
-            retries=6,
-            timeout=10,
-            command=f"netstat -nputw | grep -E '{port}.*ESTABLISHED'",
-        )
+        return None
 
     def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""
-        ot3_firmware_repo = OpentronsRepository.OT3_FIRMWARE
-        monorepo = OpentronsRepository.OPENTRONS
-        build_args: IntermediateBuildArgs = {}
-
-        if self._ot3.source_type == SourceType.REMOTE:
-            ot3_firmware_build_args = get_build_args(
-                ot3_firmware_repo,
-                self._ot3.source_location,
-                self._global_settings.get_repo_commit(ot3_firmware_repo),
-                self._global_settings.get_repo_head(ot3_firmware_repo),
-            )
-            build_args.update(ot3_firmware_build_args)
-
-        if self._ot3.opentrons_hardware_source_type == SourceType.REMOTE:
-            monorepo_build_args = get_build_args(
-                monorepo,
-                self._ot3.opentrons_hardware_source_location,
-                self._global_settings.get_repo_commit(monorepo),
-                self._global_settings.get_repo_head(monorepo),
-            )
-            build_args.update(monorepo_build_args)
-
-        args_to_pass = build_args if len(build_args) > 0 else None
-
-        self._logging_client.log_build_args(args_to_pass)
-        return args_to_pass
+        return None
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        volumes: IntermediateVolumes = []
-        if SourceType.LOCAL in [
-            self._ot3.source_type,
-            self._ot3.opentrons_hardware_source_type,
-        ]:
-            volumes.append(self.ENTRYPOINT_MOUNT_STRING)
-            volumes.extend(self._ot3.get_mount_strings())
+        volumes: IntermediateVolumes = [
+            self.ENTRYPOINT_MOUNT_STRING,
+            self._service_info.ot3_hardware.generate_emulator_volume_string(),
+            "state_manager_venv:/ot3-firmware/build-host/.venv",
+        ]
 
-            if self._ot3.source_type == SourceType.LOCAL:
-                add_ot3_firmware_named_volumes(volumes)
-
-            if self._ot3.opentrons_hardware_source_type == SourceType.LOCAL:
-                add_opentrons_named_volumes(volumes)
-
-        arg_to_pass = volumes if len(volumes) > 0 else None
-        self._logging_client.log_volumes(arg_to_pass)
-        return arg_to_pass
+        self._logging_client.log_volumes(volumes)
+        return volumes
 
     def generate_command(self) -> Optional[IntermediateCommand]:
         """Generates value for command parameter."""
@@ -208,11 +152,11 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         env_vars: IntermediateEnvironmentVariables = {
             "CAN_SERVER_HOST": self._can_server_service_name,
         }
-        if not isinstance(self._service_info.image, OT3BootloaderImages):
+        if not isinstance(self._service_info.image, OT3BootloaderImage):
             env_vars["STATE_MANAGER_HOST"] = self._state_manager_name
             env_vars["STATE_MANAGER_PORT"] = OT3_STATE_MANAGER_BOUND_PORT
 
-        if isinstance(self._service_info.image, (OT3PipettesImages, OT3GripperImages)):
+        if isinstance(self._service_info.image, (OT3PipettesImage, OT3GripperImage)):
             env_vars["EEPROM_FILENAME"] = "eeprom.bin"
 
         custom_env_vars = self.__get_custom_env_vars()
