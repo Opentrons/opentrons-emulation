@@ -203,7 +203,7 @@ class SystemConfigurationModel(BaseModel):
     def local_opentrons_modules_builder_required(self) -> bool:
         """Whether or not a local-opentrons-modules-builder container is required."""
         needed: bool
-        if self.modules_exist:
+        if not self.modules_exist:
             needed = False
         else:
             needed = len(self.hardware_level_modules) > 0

@@ -22,8 +22,8 @@ class SourceState(Enum):
     @staticmethod
     def parse_source_state(passed_value: str) -> "SourceState":
         source_state: SourceState
-        passed_value = passed_value.lower()
-        if passed_value == "latest":
+
+        if passed_value.lower() == "latest":
             source_state = SourceState.REMOTE_LATEST
         elif re.match(COMMIT_SHA_REGEX, passed_value.lower()):
             source_state = SourceState.REMOTE_COMMIT

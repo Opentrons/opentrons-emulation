@@ -19,6 +19,7 @@ from . import (
     ConcreteEmulatorProxyServiceBuilder,
     ConcreteInputServiceBuilder,
     ConcreteLocalMonorepoBuilderBuilder,
+    ConcreteLocalOpentronsModulesBuilderBuilder,
     ConcreteLocalOT3FirmwareBuilderBuilder,
     ConcreteOT3ServiceBuilder,
     ConcreteOT3StateManagerBuilder,
@@ -167,7 +168,13 @@ class ServiceBuilderOrchestrator:
         self._services[local_ot3_builder.container_name] = local_ot3_builder
 
     def __add_local_opentrons_modules_builder(self) -> None:
-        print("opentrons-modules builder required")
+        local_opentrons_modules_builder = ConcreteLocalOpentronsModulesBuilderBuilder(
+            self._config_model, self._global_settings, self._dev
+        ).build_service()
+        assert local_opentrons_modules_builder.container_name is not None
+        self._services[
+            local_opentrons_modules_builder.container_name
+        ] = local_opentrons_modules_builder
 
     def __add_local_monorepo_builder(self) -> None:
         local_monorepo_builder = ConcreteLocalMonorepoBuilderBuilder(

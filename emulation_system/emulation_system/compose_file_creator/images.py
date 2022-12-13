@@ -146,6 +146,13 @@ class LocalMonorepoBuilderImage(SingleImage):
 
 
 @dataclass
+class LocalOpentronsModulesBuilderImage(SingleImage):
+    """Image names for OT3 Bootloader."""
+
+    image_name: str = "local-opentrons-modules-builder"
+
+
+@dataclass
 class CANServerImage(SingleImage):
     """Image names for CAN server."""
 

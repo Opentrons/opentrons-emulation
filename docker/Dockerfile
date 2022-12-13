@@ -133,21 +133,25 @@ RUN (cd / &&  \
     rm -f opentrons.zip && \
     mv opentrons* opentrons)
 
-
 FROM ot3-firmware-source as local-ot3-firmware-builder
-
+COPY entrypoints/local_ot3_firmware_builder.sh /build.sh
 
 ##################
 # modules-source #
 ##################
 
 FROM ghcr.io/opentrons/cpp-base-${TARGETARCH}:latest as opentrons-modules-source
-ARG MODULE_SOURCE_DOWNLOAD_LOCATION
+ARG MODULE_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip"
+
 ADD $MODULE_SOURCE_DOWNLOAD_LOCATION /opentrons-modules.zip
 RUN (cd / &&  \
     unzip -q opentrons-modules.zip && \
     rm -f opentrons-modules.zip && \
     mv opentrons-modules* opentrons-modules)
+
+FROM opentrons-modules-source as local-opentrons-modules-builder
+COPY entrypoints/local_opentrons_modules_builder.sh /build.sh
+
 
 ####################
 # opentrons-source #

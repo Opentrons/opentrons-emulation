@@ -3,6 +3,9 @@ from .concrete_can_server_service_builder import ConcreteCANServerServiceBuilder
 from .concrete_emulator_proxy_service_builder import ConcreteEmulatorProxyServiceBuilder
 from .concrete_input_service_builder import ConcreteInputServiceBuilder
 from .concrete_local_monorepo_builder_builder import ConcreteLocalMonorepoBuilderBuilder
+from .concrete_local_opentrons_modules_builder_builder import (
+    ConcreteLocalOpentronsModulesBuilderBuilder,
+)
 from .concrete_local_ot3_firmware_builder_builder import (
     ConcreteLocalOT3FirmwareBuilderBuilder,
 )
@@ -20,4 +23,5 @@ __all__ = [
     "ConcreteInputServiceBuilder",
     "ConcreteOT3StateManagerBuilder",
     "ConcreteLocalOT3FirmwareBuilderBuilder",
+    "ConcreteLocalOpentronsModulesBuilderBuilder",
 ]
