@@ -1,27 +1,17 @@
 """Tests to confirm that ConcreteCANServerServiceBuilder builds the CAN Server Service correctly."""
-from typing import (
-    Any,
-    Dict,
-    cast,
-)
+from typing import Any, Dict, cast
 
 import pytest
 from pydantic import parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system import (
-    OpentronsEmulationConfiguration,
-    SystemConfigurationModel,
-)
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.conversion import (
     ConcreteEmulatorProxyServiceBuilder,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
-from emulation_system.consts import (
-    DEV_DOCKERFILE_NAME,
-    DOCKERFILE_NAME,
-)
+from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
 from tests.compose_file_creator.conversion_logic.conftest import (
     build_args_are_none,
     partial_string_in_mount,
@@ -83,20 +73,20 @@ def test_simple_emulator_proxy_values(
     assert "OT_EMULATOR_thermocycler_proxy" in env_root
 
     assert (
-            env_root["OT_EMULATOR_heatershaker_proxy"]
-            == '{"emulator_port": 10004, "driver_port": 11004}'
+        env_root["OT_EMULATOR_heatershaker_proxy"]
+        == '{"emulator_port": 10004, "driver_port": 11004}'
     )
     assert (
-            env_root["OT_EMULATOR_magdeck_proxy"]
-            == '{"emulator_port": 10002, "driver_port": 11002}'
+        env_root["OT_EMULATOR_magdeck_proxy"]
+        == '{"emulator_port": 10002, "driver_port": 11002}'
     )
     assert (
-            env_root["OT_EMULATOR_temperature_proxy"]
-            == '{"emulator_port": 10001, "driver_port": 11001}'
+        env_root["OT_EMULATOR_temperature_proxy"]
+        == '{"emulator_port": 10001, "driver_port": 11001}'
     )
     assert (
-            env_root["OT_EMULATOR_thermocycler_proxy"]
-            == '{"emulator_port": 10003, "driver_port": 11003}'
+        env_root["OT_EMULATOR_thermocycler_proxy"]
+        == '{"emulator_port": 10003, "driver_port": 11003}'
     )
 
     assert service.tty

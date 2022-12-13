@@ -209,6 +209,13 @@ class RuntimeComposeFileModel(ComposeSpecification):
             ContainerFilters.TEMPERATURE_MODULE.filter_name
         )
 
+    @property
+    def module_emulators(self) -> Optional[List[Service]]:
+        """Return any Temperature Module services if one exists."""
+        return self.load_containers_by_filter(
+            ContainerFilters.MODULES.filter_name
+        )
+
     def load_containers_by_filter(
         self, container_filter: str, local_only: bool = False
     ) -> List[Service]:

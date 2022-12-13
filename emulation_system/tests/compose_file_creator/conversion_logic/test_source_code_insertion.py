@@ -621,96 +621,6 @@ def test_thermocycler_module_hardware_local_mounts(
     assert len(thermocycler_module.volumes) == 4
 
 
-def test_thermocycler_module_firmware_local_mounts(
-    thermocycler_module_firmware_local: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test mounts when source-type is set to local.
-
-    Confirm that thermocycler module has opentrons, entrypoint.sh mounted in.
-    Also confirm that named volumes: opentrons-python-dist bound to the correct
-    location.
-    """
-    config_file = convert_from_obj(
-        thermocycler_module_firmware_local, testing_global_em_config, False
-    )
-    thermocycler_modules = config_file.thermocycler_module_emulators
-
-    assert thermocycler_modules is not None
-    assert len(thermocycler_modules) == 1
-
-    thermocycler_module = thermocycler_modules[0]
-    assert thermocycler_module.volumes is not None
-
-    assert partial_string_in_mount("opentrons:/opentrons", thermocycler_module)
-    assert partial_string_in_mount(
-        f"{DEFAULT_ENTRYPOINT_NAME}:/{DEFAULT_ENTRYPOINT_NAME}", thermocycler_module
-    )
-    assert partial_string_in_mount("opentrons-python-dist:/dist", thermocycler_module)
-
-    assert len(thermocycler_module.volumes) == 3
-
-
-def test_temperature_module_firmware_local_mounts(
-    temperature_module_firmware_local: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test mounts when source-type is set to local.
-
-    Confirm that temperature module has opentrons, entrypoint.sh mounted in.
-    Also confirm that named volumes: opentrons-python-dist bound to the correct
-    location.
-    """
-    config_file = convert_from_obj(
-        temperature_module_firmware_local, testing_global_em_config, False
-    )
-    temperature_modules = config_file.temperature_module_emulators
-
-    assert temperature_modules is not None
-    assert len(temperature_modules) == 1
-
-    temperature_module = temperature_modules[0]
-    assert temperature_module.volumes is not None
-
-    assert partial_string_in_mount("opentrons:/opentrons", temperature_module)
-    assert partial_string_in_mount(
-        f"{DEFAULT_ENTRYPOINT_NAME}:/{DEFAULT_ENTRYPOINT_NAME}", temperature_module
-    )
-    assert partial_string_in_mount("opentrons-python-dist:/dist", temperature_module)
-
-    assert len(temperature_module.volumes) == 3
-
-
-def test_magnetic_module_firmware_local_mounts(
-    magnetic_module_firmware_local: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test mounts when source-type is set to local.
-
-    Confirm that magnetic module has opentrons, entrypoint.sh mounted in.
-    Also confirm that named volumes: opentrons-python-dist bound to the correct
-    location.
-    """
-    config_file = convert_from_obj(
-        magnetic_module_firmware_local, testing_global_em_config, False
-    )
-    magnetic_modules = config_file.magnetic_module_emulators
-
-    assert magnetic_modules is not None
-    assert len(magnetic_modules) == 1
-
-    magnetic_module = magnetic_modules[0]
-    assert magnetic_module.volumes is not None
-
-    assert partial_string_in_mount("opentrons:/opentrons", magnetic_module)
-    assert partial_string_in_mount(
-        f"{DEFAULT_ENTRYPOINT_NAME}:/{DEFAULT_ENTRYPOINT_NAME}", magnetic_module
-    )
-    assert partial_string_in_mount("opentrons-python-dist:/dist", magnetic_module)
-
-    assert len(magnetic_module.volumes) == 3
-
-
 def test_heater_shaker_hardware_remote_mounts(
     heater_shaker_module_hardware_remote: Dict[str, Any],
     testing_global_em_config: OpentronsEmulationConfiguration,
@@ -734,7 +644,7 @@ def test_heater_shaker_hardware_remote_mounts(
 
 
 def test_thermocycler_module_hardware_remote_mounts(
-    thermocycler_module_firmware_remote: Dict[str, Any],
+    thermocycler_module_hardware_remote: Dict[str, Any],
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Test mounts when source-type is set to remote.
@@ -742,7 +652,7 @@ def test_thermocycler_module_hardware_remote_mounts(
     Confirm that there are no mounts
     """
     config_file = convert_from_obj(
-        thermocycler_module_firmware_remote, testing_global_em_config, False
+        thermocycler_module_hardware_remote, testing_global_em_config, False
     )
     thermocycler_modules = config_file.thermocycler_module_emulators
 
@@ -750,55 +660,25 @@ def test_thermocycler_module_hardware_remote_mounts(
     assert len(thermocycler_modules) == 1
 
     thermocycler_module = thermocycler_modules[0]
-    assert thermocycler_module.volumes is None
+    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", thermocycler_module)
+    assert partial_string_in_mount("monorepo-wheels:/dist", thermocycler_module)
 
 
-def test_temperature_module_firmware_remote_mounts(
-    temperature_module_firmware_remote: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test mounts when source-type is set to local.
-
-    Confirm that temperature module has opentrons, entrypoint.sh mounted in.
-    Also confirm that named volumes: opentrons-python-dist bound to the correct
-    location.
-    """
-    config_file = convert_from_obj(
-        temperature_module_firmware_remote, testing_global_em_config, False
-    )
-    temperature_modules = config_file.temperature_module_emulators
-
-    assert temperature_modules is not None
-    assert len(temperature_modules) == 1
-
-    temperature_module = temperature_modules[0]
-    assert temperature_module.volumes is None
-
-
-def test_magnetic_module_firmware_remote_mounts(
-    magnetic_module_firmware_remote: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test mounts when source-type is set to local.
-
-    Confirm that magnetic module has opentrons, entrypoint.sh mounted in.
-    Also confirm that named volumes: opentrons-python-dist bound to the correct
-    location.
-    """
-    config_file = convert_from_obj(
-        magnetic_module_firmware_remote, testing_global_em_config, False
-    )
-    magnetic_modules = config_file.magnetic_module_emulators
-
-    assert magnetic_modules is not None
-    assert len(magnetic_modules) == 1
-
-    magnetic_module = magnetic_modules[0]
-    assert magnetic_module.volumes is None
-
-
-def test_thermocycler_module_firmware_remote_mounts(
-    thermocycler_module_firmware_remote: Dict[str, Any],
+@pytest.mark.parametrize(
+    "config",
+    [
+        lazy_fixture("thermocycler_module_firmware_remote"),
+        lazy_fixture("thermocycler_module_firmware_local"),
+        lazy_fixture("temperature_module_firmware_local"),
+        lazy_fixture("temperature_module_firmware_remote"),
+        lazy_fixture("magnetic_module_firmware_remote"),
+        lazy_fixture("magnetic_module_firmware_local"),
+        lazy_fixture("heater_shaker_module_firmware_local"),
+        lazy_fixture("heater_shaker_module_firmware_remote"),
+    ],
+)
+def test_module_monorepo_mounts(
+    config: Dict[str, Any],
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Test mounts when source-type is set to local.
@@ -807,25 +687,30 @@ def test_thermocycler_module_firmware_remote_mounts(
     Also confirm that named volumes: opentrons-python-dist bound to the correct
     location.
     """
-    config_file = convert_from_obj(
-        thermocycler_module_firmware_remote, testing_global_em_config, False
-    )
-    thermocycler_modules = config_file.thermocycler_module_emulators
+    config_file = convert_from_obj(config, testing_global_em_config, False)
+    modules = config_file.module_emulators
 
-    assert thermocycler_modules is not None
-    assert len(thermocycler_modules) == 1
+    assert modules is not None
+    assert len(modules) == 1
 
-    thermocycler_module = thermocycler_modules[0]
-    assert thermocycler_module.volumes is None
+    module = modules[0]
+    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", module)
+    assert partial_string_in_mount("monorepo-wheels:/dist", module)
 
 
 @pytest.mark.parametrize(
     "config_dict",
     [
-        lazy_fixture("ot3_remote_everything_latest"),
-        lazy_fixture("ot3_remote_everything_commit_id"),
-        lazy_fixture("ot2_remote_everything_latest"),
+        lazy_fixture("ot2_only"),
+        lazy_fixture("ot3_only"),
         lazy_fixture("ot2_remote_everything_commit_id"),
+        lazy_fixture("ot3_remote_everything_commit_id"),
+        lazy_fixture("heater_shaker_module_hardware_remote"),
+        lazy_fixture("heater_shaker_module_firmware_remote"),
+        lazy_fixture("thermocycler_module_hardware_remote"),
+        lazy_fixture("thermocycler_module_firmware_remote"),
+        lazy_fixture("temperature_module_firmware_remote"),
+        lazy_fixture("magnetic_module_firmware_remote"),
     ],
 )
 def test_is_remote(
@@ -840,11 +725,16 @@ def test_is_remote(
 @pytest.mark.parametrize(
     "config_dict",
     [
-        lazy_fixture("ot3_local_robot"),
-        lazy_fixture("ot3_local_source"),
-        lazy_fixture("ot3_local_can"),
+        lazy_fixture("ot3_local_ot3_firmware_remote_monorepo"),
+        lazy_fixture("ot3_remote_ot3_firmware_local_monorepo"),
+        lazy_fixture("ot3_local_everything"),
         lazy_fixture("ot2_local_source"),
-        lazy_fixture("ot2_local_robot"),
+        lazy_fixture("heater_shaker_module_hardware_local"),
+        lazy_fixture("heater_shaker_module_firmware_local"),
+        lazy_fixture("thermocycler_module_hardware_local"),
+        lazy_fixture("thermocycler_module_firmware_local"),
+        lazy_fixture("temperature_module_firmware_local"),
+        lazy_fixture("magnetic_module_firmware_local"),
     ],
 )
 def test_is_not_remote(
