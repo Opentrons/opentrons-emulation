@@ -25,4 +25,4 @@ modules:
     hardware: heater-shaker-module
     source-type: remote
     source-location: latest
-    emulation_level: hardware
+    emulation-level: hardware

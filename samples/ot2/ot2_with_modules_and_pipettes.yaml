@@ -34,16 +34,16 @@ modules:
     hardware: thermocycler-module
     source-type: remote
     source-location: latest
-    emulation_level: firmware
+    emulation-level: firmware
 
   - id: magdeck
     hardware: magnetic-module
     source-type: remote
     source-location: latest
-    emulation_level: firmware
+    emulation-level: firmware
 
   - id: tempdeck
     hardware: temperature-module
     source-type: remote
     source-location: latest
-    emulation_level: firmware
+    emulation-level: firmware
