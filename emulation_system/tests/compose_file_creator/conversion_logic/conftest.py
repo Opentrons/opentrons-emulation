@@ -1,12 +1,24 @@
 """Conftest for conversion logic."""
-from typing import Any, Callable, Dict, Optional, cast
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Optional,
+    cast,
+)
 
 import py
 import pytest
 from pydantic import parse_obj_as
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
-from emulation_system.compose_file_creator import BuildItem, Service
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
+from emulation_system.compose_file_creator import (
+    BuildItem,
+    Service,
+)
 from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     MountTypes,
@@ -91,12 +103,12 @@ def check_correct_number_of_volumes(container: Service, expected_number: int) ->
     volumes = container.volumes
     if expected_number == 0:
         assert (
-            volumes is None
+                volumes is None
         ), f'Correct number of volumes is 0, you have "{len(volumes)}'
     else:
         assert volumes is not None
         assert (
-            len(volumes) == expected_number
+                len(volumes) == expected_number
         ), f'Correct number of volumes is {expected_number}, you have "{len(volumes)}"'
 
 
@@ -172,15 +184,15 @@ def robot_set_source_type_params(
         robot_dict["robot-server-source-location"] = robot_server_source_location
 
         if (
-            can_server_source_type is not None
-            and can_server_source_location is not None
+                can_server_source_type is not None
+                and can_server_source_location is not None
         ):
             robot_dict["can-server-source-type"] = can_server_source_type
             robot_dict["can-server-source-location"] = can_server_source_location
 
         if (
-            opentrons_hardware_source_type is not None
-            and opentrons_hardware_source_location is not None
+                opentrons_hardware_source_type is not None
+                and opentrons_hardware_source_location is not None
         ):
             robot_dict[
                 "opentrons-hardware-source-type"
@@ -214,160 +226,33 @@ def module_set_source_type_params(
 
 
 @pytest.fixture
-def ot3_remote_everything_latest(
-    ot3_default: Dict[str, Any], robot_set_source_type_params: Callable
-) -> Dict[str, Any]:
-    """Get OT3 configured for local source and local robot source."""
-    return robot_set_source_type_params(
-        robot_dict=ot3_default,
-        source_type=SourceType.REMOTE,
-        source_location="latest",
-        robot_server_source_type=SourceType.REMOTE,
-        robot_server_source_location="latest",
-        can_server_source_type=SourceType.REMOTE,
-        can_server_source_location="latest",
-        opentrons_hardware_source_type=SourceType.REMOTE,
-        opentrons_hardware_source_location="latest",
-    )
-
-
-@pytest.fixture
 def ot3_remote_everything_commit_id(
-    ot3_default: Dict[str, Any], robot_set_source_type_params: Callable
+    make_config: Callable
 ) -> Dict[str, Any]:
     """Get OT3 configured for local source and local robot source."""
-    return robot_set_source_type_params(
-        robot_dict=ot3_default,
-        source_type=SourceType.REMOTE,
-        source_location=FAKE_COMMIT_ID,
-        robot_server_source_type=SourceType.REMOTE,
-        robot_server_source_location=FAKE_COMMIT_ID,
-        can_server_source_type=SourceType.REMOTE,
-        can_server_source_location=FAKE_COMMIT_ID,
-        opentrons_hardware_source_type=SourceType.REMOTE,
-        opentrons_hardware_source_location=FAKE_COMMIT_ID,
-    )
+    return make_config(robot="ot3", monorepo_source="commit_id", ot3_firmware_source="commit_id")
 
 
 @pytest.fixture
-def ot3_local_source(
-    ot3_default: Dict[str, Any],
-    ot3_firmware_dir: str,
-    robot_set_source_type_params: Callable,
-) -> Dict[str, Any]:
-    """Get OT3 configured for local source and local robot source."""
-    return robot_set_source_type_params(
-        robot_dict=ot3_default,
-        source_type=SourceType.LOCAL,
-        source_location=ot3_firmware_dir,
-        robot_server_source_type=SourceType.REMOTE,
-        robot_server_source_location="latest",
-        can_server_source_type=SourceType.REMOTE,
-        can_server_source_location="latest",
-        opentrons_hardware_source_type=SourceType.REMOTE,
-        opentrons_hardware_source_location="latest",
-    )
+def ot3_local_ot3_firmware_remote_monorepo(make_config: Callable) -> Dict[str, Any]:
+    """Get OT3 configured for local source and remote robot source."""
+    return make_config(robot="ot3", monorepo_source="latest", ot3_firmware_source="path")
 
 
 @pytest.fixture
-def ot3_remote_source_local_opentrons_hardware(
-    ot3_default: Dict[str, Any],
-    opentrons_dir: str,
-    robot_set_source_type_params: Callable,
+def ot3_remote_ot3_firmware_local_monorepo(
+    make_config: Callable,
 ) -> Dict[str, Any]:
     """Get OT3 configured for local source and local robot source."""
-    return robot_set_source_type_params(
-        robot_dict=ot3_default,
-        source_type=SourceType.REMOTE,
-        source_location="latest",
-        robot_server_source_type=SourceType.REMOTE,
-        robot_server_source_location="latest",
-        can_server_source_type=SourceType.REMOTE,
-        can_server_source_location="latest",
-        opentrons_hardware_source_type=SourceType.LOCAL,
-        opentrons_hardware_source_location=opentrons_dir,
-    )
-
-
-@pytest.fixture
-def ot3_local_can(
-    ot3_default: Dict[str, Any],
-    opentrons_dir: str,
-    robot_set_source_type_params: Callable,
-) -> Dict[str, Any]:
-    """Get OT3 configured for local source and local robot source."""
-    return robot_set_source_type_params(
-        robot_dict=ot3_default,
-        source_type=SourceType.REMOTE,
-        source_location="latest",
-        robot_server_source_type=SourceType.REMOTE,
-        robot_server_source_location="latest",
-        can_server_source_type=SourceType.LOCAL,
-        can_server_source_location=opentrons_dir,
-        opentrons_hardware_source_type=SourceType.REMOTE,
-        opentrons_hardware_source_location="latest",
-    )
-
-
-@pytest.fixture
-def ot3_local_robot(
-    ot3_default: Dict[str, Any],
-    opentrons_dir: str,
-    robot_set_source_type_params: Callable,
-) -> Dict[str, Any]:
-    """Get OT3 configured for local source and local robot source."""
-    return robot_set_source_type_params(
-        robot_dict=ot3_default,
-        source_type=SourceType.REMOTE,
-        source_location="latest",
-        robot_server_source_type=SourceType.LOCAL,
-        robot_server_source_location=opentrons_dir,
-        can_server_source_type=SourceType.REMOTE,
-        can_server_source_location="latest",
-        opentrons_hardware_source_type=SourceType.REMOTE,
-        opentrons_hardware_source_location="latest",
-    )
+    return make_config(robot="ot3", monorepo_source="path", ot3_firmware_source="latest")
 
 
 @pytest.fixture
 def ot3_local_everything(
-    ot3_default: Dict[str, Any],
-    opentrons_dir: str,
-    ot3_firmware_dir: str,
-    robot_set_source_type_params: Callable,
+    make_config: Callable,
 ) -> Dict[str, Any]:
     """Get OT3 configured for local source and local robot source."""
-    return robot_set_source_type_params(
-        robot_dict=ot3_default,
-        source_type=SourceType.LOCAL,
-        source_location=ot3_firmware_dir,
-        robot_server_source_type=SourceType.LOCAL,
-        robot_server_source_location=opentrons_dir,
-        can_server_source_type=SourceType.LOCAL,
-        can_server_source_location=opentrons_dir,
-        opentrons_hardware_source_type=SourceType.LOCAL,
-        opentrons_hardware_source_location=opentrons_dir,
-    )
-
-
-@pytest.fixture
-def ot3_local_opentrons_hardware(
-    ot3_default: Dict[str, Any],
-    opentrons_dir: str,
-    robot_set_source_type_params: Callable,
-) -> Dict[str, Any]:
-    """Get OT3 configured for local source and local robot source."""
-    return robot_set_source_type_params(
-        robot_dict=ot3_default,
-        source_type=SourceType.REMOTE,
-        source_location="latest",
-        robot_server_source_type=SourceType.REMOTE,
-        robot_server_source_location="latest",
-        can_server_source_type=SourceType.REMOTE,
-        can_server_source_location="latest",
-        opentrons_hardware_source_type=SourceType.LOCAL,
-        opentrons_hardware_source_location=opentrons_dir,
-    )
+    return make_config(robot="ot3", monorepo_source="path", ot3_firmware_source="path")
 
 
 @pytest.fixture

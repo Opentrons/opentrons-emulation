@@ -1,12 +1,18 @@
 """Tests to confirm that local-ot3-firmware-builder container is created correctly."""
 
-from typing import Any, Dict
+from typing import (
+    Any,
+    Dict,
+)
 
 import pytest
 from pydantic import parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
 from emulation_system.compose_file_creator.config_file_settings import (
     RepoToBuildArgMapping,
 )
@@ -22,8 +28,8 @@ from tests.compose_file_creator.conversion_logic.conftest import (
 @pytest.mark.parametrize(
     "config_model",
     [
-        lazy_fixture("ot3_local_source"),
-        lazy_fixture("ot3_remote_source_local_opentrons_hardware"),
+        lazy_fixture("ot3_local_ot3_firmware_remote_monorepo"),
+        lazy_fixture("ot3_remote_ot3_firmware_local_monorepo"),
         lazy_fixture("ot3_local_everything"),
     ],
 )
@@ -52,12 +58,12 @@ def test_simple_values(
 
 
 def test_local_ot3_firmware_remote_monorepo(
-    ot3_local_source: Dict[str, Any],
+    ot3_local_ot3_firmware_remote_monorepo: Dict[str, Any],
     opentrons_head: str,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Tests for when you are using local ot3-firmware and remote monorepo."""
-    model = parse_obj_as(SystemConfigurationModel, ot3_local_source)
+    model = parse_obj_as(SystemConfigurationModel, ot3_local_ot3_firmware_remote_monorepo)
     service = ConcreteLocalOT3FirmwareBuilderBuilder(
         model, testing_global_em_config, False
     ).build_service()
@@ -75,13 +81,13 @@ def test_local_ot3_firmware_remote_monorepo(
 
 
 def test_remote_ot3_firmware_local_monorepo(
-    ot3_remote_source_local_opentrons_hardware: Dict[str, Any],
+    ot3_remote_ot3_firmware_local_monorepo,
     ot3_firmware_head: str,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Tests for when you are using remote ot3-firmware and local monorepo."""
     model = parse_obj_as(
-        SystemConfigurationModel, ot3_remote_source_local_opentrons_hardware
+        SystemConfigurationModel, ot3_remote_ot3_firmware_local_monorepo
     )
     service = ConcreteLocalOT3FirmwareBuilderBuilder(
         model, testing_global_em_config, False
