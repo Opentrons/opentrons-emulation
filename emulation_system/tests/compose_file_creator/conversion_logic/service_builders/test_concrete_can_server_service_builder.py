@@ -1,6 +1,6 @@
 """Tests to confirm that ConcreteCANServerServiceBuilder builds the CAN Server Service correctly."""
 
-from typing import Any, Dict
+from typing import Any, Dict, cast
 
 import pytest
 from pydantic import parse_obj_as
@@ -14,6 +14,7 @@ from emulation_system.compose_file_creator.config_file_settings import (
 from emulation_system.compose_file_creator.conversion import (
     ConcreteCANServerServiceBuilder,
 )
+from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
 from tests.compose_file_creator.conversion_logic.conftest import (
     FAKE_COMMIT_ID,
@@ -94,7 +95,13 @@ def test_simple_can_server_values(
 
     assert service.command is None
     assert service.depends_on is None
-    assert service.environment is None
+
+    can_env = service.environment
+    assert can_env is not None
+    assert isinstance(can_env, ListOrDict)
+    env_root = cast(Dict[str, Any], can_env.__root__)
+    assert env_root is not None
+    assert env_root == {"OPENTRONS_PROJECT": "ot3"}
 
 
 @pytest.mark.parametrize(

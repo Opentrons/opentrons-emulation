@@ -119,8 +119,9 @@ class ConcreteOT3StateManagerBuilder(AbstractServiceBuilder):
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
-        return (
-            self._ot3.state_manager_env_vars
-            if self._ot3.state_manager_env_vars is not None
-            else None
-        )
+        env_vars: IntermediateEnvironmentVariables = {"OPENTRONS_PROJECT": "ot3"}
+
+        if self._ot3.state_manager_env_vars is not None:
+            env_vars.update(self._ot3.state_manager_env_vars)
+
+        return env_vars

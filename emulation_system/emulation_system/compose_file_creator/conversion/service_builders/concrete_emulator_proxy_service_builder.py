@@ -29,6 +29,7 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
 )
 
 from ...logging import EmulatorProxyLoggingClient
+from ...utilities.hardware_utils import is_ot3
 from .abstract_service_builder import AbstractServiceBuilder
 
 
@@ -154,6 +155,9 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
             for module in self.MODULE_TYPES
             for env_var_name, env_var_value in module.get_proxy_info_env_var().items()  # type: ignore [attr-defined]
         }
+
+        if is_ot3(self._config_model.robot):
+            env_vars["OPENTRONS_PROJECT"] = "ot3"
 
         if self._config_model.robot is not None:
             assert issubclass(self._config_model.robot.__class__, RobotInputModel)

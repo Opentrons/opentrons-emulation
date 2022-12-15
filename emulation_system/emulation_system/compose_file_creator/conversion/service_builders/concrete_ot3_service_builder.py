@@ -206,7 +206,7 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
         env_vars: IntermediateEnvironmentVariables = {
-            "CAN_SERVER_HOST": self._can_server_service_name,
+            "CAN_SERVER_HOST": self._can_server_service_name
         }
         if not isinstance(self._service_info.image, OT3BootloaderImages):
             env_vars["STATE_MANAGER_HOST"] = self._state_manager_name
