@@ -2,9 +2,9 @@
     "emulation-settings": {
         "source-download-locations": {
             "heads": {
-                "opentrons": "https://github.com/Opentrons/opentrons.git",
-                "ot3-firmware": "https://github.com/Opentrons/ot3-firmware.git",
-                "modules": "https://github.com/Opentrons/opentrons-modules.git"
+                "opentrons": "https://github.com/Opentrons/opentrons.git#edge",
+                "ot3-firmware": "https://github.com/Opentrons/ot3-firmware.git#main",
+                "modules": "https://github.com/Opentrons/opentrons-modules.git#edge"
             },
             "commits": {
                 "opentrons": "https://github.com/Opentrons/opentrons.git#{{commit-sha}}",
