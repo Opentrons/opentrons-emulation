@@ -152,7 +152,7 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
-        env_vars: IntermediateEnvironmentVariables | None = {"OPENTRONS_PROJECT": "ot3"}
+        env_vars: IntermediateEnvironmentVariables = {"OPENTRONS_PROJECT": "ot3"}
         assert isinstance(self._config_model.robot, OT3InputModel)
         if self._config_model.robot.can_server_env_vars is not None:
             env_vars.update(self._config_model.robot.can_server_env_vars)

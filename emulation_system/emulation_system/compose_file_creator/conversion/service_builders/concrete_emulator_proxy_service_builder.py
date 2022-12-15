@@ -156,6 +156,7 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
             for env_var_name, env_var_value in module.get_proxy_info_env_var().items()  # type: ignore [attr-defined]
         }
 
+        assert self._config_model.robot is not None
         if is_ot3(self._config_model.robot):
             env_vars["OPENTRONS_PROJECT"] = "ot3"
 

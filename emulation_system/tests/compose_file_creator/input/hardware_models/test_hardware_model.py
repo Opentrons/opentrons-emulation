@@ -230,12 +230,14 @@ def test_getting_image(
 
 def test_get_image_name_from_hardware_model() -> None:
     """Test that get_image_name_from_hardware_model returns correct value."""
-    model = HeaterShakerModuleInputModel(
-        id="my-heater-shaker",
-        hardware=Hardware.HEATER_SHAKER_MODULE,
-        source_type=SourceType.REMOTE,
-        source_location="latest",
-        emulation_level=EmulationLevels.HARDWARE,
+    model = HeaterShakerModuleInputModel.parse_obj(
+        {
+            "id": "my-heater-shaker",
+            "hardware": Hardware.HEATER_SHAKER_MODULE,
+            "source-type": SourceType.REMOTE,
+            "source-location": "latest",
+            "emulation-level": EmulationLevels.HARDWARE,
+        }
     )
     assert model.get_image_name() == "heater-shaker-hardware-remote"
 
