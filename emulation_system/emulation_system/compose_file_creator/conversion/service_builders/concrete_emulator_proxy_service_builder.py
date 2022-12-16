@@ -117,7 +117,7 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         build_args = get_build_args(
             repo,
             "latest",
-            self._global_settings.get_repo_commit(repo),
+            self._global_settings.get_repo_branch(repo),
             self._global_settings.get_repo_head(repo),
         )
         self._logging_client.log_build_args(build_args)

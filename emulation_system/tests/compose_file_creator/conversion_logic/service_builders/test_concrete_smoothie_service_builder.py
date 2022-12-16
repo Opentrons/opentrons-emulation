@@ -18,7 +18,7 @@ from emulation_system.compose_file_creator.conversion import (
 from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
 from tests.compose_file_creator.conversion_logic.conftest import (
-    FAKE_COMMIT_ID,
+    FAKE_BRANCH_NAME,
     build_args_are_none,
     get_source_code_build_args,
     partial_string_in_mount,
@@ -38,14 +38,14 @@ def remote_source_latest(ot2_only: Dict[str, Any]) -> SystemConfigurationModel:
 
 
 @pytest.fixture
-def remote_source_commit_id(ot2_only: Dict[str, Any]) -> SystemConfigurationModel:
+def remote_source_branch(ot2_only: Dict[str, Any]) -> SystemConfigurationModel:
     """Gets SystemConfigurationModel.
 
     source-type is set to remote.
     source-location is set a commit id.
     """
     ot2_only["robot"]["source-type"] = "remote"
-    ot2_only["robot"]["source-location"] = FAKE_COMMIT_ID
+    ot2_only["robot"]["source-location"] = FAKE_BRANCH_NAME
     return parse_obj_as(SystemConfigurationModel, ot2_only)
 
 
@@ -69,8 +69,8 @@ def local_source(
     [
         (lazy_fixture("remote_source_latest"), True),
         (lazy_fixture("remote_source_latest"), False),
-        (lazy_fixture("remote_source_commit_id"), True),
-        (lazy_fixture("remote_source_commit_id"), False),
+        (lazy_fixture("remote_source_branch"), True),
+        (lazy_fixture("remote_source_branch"), False),
         (lazy_fixture("local_source"), True),
         (lazy_fixture("local_source"), False),
     ],
@@ -126,7 +126,7 @@ def test_simple_smoothie_values(
     "config, expected_url",
     [
         (lazy_fixture("remote_source_latest"), lazy_fixture("opentrons_head")),
-        (lazy_fixture("remote_source_commit_id"), lazy_fixture("opentrons_commit")),
+        (lazy_fixture("remote_source_branch"), lazy_fixture("opentrons_branch")),
     ],
 )
 def test_smoothie_remote(

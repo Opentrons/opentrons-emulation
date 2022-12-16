@@ -14,7 +14,7 @@ from emulation_system.compose_file_creator.config_file_settings import (
     Mount,
     SourceType,
 )
-from emulation_system.compose_file_creator.errors import InvalidRemoteSourceError
+from emulation_system.compose_file_creator.errors import CommitShaNotSupportedError
 from emulation_system.compose_file_creator.images import (
     ImageNotDefinedError,
     get_image_name,
@@ -368,13 +368,13 @@ def test_exception_thrown_when_local_source_code_does_not_exist() -> None:
 
 
 @pytest.mark.parametrize(
-    "invalid_location", ["/a/file/path.txt", "notavalidsha", "", "{something}"]
+    "invalid_location", ["f50cd8bfe2b661ecf928cdb044b33e7d10c294a8"]
 )
 def test_exception_thrown_when_invalid_remote_source_location(
     invalid_location: str,
 ) -> None:
     """Confirm LocalSourceDoesNotExistError is thrown when local path does not exist."""
-    with pytest.raises(InvalidRemoteSourceError):
+    with pytest.raises(CommitShaNotSupportedError):
         HeaterShakerModuleInputModel.parse_obj(
             {
                 "id": "my-heater-shaker",
@@ -390,8 +390,7 @@ def test_exception_thrown_when_invalid_remote_source_location(
 @pytest.mark.parametrize(
     "valid_location",
     [
-        "ca82a6dff817ec66f44342007202690a93763949",
-        "CA82A6DFF817EC66F44342007202690A93763949",
+        "branch-name",
         "latest",
         "Latest",
         "LATEST",

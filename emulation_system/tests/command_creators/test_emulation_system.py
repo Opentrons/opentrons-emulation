@@ -34,7 +34,7 @@ EXPECTED_YAML = convert_yaml(
       derek-emulator-proxy:
         build:
           args:
-            OPENTRONS_SOURCE_DOWNLOAD_LOCATION: https://github.com/AnotherOrg/opentrons/archive/refs/heads/edge.zip
+            OPENTRONS_SOURCE_DOWNLOAD_LOCATION: https://github.com/AnotherOrg/opentrons.git#edge
           context: /home/derek-maggio/Documents/repos/opentrons-emulation/emulation_system/resources/docker/
           target: emulator-proxy-remote
           dockerfile: Dockerfile

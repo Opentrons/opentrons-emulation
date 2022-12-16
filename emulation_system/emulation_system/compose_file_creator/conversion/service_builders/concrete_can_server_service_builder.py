@@ -112,7 +112,7 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
             build_args = get_build_args(
                 repo,
                 self._ot3.can_server_source_location,
-                self._global_settings.get_repo_commit(repo),
+                self._global_settings.get_repo_branch(repo),
                 self._global_settings.get_repo_head(repo),
             )
 

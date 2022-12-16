@@ -21,7 +21,7 @@ def get_build_args(
     value = (
         head
         if source_location == "latest"
-        else format_string.replace("{{commit-sha}}", source_location)
+        else format_string.replace("{{branch-name}}", source_location)
     )
     return {env_var_to_use: value}
 

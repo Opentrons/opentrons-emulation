@@ -46,7 +46,7 @@ SERVICE_NAMES = [
 ]
 
 EXTRA_MOUNT_PATH = "/var/log/log_files"
-FAKE_COMMIT_ID = "ca82a6dff817ec66f44342007202690a93763949"
+FAKE_BRANCH_NAME = "test-branch-name"
 
 
 @pytest.fixture
@@ -110,18 +110,18 @@ def ot3_firmware_head(testing_global_em_config: OpentronsEmulationConfiguration)
 
 
 @pytest.fixture
-def opentrons_commit(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
-    """Return commit url of opentrons repo from test config file."""
-    return testing_global_em_config.get_repo_commit(
+def opentrons_branch(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
+    """Return branch url of opentrons repo from test config file."""
+    return testing_global_em_config.get_repo_branch(
         OpentronsRepository.OPENTRONS
-    ).replace("{{commit-sha}}", FAKE_COMMIT_ID)
+    ).replace("{{branch-name}}", FAKE_BRANCH_NAME)
 
 
 @pytest.fixture
-def ot3_firmware_commit(
+def ot3_firmware_branch(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> str:
-    """Return commit url of ot3-firmware repo from test config file."""
-    return testing_global_em_config.get_repo_commit(
+    """Return branch url of ot3-firmware repo from test config file."""
+    return testing_global_em_config.get_repo_branch(
         OpentronsRepository.OT3_FIRMWARE
-    ).replace("{{commit-sha}}", FAKE_COMMIT_ID)
+    ).replace("{{branch-name}}", FAKE_BRANCH_NAME)

@@ -6,10 +6,10 @@
                 "ot3-firmware": "https://github.com/Opentrons/ot3-firmware.git#main",
                 "modules": "https://github.com/Opentrons/opentrons-modules.git#edge"
             },
-            "commits": {
-                "opentrons": "https://github.com/Opentrons/opentrons.git#{{commit-sha}}",
-                "ot3-firmware": "https://github.com/Opentrons/ot3-firmware.git#{{commit-sha}}",
-                "modules": "https://github.com/Opentrons/opentrons-modules.git#{{commit-sha}}"
+            "branches": {
+                "opentrons": "https://github.com/Opentrons/opentrons.git#{{branch-name}}",
+                "ot3-firmware": "https://github.com/Opentrons/ot3-firmware.git#{{branch-name}}",
+                "modules": "https://github.com/Opentrons/opentrons-modules.git#{{branch-name}}"
             }
         }
     }
