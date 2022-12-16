@@ -83,7 +83,7 @@ class ConcreteOT3StateManagerBuilder(AbstractServiceBuilder):
         ot3_firmware_build_args = get_build_args(
             ot3_firmware_repo,
             self._ot3.source_location,
-            self._global_settings.get_repo_commit(ot3_firmware_repo),
+            self._global_settings.get_repo_branch(ot3_firmware_repo),
             self._global_settings.get_repo_head(ot3_firmware_repo),
         )
         build_args.update(ot3_firmware_build_args)
@@ -91,7 +91,7 @@ class ConcreteOT3StateManagerBuilder(AbstractServiceBuilder):
         monorepo_build_args = get_build_args(
             monorepo,
             self._ot3.opentrons_hardware_source_location,
-            self._global_settings.get_repo_commit(monorepo),
+            self._global_settings.get_repo_branch(monorepo),
             self._global_settings.get_repo_head(monorepo),
         )
         build_args.update(monorepo_build_args)
@@ -119,8 +119,9 @@ class ConcreteOT3StateManagerBuilder(AbstractServiceBuilder):
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
-        return (
-            self._ot3.state_manager_env_vars
-            if self._ot3.state_manager_env_vars is not None
-            else None
-        )
+        env_vars: IntermediateEnvironmentVariables = {"OPENTRONS_PROJECT": "ot3"}
+
+        if self._ot3.state_manager_env_vars is not None:
+            env_vars.update(self._ot3.state_manager_env_vars)
+
+        return env_vars

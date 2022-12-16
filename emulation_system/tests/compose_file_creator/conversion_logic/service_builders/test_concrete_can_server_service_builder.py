@@ -1,6 +1,6 @@
 """Tests to confirm that ConcreteCANServerServiceBuilder builds the CAN Server Service correctly."""
 
-from typing import Any, Dict
+from typing import Any, Dict, cast
 
 import pytest
 from pydantic import parse_obj_as
@@ -14,9 +14,10 @@ from emulation_system.compose_file_creator.config_file_settings import (
 from emulation_system.compose_file_creator.conversion import (
     ConcreteCANServerServiceBuilder,
 )
+from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
 from tests.compose_file_creator.conversion_logic.conftest import (
-    FAKE_COMMIT_ID,
+    FAKE_BRANCH_NAME,
     build_args_are_none,
     get_source_code_build_args,
     partial_string_in_mount,
@@ -34,13 +35,13 @@ def remote_can_latest(ot3_only: Dict[str, Any]) -> SystemConfigurationModel:
 
 
 @pytest.fixture
-def remote_can_commit_id(ot3_only: Dict[str, Any]) -> SystemConfigurationModel:
+def remote_can_branch(ot3_only: Dict[str, Any]) -> SystemConfigurationModel:
     """Gets SystemConfigurationModel.
 
     can-server-source-type is set to remote.
     can-server-source-location is set a commit id.
     """
-    ot3_only["robot"]["can-server-source-location"] = FAKE_COMMIT_ID
+    ot3_only["robot"]["can-server-source-location"] = FAKE_BRANCH_NAME
     return parse_obj_as(SystemConfigurationModel, ot3_only)
 
 
@@ -62,8 +63,8 @@ def local_can(ot3_only: Dict[str, Any], opentrons_dir: str) -> SystemConfigurati
     [
         (lazy_fixture("remote_can_latest"), True),
         (lazy_fixture("remote_can_latest"), False),
-        (lazy_fixture("remote_can_commit_id"), True),
-        (lazy_fixture("remote_can_commit_id"), False),
+        (lazy_fixture("remote_can_branch"), True),
+        (lazy_fixture("remote_can_branch"), False),
         (lazy_fixture("local_can"), True),
         (lazy_fixture("local_can"), False),
     ],
@@ -94,14 +95,20 @@ def test_simple_can_server_values(
 
     assert service.command is None
     assert service.depends_on is None
-    assert service.environment is None
+
+    can_env = service.environment
+    assert can_env is not None
+    assert isinstance(can_env, ListOrDict)
+    env_root = cast(Dict[str, Any], can_env.__root__)
+    assert env_root is not None
+    assert env_root == {"OPENTRONS_PROJECT": "ot3"}
 
 
 @pytest.mark.parametrize(
     "config, expected_url",
     [
         (lazy_fixture("remote_can_latest"), lazy_fixture("opentrons_head")),
-        (lazy_fixture("remote_can_commit_id"), lazy_fixture("opentrons_commit")),
+        (lazy_fixture("remote_can_branch"), lazy_fixture("opentrons_branch")),
     ],
 )
 def test_can_server_remote(

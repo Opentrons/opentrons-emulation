@@ -146,7 +146,7 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
             ot3_firmware_build_args = get_build_args(
                 ot3_firmware_repo,
                 self._ot3.source_location,
-                self._global_settings.get_repo_commit(ot3_firmware_repo),
+                self._global_settings.get_repo_branch(ot3_firmware_repo),
                 self._global_settings.get_repo_head(ot3_firmware_repo),
             )
             build_args.update(ot3_firmware_build_args)
@@ -155,7 +155,7 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
             monorepo_build_args = get_build_args(
                 monorepo,
                 self._ot3.opentrons_hardware_source_location,
-                self._global_settings.get_repo_commit(monorepo),
+                self._global_settings.get_repo_branch(monorepo),
                 self._global_settings.get_repo_head(monorepo),
             )
             build_args.update(monorepo_build_args)
@@ -206,7 +206,7 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
         env_vars: IntermediateEnvironmentVariables = {
-            "CAN_SERVER_HOST": self._can_server_service_name,
+            "CAN_SERVER_HOST": self._can_server_service_name
         }
         if not isinstance(self._service_info.image, OT3BootloaderImages):
             env_vars["STATE_MANAGER_HOST"] = self._state_manager_name

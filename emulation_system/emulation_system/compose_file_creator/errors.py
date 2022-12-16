@@ -51,6 +51,16 @@ class InvalidRemoteSourceError(Exception):
         )
 
 
+class CommitShaNotSupportedError(Exception):
+    """Exception thrown when user tries to specify a commit sha for their source-location."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            "Usage of a commit SHA as a reference for a source location "
+            "is deprecated. Use a branch name instead."
+        )
+
+
 class DuplicateHardwareNameError(Exception):
     """Exception thrown when there is hardware with duplicate names."""
 

@@ -10,7 +10,6 @@ from emulation_system.compose_file_creator.images import EmulatorProxyImages
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
     MagneticModuleInputModel,
-    RobotInputModel,
     TemperatureModuleInputModel,
     ThermocyclerModuleInputModel,
 )
@@ -29,6 +28,7 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
 )
 
 from ...logging import EmulatorProxyLoggingClient
+from ...utilities.hardware_utils import is_ot3, is_robot
 from .abstract_service_builder import AbstractServiceBuilder
 
 
@@ -117,7 +117,7 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         build_args = get_build_args(
             repo,
             "latest",
-            self._global_settings.get_repo_commit(repo),
+            self._global_settings.get_repo_branch(repo),
             self._global_settings.get_repo_head(repo),
         )
         self._logging_client.log_build_args(build_args)
@@ -155,8 +155,11 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
             for env_var_name, env_var_value in module.get_proxy_info_env_var().items()  # type: ignore [attr-defined]
         }
 
-        if self._config_model.robot is not None:
-            assert issubclass(self._config_model.robot.__class__, RobotInputModel)
+        if self._config_model.robot is not None and is_robot(self._config_model.robot):
+
+            if is_ot3(self._config_model.robot):
+                env_vars["OPENTRONS_PROJECT"] = "ot3"
+
             if self._config_model.robot.emulator_proxy_env_vars is not None:
                 env_vars.update(self._config_model.robot.emulator_proxy_env_vars)
 

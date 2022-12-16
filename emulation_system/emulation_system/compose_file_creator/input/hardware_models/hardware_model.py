@@ -20,8 +20,8 @@ from emulation_system.compose_file_creator.config_file_settings import (
     SourceType,
 )
 from emulation_system.compose_file_creator.errors import (
+    CommitShaNotSupportedError,
     EmulationLevelNotSupportedError,
-    InvalidRemoteSourceError,
     LocalSourceDoesNotExistError,
     MountNotFoundError,
     NoMountsDefinedError,
@@ -73,16 +73,12 @@ class HardwareModel(BaseModel):
     @staticmethod
     def validate_source_location(key: str, v: str, values: Dict[str, Any]) -> str:
         """If source type is local, confirms directory path specified exists."""
-        if values[key] == SourceType.LOCAL:
-            if not os.path.isdir(v):
-                raise LocalSourceDoesNotExistError(v)
-        else:
-            lower_case_v = v.lower()
-            if (
-                lower_case_v != "latest"
-                and re.compile(COMMIT_SHA_REGEX).match(lower_case_v) is None
-            ):
-                raise InvalidRemoteSourceError(v)
+        if values[key] == SourceType.LOCAL and not os.path.isdir(v):
+            raise LocalSourceDoesNotExistError(v)
+
+        if re.compile(COMMIT_SHA_REGEX).match(v.lower()) is not None:
+            raise CommitShaNotSupportedError()
+
         return v
 
     def _get_source_code_mount(self) -> List[DirectoryMount]:

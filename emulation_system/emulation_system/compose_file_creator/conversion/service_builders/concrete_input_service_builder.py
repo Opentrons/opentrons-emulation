@@ -159,7 +159,7 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
             build_args = get_build_args(
                 repo,
                 source_location,
-                self._global_settings.get_repo_commit(repo),
+                self._global_settings.get_repo_branch(repo),
                 self._global_settings.get_repo_head(repo),
             )
         self._logging_client.log_build_args(build_args)
@@ -243,6 +243,7 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
 
         if is_ot3(self._container):
             assert self._can_server_service_name is not None
+            temp_vars["OPENTRONS_PROJECT"] = "ot3"
             temp_vars["OT_API_FF_enableOT3HardwareController"] = True
             temp_vars["OT3_CAN_DRIVER_interface"] = "opentrons_sock"
             temp_vars["OT3_CAN_DRIVER_host"] = self._can_server_service_name

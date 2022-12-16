@@ -15,71 +15,56 @@ from emulation_system.compose_file_creator.utilities.shared_functions import (
     [
         [
             OpentronsRepository.OPENTRONS,
-            "ca82a6dff817ec66f44342007202690a93763949",
-            "https://github.com/Opentrons/opentrons/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip",
+            "my-branch",
+            "https://github.com/Opentrons/opentrons.git#{{branch-name}}",
+            "https://github.com/Opentrons/opentrons.git#edge",
             {
-                "OPENTRONS_SOURCE_DOWNLOAD_LOCATION": "https://github.com/"
-                "Opentrons/opentrons/archive/"
-                "ca82a6dff817ec66f44342"
-                "007202690a93763949.zip"
+                "OPENTRONS_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/opentrons.git#my-branch"
             },
         ],
         [
             OpentronsRepository.OPENTRONS_MODULES,
-            "ca82a6dff817ec66f44342007202690a93763949",
-            "https://github.com/Opentrons/opentrons-modules/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip",
+            "my-branch",
+            "https://github.com/Opentrons/opentrons-modules.git#{{branch-name}}",
+            "https://github.com/Opentrons/opentrons.git#edge",
             {
-                "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/"
-                "opentrons-modules/archive/"
-                "ca82a6dff817ec66f4434200720269"
-                "0a93763949.zip"
+                "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/opentrons-modules.git#my-branch"
             },
         ],
         [
             OpentronsRepository.OT3_FIRMWARE,
-            "ca82a6dff817ec66f44342007202690a93763949",
-            "https://github.com/Opentrons/ot3-firmware/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip",
+            "my-branch",
+            "https://github.com/Opentrons/ot3-firmware.git#{{branch-name}}",
+            "https://github.com/Opentrons/opentrons.git#edge",
             {
-                "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/"
-                "Opentrons/ot3-firmware/"
-                "archive/ca82a6dff817ec66f443"
-                "42007202690a93763949.zip"
+                "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/ot3-firmware.git#my-branch"
             },
         ],
         [
             OpentronsRepository.OPENTRONS,
             "latest",
-            "https://github.com/Opentrons/opentrons/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip",
+            "https://github.com/Opentrons/opentrons.git#{{branch-name}}",
+            "https://github.com/Opentrons/opentrons.git#edge",
             {
-                "OPENTRONS_SOURCE_DOWNLOAD_LOCATION": "https://github.com/"
-                "Opentrons/opentrons/archive/"
-                "refs/heads/edge.zip"
+                "OPENTRONS_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/opentrons.git#edge"
             },
         ],
         [
             OpentronsRepository.OPENTRONS_MODULES,
             "latest",
-            "https://github.com/Opentrons/opentrons-modules/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip",
+            "https://github.com/Opentrons/opentrons-modules.git#{{branch-name}}",
+            "https://github.com/Opentrons/opentrons-modules.git#edge",
             {
-                "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/"
-                "opentrons-modules/archive/refs/"
-                "heads/edge.zip"
+                "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/opentrons-modules.git#edge"
             },
         ],
         [
             OpentronsRepository.OT3_FIRMWARE,
             "latest",
-            "https://github.com/Opentrons/ot3-firmware/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/ot3-firmware/archive/refs/heads/main.zip",
+            "https://github.com/Opentrons/ot3-firmware.git#{{branch-name}}",
+            "https://github.com/Opentrons/ot3-firmware.git#main",
             {
-                "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/"
-                "ot3-firmware/archive/refs/"
-                "heads/main.zip"
+                "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/ot3-firmware.git#main"
             },
         ],
     ],

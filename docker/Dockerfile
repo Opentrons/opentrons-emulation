@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile-upstream:master-labs
 #############################################################
 #                       LOCAL TARGETS                       #
 #############################################################
@@ -126,17 +127,8 @@ FROM ghcr.io/opentrons/cpp-base-${TARGETARCH}:latest as ot3-firmware-source
 ARG FIRMWARE_SOURCE_DOWNLOAD_LOCATION
 ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION
 
-ADD $FIRMWARE_SOURCE_DOWNLOAD_LOCATION /ot3-firmware.zip
-ADD $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons.zip
-
-RUN (cd / &&  \
-    unzip -q ot3-firmware.zip && \
-    rm -f ot3-firmware.zip && \
-    mv ot3-firmware* ot3-firmware)
-RUN (cd / &&  \
-    unzip -q opentrons.zip && \
-    rm -f opentrons.zip && \
-    mv opentrons* opentrons)
+ADD --keep-git-dir=true $FIRMWARE_SOURCE_DOWNLOAD_LOCATION /ot3-firmware
+ADD --keep-git-dir=true $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons
 
 ##################
 # modules-source #
@@ -144,11 +136,7 @@ RUN (cd / &&  \
 
 FROM ghcr.io/opentrons/cpp-base-${TARGETARCH}:latest as opentrons-modules-source
 ARG MODULE_SOURCE_DOWNLOAD_LOCATION
-ADD $MODULE_SOURCE_DOWNLOAD_LOCATION /opentrons-modules.zip
-RUN (cd / &&  \
-    unzip -q opentrons-modules.zip && \
-    rm -f opentrons-modules.zip && \
-    mv opentrons-modules* opentrons-modules)
+ADD --keep-git-dir=true $MODULE_SOURCE_DOWNLOAD_LOCATION /opentrons-modules
 
 ####################
 # opentrons-source #
@@ -156,11 +144,8 @@ RUN (cd / &&  \
 
 FROM ghcr.io/opentrons/python-base:latest as opentrons-source
 ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION
-ADD $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons.zip
-RUN (cd / &&  \
-    unzip -q opentrons.zip && \
-    rm -f opentrons.zip && \
-    mv opentrons* opentrons)
+
+ADD --keep-git-dir=true $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons
 
 #############################################################
 #                    EXECUTABLE BUILDERS                    #
