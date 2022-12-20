@@ -9,7 +9,10 @@ from emulation_system.compose_file_creator import Service
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
-from emulation_system.compose_file_creator.images import LocalMonorepoBuilderImage
+from emulation_system.compose_file_creator.images import (
+    LocalMonorepoBuilderImage,
+    LocalOpentronsModulesBuilderImage,
+)
 from emulation_system.compose_file_creator.output.compose_file_model import Network
 from emulation_system.consts import DEFAULT_NETWORK_NAME
 from tests.compose_file_creator.conftest import (
@@ -50,6 +53,7 @@ def test_service_keys_with_system_unique_id(
         f"{TEMPERATURE_MODULE_ID}-1",
         f"{MAGNETIC_MODULE_ID}-1",
         LocalMonorepoBuilderImage.image_name,
+        LocalOpentronsModulesBuilderImage.image_name,
         EMULATOR_PROXY_ID,
         SMOOTHIE_ID,
     ]
