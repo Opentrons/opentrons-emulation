@@ -69,7 +69,7 @@ def test_simple_smoothie_values(
     }
 
     assert service.container_name == "smoothie"
-    assert service.image == "smoothie:latest"
+    assert service.image == "smoothie"
 
     assert isinstance(service.build, BuildItem)
     assert isinstance(service.build.context, str)

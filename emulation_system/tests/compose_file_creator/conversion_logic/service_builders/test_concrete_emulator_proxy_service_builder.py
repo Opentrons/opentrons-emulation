@@ -53,7 +53,7 @@ def test_simple_emulator_proxy_values(
     expected_dockerfile_name = DEV_DOCKERFILE_NAME if dev else DOCKERFILE_NAME
 
     assert service.container_name == "emulator-proxy"
-    assert service.image == "emulator-proxy:latest"
+    assert service.image == "emulator-proxy"
     assert isinstance(service.build, BuildItem)
     assert isinstance(service.build.context, str)
     assert service.build.target == "emulator-proxy"

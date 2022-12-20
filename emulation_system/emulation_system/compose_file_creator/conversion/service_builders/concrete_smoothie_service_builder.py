@@ -64,7 +64,7 @@ class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
 
     def generate_image(self) -> str:
         """Generates value for image parameter."""
-        return f"{self._image}:latest"
+        return self._image
 
     @property
     def _image(self) -> str:
