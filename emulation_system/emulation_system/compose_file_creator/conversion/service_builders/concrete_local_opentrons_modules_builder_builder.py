@@ -13,7 +13,6 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateVolumes,
 )
 
-from ...config_file_settings import Hardware
 from ...images import LocalOpentronsModulesBuilderImage
 from ...utilities.shared_functions import get_build_args
 from .abstract_service_builder import AbstractServiceBuilder
@@ -76,10 +75,7 @@ class ConcreteLocalOpentronsModulesBuilderBuilder(AbstractServiceBuilder):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        return [
-            module.generate_executable_storage_volume_string()
-            for module in Hardware.get_opentrons_modules_hardware()
-        ] + [self.ENTRYPOINT_MOUNT_STRING]
+        return self._opentrons_modules_source.generate_builder_mount_strings()
 
     def generate_command(self) -> Optional[IntermediateCommand]:
         """Generates value for command parameter."""

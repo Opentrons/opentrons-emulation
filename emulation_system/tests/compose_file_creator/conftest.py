@@ -264,6 +264,19 @@ def ot2_and_modules(make_config) -> Dict[str, Any]:
 
 
 @pytest.fixture
+def ot3_and_modules(make_config) -> Dict[str, Any]:
+    return make_config(
+        robot="ot3",
+        modules={
+            "magnetic-module": 1,
+            "temperature-module": 1,
+            "thermocycler-module": 1,
+            "heater-shaker-module": 1,
+        },
+    )
+
+
+@pytest.fixture
 def modules_only(make_config) -> Dict[str, Any]:
     return make_config(
         modules={

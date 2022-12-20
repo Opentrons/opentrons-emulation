@@ -12,21 +12,13 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.consts import MONOREPO_NAMED_VOLUME_STRING
 from emulation_system.source import Source
 
-from ...config_file_settings import Hardware, OpentronsRepository
+from ...config_file_settings import OpentronsRepository
 from ...logging import InputLoggingClient
 from ...types.input_types import Containers
 from ...utilities.conversion_utils import get_input_container_source
-from ...utilities.hardware_utils import (
-    is_heater_shaker_module,
-    is_module,
-    is_ot2,
-    is_ot3,
-    is_robot,
-    is_thermocycler_module,
-)
+from ...utilities.hardware_utils import is_module, is_ot2, is_ot3, is_robot
 from .abstract_service_builder import AbstractServiceBuilder
 
 
@@ -116,19 +108,20 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
         source: Source = get_input_container_source(self._container, self._config_model)
-        volumes = [self.ENTRYPOINT_MOUNT_STRING]
+        volumes = []
 
         if source.repo == OpentronsRepository.OPENTRONS or is_robot(self._container):
-            volumes.append(MONOREPO_NAMED_VOLUME_STRING)
+            volumes.extend(
+                self._monorepo_source.generate_emulator_mount_strings(
+                    self._container.hardware
+                )
+            )
         elif source.repo == OpentronsRepository.OPENTRONS_MODULES:
-            if is_heater_shaker_module(self._container):
-                volumes.append(
-                    Hardware.HEATER_SHAKER_MODULE.generate_emulator_volume_string()
+            volumes.extend(
+                self._opentrons_modules_source.generate_emulator_mount_strings(
+                    self._container.hardware
                 )
-            if is_thermocycler_module(self._container):
-                volumes.append(
-                    Hardware.THERMOCYCLER_MODULE.generate_emulator_volume_string()
-                )
+            )
 
         self._logging_client.log_volumes(volumes)
         return volumes

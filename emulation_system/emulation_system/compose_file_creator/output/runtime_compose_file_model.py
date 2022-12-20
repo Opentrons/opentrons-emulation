@@ -158,9 +158,25 @@ class RuntimeComposeFileModel(ComposeSpecification):
 
     @property
     def local_ot3_firmware_builder(self) -> Optional[Service]:
-        """Returns Local ot3-firmware Builder service if one exists."""
+        """Returns local ot3-firmware builder service if one exists."""
         service_list = self.load_containers_by_filter(
             ContainerFilters.LOCAL_OT3_FIRMWARE_BUILDER.filter_name
+        )
+        return service_list[0] if len(service_list) > 0 else None
+
+    @property
+    def local_monorepo_builder(self) -> Optional[Service]:
+        """Returns local monorepo builder service if one exists."""
+        service_list = self.load_containers_by_filter(
+            ContainerFilters.LOCAL_MONOREPO_BUILDER.filter_name
+        )
+        return service_list[0] if len(service_list) > 0 else None
+
+    @property
+    def local_opentrons_modules_builder(self) -> Optional[Service]:
+        """Returns local ot3-firmware builder service if one exists."""
+        service_list = self.load_containers_by_filter(
+            ContainerFilters.LOCAL_OPENTRONS_MODULES_BUILDER.filter_name
         )
         return service_list[0] if len(service_list) > 0 else None
 
@@ -182,7 +198,9 @@ class RuntimeComposeFileModel(ComposeSpecification):
                 self.ot3_head_emulator,
                 self.ot3_pipette_emulator,
                 self.ot3_gantry_x_emulator,
-                self.ot3_gantry_y_emulator
+                self.ot3_gantry_y_emulator,
+                self.ot3_gripper_emulator,
+                self.ot3_bootloader_emulator
             ]
             if prop is not None
         ]

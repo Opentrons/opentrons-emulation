@@ -11,6 +11,8 @@ from .images import (
     EmulatorProxyImage,
     FirmwareAndHardwareImages,
     HeaterShakerModuleImages,
+    LocalMonorepoBuilderImage,
+    LocalOpentronsModulesBuilderImage,
     LocalOT3FirmwareBuilderImage,
     MagneticModuleImages,
     OT3BootloaderImage,
@@ -39,6 +41,7 @@ class ContainerFilters(Enum):
     SMOOTHIE = ("smoothie", [SmoothieImage])
 
     CAN_SERVER = ("can-server", [CANServerImage])
+
     OT3_GANTRY_X = ("ot3-gantry-x", [OT3GantryXImage])
     OT3_GANTRY_Y = ("ot3-gantry-y", [OT3GantryYImage])
     OT3_HEAD = ("ot3-head", [OT3HeadImage])
@@ -46,9 +49,18 @@ class ContainerFilters(Enum):
     OT3_BOOTLOADER = ("ot3-bootloader", [OT3BootloaderImage])
     OT3_GRIPPER = ("ot3-gripper", [OT3GripperImage])
     OT3_STATE_MANAGER = ("ot3-state-manager", [OT3StateManagerImage])
+
     LOCAL_OT3_FIRMWARE_BUILDER = (
         "local-ot3-firmware-builder",
         [LocalOT3FirmwareBuilderImage],
+    )
+    LOCAL_MONOREPO_BUILDER = (
+        "local-monorepo-builder",
+        [LocalMonorepoBuilderImage],
+    )
+    LOCAL_OPENTRONS_MODULES_BUILDER = (
+        "local-opentrons-modules-builder",
+        [LocalOpentronsModulesBuilderImage],
     )
 
     MODULES = (
@@ -92,6 +104,9 @@ class ContainerFilters(Enum):
             TemperatureModuleImages,
             ThermocyclerModuleImages,
             OT3StateManagerImage,
+            LocalOT3FirmwareBuilderImage,
+            LocalMonorepoBuilderImage,
+            LocalOpentronsModulesBuilderImage,
         ],
     )
 

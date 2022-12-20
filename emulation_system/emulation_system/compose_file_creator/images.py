@@ -28,6 +28,10 @@ class FirmwareAndHardwareImages:
 class SingleImage:
     image_name: str
 
+    def get_image_names(self) -> List[str]:
+        """Get list of image names for image."""
+        return [self.image_name]
+
 
 @dataclass
 class HeaterShakerModuleImages(FirmwareAndHardwareImages):

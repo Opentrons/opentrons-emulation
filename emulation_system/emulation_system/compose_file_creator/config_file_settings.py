@@ -19,30 +19,25 @@ class Hardware(str, Enum):
     OT3 = "ot3"
 
     @classmethod
-    def get_opentrons_modules_hardware(cls) -> List["Hardware"]:
+    def opentrons_modules_hardware(cls) -> List["Hardware"]:
         return [cls.HEATER_SHAKER_MODULE, cls.THERMOCYCLER_MODULE]
 
-    def _remove_module_suffix(self) -> str:
-        return self.value.replace("-module", "")
+    @property
+    def hw_name(self) -> str:
+        return self.value.replace("-module", "").replace("-", "_")
 
-    def _to_volume_name(self) -> str:
-        switch_dashes_to_underscores = self._remove_module_suffix().replace("-", "_")
-        return f"{switch_dashes_to_underscores}_executable"
+    @property
+    def named_volume_name(self) -> str:
+        return f"{self.hw_name}_executable"
 
-    def _to_volume_path(self) -> str:
-        switch_dashes_to_underscores = self._remove_module_suffix().replace("-", "_")
-        return f"/volumes/{switch_dashes_to_underscores}_volume/"
+    @property
+    def container_volume_storage_path(self) -> str:
+        return f"/volumes/{self.hw_name}_volume/"
 
-    def to_simulator_name(self) -> str:
+    @property
+    def simulator_name(self) -> str:
         """Generates simulator name."""
-        return f"{self._remove_module_suffix()}-simulator"
-
-    def generate_executable_storage_volume_string(self) -> str:
-        """Generates volume string for local-ot3-firmware-builder."""
-        return f"{self._to_volume_name()}:{self._to_volume_path()}"
-
-    def generate_emulator_volume_string(self) -> str:
-        return f"{self._to_volume_name()}:/executable"
+        return f'{self.value.replace("-module", "")}-simulator'
 
 
 class OT3Hardware(str, Enum):
@@ -55,27 +50,22 @@ class OT3Hardware(str, Enum):
     BOOTLOADER = "ot3-bootloader"
     GRIPPER = "ot3-gripper"
 
-    def _remove_prefix(self) -> str:
-        return self.value.replace("ot3-", "")
+    @property
+    def hw_name(self) -> str:
+        return self.value.replace("ot3-", "").replace("-", "_")
 
-    def _to_volume_name(self) -> str:
-        switch_dashes_to_underscores = self._remove_prefix().replace("-", "_")
-        return f"{switch_dashes_to_underscores}_executable"
+    @property
+    def named_volume_name(self) -> str:
+        return f"{self.hw_name}_executable"
 
-    def _to_volume_path(self) -> str:
-        switch_dashes_to_underscores = self._remove_prefix().replace("-", "_")
-        return f"/volumes/{switch_dashes_to_underscores}_volume/"
+    @property
+    def container_volume_storage_path(self) -> str:
+        return f"/volumes/{self.hw_name}_volume/"
 
-    def to_simulator_name(self) -> str:
+    @property
+    def simulator_name(self) -> str:
         """Generates simulator name."""
-        return f"{self._remove_prefix()}-simulator"
-
-    def generate_executable_storage_volume_string(self) -> str:
-        """Generates volume string for local-ot3-firmware-builder."""
-        return f"{self._to_volume_name()}:{self._to_volume_path()}"
-
-    def generate_emulator_volume_string(self) -> str:
-        return f"{self._to_volume_name()}:/executable"
+        return f'{self.value.replace("ot3-", "")}-simulator'
 
 
 class EmulationLevels(str, Enum):

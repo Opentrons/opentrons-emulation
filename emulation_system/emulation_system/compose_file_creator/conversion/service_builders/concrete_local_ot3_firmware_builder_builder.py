@@ -13,7 +13,6 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateVolumes,
 )
 
-from ...config_file_settings import OT3Hardware
 from ...images import LocalOT3FirmwareBuilderImage
 from ...utilities.shared_functions import get_build_args
 from .abstract_service_builder import AbstractServiceBuilder
@@ -88,10 +87,7 @@ class ConcreteLocalOT3FirmwareBuilderBuilder(AbstractServiceBuilder):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        return [
-            member.generate_executable_storage_volume_string()
-            for member in OT3Hardware.__members__.values()
-        ] + [self.ENTRYPOINT_MOUNT_STRING]
+        return self._ot3_source.generate_builder_mount_strings()
 
     def generate_command(self) -> Optional[IntermediateCommand]:
         """Generates value for command parameter."""

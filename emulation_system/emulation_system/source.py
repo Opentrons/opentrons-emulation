@@ -6,12 +6,24 @@ from enum import Enum, auto
 from typing import List
 
 from emulation_system.compose_file_creator.config_file_settings import (
-    DirectoryMount,
+    FileMount,
+    Hardware,
     MountTypes,
     OpentronsRepository,
+    OT3Hardware,
     RepoToBuildArgMapping,
 )
-from emulation_system.consts import COMMIT_SHA_REGEX
+from emulation_system.consts import (
+    COMMIT_SHA_REGEX,
+    ENTRYPOINT_FILE_LOCATION,
+    MONOREPO_NAMED_VOLUME_STRING,
+)
+
+ENTRYPOINT_MOUNT_STRING = FileMount(
+    type=MountTypes.FILE,
+    source_path=pathlib.Path(ENTRYPOINT_FILE_LOCATION),
+    mount_path="/entrypoint.sh",
+).get_bind_mount_string()
 
 
 class SourceState(Enum):
@@ -63,6 +75,16 @@ class Source(ABC):
     def __get_validators__(cls):
         yield cls.validate
 
+    @abstractmethod
+    def generate_builder_mount_strings(self) -> List[str]:
+        ...
+
+    @abstractmethod
+    def generate_emulator_mount_strings(
+        self, emulator_hw: Hardware | OT3Hardware | None
+    ) -> List[str]:
+        ...
+
     @property
     def source_state(self) -> SourceState:
         return SourceState.parse_source_state(self.source_location)
@@ -70,20 +92,6 @@ class Source(ABC):
     @property
     def repo_to_build_arg_mapping(self) -> RepoToBuildArgMapping:
         return RepoToBuildArgMapping.get_mapping(self.repo)
-
-    def generate_mount_string(self) -> List[str]:
-        service_mount_path = os.path.basename(os.path.normpath(self.source_location))
-        return (
-            [
-                DirectoryMount(
-                    type=MountTypes.DIRECTORY,
-                    source_path=pathlib.Path(self.source_location),
-                    mount_path=f"/{service_mount_path}",
-                ).get_bind_mount_string()
-            ]
-            if self.source_state.is_local()
-            else []
-        )
 
     def is_remote(self) -> bool:
         return self.source_state.is_remote()
@@ -108,6 +116,17 @@ class MonorepoSource(Source):
     def __repr__(self):
         return f"MonorepoSource({super().__repr__()})"
 
+    def generate_emulator_mount_strings(self, emulator_hw: None = None) -> List[str]:
+        return [MONOREPO_NAMED_VOLUME_STRING, ENTRYPOINT_MOUNT_STRING]
+
+    def generate_builder_mount_strings(self) -> List[str]:
+        default_values = [MONOREPO_NAMED_VOLUME_STRING, ENTRYPOINT_MOUNT_STRING]
+
+        if self.is_local():
+            default_values.append(f"{self.source_location}:/{self.repo.value}")
+
+        return default_values
+
 
 class OT3FirmwareSource(Source):
     def __init__(self, source: str) -> None:
@@ -125,6 +144,24 @@ class OT3FirmwareSource(Source):
     def __repr__(self):
         return f"OT3FirmwareSource({super().__repr__()})"
 
+    def generate_emulator_mount_strings(self, emulator_hw: OT3Hardware) -> List[str]:
+        return [
+            ENTRYPOINT_MOUNT_STRING,
+            f"{emulator_hw.hw_name}_executable:/executable",
+        ]
+
+    def generate_builder_mount_strings(self) -> List[str]:
+        default_values = [
+            f"{member.named_volume_name}:{member.container_volume_storage_path}"
+            for member in OT3Hardware.__members__.values()
+        ]
+
+        default_values.append(ENTRYPOINT_MOUNT_STRING)
+        if self.is_local():
+            default_values.append(f"{self.source_location}:/{self.repo.value}")
+
+        return default_values
+
 
 class OpentronsModulesSource(Source):
     def __init__(self, source: str) -> None:
@@ -141,3 +178,21 @@ class OpentronsModulesSource(Source):
 
     def __repr__(self):
         return f"OpentronsModulesSource({super().__repr__()})"
+
+    def generate_builder_mount_strings(self) -> List[str]:
+        default_values = [
+            f"{hardware.named_volume_name}:{hardware.container_volume_storage_path}"
+            for hardware in Hardware.opentrons_modules_hardware()
+        ]
+        default_values.append(ENTRYPOINT_MOUNT_STRING)
+
+        if self.is_local():
+            default_values.append(f"{self.source_location}:/{self.repo.value}")
+
+        return default_values
+
+    def generate_emulator_mount_strings(self, emulator_hw: Hardware) -> List[str]:
+        return [
+            ENTRYPOINT_MOUNT_STRING,
+            f"{emulator_hw.hw_name}_executable:/executable",
+        ]

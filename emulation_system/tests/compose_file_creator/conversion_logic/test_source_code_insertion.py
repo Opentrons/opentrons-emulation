@@ -5,522 +5,297 @@ import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system import OpentronsEmulationConfiguration
-from emulation_system.compose_file_creator import Service
 from emulation_system.compose_file_creator.config_file_settings import (
-    OpentronsRepository,
     RepoToBuildArgMapping,
 )
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
-from emulation_system.consts import (
-    DEFAULT_ENTRYPOINT_NAME,
-    LOCAL_OT3_FIRMWARE_BUILDER_SCRIPT_NAME,
-)
 from tests.compose_file_creator.conversion_logic.conftest import (
     build_args_are_none,
     check_correct_number_of_volumes,
     get_source_code_build_args,
-    mount_string_is,
     partial_string_in_mount,
 )
-from tests.conftest import get_test_conf
 
 
-def has_repo_build_args(
-    container: Service, monorepo: bool, ot3_firmware: bool, opentrons_modules: bool
-) -> bool:
-    monorepo_edge = get_test_conf().get_repo_head(OpentronsRepository.OPENTRONS)
-    ot3_firmware_edge = get_test_conf().get_repo_head(OpentronsRepository.OT3_FIRMWARE)
-    opentrons_modules_edge = get_test_conf().get_repo_head(
-        OpentronsRepository.OPENTRONS_MODULES
-    )
-    build_args = get_source_code_build_args(container)
-
-    if not monorepo and not ot3_firmware and not opentrons_modules:
-        return build_args is None
-
-    has_monorepo = monorepo == (
-        RepoToBuildArgMapping.OPENTRONS in build_args
-        and build_args[RepoToBuildArgMapping.OPENTRONS] == monorepo_edge
-    )
-
-    has_ot3_firmware = ot3_firmware == (
-        RepoToBuildArgMapping.OT3_FIRMWARE in build_args
-        and build_args[RepoToBuildArgMapping.OT3_FIRMWARE] == ot3_firmware_edge
-    )
-
-    has_opentrons_modules = opentrons_modules == (
-        RepoToBuildArgMapping.OPENTRONS_MODULES in build_args
-        and build_args[RepoToBuildArgMapping.OPENTRONS_MODULES]
-        == opentrons_modules_edge
-    )
-
-    return all([has_monorepo, has_ot3_firmware, has_opentrons_modules])
-
-
-def test_ot3_remote_everything(
-    ot3_remote_everything_latest: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test mounts when all source-types are remote.
-
-    Confirm that when all source-types are remote, nothing is mounted to any container.
-    """
-    config_file = convert_from_obj(
-        ot3_remote_everything_latest, testing_global_em_config, False
-    )
-
-    robot_server = config_file.robot_server
-    can_server = config_file.can_server
-    emulators = config_file.ot3_emulators
-    state_manager = config_file.ot3_state_manager
-    assert config_file.local_ot3_firmware_builder is None
-
-    assert robot_server is not None
-    assert can_server is not None
-    assert emulators is not None
-    assert state_manager is not None
-
-    assert has_repo_build_args(
-        robot_server, monorepo=True, ot3_firmware=False, opentrons_modules=False
-    )
-    assert has_repo_build_args(
-        can_server, monorepo=True, ot3_firmware=False, opentrons_modules=False
-    )
-    assert has_repo_build_args(
-        state_manager, monorepo=True, ot3_firmware=True, opentrons_modules=False
-    )
-
-    check_correct_number_of_volumes(robot_server, 0)
-    check_correct_number_of_volumes(can_server, 0)
-    check_correct_number_of_volumes(state_manager, 0)
-
-    for emulator in emulators:
-        check_correct_number_of_volumes(emulator, 0)
-        assert has_repo_build_args(
-            emulator, monorepo=True, ot3_firmware=True, opentrons_modules=False
-        )
-
-
-def test_ot3_local_source(
-    ot3_local_source: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test mounts when source-type is set to local.
-
-    Confirm that ot3-firmware and entrypoint.sh is mounted to emulator containers.
-    Confirm other containers have nothing mounted.
-    """
-    config_file = convert_from_obj(ot3_local_source, testing_global_em_config, False)
-    robot_server = config_file.robot_server
-    can_server = config_file.can_server
-    emulators = config_file.ot3_emulators
-    state_manager = config_file.ot3_state_manager
-    local_ot3_firmware_builder = config_file.local_ot3_firmware_builder
-
-    assert robot_server is not None
-    assert can_server is not None
-    assert emulators is not None
-    assert state_manager is not None
-    assert local_ot3_firmware_builder is not None
-
-    assert has_repo_build_args(
-        robot_server, monorepo=True, ot3_firmware=False, opentrons_modules=False
-    )
-    assert has_repo_build_args(
-        can_server, monorepo=True, ot3_firmware=False, opentrons_modules=False
-    )
-    assert has_repo_build_args(
-        state_manager, monorepo=True, ot3_firmware=False, opentrons_modules=False
-    )
-
-    check_correct_number_of_volumes(robot_server, 0)
-    check_correct_number_of_volumes(can_server, 0)
-
-    assert partial_string_in_mount("ot3-firmware:/ot3-firmware", state_manager)
-
-    check_correct_number_of_volumes(local_ot3_firmware_builder, 8)
-    assert mount_string_is(
-        "pipettes_executable:/volumes/pipettes_volume/", local_ot3_firmware_builder
-    )
-    assert mount_string_is(
-        "head_executable:/volumes/head_volume/", local_ot3_firmware_builder
-    )
-    assert mount_string_is(
-        "gantry_x_executable:/volumes/gantry_x_volume/", local_ot3_firmware_builder
-    )
-    assert mount_string_is(
-        "gantry_y_executable:/volumes/gantry_y_volume/", local_ot3_firmware_builder
-    )
-    assert mount_string_is(
-        "bootloader_executable:/volumes/bootloader_volume/", local_ot3_firmware_builder
-    )
-    assert mount_string_is(
-        "gripper_executable:/volumes/gripper_volume/", local_ot3_firmware_builder
-    )
-    assert partial_string_in_mount(
-        "local_ot3_firmware_builder.sh:/local_ot3_firmware_builder.sh",
-        local_ot3_firmware_builder,
-    )
-    assert partial_string_in_mount(
-        "ot3-firmware:/ot3-firmware", local_ot3_firmware_builder
-    )
-    assert has_repo_build_args(
-        local_ot3_firmware_builder,
-        monorepo=True,
-        ot3_firmware=False,
-        opentrons_modules=False,
-    )
-
-    for emulator in emulators:
-        check_correct_number_of_volumes(emulator, 3)
-        assert partial_string_in_mount(
-            f"{DEFAULT_ENTRYPOINT_NAME}:/{DEFAULT_ENTRYPOINT_NAME}", emulator
-        )
-        assert partial_string_in_mount("ot3-firmware:/ot3-firmware", emulator)
-        assert partial_string_in_mount("executable:/executable", emulator)
-        assert has_repo_build_args(
-            emulator, monorepo=True, ot3_firmware=False, opentrons_modules=False
-        )
-
-
-def test_ot3_local_can_server(
-    ot3_local_can: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test mounts when can-server-source-type is set to local.
-
-    Confirm that robot server and emulators have no mounts.
-    Confirm that can-server has opentrons and entrypoint.sh mounted in.
-    """
-    config_file = convert_from_obj(ot3_local_can, testing_global_em_config, False)
-    robot_server = config_file.robot_server
-    can_server = config_file.can_server
-    emulators = config_file.ot3_emulators
-    state_manager = config_file.ot3_state_manager
-    assert config_file.local_ot3_firmware_builder is None
-
-    assert robot_server is not None
-    assert can_server is not None
-    assert state_manager is not None
-    assert emulators is not None
-
-    assert has_repo_build_args(
-        robot_server, monorepo=True, ot3_firmware=False, opentrons_modules=False
-    )
-    assert has_repo_build_args(
-        can_server, monorepo=False, ot3_firmware=False, opentrons_modules=False
-    )
-    assert has_repo_build_args(
-        state_manager, monorepo=True, ot3_firmware=True, opentrons_modules=False
-    )
-
-    check_correct_number_of_volumes(state_manager, 0)
-    check_correct_number_of_volumes(robot_server, 0)
-
-    check_correct_number_of_volumes(can_server, 3)
-    assert partial_string_in_mount("opentrons:/opentrons", can_server)
-    assert partial_string_in_mount(
-        f"{DEFAULT_ENTRYPOINT_NAME}:/{DEFAULT_ENTRYPOINT_NAME}", can_server
-    )
-    assert partial_string_in_mount("opentrons-python-dist:/dist", can_server)
-
-    for emulator in emulators:
-        check_correct_number_of_volumes(emulator, 0)
-        assert has_repo_build_args(
-            state_manager, monorepo=True, ot3_firmware=True, opentrons_modules=False
-        )
-
-
-def test_ot3_local_robot_server_mounts(
-    ot3_local_robot: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test mounts when robot-server-source-type is set to local.
-
-    Confirm that can server and emulators have no mounts.
-    Confirm that robot server has opentrons and entrypoint.sh mounted in.
-    """
-    config_file = convert_from_obj(ot3_local_robot, testing_global_em_config, False)
-    robot_server = config_file.robot_server
-    can_server = config_file.can_server
-    emulators = config_file.ot3_emulators
-    state_manager = config_file.ot3_state_manager
-    assert config_file.local_ot3_firmware_builder is None
-
-    assert robot_server is not None
-    assert can_server is not None
-    assert emulators is not None
-    assert state_manager is not None
-
-    check_correct_number_of_volumes(robot_server, 3)
-    assert partial_string_in_mount("opentrons:/opentrons", robot_server)
-    assert partial_string_in_mount(
-        f"{DEFAULT_ENTRYPOINT_NAME}:/{DEFAULT_ENTRYPOINT_NAME}", robot_server
-    )
-    assert partial_string_in_mount("opentrons-python-dist:/dist", robot_server)
-    assert has_repo_build_args(
-        robot_server, monorepo=False, ot3_firmware=False, opentrons_modules=False
-    )
-
-    check_correct_number_of_volumes(can_server, 0)
-    assert has_repo_build_args(
-        can_server, monorepo=True, ot3_firmware=False, opentrons_modules=False
-    )
-
-    check_correct_number_of_volumes(state_manager, 0)
-    assert has_repo_build_args(
-        state_manager, monorepo=True, ot3_firmware=True, opentrons_modules=False
-    )
-
-    for emulator in config_file.ot3_emulators:
-        check_correct_number_of_volumes(emulator, 0)
-        assert has_repo_build_args(
-            state_manager, monorepo=True, ot3_firmware=True, opentrons_modules=False
-        )
-
-
-def test_ot3_local_opentrons_hardware(
-    ot3_local_opentrons_hardware: Dict[str, Any],
+@pytest.mark.parametrize(
+    "config, monorepo_is_local, ot3_firmware_is_local",
+    [
+        [lazy_fixture("ot3_only"), False, False],
+        [lazy_fixture("ot3_and_modules"), False, False],
+        [lazy_fixture("ot3_remote_everything_commit_id"), False, False],
+        [lazy_fixture("ot3_local_ot3_firmware_remote_monorepo"), False, True],
+        [lazy_fixture("ot3_remote_ot3_firmware_local_monorepo"), True, False],
+        [lazy_fixture("ot3_local_everything"), True, True],
+    ],
+)
+def test_ot3_build_args(
+    config: Dict[str, Any],
+    monorepo_is_local: bool,
+    ot3_firmware_is_local: bool,
     opentrons_head: str,
-    ot3_firmware_head: str,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
-    """Test build arguments when robot-server-source-type is set to local.
 
-    Confirm that robot server does not have any build arguments.
-    Confirm that can server is looking for the opentrons repo head.
-    Confirm that the emulators are looking for the ot3-firmware repo head.
-    """
-    config_file = convert_from_obj(
-        ot3_local_opentrons_hardware, testing_global_em_config, False
-    )
+    config_file = convert_from_obj(config, testing_global_em_config, False)
     robot_server = config_file.robot_server
     can_server = config_file.can_server
     emulators = config_file.ot3_emulators
-    state_manager = config_file.ot3_state_manager
     local_ot3_firmware_builder = config_file.local_ot3_firmware_builder
+    local_monorepo_builder = config_file.local_monorepo_builder
+    state_manager = config_file.ot3_state_manager
 
     assert robot_server is not None
     assert can_server is not None
     assert emulators is not None
-    assert state_manager is not None
     assert local_ot3_firmware_builder is not None
+    assert local_monorepo_builder is not None
+    assert state_manager is not None
 
-    check_correct_number_of_volumes(robot_server, 0)
-    assert has_repo_build_args(
-        robot_server, monorepo=True, ot3_firmware=False, opentrons_modules=False
-    )
+    assert build_args_are_none(robot_server)
+    assert build_args_are_none(can_server)
+    assert all(build_args_are_none(emulator) for emulator in emulators)
+    assert build_args_are_none(state_manager)
 
-    check_correct_number_of_volumes(can_server, 0)
-    assert has_repo_build_args(
-        can_server, monorepo=True, ot3_firmware=False, opentrons_modules=False
-    )
+    if monorepo_is_local and ot3_firmware_is_local:
+        assert build_args_are_none(local_ot3_firmware_builder)
+    else:
 
-    check_correct_number_of_volumes(state_manager, 2)
-    assert partial_string_in_mount(
-        f"{DEFAULT_ENTRYPOINT_NAME}:/{DEFAULT_ENTRYPOINT_NAME}", state_manager
-    )
-    assert partial_string_in_mount(
-        "state_manager_venv:/ot3-firmware/build-host/.venv", state_manager
-    )
-    assert has_repo_build_args(
-        state_manager, monorepo=False, ot3_firmware=True, opentrons_modules=False
+        num_local_ot3_firmware_build_args = 0
+
+        build_args = get_source_code_build_args(local_ot3_firmware_builder)
+        assert build_args is not None
+        assert RepoToBuildArgMapping.OPENTRONS_MODULES not in build_args
+
+        if not monorepo_is_local:
+            num_local_ot3_firmware_build_args += 1
+            assert RepoToBuildArgMapping.OPENTRONS in build_args
+        else:
+            assert RepoToBuildArgMapping.OPENTRONS not in build_args
+
+        if not ot3_firmware_is_local:
+            num_local_ot3_firmware_build_args += 1
+            assert RepoToBuildArgMapping.OT3_FIRMWARE in build_args
+        else:
+            assert RepoToBuildArgMapping.OT3_FIRMWARE not in build_args
+
+        assert len(build_args) == num_local_ot3_firmware_build_args
+
+    if monorepo_is_local:
+        assert build_args_are_none(local_monorepo_builder)
+    else:
+        build_args = get_source_code_build_args(local_monorepo_builder)
+        assert build_args is not None
+        assert len(build_args) == 1
+        assert RepoToBuildArgMapping.OPENTRONS in build_args
+
+
+@pytest.mark.parametrize(
+    "config, monorepo_is_local",
+    [
+        [lazy_fixture("ot2_only"), False],
+        [lazy_fixture("ot2_and_modules"), False],
+        [lazy_fixture("ot2_remote_everything_commit_id"), False],
+        [lazy_fixture("ot2_local_source"), True],
+    ],
+)
+def test_ot2_build_args(
+    config: Dict[str, Any],
+    monorepo_is_local: bool,
+    opentrons_head: str,
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> None:
+    config_file = convert_from_obj(config, testing_global_em_config, False)
+    robot = config_file.robot_server
+    emulator_proxy = config_file.emulator_proxy
+    smoothie = config_file.smoothie_emulator
+    local_monorepo_builder = config_file.local_monorepo_builder
+
+    assert robot is not None
+    assert emulator_proxy is not None
+    assert smoothie is not None
+    assert local_monorepo_builder is not None
+
+    assert build_args_are_none(robot)
+    assert build_args_are_none(emulator_proxy)
+    assert build_args_are_none(smoothie)
+
+    if monorepo_is_local:
+        assert build_args_are_none(local_monorepo_builder)
+    else:
+        build_args = get_source_code_build_args(local_monorepo_builder)
+        assert build_args is not None
+        assert len(build_args) == 1
+        assert RepoToBuildArgMapping.OPENTRONS in build_args
+
+
+@pytest.mark.parametrize(
+    "config, monorepo_is_local",
+    [
+        [lazy_fixture("thermocycler_module_firmware_remote"), False],
+        [lazy_fixture("thermocycler_module_firmware_local"), True],
+        [lazy_fixture("temperature_module_firmware_local"), True],
+        [lazy_fixture("temperature_module_firmware_remote"), False],
+        [lazy_fixture("magnetic_module_firmware_remote"), False],
+        [lazy_fixture("magnetic_module_firmware_local"), True],
+        [lazy_fixture("heater_shaker_module_firmware_local"), True],
+        [lazy_fixture("heater_shaker_module_firmware_remote"), False],
+    ],
+)
+def test_module_monorepo_build_args(
+    config: Dict[str, Any],
+    monorepo_is_local: bool,
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> None:
+    config_file = convert_from_obj(config, testing_global_em_config, False)
+    modules = config_file.module_emulators
+    local_monorepo_builder = config_file.local_monorepo_builder
+
+    assert all(module is not None for module in modules)
+    assert local_monorepo_builder is not None
+
+    assert all(build_args_are_none(module) for module in modules)
+
+    if monorepo_is_local:
+        assert build_args_are_none(local_monorepo_builder)
+    else:
+        build_args = get_source_code_build_args(local_monorepo_builder)
+        assert build_args is not None
+        assert len(build_args) == 1
+        assert RepoToBuildArgMapping.OPENTRONS in build_args
+
+
+@pytest.mark.parametrize(
+    "config, opentrons_modules_is_local",
+    [
+        [lazy_fixture("thermocycler_module_hardware_remote"), False],
+        [lazy_fixture("thermocycler_module_hardware_local"), True],
+        [lazy_fixture("heater_shaker_module_hardware_local"), True],
+        [lazy_fixture("heater_shaker_module_hardware_remote"), False],
+    ],
+)
+def test_module_opentrons_modules_build_args(
+    config: Dict[str, Any],
+    opentrons_modules_is_local: bool,
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> None:
+    config_file = convert_from_obj(config, testing_global_em_config, False)
+    modules = config_file.module_emulators
+    local_opentrons_modules_builder = config_file.local_opentrons_modules_builder
+
+    assert all(module is not None for module in modules)
+    assert local_opentrons_modules_builder is not None
+
+    assert all(build_args_are_none(module) for module in modules)
+
+    if opentrons_modules_is_local:
+        assert build_args_are_none(local_opentrons_modules_builder)
+    else:
+        build_args = get_source_code_build_args(local_opentrons_modules_builder)
+        assert build_args is not None
+        assert len(build_args) == 1
+        assert RepoToBuildArgMapping.OPENTRONS_MODULES in build_args
+
+
+@pytest.mark.parametrize(
+    "config, monorepo_is_local, ot3_firmware_is_local",
+    [
+        [lazy_fixture("ot3_only"), False, False],
+        [lazy_fixture("ot3_and_modules"), False, False],
+        [lazy_fixture("ot3_remote_everything_commit_id"), False, False],
+        [lazy_fixture("ot3_local_ot3_firmware_remote_monorepo"), False, True],
+        [lazy_fixture("ot3_remote_ot3_firmware_local_monorepo"), True, False],
+        [lazy_fixture("ot3_local_everything"), True, True],
+    ],
+)
+def test_ot3_mounts(
+    config: Dict[str, Any],
+    monorepo_is_local: bool,
+    ot3_firmware_is_local: bool,
+    opentrons_head: str,
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> None:
+    config_file = convert_from_obj(config, testing_global_em_config, False)
+    robot_server = config_file.robot_server
+    can_server = config_file.can_server
+    emulators = config_file.ot3_emulators
+    local_ot3_firmware_builder = config_file.local_ot3_firmware_builder
+    local_monorepo_builder = config_file.local_monorepo_builder
+    state_manager = config_file.ot3_state_manager
+
+    assert robot_server is not None
+    assert can_server is not None
+    assert emulators is not None
+    assert local_ot3_firmware_builder is not None
+    assert local_monorepo_builder is not None
+    assert state_manager is not None
+
+    # robot-server, can-server, and local-monorepo-builder
+    # should always have entrypoint.sh and monorepo-wheels
+    check_correct_number_of_volumes(robot_server, 2)
+    check_correct_number_of_volumes(can_server, 2)
+    check_correct_number_of_volumes(state_manager, 3)
+
+    check_correct_number_of_volumes(
+        local_monorepo_builder, 3 if monorepo_is_local else 2
     )
 
     check_correct_number_of_volumes(
-        local_ot3_firmware_builder, 3
-    ), f"Correct number of volumes is "
+        local_ot3_firmware_builder, len(emulators) + (2 if ot3_firmware_is_local else 1)
+    )
+
+    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", robot_server)
+    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", can_server)
     assert partial_string_in_mount(
-        f"{LOCAL_OT3_FIRMWARE_BUILDER_SCRIPT_NAME}:/{LOCAL_OT3_FIRMWARE_BUILDER_SCRIPT_NAME}",
-        local_ot3_firmware_builder,
+        "entrypoint.sh:/entrypoint.sh", local_ot3_firmware_builder
     )
     assert partial_string_in_mount(
-        "state_manager_venv:/ot3-firmware/build-host/.venv", local_ot3_firmware_builder
+        "entrypoint.sh:/entrypoint.sh", local_monorepo_builder
     )
-    assert partial_string_in_mount("opentrons:/opentrons", local_ot3_firmware_builder)
-    has_repo_build_args(
-        local_ot3_firmware_builder,
-        monorepo=False,
-        ot3_firmware=True,
-        opentrons_modules=False,
-    )
+    assert partial_string_in_mount("monorepo-wheels:/dist", robot_server)
+    assert partial_string_in_mount("monorepo-wheels:/dist", can_server)
+    assert partial_string_in_mount("monorepo-wheels:/dist", local_monorepo_builder)
+
+    if monorepo_is_local:
+        assert partial_string_in_mount("/opentrons:/opentrons", local_monorepo_builder)
+
+    if ot3_firmware_is_local:
+        assert partial_string_in_mount(
+            "/ot3-firmware:/ot3-firmware", local_ot3_firmware_builder
+        )
 
     for emulator in emulators:
         check_correct_number_of_volumes(emulator, 2)
-        assert partial_string_in_mount(
-            f"{DEFAULT_ENTRYPOINT_NAME}:/{DEFAULT_ENTRYPOINT_NAME}", emulator
+        assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", emulator)
+        hardware_name = (
+            emulator.image.replace("ot3-", "")
+            .replace("-hardware", "")
+            .replace("-", "_")
         )
-        assert partial_string_in_mount("opentrons:/opentrons", emulator)
-        has_repo_build_args(
-            emulator, monorepo=False, ot3_firmware=True, opentrons_modules=False
+        assert partial_string_in_mount(
+            f"{hardware_name}_executable:/executable", emulator
+        )
+
+        # Note checking volumes on local_ot3_firmware_builder here
+        assert partial_string_in_mount(
+            f"{hardware_name}_executable:/volumes/{hardware_name}_volume",
+            local_ot3_firmware_builder,
         )
 
 
 @pytest.mark.parametrize(
-    "config_dict",
+    "config, monorepo_is_local",
     [
-        lazy_fixture("ot2_remote_everything_latest"),
-        lazy_fixture("ot2_remote_everything_commit_id"),
+        [lazy_fixture("ot2_only"), False],
+        [lazy_fixture("ot2_and_modules"), False],
+        [lazy_fixture("ot2_remote_everything_commit_id"), False],
+        [lazy_fixture("ot2_local_source"), True],
     ],
 )
-def test_ot2_remote_everything_mounts(
-    config_dict: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test mounts when all source-types are remote.
-
-    Confirm that smoothie and robot server have no mounts.
-    """
-    config_file = convert_from_obj(config_dict, testing_global_em_config, False)
-    robot_server = config_file.robot_server
-    smoothie = config_file.smoothie_emulator
-
-    assert robot_server is not None
-    assert smoothie is not None
-
-    assert robot_server.volumes is None
-    assert smoothie.volumes is None
-
-
-def test_ot2_remote_everything_latest_build_args(
-    ot2_remote_everything_latest: Dict[str, Any],
-    opentrons_head: str,
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test build arguments when all source-types are remote latest.
-
-    Confirm that smoothie and robot server are both looking for the opentrons repo head.
-    """
-    config_file = convert_from_obj(
-        ot2_remote_everything_latest, testing_global_em_config, False
-    )
-    robot_server = config_file.robot_server
-    smoothie = config_file.smoothie_emulator
-
-    assert robot_server is not None
-    assert smoothie is not None
-
-    robot_server_build_args = get_source_code_build_args(robot_server)
-    assert robot_server_build_args is not None
-    assert robot_server_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
-    smoothie_build_args = get_source_code_build_args(smoothie)
-    assert smoothie_build_args is not None
-    assert smoothie_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
-
-
-def test_ot2_remote_everything_commit_id_build_args(
-    ot2_remote_everything_commit_id: Dict[str, Any],
-    opentrons_commit: str,
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test build arguments when all source-types are remote commit id.
-
-    Confirm that smoothie and robot server are both looking for the opentrons repo head.
-    """
-    config_file = convert_from_obj(
-        ot2_remote_everything_commit_id, testing_global_em_config, False
-    )
-    robot_server = config_file.robot_server
-    smoothie = config_file.smoothie_emulator
-
-    assert robot_server is not None
-    assert smoothie is not None
-
-    robot_server_build_args = get_source_code_build_args(robot_server)
-    assert robot_server_build_args is not None
-    assert robot_server_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_commit
-
-    smoothie_build_args = get_source_code_build_args(smoothie)
-    assert smoothie_build_args is not None
-    assert smoothie_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_commit
-
-
-def test_ot2_local_source_mounts(
-    ot2_local_source: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test mounts when source-type is set to local.
-
-    Confirm that robot server has nothing mounted to it.
-    Confirm that smoothie has opentrons and entrypoint.sh mounted to it.
-    """
-    config_file = convert_from_obj(ot2_local_source, testing_global_em_config, False)
-    robot_server = config_file.robot_server
-    smoothie = config_file.smoothie_emulator
-
-    assert robot_server is not None
-    assert smoothie is not None
-
-    assert smoothie.volumes is not None
-    assert partial_string_in_mount("opentrons:/opentrons", smoothie)
-    assert partial_string_in_mount(
-        f"{DEFAULT_ENTRYPOINT_NAME}:/{DEFAULT_ENTRYPOINT_NAME}", smoothie
-    )
-    assert partial_string_in_mount("opentrons-python-dist:/dist", smoothie)
-
-    assert len(smoothie.volumes) == 3
-
-    assert robot_server.volumes is None
-
-
-def test_ot2_local_source_build_args(
-    ot2_local_source: Dict[str, Any],
-    opentrons_head: str,
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test build arguments when source-type is set to local.
-
-    Confirm that robot server is looking for the opentrons repo head.
-    Confirm that smoothie has no build arguments.
-    """
-    config_file = convert_from_obj(ot2_local_source, testing_global_em_config, False)
-    robot_server = config_file.robot_server
-    smoothie = config_file.smoothie_emulator
-
-    assert robot_server is not None
-    assert smoothie is not None
-
-    assert robot_server is not None
-    assert smoothie is not None
-
-    robot_server_build_args = get_source_code_build_args(robot_server)
-    assert robot_server_build_args is not None
-    assert robot_server_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
-
-    assert build_args_are_none(smoothie)
-
-
-def test_ot2_local_robot_server_mounts(
-    ot2_local_robot: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test mounts when robot-server-source-type is set to local.
-
-    Confirm that robot server has opentrons and entrypoint.sh mounted to it.
-    Confirm that smoothie has nothing mounted to it.
-    """
-    config_file = convert_from_obj(ot2_local_robot, testing_global_em_config, False)
-    robot_server = config_file.robot_server
-    smoothie = config_file.smoothie_emulator
-
-    assert robot_server is not None
-    assert smoothie is not None
-
-    assert robot_server.volumes is not None
-    assert partial_string_in_mount("opentrons:/opentrons", robot_server)
-    assert partial_string_in_mount(
-        f"{DEFAULT_ENTRYPOINT_NAME}:/{DEFAULT_ENTRYPOINT_NAME}", robot_server
-    )
-    assert partial_string_in_mount("opentrons-python-dist:/dist", robot_server)
-    assert len(robot_server.volumes) == 3
-
-    assert smoothie.volumes is None
-
-
-def test_ot2_local_robot_server_build_args(
-    ot2_local_robot: Dict[str, Any],
+def test_ot2_mounts(
+    config: Dict[str, Any],
+    monorepo_is_local: bool,
     opentrons_head: str,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
@@ -529,139 +304,38 @@ def test_ot2_local_robot_server_build_args(
     Confirm that robot server has no build arguments
     Confirm that smoothie is looking for the opentrons repo head.
     """
-    config_file = convert_from_obj(ot2_local_robot, testing_global_em_config, False)
-    robot_server = config_file.robot_server
+    config_file = convert_from_obj(config, testing_global_em_config, False)
+    robot = config_file.robot_server
+    emulator_proxy = config_file.emulator_proxy
     smoothie = config_file.smoothie_emulator
+    local_monorepo_builder = config_file.local_monorepo_builder
 
-    assert robot_server is not None
+    assert robot is not None
+    check_correct_number_of_volumes(robot, 2)
+    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", robot)
+    assert partial_string_in_mount("monorepo-wheels:/dist", robot)
+
+    assert emulator_proxy is not None
+    check_correct_number_of_volumes(emulator_proxy, 2)
+    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", emulator_proxy)
+    assert partial_string_in_mount("monorepo-wheels:/dist", emulator_proxy)
+
     assert smoothie is not None
+    check_correct_number_of_volumes(smoothie, 2)
+    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", smoothie)
+    assert partial_string_in_mount("monorepo-wheels:/dist", smoothie)
 
-    assert build_args_are_none(robot_server)
-
-    smoothie_build_args = get_source_code_build_args(smoothie)
-    assert smoothie_build_args is not None
-    assert smoothie_build_args[RepoToBuildArgMapping.OPENTRONS] == opentrons_head
-
-
-def test_heater_shaker_hardware_local_mounts(
-    heater_shaker_module_hardware_local: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test mounts when source-type is set to local.
-
-    Confirm that heater shaker has opentrons-modules, entrypoint.sh mounted in.
-    Also confirm that named volumes: opentrons-modules-build-stm32-host and
-    opentrons-modules-stm32-tools exist and are bound to the correct location.
-    """
-    config_file = convert_from_obj(
-        heater_shaker_module_hardware_local, testing_global_em_config, False
-    )
-    heater_shakers = config_file.heater_shaker_module_emulators
-
-    assert heater_shakers is not None
-    assert len(heater_shakers) == 1
-
-    heater_shaker = heater_shakers[0]
-    assert heater_shaker.volumes is not None
-
-    assert partial_string_in_mount(
-        "opentrons-modules:/opentrons-modules", heater_shaker
+    assert local_monorepo_builder is not None
+    check_correct_number_of_volumes(
+        local_monorepo_builder, 3 if monorepo_is_local else 2
     )
     assert partial_string_in_mount(
-        f"{DEFAULT_ENTRYPOINT_NAME}:/{DEFAULT_ENTRYPOINT_NAME}", heater_shaker
+        "entrypoint.sh:/entrypoint.sh", local_monorepo_builder
     )
-    assert partial_string_in_mount(
-        "opentrons-modules-build-stm32-host:/opentrons-modules/build-stm32-host",
-        heater_shaker,
-    )
-    assert partial_string_in_mount(
-        "opentrons-modules-stm32-tools:/opentrons-modules/stm32-tools",
-        heater_shaker,
-    )
+    assert partial_string_in_mount("monorepo-wheels:/dist", local_monorepo_builder)
 
-    assert len(heater_shaker.volumes) == 4
-
-
-def test_thermocycler_module_hardware_local_mounts(
-    thermocycler_module_hardware_local: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test mounts when source-type is set to local.
-
-    Confirm that thermoycler has opentrons-modules, entrypoint.sh mounted in.
-    Also confirm that named volumes: opentrons-modules-build-stm32-host and
-    opentrons-modules-stm32-tools exist and are bound to the correct location.
-    """
-    config_file = convert_from_obj(
-        thermocycler_module_hardware_local, testing_global_em_config, False
-    )
-    thermocycler_modules = config_file.thermocycler_module_emulators
-
-    assert thermocycler_modules is not None
-    assert len(thermocycler_modules) == 1
-
-    thermocycler_module = thermocycler_modules[0]
-    assert thermocycler_module.volumes is not None
-
-    assert partial_string_in_mount(
-        "opentrons-modules:/opentrons-modules", thermocycler_module
-    )
-    assert partial_string_in_mount(
-        f"{DEFAULT_ENTRYPOINT_NAME}:/{DEFAULT_ENTRYPOINT_NAME}", thermocycler_module
-    )
-    assert partial_string_in_mount(
-        "opentrons-modules-build-stm32-host:/opentrons-modules/build-stm32-host",
-        thermocycler_module,
-    )
-    assert partial_string_in_mount(
-        "opentrons-modules-stm32-tools:/opentrons-modules/stm32-tools",
-        thermocycler_module,
-    )
-
-    assert len(thermocycler_module.volumes) == 4
-
-
-def test_heater_shaker_hardware_remote_mounts(
-    heater_shaker_module_hardware_remote: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test mounts when source-type is set to local.
-
-    Confirm that heater shaker has opentrons-modules, entrypoint.sh mounted in.
-    Also confirm that named volumes: opentrons-modules-build-stm32-host and
-    opentrons-modules-stm32-tools exist and are bound to the correct location.
-    """
-    config_file = convert_from_obj(
-        heater_shaker_module_hardware_remote, testing_global_em_config, False
-    )
-    heater_shakers = config_file.heater_shaker_module_emulators
-
-    assert heater_shakers is not None
-    assert len(heater_shakers) == 1
-
-    heater_shaker = heater_shakers[0]
-    assert heater_shaker.volumes is None
-
-
-def test_thermocycler_module_hardware_remote_mounts(
-    thermocycler_module_hardware_remote: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Test mounts when source-type is set to remote.
-
-    Confirm that there are no mounts
-    """
-    config_file = convert_from_obj(
-        thermocycler_module_hardware_remote, testing_global_em_config, False
-    )
-    thermocycler_modules = config_file.thermocycler_module_emulators
-
-    assert thermocycler_modules is not None
-    assert len(thermocycler_modules) == 1
-
-    thermocycler_module = thermocycler_modules[0]
-    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", thermocycler_module)
-    assert partial_string_in_mount("monorepo-wheels:/dist", thermocycler_module)
+    if monorepo_is_local:
+        assert partial_string_in_mount("/opentrons:/opentrons", local_monorepo_builder)
 
 
 @pytest.mark.parametrize(
@@ -689,13 +363,49 @@ def test_module_monorepo_mounts(
     """
     config_file = convert_from_obj(config, testing_global_em_config, False)
     modules = config_file.module_emulators
+    local_monorepo_builder = config_file.local_monorepo_builder
 
     assert modules is not None
+    assert local_monorepo_builder is not None
     assert len(modules) == 1
 
     module = modules[0]
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", module)
     assert partial_string_in_mount("monorepo-wheels:/dist", module)
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        lazy_fixture("thermocycler_module_hardware_remote"),
+        lazy_fixture("thermocycler_module_hardware_local"),
+        lazy_fixture("heater_shaker_module_hardware_local"),
+        lazy_fixture("heater_shaker_module_hardware_remote"),
+    ],
+)
+def test_module_opentrons_modules_mounts(
+    config: Dict[str, Any],
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> None:
+    """Test mounts when source-type is set to local.
+
+    Confirm that thermocycler module has opentrons, entrypoint.sh mounted in.
+    Also confirm that named volumes: opentrons-python-dist bound to the correct
+    location.
+    """
+    config_file = convert_from_obj(config, testing_global_em_config, False)
+    modules = config_file.module_emulators
+    local_opentrons_modules_builder = config_file.local_opentrons_modules_builder
+
+    assert modules is not None
+    assert local_opentrons_modules_builder is not None
+    assert len(modules) == 1
+
+    module = modules[0]
+    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", module)
+
+    module_type = module.image.replace("-hardware", "").replace("-", "_")
+    assert partial_string_in_mount(f"{module_type}_executable:/executable", module)
 
 
 @pytest.mark.parametrize(

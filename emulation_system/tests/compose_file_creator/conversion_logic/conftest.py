@@ -3,15 +3,13 @@ from typing import Any, Callable, Dict, Optional, cast
 
 import py
 import pytest
-from pydantic import parse_obj_as
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator import BuildItem, Service
 from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     MountTypes,
     OpentronsRepository,
-    SourceType,
 )
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
@@ -150,70 +148,6 @@ def ot3_firmware_commit(
 
 
 @pytest.fixture
-def robot_set_source_type_params(
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> Callable:
-    """Create a runnable fixture that builds a RuntimeComposeFileModel."""
-
-    def robot_set_source_type_params(
-        robot_dict: Dict[str, Any],
-        source_type: SourceType,
-        source_location: str,
-        robot_server_source_type: SourceType,
-        robot_server_source_location: str,
-        can_server_source_type: Optional[SourceType],
-        can_server_source_location: Optional[str],
-        opentrons_hardware_source_type: Optional[SourceType],
-        opentrons_hardware_source_location: Optional[str],
-    ) -> Dict[str, Any]:
-        robot_dict["source-type"] = source_type
-        robot_dict["source-location"] = source_location
-        robot_dict["robot-server-source-type"] = robot_server_source_type
-        robot_dict["robot-server-source-location"] = robot_server_source_location
-
-        if (
-            can_server_source_type is not None
-            and can_server_source_location is not None
-        ):
-            robot_dict["can-server-source-type"] = can_server_source_type
-            robot_dict["can-server-source-location"] = can_server_source_location
-
-        if (
-            opentrons_hardware_source_type is not None
-            and opentrons_hardware_source_location is not None
-        ):
-            robot_dict[
-                "opentrons-hardware-source-type"
-            ] = opentrons_hardware_source_type
-            robot_dict[
-                "opentrons-hardware-source-location"
-            ] = opentrons_hardware_source_location
-        return {"robot": robot_dict}
-
-    return robot_set_source_type_params
-
-
-@pytest.fixture
-def module_set_source_type_params(
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> Callable:
-    """Create a runnable fixture that builds a RuntimeComposeFileModel."""
-
-    def module_set_source_type_params(
-        module_dict: Dict[str, Any],
-        source_type: SourceType,
-        source_location: str,
-        emulation_level: EmulationLevels,
-    ) -> SystemConfigurationModel:
-        module_dict["source-type"] = source_type
-        module_dict["source-location"] = source_location
-        module_dict["emulation-level"] = emulation_level
-        return parse_obj_as(SystemConfigurationModel, {"modules": [module_dict]})
-
-    return module_set_source_type_params
-
-
-@pytest.fixture
 def ot3_remote_everything_commit_id(make_config: Callable) -> Dict[str, Any]:
     """Get OT3 configured for local source and local robot source."""
     return make_config(
@@ -262,14 +196,14 @@ def ot2_local_source(make_config: Callable) -> Dict[str, Any]:
 @pytest.fixture
 def heater_shaker_module_hardware_remote(make_config: Callable) -> Dict[str, Any]:
     """Get Heater Shaker configuration for remote source."""
-    return make_config(modules={"heater-shaker-modules": 1})
+    return make_config(modules={"heater-shaker-module": 1})
 
 
 @pytest.fixture
 def heater_shaker_module_hardware_local(make_config: Callable) -> Dict[str, Any]:
     """Get Heater Shaker configuration for local source."""
     return make_config(
-        modules={"heater-shaker-modules": 1}, opentrons_modules_source="path"
+        modules={"heater-shaker-module": 1}, opentrons_modules_source="path"
     )
 
 
