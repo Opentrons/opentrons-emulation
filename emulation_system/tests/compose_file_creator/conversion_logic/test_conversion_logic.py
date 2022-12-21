@@ -2,6 +2,7 @@
 from typing import Any, Dict, List, cast
 
 import pytest
+from validation_helper_functions import CONTAINER_NAME_TO_IMAGE, SERVICE_NAMES
 
 from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator import BuildItem, Service
@@ -18,10 +19,6 @@ from tests.compose_file_creator.conftest import (
     SMOOTHIE_ID,
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
-)
-from tests.compose_file_creator.conversion_logic.conftest import (
-    CONTAINER_NAME_TO_IMAGE,
-    SERVICE_NAMES,
 )
 
 # TODO: Add following tests:

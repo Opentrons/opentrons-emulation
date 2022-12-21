@@ -1,22 +1,18 @@
 """Tests for conversion pure functions."""
-from typing import (
-    Dict,
-    Type,
-    Union,
-)
+from typing import Dict, Type, Union
 
 import pytest
+from compose_file_creator.conftest import FAKE_COMMIT_ID
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from compose_file_creator.conftest import FAKE_COMMIT_ID
 from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.utilities.shared_functions import (
     get_build_args,
 )
 from emulation_system.source import (
     MonorepoSource,
-    OT3FirmwareSource,
     OpentronsModulesSource,
+    OT3FirmwareSource,
 )
 
 

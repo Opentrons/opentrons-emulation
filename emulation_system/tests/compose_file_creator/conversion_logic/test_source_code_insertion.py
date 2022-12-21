@@ -3,6 +3,12 @@ from typing import Any, Dict
 
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
+from validation_helper_functions import (
+    build_args_are_none,
+    check_correct_number_of_volumes,
+    get_source_code_build_args,
+    partial_string_in_mount,
+)
 
 from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.config_file_settings import (
@@ -10,12 +16,6 @@ from emulation_system.compose_file_creator.config_file_settings import (
 )
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
-)
-from tests.compose_file_creator.conversion_logic.conftest import (
-    build_args_are_none,
-    check_correct_number_of_volumes,
-    get_source_code_build_args,
-    partial_string_in_mount,
 )
 
 

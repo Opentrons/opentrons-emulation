@@ -5,18 +5,14 @@ Tests for checking env variables, such as pipettes for smoothie, are in
 test_environment_variables.py
 """
 
-from typing import (
-    Any,
-    Dict,
-)
+from typing import Any, Dict
 
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
+from validation_helper_functions import partial_string_in_mount
 
 from emulation_system import OpentronsEmulationConfiguration
-from emulation_system.compose_file_creator.config_file_settings import (
-    OT3Hardware,
-)
+from emulation_system.compose_file_creator.config_file_settings import OT3Hardware
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
@@ -29,10 +25,7 @@ from emulation_system.compose_file_creator.images import (
     OT3PipettesImage,
     SmoothieImage,
 )
-from tests.compose_file_creator.conftest import (
-    EMULATOR_PROXY_ID,
-)
-from tests.compose_file_creator.conversion_logic.conftest import partial_string_in_mount
+from tests.compose_file_creator.conftest import EMULATOR_PROXY_ID
 
 
 @pytest.mark.parametrize(
@@ -58,7 +51,7 @@ from tests.compose_file_creator.conversion_logic.conftest import partial_string_
         lazy_fixture("ot2_only"),
         lazy_fixture("ot2_and_modules"),
         lazy_fixture("ot2_remote_everything_commit_id"),
-        lazy_fixture("ot2_local_source")
+        lazy_fixture("ot2_local_source"),
     ],
 )
 def test_emulation_proxy_created(
@@ -77,7 +70,7 @@ def test_emulation_proxy_created(
         lazy_fixture("ot2_and_modules"),
         lazy_fixture("ot2_remote_everything_commit_id"),
         lazy_fixture("ot2_local_source"),
-    ]
+    ],
 )
 def test_smoothie_created(
     config: Dict[str, Any],
@@ -85,7 +78,9 @@ def test_smoothie_created(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm smoothie uses local source when OT2 is set to local and has mounts."""
-    runtime_compose_file_model = convert_from_obj(config, testing_global_em_config, False)
+    runtime_compose_file_model = convert_from_obj(
+        config, testing_global_em_config, False
+    )
     smoothie = runtime_compose_file_model.smoothie_emulator
     assert smoothie is not None
     assert smoothie.image == SmoothieImage().image_name
@@ -111,7 +106,7 @@ def test_smoothie_created(
         lazy_fixture("temperature_module_firmware_remote"),
         lazy_fixture("magnetic_module_firmware_remote"),
         lazy_fixture("magnetic_module_firmware_local"),
-    ]
+    ],
 )
 def test_smoothie_not_created(
     config: Dict[str, Any],
@@ -119,7 +114,9 @@ def test_smoothie_not_created(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm smoothie uses local source when OT2 is set to local and has mounts."""
-    runtime_compose_file_model = convert_from_obj(config, testing_global_em_config, False)
+    runtime_compose_file_model = convert_from_obj(
+        config, testing_global_em_config, False
+    )
     smoothie = runtime_compose_file_model.smoothie_emulator
     assert smoothie is None
 

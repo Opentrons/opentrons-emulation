@@ -5,6 +5,7 @@ from typing import Any, Dict
 import pytest
 from pydantic import parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
+from validation_helper_functions import build_args_are_none, get_source_code_build_args
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator.config_file_settings import (
@@ -12,10 +13,6 @@ from emulation_system.compose_file_creator.config_file_settings import (
 )
 from emulation_system.compose_file_creator.conversion.service_builders import (
     ConcreteLocalOT3FirmwareBuilderBuilder,
-)
-from tests.compose_file_creator.conversion_logic.conftest import (
-    build_args_are_none,
-    get_source_code_build_args,
 )
 
 

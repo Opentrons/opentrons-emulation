@@ -1,9 +1,6 @@
 """Test docker-compose healthcheck fields for all emulators."""
 
-from typing import (
-    Any,
-    Dict,
-)
+from typing import Any, Dict
 
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
@@ -26,10 +23,10 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 )
 
 MODULE_IMAGE_NAMES = (
-        HeaterShakerModuleImages().get_image_names()
-        + MagneticModuleImages().get_image_names()
-        + TemperatureModuleImages().get_image_names()
-        + ThermocyclerModuleImages().get_image_names()
+    HeaterShakerModuleImages().get_image_names()
+    + MagneticModuleImages().get_image_names()
+    + TemperatureModuleImages().get_image_names()
+    + ThermocyclerModuleImages().get_image_names()
 )
 
 
@@ -43,9 +40,9 @@ def test_ot3_services_heathcheck(
         service
         for service in services.values()
         if service.image is not None
-           and "state-manager" not in service.image
-           and "local-ot3-firmware-builder" not in service.image
-           and ("ot3" in service.image or "can-server" in service.image)
+        and "state-manager" not in service.image
+        and "local-ot3-firmware-builder" not in service.image
+        and ("ot3" in service.image or "can-server" in service.image)
     ]
     assert len(services_to_check) == 7
     for service in services_to_check:
@@ -155,7 +152,7 @@ def test_modules_healthcheck(
         service
         for service in services.values()
         if service.image is not None
-           and service.image.replace(":latest", "") in MODULE_IMAGE_NAMES
+        and service.image.replace(":latest", "") in MODULE_IMAGE_NAMES
     ]
     assert len(services_to_check) == 4
 

@@ -3,6 +3,7 @@
 from typing import Any, Dict, cast
 
 import pytest
+from validation_helper_functions import SERVICE_NAMES
 
 from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator import Service
@@ -25,7 +26,6 @@ from tests.compose_file_creator.conftest import (
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
 )
-from tests.compose_file_creator.conversion_logic.conftest import SERVICE_NAMES
 
 
 @pytest.fixture

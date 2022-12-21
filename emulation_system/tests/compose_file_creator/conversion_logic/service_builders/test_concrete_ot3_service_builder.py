@@ -4,16 +4,13 @@ from typing import Any, Dict, List, cast
 import pytest
 from pydantic import parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
+from validation_helper_functions import build_args_are_none, partial_string_in_mount
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem, Service
 from emulation_system.compose_file_creator.config_file_settings import OT3Hardware
 from emulation_system.compose_file_creator.conversion import ServiceBuilderOrchestrator
 from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
-from tests.compose_file_creator.conversion_logic.conftest import (
-    build_args_are_none,
-    partial_string_in_mount,
-)
 
 
 def get_ot3_service(service_list: List[Service], hardware: OT3Hardware) -> Service:

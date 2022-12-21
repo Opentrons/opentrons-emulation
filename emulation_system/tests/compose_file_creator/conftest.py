@@ -4,9 +4,11 @@ from typing import Any, Callable, Dict, Literal
 import py
 import pytest
 
+from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     Hardware,
+    OpentronsRepository,
     SourceType,
 )
 
@@ -65,6 +67,16 @@ def opentrons_modules_dir(tmpdir: py.path.local) -> str:
     different places in the test the variable will be the same.
     """
     return str(tmpdir.mkdir("opentrons-modules"))
+
+
+@pytest.fixture
+def ot3_firmware_dir(tmpdir: py.path.local) -> str:
+    """Get path to temporary opentrons-modules directory.
+
+    Note that this variable is scoped to the test. So if you call the fixture from
+    different places in the test the variable will be the same.
+    """
+    return str(tmpdir.mkdir("ot3-firmware"))
 
 
 def __build_source(
@@ -326,10 +338,163 @@ def with_system_unique_id(ot2_and_modules: Dict[str, Any]) -> Dict[str, Any]:
 
 
 @pytest.fixture
-def ot3_firmware_dir(tmpdir: py.path.local) -> str:
-    """Get path to temporary opentrons-modules directory.
+def opentrons_head(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
+    """Return head url of opentrons repo from test config file."""
+    return testing_global_em_config.get_repo_head(OpentronsRepository.OPENTRONS)
 
-    Note that this variable is scoped to the test. So if you call the fixture from
-    different places in the test the variable will be the same.
-    """
-    return str(tmpdir.mkdir("ot3-firmware"))
+
+@pytest.fixture
+def ot3_firmware_head(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
+    """Return head url of ot3-firmware repo from test config file."""
+    return testing_global_em_config.get_repo_head(OpentronsRepository.OT3_FIRMWARE)
+
+
+@pytest.fixture
+def opentrons_commit(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
+    """Return commit url of opentrons repo from test config file."""
+    return testing_global_em_config.get_repo_commit(
+        OpentronsRepository.OPENTRONS
+    ).replace("{{commit-sha}}", FAKE_COMMIT_ID)
+
+
+@pytest.fixture
+def ot3_firmware_commit(
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> str:
+    """Return commit url of ot3-firmware repo from test config file."""
+    return testing_global_em_config.get_repo_commit(
+        OpentronsRepository.OT3_FIRMWARE
+    ).replace("{{commit-sha}}", FAKE_COMMIT_ID)
+
+
+@pytest.fixture
+def ot3_remote_everything_commit_id(make_config: Callable) -> Dict[str, Any]:
+    """Get OT3 configured for local source and local robot source."""
+    return make_config(
+        robot="ot3", monorepo_source="commit_id", ot3_firmware_source="commit_id"
+    )
+
+
+@pytest.fixture
+def ot3_local_ot3_firmware_remote_monorepo(make_config: Callable) -> Dict[str, Any]:
+    """Get OT3 configured for local source and remote robot source."""
+    return make_config(
+        robot="ot3", monorepo_source="latest", ot3_firmware_source="path"
+    )
+
+
+@pytest.fixture
+def ot3_remote_ot3_firmware_local_monorepo(
+    make_config: Callable,
+) -> Dict[str, Any]:
+    """Get OT3 configured for local source and local robot source."""
+    return make_config(
+        robot="ot3", monorepo_source="path", ot3_firmware_source="latest"
+    )
+
+
+@pytest.fixture
+def ot3_local_everything(
+    make_config: Callable,
+) -> Dict[str, Any]:
+    """Get OT3 configured for local source and local robot source."""
+    return make_config(robot="ot3", monorepo_source="path", ot3_firmware_source="path")
+
+
+@pytest.fixture
+def ot2_remote_everything_commit_id(make_config: Callable) -> Dict[str, Any]:
+    """Get OT3 configured for local source and local robot source."""
+    return make_config(robot="ot2", monorepo_source="commit_id")
+
+
+@pytest.fixture
+def ot2_local_source(make_config: Callable) -> Dict[str, Any]:
+    """Get OT3 configured for local source and local robot source."""
+    return make_config(robot="ot2", monorepo_source="path")
+
+
+@pytest.fixture
+def heater_shaker_module_hardware_remote(make_config: Callable) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for remote source."""
+    return make_config(modules={"heater-shaker-module": 1})
+
+
+@pytest.fixture
+def heater_shaker_module_hardware_local(make_config: Callable) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for local source."""
+    return make_config(
+        modules={"heater-shaker-module": 1}, opentrons_modules_source="path"
+    )
+
+
+@pytest.fixture
+def heater_shaker_module_firmware_local(make_config: Callable) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for local source."""
+    config = make_config(modules={"heater-shaker-module": 1}, monorepo_source="path")
+    config["modules"][0]["emulation-level"] = EmulationLevels.FIRMWARE.value
+    return config
+
+
+@pytest.fixture
+def heater_shaker_module_firmware_remote(make_config: Callable) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for remote source."""
+    config = make_config(modules={"heater-shaker-module": 1})
+    config["modules"][0]["emulation-level"] = EmulationLevels.FIRMWARE.value
+    return config
+
+
+@pytest.fixture
+def thermocycler_module_hardware_local(make_config: Callable) -> Dict[str, Any]:
+    """Get Hardware Thermocycler configuration for local source."""
+    return make_config(
+        modules={"thermocycler-module": 1}, opentrons_modules_source="path"
+    )
+
+
+@pytest.fixture
+def thermocycler_module_firmware_local(make_config: Callable) -> Dict[str, Any]:
+    """Get Firmware Thermocycler configuration for local source."""
+    config = make_config(modules={"thermocycler-module": 1}, monorepo_source="path")
+    config["modules"][0]["emulation-level"] = EmulationLevels.FIRMWARE.value
+    return config
+
+
+@pytest.fixture
+def thermocycler_module_hardware_remote(make_config: Callable) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for remote source."""
+    return make_config(modules={"thermocycler-module": 1})
+
+
+@pytest.fixture
+def thermocycler_module_firmware_remote(
+    thermocycler_module_hardware_remote: Dict[str, Any],
+) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for remote source."""
+    thermocycler_module_hardware_remote["modules"][0][
+        "emulation-level"
+    ] = EmulationLevels.FIRMWARE.value
+    return thermocycler_module_hardware_remote
+
+
+@pytest.fixture
+def temperature_module_firmware_local(make_config: Callable) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for local source."""
+    return make_config(modules={"temperature-module": 1}, monorepo_source="path")
+
+
+@pytest.fixture
+def temperature_module_firmware_remote(make_config: Callable) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for remote source."""
+    return make_config(modules={"temperature-module": 1})
+
+
+@pytest.fixture
+def magnetic_module_firmware_remote(make_config: Callable) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for remote source."""
+    return make_config(modules={"magnetic-module": 1})
+
+
+@pytest.fixture
+def magnetic_module_firmware_local(make_config: Callable) -> Dict[str, Any]:
+    """Get Heater Shaker configuration for local source."""
+    return make_config(modules={"magnetic-module": 1}, monorepo_source="path")
