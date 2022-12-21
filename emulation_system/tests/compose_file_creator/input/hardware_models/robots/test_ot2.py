@@ -5,12 +5,11 @@ import pytest
 from pydantic import ValidationError, parse_obj_as
 
 from emulation_system.compose_file_creator.config_file_settings import (
-    EmulationLevels,
     Hardware,
     OpentronsRepository,
 )
 from emulation_system.compose_file_creator.input.hardware_models import OT2InputModel
-from tests.compose_file_creator.conftest import OT2_EMULATION_LEVEL, OT2_ID
+from tests.compose_file_creator.conftest import OT2_ID, EmulationLevels
 
 
 @pytest.fixture
@@ -46,7 +45,7 @@ def test_default_ot2(ot2_model: Dict[str, Any]) -> None:
     ot2 = parse_obj_as(OT2InputModel, ot2_model)
     assert ot2.hardware == Hardware.OT2.value
     assert ot2.id == OT2_ID
-    assert ot2.emulation_level == OT2_EMULATION_LEVEL
+    assert ot2.emulation_level == EmulationLevels.FIRMWARE.value
     assert ot2.exposed_port == 5000
     assert ot2.bound_port == 31950
     assert ot2.hardware_specific_attributes.left.model == "p20_single_v2.0"
@@ -64,7 +63,7 @@ def test_ot2_with_overridden_bound_port(
     ot2 = parse_obj_as(OT2InputModel, ot2_with_overridden_bound_port)
     assert ot2.hardware == Hardware.OT2.value
     assert ot2.id == OT2_ID
-    assert ot2.emulation_level == OT2_EMULATION_LEVEL
+    assert ot2.emulation_level == EmulationLevels.FIRMWARE.value
     assert ot2.exposed_port == 5000
     assert ot2.bound_port == 2500
     assert ot2.hardware_specific_attributes.left.model == "p20_single_v2.0"
@@ -78,7 +77,7 @@ def test_ot2_with_custom_pipettes(ot2_with_pipettes: Dict[str, Any]) -> None:
     ot2 = parse_obj_as(OT2InputModel, ot2_with_pipettes)
     assert ot2.hardware == Hardware.OT2.value
     assert ot2.id == OT2_ID
-    assert ot2.emulation_level == OT2_EMULATION_LEVEL
+    assert ot2.emulation_level == EmulationLevels.FIRMWARE.value
     assert ot2.exposed_port == 5000
     assert ot2.bound_port == 31950
     assert ot2.hardware_specific_attributes.left.model == "test_1"

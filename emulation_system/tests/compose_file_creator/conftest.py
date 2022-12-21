@@ -9,7 +9,6 @@ from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     Hardware,
     OpentronsRepository,
-    SourceType,
 )
 
 HEATER_SHAKER_MODULE_ID = "shakey-and-warm"
@@ -20,20 +19,6 @@ OT2_ID = "brobot"
 OT3_ID = "edgar-allen-poebot"
 EMULATOR_PROXY_ID = "emulator-proxy"
 SMOOTHIE_ID = "smoothie"
-
-HEATER_SHAKER_MODULE_EMULATION_LEVEL = EmulationLevels.HARDWARE.value
-MAGNETIC_MODULE_EMULATION_LEVEL = EmulationLevels.FIRMWARE.value
-TEMPERATURE_MODULE_EMULATION_LEVEL = EmulationLevels.FIRMWARE.value
-THERMOCYCLER_MODULE_EMULATION_LEVEL = EmulationLevels.HARDWARE.value
-OT2_EMULATION_LEVEL = EmulationLevels.FIRMWARE.value
-OT3_EMULATION_LEVEL = EmulationLevels.HARDWARE.value
-
-HEATER_SHAKER_MODULE_SOURCE_TYPE = SourceType.REMOTE.value
-MAGNETIC_MODULE_SOURCE_TYPE = SourceType.LOCAL.value
-TEMPERATURE_MODULE_SOURCE_TYPE = SourceType.LOCAL.value
-THERMOCYCLER_MODULE_SOURCE_TYPE = SourceType.LOCAL.value
-OT2_SOURCE_TYPE = SourceType.LOCAL.value
-OT3_SOURCE_TYPE = SourceType.LOCAL.value
 
 SYSTEM_UNIQUE_ID = "testing-1-2-3"
 FAKE_COMMIT_ID = "ca82a6dff817ec66f44342007202690a93763949"
@@ -207,7 +192,7 @@ def __build_modules(
             {
                 "id": f"{MAGNETIC_MODULE_ID}-{i}",
                 "hardware": Hardware.MAGNETIC_MODULE.value,
-                "emulation-level": MAGNETIC_MODULE_EMULATION_LEVEL,
+                "emulation-level": EmulationLevels.FIRMWARE.value,
                 "hardware-specific-attributes": {},
             }
             for i in range(1, num_mag + 1)

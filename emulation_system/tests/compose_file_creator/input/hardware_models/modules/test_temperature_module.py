@@ -12,7 +12,6 @@ from emulation_system.compose_file_creator.config_file_settings import (
 from emulation_system.compose_file_creator.input.hardware_models import (
     TemperatureModuleInputModel,
 )
-from tests.compose_file_creator.conftest import TEMPERATURE_MODULE_EMULATION_LEVEL
 
 
 @pytest.fixture
@@ -38,7 +37,7 @@ def test_default_temperature_module(temperature_model: Dict[str, Any]) -> None:
     """Confirm Temperature Module is parsed correctly and defaults are applied."""
     therm = parse_obj_as(TemperatureModuleInputModel, temperature_model)
     assert therm.hardware == Hardware.TEMPERATURE_MODULE.value
-    assert therm.emulation_level == TEMPERATURE_MODULE_EMULATION_LEVEL
+    assert therm.emulation_level == EmulationLevels.FIRMWARE.value
     assert therm.hardware_specific_attributes.temperature.degrees_per_tick == 2.0
     assert therm.hardware_specific_attributes.temperature.starting == 23.0
 
@@ -52,7 +51,7 @@ def test_temperature_module_with_temp(
     """
     therm = parse_obj_as(TemperatureModuleInputModel, temperature_module_set_temp)
     assert therm.hardware == Hardware.TEMPERATURE_MODULE.value
-    assert therm.emulation_level == TEMPERATURE_MODULE_EMULATION_LEVEL
+    assert therm.emulation_level == EmulationLevels.FIRMWARE.value
     assert therm.hardware_specific_attributes.temperature.degrees_per_tick == 5.0
     assert therm.hardware_specific_attributes.temperature.starting == 20.0
 

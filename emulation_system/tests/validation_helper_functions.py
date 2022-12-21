@@ -1,4 +1,4 @@
-from typing import Dict, Optional, cast
+from typing import Any, Dict, Optional, cast
 
 from compose_file_creator.conftest import (
     HEATER_SHAKER_MODULE_ID,
@@ -77,3 +77,11 @@ def build_args_are_none(service: Service) -> bool:
     assert build is not None
     assert isinstance(build, BuildItem)
     return build.args is None
+
+
+def get_env(container: Service) -> Dict[str, Any] | None:
+    return (
+        None
+        if container.environment is None
+        else cast(Dict[str, Any], container.environment.__root__)
+    )
