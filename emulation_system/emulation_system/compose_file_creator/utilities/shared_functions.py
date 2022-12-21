@@ -11,8 +11,12 @@ from emulation_system.source import Source
 
 def get_build_args(
     source: Source, global_settings: OpentronsEmulationConfiguration
-) -> IntermediateBuildArgs:
+) -> IntermediateBuildArgs | None:
     """Get build arguments for service."""
+
+    if source.is_local():
+        return None
+
     env_var_to_use = str(source.repo_to_build_arg_mapping.value)
     head = global_settings.get_repo_head(source.repo)
     format_string = global_settings.get_repo_commit(source.repo)

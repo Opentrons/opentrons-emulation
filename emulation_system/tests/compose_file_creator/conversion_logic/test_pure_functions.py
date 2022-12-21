@@ -1,98 +1,81 @@
 """Tests for conversion pure functions."""
+from typing import (
+    Dict,
+    Type,
+    Union,
+)
 
 import pytest
+from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system.compose_file_creator.config_file_settings import (
-    OpentronsRepository,
-)
+from compose_file_creator.conftest import FAKE_COMMIT_ID
+from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.utilities.shared_functions import (
     get_build_args,
+)
+from emulation_system.source import (
+    MonorepoSource,
+    OT3FirmwareSource,
+    OpentronsModulesSource,
 )
 
 
 @pytest.mark.parametrize(
-    "source_repo,source_location,format_string,head,expected_value",
+    "source, source_location, expected_value",
     [
         [
-            OpentronsRepository.OPENTRONS,
-            "ca82a6dff817ec66f44342007202690a93763949",
-            "https://github.com/Opentrons/opentrons/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip",
-            {
-                "OPENTRONS_SOURCE_DOWNLOAD_LOCATION": "https://github.com/"
-                "Opentrons/opentrons/archive/"
-                "ca82a6dff817ec66f44342"
-                "007202690a93763949.zip"
-            },
-        ],
-        [
-            OpentronsRepository.OPENTRONS_MODULES,
-            "ca82a6dff817ec66f44342007202690a93763949",
-            "https://github.com/Opentrons/opentrons-modules/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip",
-            {
-                "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/"
-                "opentrons-modules/archive/"
-                "ca82a6dff817ec66f4434200720269"
-                "0a93763949.zip"
-            },
-        ],
-        [
-            OpentronsRepository.OT3_FIRMWARE,
-            "ca82a6dff817ec66f44342007202690a93763949",
-            "https://github.com/Opentrons/ot3-firmware/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip",
-            {
-                "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/"
-                "Opentrons/ot3-firmware/"
-                "archive/ca82a6dff817ec66f443"
-                "42007202690a93763949.zip"
-            },
-        ],
-        [
-            OpentronsRepository.OPENTRONS,
+            MonorepoSource,
             "latest",
-            "https://github.com/Opentrons/opentrons/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip",
             {
-                "OPENTRONS_SOURCE_DOWNLOAD_LOCATION": "https://github.com/"
-                "Opentrons/opentrons/archive/"
-                "refs/heads/edge.zip"
+                "OPENTRONS_SOURCE_DOWNLOAD_LOCATION": "https://github.com/AnotherOrg/opentrons/archive/refs/heads/edge.zip"
             },
         ],
         [
-            OpentronsRepository.OPENTRONS_MODULES,
-            "latest",
-            "https://github.com/Opentrons/opentrons-modules/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip",
+            MonorepoSource,
+            FAKE_COMMIT_ID,
             {
-                "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/"
-                "opentrons-modules/archive/refs/"
-                "heads/edge.zip"
+                "OPENTRONS_SOURCE_DOWNLOAD_LOCATION": f"https://github.com/AnotherOrg/opentrons/archive/{FAKE_COMMIT_ID}.zip"
+            },
+        ],
+        [MonorepoSource, lazy_fixture("opentrons_dir"), None],
+        [
+            OpentronsModulesSource,
+            "latest",
+            {
+                "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/AnotherOrg/opentrons-modules/archive/refs/heads/edge.zip"
             },
         ],
         [
-            OpentronsRepository.OT3_FIRMWARE,
-            "latest",
-            "https://github.com/Opentrons/ot3-firmware/archive/{{commit-sha}}.zip",
-            "https://github.com/Opentrons/ot3-firmware/archive/refs/heads/main.zip",
+            OpentronsModulesSource,
+            FAKE_COMMIT_ID,
             {
-                "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/Opentrons/"
-                "ot3-firmware/archive/refs/"
-                "heads/main.zip"
+                "MODULE_SOURCE_DOWNLOAD_LOCATION": f"https://github.com/AnotherOrg/opentrons-modules/archive/{FAKE_COMMIT_ID}.zip"
             },
         ],
+        [OpentronsModulesSource, lazy_fixture("opentrons_modules_dir"), None],
+        [
+            OT3FirmwareSource,
+            "latest",
+            {
+                "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/AnotherOrg/ot3-firmware/archive/refs/heads/main.zip"
+            },
+        ],
+        [
+            OT3FirmwareSource,
+            FAKE_COMMIT_ID,
+            {
+                "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": f"https://github.com/AnotherOrg/ot3-firmware/archive/{FAKE_COMMIT_ID}.zip"
+            },
+        ],
+        [OT3FirmwareSource, lazy_fixture("ot3_firmware_dir"), None],
     ],
 )
 def test_get_build_args(
-    source_repo: OpentronsRepository,
+    source: Type[Union[MonorepoSource, OpentronsModulesSource, OT3FirmwareSource]],
     source_location: str,
-    format_string: str,
-    head: str,
-    expected_value: str,
+    expected_value: Dict[str, str] | None,
+    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that get_build_args is working as expected."""
-    assert (
-        get_build_args(source_repo, source_location, format_string, head)
-        == expected_value
-    )
+    source_obj = source(source_location)
+    assert get_build_args(source_obj, testing_global_em_config) == expected_value

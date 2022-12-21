@@ -80,11 +80,8 @@ def test_simple_ot3_values(
         # Volumes
         volumes = service.volumes
         assert volumes is not None
-        assert len(volumes) == 3
+        assert len(volumes) == 2
         assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", service)
-        assert partial_string_in_mount(
-            "state_manager_venv:/ot3-firmware/build-host/.venv", service
-        )
 
         executable_name = (
             f'{service.container_name.replace("ot3-", "").replace("-", "_")}_executable'
@@ -107,7 +104,6 @@ def test_simple_ot3_values(
     not_pipette_or_gripper_services = [head, gantry_x, gantry_y]
 
     # Env vars 1/3
-
     for service in not_pipette_or_gripper_services:
         service_env = service.environment
         assert service_env is not None
