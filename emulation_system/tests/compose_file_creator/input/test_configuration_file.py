@@ -115,11 +115,6 @@ def with_invalid_system_unique_id(make_config: Callable) -> Dict[str, Any]:
     return config
 
 
-def create_system_configuration(obj: Dict) -> SystemConfigurationModel:
-    """Creates SystemConfigurationModel object."""
-    return SystemConfigurationModel.from_dict(obj)
-
-
 @pytest.mark.parametrize(
     "config",
     [
@@ -130,7 +125,7 @@ def create_system_configuration(obj: Dict) -> SystemConfigurationModel:
 def test_duplicate_names(config: Dict[str, Any]) -> None:
     """Confirm that ValidationError is thrown when a robot and module have the same name."""
     with pytest.raises(DuplicateHardwareNameError) as err:
-        create_system_configuration(config)
+        SystemConfigurationModel.from_dict(config)
     expected_error_text = (
         "The following container names are duplicated in the "
         f"configuration file: {MAGNETIC_MODULE_ID}"
@@ -141,7 +136,7 @@ def test_duplicate_names(config: Dict[str, Any]) -> None:
 def test_invalid_container_name(invalid_ot2_name: Dict[str, Any]) -> None:
     """Confirm that ValidationError is thrown when a robot and module have the same name."""
     with pytest.raises(ValidationError) as err:
-        create_system_configuration(invalid_ot2_name)
+        SystemConfigurationModel.from_dict(invalid_ot2_name)
     expected_error_text = ".*string does not match regex.*"
     assert err.match(expected_error_text)
 
@@ -156,7 +151,7 @@ def test_invalid_container_name(invalid_ot2_name: Dict[str, Any]) -> None:
 )
 def test_modules_exist_is_true(config: Dict[str, Any]) -> None:
     """Test that modules_exist property is true when it is supposed to be."""
-    assert create_system_configuration(config).modules_exist
+    assert SystemConfigurationModel.from_dict(config).modules_exist
 
 
 @pytest.mark.parametrize(
@@ -164,7 +159,7 @@ def test_modules_exist_is_true(config: Dict[str, Any]) -> None:
 )
 def test_modules_exist_is_false(config: Dict[str, Any]) -> None:
     """Test that modules_exist property is false when it is supposed to be."""
-    assert not create_system_configuration(config).modules_exist
+    assert not SystemConfigurationModel.from_dict(config).modules_exist
 
 
 @pytest.mark.parametrize(
@@ -177,7 +172,7 @@ def test_modules_exist_is_false(config: Dict[str, Any]) -> None:
 )
 def test_robot_exists_is_true(config: Dict[str, Any]) -> None:
     """Test that robot_exists property is true when it is supposed to be."""
-    assert create_system_configuration(config).robot_exists
+    assert SystemConfigurationModel.from_dict(config).robot_exists
 
 
 @pytest.mark.parametrize(
@@ -185,12 +180,12 @@ def test_robot_exists_is_true(config: Dict[str, Any]) -> None:
 )
 def test_robot_exists_is_false(config: Dict[str, Any]) -> None:
     """Test that robot_exists property is false when it is supposed to be."""
-    assert not create_system_configuration(config).robot_exists
+    assert not SystemConfigurationModel.from_dict(config).robot_exists
 
 
 def test_containers_property(ot2_and_modules: Dict[str, Any]) -> None:
     """Test the containers property is constructed correctly."""
-    containers = create_system_configuration(ot2_and_modules).containers
+    containers = SystemConfigurationModel.from_dict(ot2_and_modules).containers
     magnetic_module_id = f"{MAGNETIC_MODULE_ID}-1"
     temperature_module_id = f"{TEMPERATURE_MODULE_ID}-1"
     thermocycler_module_id = f"{THERMOCYCLER_MODULE_ID}-1"
@@ -212,7 +207,7 @@ def test_containers_property(ot2_and_modules: Dict[str, Any]) -> None:
 
 def test_get_by_id(ot2_and_modules: Dict[str, Any]) -> None:
     """Test that loading containers by id works correctly."""
-    system_config = create_system_configuration(ot2_and_modules)
+    system_config = SystemConfigurationModel.from_dict(ot2_and_modules)
     magnetic_module_id = f"{MAGNETIC_MODULE_ID}-1"
     temperature_module_id = f"{TEMPERATURE_MODULE_ID}-1"
     thermocycler_module_id = f"{THERMOCYCLER_MODULE_ID}-1"
@@ -237,12 +232,12 @@ def test_get_by_id(ot2_and_modules: Dict[str, Any]) -> None:
 )
 def test_no_system_unique_id(config: Dict[str, Any]) -> None:
     """Test that default network name is set correctly when field is not specified."""
-    assert create_system_configuration(config).system_unique_id is None
+    assert SystemConfigurationModel.from_dict(config).system_unique_id is None
 
 
 def test_overriding_system_unique_id(with_system_unique_id: Dict[str, Any]) -> None:
     """Test that system network name is overridden correctly."""
-    system_config = create_system_configuration(with_system_unique_id)
+    system_config = SystemConfigurationModel.from_dict(with_system_unique_id)
     assert system_config.system_unique_id == SYSTEM_UNIQUE_ID
 
 
@@ -251,4 +246,4 @@ def test_invalid_system_unique_id(
 ) -> None:
     """Verify exception is thrown when invalid system-unique-id is passed."""
     with pytest.raises(ValidationError):
-        create_system_configuration(with_invalid_system_unique_id)
+        SystemConfigurationModel.from_dict(with_invalid_system_unique_id)
