@@ -115,8 +115,7 @@ class ConcreteSmoothieServiceBuilder(AbstractServiceBuilder):
 
         assert isinstance(self._config_model.robot, OT2InputModel)
         if self._config_model.robot.smoothie_env_vars is not None:
-            print(self._config_model.robot.smoothie_env_vars)
-            # env_vars.update()
+            env_vars.update(self._config_model.robot.smoothie_env_vars)
 
         self._logging_client.log_env_vars(env_vars)
         return env_vars
