@@ -6,7 +6,6 @@ from typing import Optional
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
-    IntermediateDependsOn,
     IntermediateEnvironmentVariables,
     IntermediateNetworks,
     IntermediatePorts,
@@ -137,11 +136,6 @@ class AbstractLoggingClient(ABC):
     @abstractmethod
     def log_ports(self, ports: Optional[IntermediatePorts]) -> None:
         """Logs what ports are being set, if any, and why."""
-        ...
-
-    @abstractmethod
-    def log_depends_on(self, depends_on: Optional[IntermediateDependsOn]) -> None:
-        """Logs what depends_on are being set, if any, and why."""
         ...
 
     @abstractmethod

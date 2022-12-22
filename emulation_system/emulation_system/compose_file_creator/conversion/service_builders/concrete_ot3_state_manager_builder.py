@@ -5,7 +5,6 @@ from emulation_system import OpentronsEmulationConfiguration, SystemConfiguratio
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
-    IntermediateDependsOn,
     IntermediateEnvironmentVariables,
     IntermediateHealthcheck,
     IntermediateNetworks,
@@ -84,12 +83,6 @@ class ConcreteOT3StateManagerBuilder(AbstractServiceBuilder):
     def generate_ports(self) -> Optional[IntermediatePorts]:
         """Generates value for ports parameter."""
         return self._ot3.get_ot3_state_manager_bound_port()
-
-    def generate_depends_on(self) -> Optional[IntermediateDependsOn]:
-        """Generates value for depends_on parameter."""
-        depends_on = None
-
-        return depends_on
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""

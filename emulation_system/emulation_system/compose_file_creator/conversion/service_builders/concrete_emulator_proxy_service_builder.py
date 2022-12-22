@@ -13,7 +13,6 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
-    IntermediateDependsOn,
     IntermediateEnvironmentVariables,
     IntermediateHealthcheck,
     IntermediateNetworks,
@@ -120,12 +119,6 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         ports = None
         self._logging_client.log_ports(ports)
         return ports
-
-    def generate_depends_on(self) -> Optional[IntermediateDependsOn]:
-        """Generates value for depends_on parameter."""
-        depends_on = None
-        self._logging_client.log_depends_on(depends_on)
-        return depends_on
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
