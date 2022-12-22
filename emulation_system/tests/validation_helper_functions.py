@@ -19,10 +19,10 @@ from emulation_system.compose_file_creator.images import (
 
 CONTAINER_NAME_TO_IMAGE = {
     OT2_ID: RobotServerImage().image_name,
-    THERMOCYCLER_MODULE_ID: ThermocyclerModuleImages().hardware_image_name,
-    HEATER_SHAKER_MODULE_ID: HeaterShakerModuleImages().hardware_image_name,
-    TEMPERATURE_MODULE_ID: TemperatureModuleImages().firmware_image_name,
-    MAGNETIC_MODULE_ID: MagneticModuleImages().firmware_image_name,
+    f"{THERMOCYCLER_MODULE_ID}-1": ThermocyclerModuleImages().hardware_image_name,
+    f"{HEATER_SHAKER_MODULE_ID}-1": HeaterShakerModuleImages().hardware_image_name,
+    f"{TEMPERATURE_MODULE_ID}-1": TemperatureModuleImages().firmware_image_name,
+    f"{MAGNETIC_MODULE_ID}-1": MagneticModuleImages().firmware_image_name,
 }
 SERVICE_NAMES = [
     OT2_ID,
