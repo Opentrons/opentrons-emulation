@@ -30,13 +30,13 @@ EXPECTED_YAML = convert_yaml(
     """
     networks:
       derek-local-network: {}
+    volumes:
+      monorepo-wheels: {}
     services:
       derek-emulator-proxy:
         build:
-          args:
-            OPENTRONS_SOURCE_DOWNLOAD_LOCATION: https://github.com/AnotherOrg/opentrons/archive/refs/heads/edge.zip
           context: /home/derek-maggio/Documents/repos/opentrons-emulation/emulation_system/resources/docker/
-          target: emulator-proxy-remote
+          target: emulator-proxy
           dockerfile: Dockerfile
         container_name: derek-emulator-proxy
         environment:
@@ -44,15 +44,13 @@ EXPECTED_YAML = convert_yaml(
           OT_EMULATOR_magdeck_proxy: '{"emulator_port": 10002, "driver_port": 11002}'
           OT_EMULATOR_temperature_proxy: '{"emulator_port": 10001, "driver_port": 11001}'
           OT_EMULATOR_thermocycler_proxy: '{"emulator_port": 10003, "driver_port": 11003}'
-        healthcheck:
-          interval: 10s
-          retries: 6
-          test: "ps -eaf | grep 'python -m opentrons.hardware_control.emulation.app' | grep -v 'grep'"
-          timeout: 10s
-        image: emulator-proxy-remote:latest
+        image: emulator-proxy
         networks:
         - derek-local-network
         tty: true
+        volumes:
+        - '/home/derek-maggio/Documents/repos/opentrons-emulation/docker/entrypoint.sh:/entrypoint.sh'
+        - 'monorepo-wheels:/dist'
     """
 )
 
