@@ -5,7 +5,6 @@ from typing import Any, Dict, Type, cast
 
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
-from validation_helper_functions import get_env
 
 from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
@@ -27,6 +26,7 @@ from tests.compose_file_creator.conftest import (
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
 )
+from tests.validation_helper_functions import get_env
 
 
 @pytest.mark.parametrize(

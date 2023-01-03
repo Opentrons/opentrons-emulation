@@ -9,7 +9,6 @@ from typing import Any, Dict
 
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
-from validation_helper_functions import partial_string_in_mount
 
 from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.config_file_settings import OT3Hardware
@@ -26,6 +25,7 @@ from emulation_system.compose_file_creator.images import (
     SmoothieImage,
 )
 from tests.compose_file_creator.conftest import EMULATOR_PROXY_ID
+from tests.validation_helper_functions import partial_string_in_mount
 
 
 @pytest.mark.parametrize(

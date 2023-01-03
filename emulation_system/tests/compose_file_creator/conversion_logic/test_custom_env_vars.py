@@ -3,7 +3,6 @@
 from typing import Any, Dict, cast
 
 import pytest
-from validation_helper_functions import get_env
 
 from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
@@ -19,6 +18,7 @@ from tests.compose_file_creator.conftest import (
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
 )
+from tests.validation_helper_functions import get_env
 
 OT2_ROBOT_SERVER_VAL_1 = "ot2"
 OT2_ROBOT_SERVER_VAL_2 = 1

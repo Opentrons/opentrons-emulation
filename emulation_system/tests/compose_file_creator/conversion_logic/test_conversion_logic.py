@@ -3,7 +3,6 @@ from typing import Any, Dict, List, cast
 
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
-from validation_helper_functions import CONTAINER_NAME_TO_IMAGE, SERVICE_NAMES
 
 from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator import BuildItem
@@ -27,6 +26,7 @@ from tests.compose_file_creator.conftest import (
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
 )
+from tests.validation_helper_functions import CONTAINER_NAME_TO_IMAGE, SERVICE_NAMES
 
 # TODO: Add following tests:
 #   - CAN network is created on OT3 breakout

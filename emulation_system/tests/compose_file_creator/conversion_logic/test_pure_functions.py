@@ -2,7 +2,6 @@
 from typing import Dict, Type, Union
 
 import pytest
-from compose_file_creator.conftest import FAKE_COMMIT_ID
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system import OpentronsEmulationConfiguration
@@ -14,6 +13,7 @@ from emulation_system.source import (
     OpentronsModulesSource,
     OT3FirmwareSource,
 )
+from tests.compose_file_creator.conftest import FAKE_COMMIT_ID
 
 
 @pytest.mark.parametrize(

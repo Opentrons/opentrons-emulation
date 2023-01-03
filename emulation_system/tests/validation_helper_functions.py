@@ -1,13 +1,5 @@
 from typing import Any, Dict, Optional, cast
 
-from compose_file_creator.conftest import (
-    HEATER_SHAKER_MODULE_ID,
-    MAGNETIC_MODULE_ID,
-    OT2_ID,
-    TEMPERATURE_MODULE_ID,
-    THERMOCYCLER_MODULE_ID,
-)
-
 from emulation_system.compose_file_creator import BuildItem, Service
 from emulation_system.compose_file_creator.images import (
     HeaterShakerModuleImages,
@@ -15,6 +7,13 @@ from emulation_system.compose_file_creator.images import (
     RobotServerImage,
     TemperatureModuleImages,
     ThermocyclerModuleImages,
+)
+from tests.compose_file_creator.conftest import (
+    HEATER_SHAKER_MODULE_ID,
+    MAGNETIC_MODULE_ID,
+    OT2_ID,
+    TEMPERATURE_MODULE_ID,
+    THERMOCYCLER_MODULE_ID,
 )
 
 CONTAINER_NAME_TO_IMAGE = {

@@ -216,6 +216,17 @@ push-docker-image-bases:
 	$(if $(branch_name),,$(error branch_name variable required))
 	@(cd ./docker && ./build_bases.sh ${branch_name})
 
+.PHONY: pretty-print
+pretty-print:
+	$(if $(container_name),,$(error container_name variable required))
+	@printf '%s\n' "--------STATUS--------"
+	@docker inspect $(container_name) --format '{{printf "Status: "}}{{.State.Status}}'
+	@docker inspect $(container_name) --format '{{printf "Error: "}}{{.State.Error}}'
+	@docker inspect $(container_name) --format '{{printf "Exit Code: "}}{{.State.ExitCode}}'
+	@docker inspect $(container_name) --format '{{printf "Health Status: "}}{{.State.Health.Status}}'
+	@printf '\n%s' "--------VOLUMES & MOUNTS--------"
+	@docker inspect $(container_name) --format '{{ range .Mounts }}{{ printf "\n" }}{{ if eq .Type "bind" }}{{ .Source }}{{ end }}{{ .Name }}:{{ .Destination }}{{ end }}{{ printf "\n" }}'
+
 OT2CONFIG ?= ./samples/ot2/ot2_with_all_modules.yaml
 
 .PHONY: ot2

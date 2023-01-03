@@ -22,7 +22,7 @@ modules:
     emulation-level: hardware
   - id: t00-hot-to-handle
     hardware: thermocycler-module
-    emulation-level: firmware
+    emulation-level: hardware
   - id: fatal-attraction
     hardware: magnetic-module
     emulation-level: firmware

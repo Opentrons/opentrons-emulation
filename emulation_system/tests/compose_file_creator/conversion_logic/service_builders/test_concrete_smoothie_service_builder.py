@@ -5,7 +5,6 @@ from typing import Any, Callable, Dict, cast
 import pytest
 from pydantic import parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
-from validation_helper_functions import build_args_are_none, partial_string_in_mount
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem
@@ -15,6 +14,10 @@ from emulation_system.compose_file_creator.conversion import (
 )
 from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
+from tests.validation_helper_functions import (
+    build_args_are_none,
+    partial_string_in_mount,
+)
 
 
 @pytest.fixture
