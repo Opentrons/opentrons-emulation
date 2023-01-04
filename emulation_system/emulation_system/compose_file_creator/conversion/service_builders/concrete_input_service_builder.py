@@ -110,14 +110,10 @@ class ConcreteInputServiceBuilder(AbstractServiceBuilder):
         volumes = []
 
         if source.repo == OpentronsRepository.OPENTRONS or is_robot(self._container):
-            volumes.extend(
-                self._monorepo_source.generate_emulator_mount_strings(
-                    self._container.hardware
-                )
-            )
+            volumes.extend(self._monorepo_source.generate_emulator_mount_strings())
         elif source.repo == OpentronsRepository.OPENTRONS_MODULES:
             volumes.extend(
-                self._opentrons_modules_source.generate_emulator_mount_strings(
+                self._opentrons_modules_source.generate_emulator_mount_strings_from_hw(
                     self._container.hardware
                 )
             )

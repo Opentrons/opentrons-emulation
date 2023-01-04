@@ -119,7 +119,7 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        volumes = self._ot3_source.generate_emulator_mount_strings(
+        volumes = self._ot3_source.generate_emulator_mount_strings_from_hw(
             self._service_info.ot3_hardware
         )
 

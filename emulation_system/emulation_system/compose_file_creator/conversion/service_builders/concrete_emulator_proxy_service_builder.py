@@ -19,7 +19,6 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.consts import MONOREPO_NAMED_VOLUME_STRING
 
 from ...images import EmulatorProxyImage
 from ...logging import EmulatorProxyLoggingClient
@@ -106,7 +105,7 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        return [self.ENTRYPOINT_MOUNT_STRING, MONOREPO_NAMED_VOLUME_STRING]
+        return self._monorepo_source.generate_emulator_mount_strings()
 
     def generate_command(self) -> Optional[IntermediateCommand]:
         """Generates value for command parameter."""
@@ -125,7 +124,8 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         env_vars = {
             env_var_name: env_var_value
             for module in self.MODULE_TYPES
-            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()  # type: ignore [attr-defined]
+            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()
+            # type: ignore [attr-defined]
         }
 
         if self._config_model.robot is not None:

@@ -13,7 +13,6 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.consts import MONOREPO_NAMED_VOLUME_STRING
 
 from ...input.hardware_models import OT3InputModel
 from ...logging import CANServerLoggingClient
@@ -93,7 +92,7 @@ class ConcreteCANServerServiceBuilder(AbstractServiceBuilder):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        return [self.ENTRYPOINT_MOUNT_STRING, MONOREPO_NAMED_VOLUME_STRING]
+        return self._monorepo_source.generate_emulator_mount_strings()
 
     def generate_command(self) -> Optional[IntermediateCommand]:
         """Generates value for command parameter."""

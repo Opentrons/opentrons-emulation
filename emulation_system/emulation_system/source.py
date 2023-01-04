@@ -79,12 +79,6 @@ class Source(ABC):
     def generate_builder_mount_strings(self) -> List[str]:
         ...
 
-    @abstractmethod
-    def generate_emulator_mount_strings(
-        self, emulator_hw: Hardware | OT3Hardware | None
-    ) -> List[str]:
-        ...
-
     @property
     def source_state(self) -> SourceState:
         return SourceState.parse_source_state(self.source_location)
@@ -98,6 +92,17 @@ class Source(ABC):
 
     def is_local(self) -> bool:
         return self.source_state.is_local()
+
+
+class EmulatorSource:
+    @staticmethod
+    def generate_emulator_mount_strings_from_hw(
+        emulator_hw: OT3Hardware | Hardware,
+    ) -> List[str]:
+        return [
+            ENTRYPOINT_MOUNT_STRING,
+            f"{emulator_hw.hw_name}_executable:/executable",
+        ]
 
 
 class MonorepoSource(Source):
@@ -116,8 +121,9 @@ class MonorepoSource(Source):
     def __repr__(self):
         return f"MonorepoSource({super().__repr__()})"
 
-    def generate_emulator_mount_strings(self, emulator_hw: None = None) -> List[str]:
-        return [MONOREPO_NAMED_VOLUME_STRING, ENTRYPOINT_MOUNT_STRING]
+    @staticmethod
+    def generate_emulator_mount_strings() -> List[str]:
+        return [ENTRYPOINT_MOUNT_STRING, MONOREPO_NAMED_VOLUME_STRING]
 
     def generate_builder_mount_strings(self) -> List[str]:
         default_values = [MONOREPO_NAMED_VOLUME_STRING, ENTRYPOINT_MOUNT_STRING]
@@ -128,7 +134,7 @@ class MonorepoSource(Source):
         return default_values
 
 
-class OT3FirmwareSource(Source):
+class OT3FirmwareSource(Source, EmulatorSource):
     def __init__(self, source: str) -> None:
         super().__init__(source, OpentronsRepository.OT3_FIRMWARE)
 
@@ -144,12 +150,6 @@ class OT3FirmwareSource(Source):
     def __repr__(self):
         return f"OT3FirmwareSource({super().__repr__()})"
 
-    def generate_emulator_mount_strings(self, emulator_hw: OT3Hardware) -> List[str]:
-        return [
-            ENTRYPOINT_MOUNT_STRING,
-            f"{emulator_hw.hw_name}_executable:/executable",
-        ]
-
     def generate_builder_mount_strings(self) -> List[str]:
         default_values = [
             f"{member.named_volume_name}:{member.container_volume_storage_path}"
@@ -163,7 +163,7 @@ class OT3FirmwareSource(Source):
         return default_values
 
 
-class OpentronsModulesSource(Source):
+class OpentronsModulesSource(Source, EmulatorSource):
     def __init__(self, source: str) -> None:
         super().__init__(source, OpentronsRepository.OPENTRONS_MODULES)
 
@@ -190,9 +190,3 @@ class OpentronsModulesSource(Source):
             default_values.append(f"{self.source_location}:/{self.repo.value}")
 
         return default_values
-
-    def generate_emulator_mount_strings(self, emulator_hw: Hardware) -> List[str]:
-        return [
-            ENTRYPOINT_MOUNT_STRING,
-            f"{emulator_hw.hw_name}_executable:/executable",
-        ]
