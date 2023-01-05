@@ -20,6 +20,7 @@ from ...images import (
     OT3GripperImage,
     OT3HeadImage,
     OT3PipettesImage,
+    SingleImage,
 )
 from ...input.hardware_models import OT3InputModel
 from ...logging import OT3LoggingClient
@@ -56,6 +57,7 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
         This prevents, primarily, logging happening twice, but also the increased
         overhead of calculating the same thing twice.
         """
+        assert isinstance(self._service_info.image, SingleImage)
         image_name = self._service_info.image.image_name
         return image_name
 

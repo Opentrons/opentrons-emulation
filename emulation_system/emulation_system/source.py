@@ -1,3 +1,8 @@
+"""Classes for interacting with source code.
+
+Supports interaction with local or remote code.
+"""
+
 import os
 import pathlib
 import re
@@ -27,12 +32,18 @@ ENTRYPOINT_MOUNT_STRING = FileMount(
 
 
 class SourceState(Enum):
+    """State of Source object.
+
+    Can either be local, remote latest, or remote commit.
+    """
+
     REMOTE_LATEST = auto()
     REMOTE_COMMIT = auto()
     LOCAL = auto()
 
     @staticmethod
-    def parse_source_state(passed_value: str) -> "SourceState":
+    def to_source_state(passed_value: str) -> "SourceState":
+        """Helper method to parse passed string value to SourceState."""
         source_state: SourceState
 
         if passed_value.lower() == "latest":
@@ -52,13 +63,17 @@ class SourceState(Enum):
         return source_state
 
     def is_remote(self) -> bool:
+        """If SourceState is remote."""
         return self in [self.REMOTE_COMMIT, self.REMOTE_LATEST]
 
     def is_local(self) -> bool:
+        """If SourceState is local."""
         return self == self.LOCAL
 
 
 class Source(ABC):
+    """ABC for Source objects."""
+
     source_location: str
     repo: OpentronsRepository
 
@@ -69,36 +84,46 @@ class Source(ABC):
     @classmethod
     @abstractmethod
     def validate(cls, v: str) -> "Source":
+        """Required validate method to create custom Pydantic datatype."""
         ...
 
     @classmethod
-    def __get_validators__(cls):
+    def __get_validators__(cls):  # noqa: ANN206
+        """Required __get_validators__ method to create custom Pydantic datatype."""
         yield cls.validate
 
     @abstractmethod
     def generate_builder_mount_strings(self) -> List[str]:
+        """Generates volume and bint mount strings for builder classes."""
         ...
 
     @property
     def source_state(self) -> SourceState:
-        return SourceState.parse_source_state(self.source_location)
+        """Source State of the Source object."""
+        return SourceState.to_source_state(self.source_location)
 
     @property
     def repo_to_build_arg_mapping(self) -> RepoToBuildArgMapping:
+        """Build arg name for repo."""
         return RepoToBuildArgMapping.get_mapping(self.repo)
 
     def is_remote(self) -> bool:
+        """Returns True if source is remote."""
         return self.source_state.is_remote()
 
     def is_local(self) -> bool:
+        """Returns True is source is local."""
         return self.source_state.is_local()
 
 
-class EmulatorSource:
+class EmulatorSourceMixin:
+    """Mixin providing functionality to classes that require evaluation of hardware type."""
+
     @staticmethod
     def generate_emulator_mount_strings_from_hw(
         emulator_hw: OT3Hardware | Hardware,
     ) -> List[str]:
+        """Method to generate mount strings based off of hardware."""
         return [
             ENTRYPOINT_MOUNT_STRING,
             f"{emulator_hw.hw_name}_executable:/executable",
@@ -106,26 +131,33 @@ class EmulatorSource:
 
 
 class MonorepoSource(Source):
-    def __init__(self, source: str) -> None:
-        super().__init__(source, OpentronsRepository.OPENTRONS)
+    """Source class for opentrons monorepo."""
+
+    def __init__(self, source_location: str) -> None:
+        """Instantiate MonorepoSource object"""
+        super().__init__(source_location, OpentronsRepository.OPENTRONS)
 
     @classmethod
     def validate(cls, v: str) -> "MonorepoSource":
+        """Confirm that parsing source-location string to SourceState does not throw an error."""
         try:
-            SourceState.parse_source_state(v)
+            SourceState.to_source_state(v)
         except ValueError:
             raise
         else:
-            return MonorepoSource(source=v)
+            return MonorepoSource(source_location=v)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Override __repr__."""
         return f"MonorepoSource({super().__repr__()})"
 
     @staticmethod
     def generate_emulator_mount_strings() -> List[str]:
+        """Generates volume and bind mount strings for emulator contianers using monorepo source code."""
         return [ENTRYPOINT_MOUNT_STRING, MONOREPO_NAMED_VOLUME_STRING]
 
     def generate_builder_mount_strings(self) -> List[str]:
+        """Generates volume and bind mount strings for LocalMonorepoBuilderBuilder container."""
         default_values = [MONOREPO_NAMED_VOLUME_STRING, ENTRYPOINT_MOUNT_STRING]
 
         if self.is_local():
@@ -134,23 +166,29 @@ class MonorepoSource(Source):
         return default_values
 
 
-class OT3FirmwareSource(Source, EmulatorSource):
+class OT3FirmwareSource(Source, EmulatorSourceMixin):
+    """Source class for opentrons ot3-firmware repo."""
+
     def __init__(self, source: str) -> None:
+        """Instantiate OT3FirmwareSource object."""
         super().__init__(source, OpentronsRepository.OT3_FIRMWARE)
 
     @classmethod
     def validate(cls, v: str) -> "OT3FirmwareSource":
+        """Confirm that parsing source-location string to SourceState does not throw an error."""
         try:
-            SourceState.parse_source_state(v)
+            SourceState.to_source_state(v)
         except ValueError:
             raise
         else:
             return OT3FirmwareSource(source=v)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Override __repr__."""
         return f"OT3FirmwareSource({super().__repr__()})"
 
     def generate_builder_mount_strings(self) -> List[str]:
+        """Generates volume and bint mount strings for LocalOT3FirmwareBuilderBuilder container."""
         default_values = [
             f"{member.named_volume_name}:{member.container_volume_storage_path}"
             for member in OT3Hardware.__members__.values()
@@ -163,14 +201,14 @@ class OT3FirmwareSource(Source, EmulatorSource):
         return default_values
 
 
-class OpentronsModulesSource(Source, EmulatorSource):
+class OpentronsModulesSource(Source, EmulatorSourceMixin):
     def __init__(self, source: str) -> None:
         super().__init__(source, OpentronsRepository.OPENTRONS_MODULES)
 
     @classmethod
     def validate(cls, v: str) -> "OpentronsModulesSource":
         try:
-            SourceState.parse_source_state(v)
+            SourceState.to_source_state(v)
         except ValueError:
             raise
         else:
@@ -180,6 +218,7 @@ class OpentronsModulesSource(Source, EmulatorSource):
         return f"OpentronsModulesSource({super().__repr__()})"
 
     def generate_builder_mount_strings(self) -> List[str]:
+        """Method to generate volume and bint mount strings for builder classes."""
         default_values = [
             f"{hardware.named_volume_name}:{hardware.container_volume_storage_path}"
             for hardware in Hardware.opentrons_modules_hardware()

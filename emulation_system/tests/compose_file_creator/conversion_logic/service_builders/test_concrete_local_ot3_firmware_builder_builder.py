@@ -66,6 +66,7 @@ def test_local_ot3_firmware_remote_monorepo(
 
     monorepo_build_arg = RepoToBuildArgMapping.OPENTRONS
     build_args = get_source_code_build_args(service)
+    assert build_args is not None
     assert len(build_args) == 1
     assert monorepo_build_arg in build_args
     assert build_args[monorepo_build_arg] == opentrons_head
@@ -91,6 +92,7 @@ def test_remote_ot3_firmware_local_monorepo(
 
     ot3_firmware_build_arg = RepoToBuildArgMapping.OT3_FIRMWARE
     build_args = get_source_code_build_args(service)
+    assert build_args is not None
     assert len(build_args) == 1
     assert ot3_firmware_build_arg in build_args
     assert build_args[ot3_firmware_build_arg] == ot3_firmware_head

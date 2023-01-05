@@ -74,12 +74,14 @@ class ConcreteLocalOT3FirmwareBuilderBuilder(AbstractServiceBuilder):
             ot3_firmware_build_args = get_build_args(
                 self._ot3_source, self._global_settings
             )
+            assert ot3_firmware_build_args is not None
             build_args.update(ot3_firmware_build_args)
 
         if self._monorepo_source.is_remote():
             monorepo_build_args = get_build_args(
                 self._monorepo_source, self._global_settings
             )
+            assert monorepo_build_args is not None
             build_args.update(monorepo_build_args)
 
         return build_args if len(build_args) > 0 else None

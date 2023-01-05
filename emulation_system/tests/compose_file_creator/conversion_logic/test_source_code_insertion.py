@@ -152,6 +152,7 @@ def test_module_monorepo_build_args(
     modules = config_file.module_emulators
     local_monorepo_builder = config_file.local_monorepo_builder
 
+    assert modules is not None
     assert all(module is not None for module in modules)
     assert local_monorepo_builder is not None
 
@@ -184,6 +185,7 @@ def test_module_opentrons_modules_build_args(
     modules = config_file.module_emulators
     local_opentrons_modules_builder = config_file.local_opentrons_modules_builder
 
+    assert modules is not None
     assert all(module is not None for module in modules)
     assert local_opentrons_modules_builder is not None
 
@@ -268,6 +270,7 @@ def test_ot3_mounts(
     for emulator in emulators:
         check_correct_number_of_volumes(emulator, 2)
         assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", emulator)
+        assert emulator.image is not None
         hardware_name = (
             emulator.image.replace("ot3-", "")
             .replace("-hardware", "")
@@ -404,6 +407,7 @@ def test_module_opentrons_modules_mounts(
     module = modules[0]
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", module)
 
+    assert module.image is not None
     module_type = module.image.replace("-hardware", "").replace("-", "_")
     assert partial_string_in_mount(f"{module_type}_executable:/executable", module)
 

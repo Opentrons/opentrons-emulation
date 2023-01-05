@@ -10,7 +10,6 @@ from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     PipetteSettings,
     SourceRepositories,
-    SourceType,
 )
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateEnvironmentVariables,
@@ -80,8 +79,3 @@ class OT3InputModel(RobotInputModel):
         return [
             f"{self.ot3_state_manager_exposed_port}:{OT3_STATE_MANAGER_BOUND_PORT}/udp"
         ]
-
-    @property
-    def is_remote(self) -> bool:
-        """Check if all source-types are remote."""
-        return super().is_remote and self.can_server_source_type == SourceType.REMOTE

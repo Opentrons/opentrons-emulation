@@ -121,12 +121,11 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
-        env_vars = {
-            env_var_name: env_var_value
-            for module in self.MODULE_TYPES
-            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()
-            # type: ignore [attr-defined]
-        }
+        env_vars = {}
+        for module in self.MODULE_TYPES:
+            proxy_info_items = module.get_proxy_info_env_var().items()  # type: ignore [attr-defined]
+            for env_var_name, env_var_value in proxy_info_items:
+                env_vars[env_var_name] = env_var_value
 
         if self._config_model.robot is not None:
             assert issubclass(self._config_model.robot.__class__, RobotInputModel)

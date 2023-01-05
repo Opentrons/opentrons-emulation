@@ -56,6 +56,7 @@ def test_ot3_feature_flag_added(
 ) -> None:
     """Confirm feature flag is added when robot is an OT3."""
     robot = convert_from_obj(ot3_only, testing_global_em_config, dev=False).robot_server
+    assert robot is not None
     env = get_env(robot)
     assert env is not None
     assert "OT_API_FF_enableOT3HardwareController" in env
@@ -134,9 +135,12 @@ def test_hardware_serial_number_env_vars(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that serial number env vars are created correctly on hardware modules."""
-    module = convert_from_obj(
+    service = convert_from_obj(
         ot2_and_modules, testing_global_em_config, dev=False
-    ).services[service_name]
+    ).services
+    assert service is not None
+    module = service[service_name]
+    assert module is not None
 
     module_env = get_env(module)
     assert module_env is not None
@@ -161,10 +165,13 @@ def test_em_proxy_info_env_vars_on_modules(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that serial number env vars are created correctly on hardware modules."""
-    module = convert_from_obj(
+    service = convert_from_obj(
         ot2_and_modules, testing_global_em_config, dev=False
-    ).services[service_name]
+    ).services
+    assert service is not None
+    module = service[service_name]
 
+    assert module is not None
     module_env = get_env(module)
     assert module_env is not None
     assert input_class.proxy_info.env_var_name in module_env
@@ -195,6 +202,8 @@ def test_em_proxy_info_env_vars_on_proxy(
     emulator_proxy = convert_from_obj(
         ot2_and_modules, testing_global_em_config, dev=False
     ).emulator_proxy
+
+    assert emulator_proxy is not None
 
     emulator_proxy_env = get_env(emulator_proxy)
     assert emulator_proxy_env is not None

@@ -1,5 +1,5 @@
 """Conftest for compose_file_creator package."""
-from typing import Any, Callable, Dict, Literal
+from typing import Any, Callable, Dict, Literal, Optional
 
 import py
 import pytest
@@ -106,7 +106,10 @@ def __build_source(
         struct["opentrons-modules-source"] = opentrons_modules_dir
 
 
-def __build_robot(struct: Dict[str, Any], robot: str) -> None:
+def __build_robot(struct: Dict[str, Any], robot: Optional[str]) -> None:
+    if robot is None:
+        return
+
     if robot is not None and robot not in ["ot2", "ot3"]:
         raise ValueError('robot is not None, "ot2", or "ot3"')
 

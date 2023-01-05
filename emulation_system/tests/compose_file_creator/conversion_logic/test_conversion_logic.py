@@ -64,6 +64,7 @@ def test_service_keys(
         default_values.add(OT2_ID)
         default_values.add(SMOOTHIE_ID)
 
+    assert config_file.services is not None
     assert set(config_file.services.keys()) == default_values
 
 
@@ -77,6 +78,7 @@ def test_tty(
     services = convert_from_obj(
         ot2_and_modules, testing_global_em_config, dev=False
     ).services
+    assert services is not None
     assert services[service_name].tty
 
 
@@ -90,6 +92,7 @@ def test_service_container_name(
     services = convert_from_obj(
         ot2_and_modules, testing_global_em_config, dev=False
     ).services
+    assert services is not None
     assert services[service_name].container_name == service_name
 
 
@@ -103,6 +106,7 @@ def test_service_image(
     services = convert_from_obj(
         ot2_and_modules, testing_global_em_config, dev=False
     ).services
+    assert services is not None
     assert services[service_name].image == CONTAINER_NAME_TO_IMAGE[service_name]
 
 
@@ -116,6 +120,7 @@ def test_service_build(
     services = convert_from_obj(
         ot2_and_modules, testing_global_em_config, dev=False
     ).services
+    assert services is not None
     build = cast(BuildItem, services[service_name].build)
     assert build.context == DOCKERFILE_DIR_LOCATION
     assert build.target == CONTAINER_NAME_TO_IMAGE[service_name]
@@ -131,6 +136,7 @@ def test_service_local_network(
     services = convert_from_obj(
         ot2_and_modules, testing_global_em_config, dev=False
     ).services
+    assert services is not None
     assert services[service_name].networks == [DEFAULT_NETWORK_NAME]
 
 
@@ -142,6 +148,7 @@ def test_top_level_network(
     networks = convert_from_obj(
         ot2_and_modules, testing_global_em_config, dev=False
     ).networks
+    assert networks is not None
     assert networks == {DEFAULT_NETWORK_NAME: Network()}
 
 
@@ -153,6 +160,7 @@ def test_robot_port(
     services = convert_from_obj(
         ot2_and_modules, testing_global_em_config, dev=False
     ).services
+    assert services is not None
     assert services[OT2_ID].ports == ["5000:31950"]
 
 
@@ -209,6 +217,7 @@ def test_module_command(
     services = convert_from_obj(
         ot2_and_modules, testing_global_em_config, dev=False
     ).services
+    assert services is not None
     assert services[service_name].command == expected_value
 
 
@@ -220,4 +229,5 @@ def test_robot_command(
     services = convert_from_obj(
         ot2_and_modules, testing_global_em_config, dev=False
     ).services
+    assert services is not None
     assert services[OT2_ID].command is None

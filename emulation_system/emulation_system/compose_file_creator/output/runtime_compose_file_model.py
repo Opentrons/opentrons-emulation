@@ -1,5 +1,5 @@
 """Adds functions to generated compose_file_model."""
-from typing import Any, List, Optional, Type
+from typing import Any, List, Optional
 
 import yaml
 
@@ -33,7 +33,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
 
     def _search_for_services(
         self,
-        images_to_search_for: List[Type[FirmwareAndHardwareImages | SingleImage]],
+        images_to_search_for: List[FirmwareAndHardwareImages | SingleImage],
         inverse: bool = False,
         only_local: bool = False
     ) -> Optional[List[Service]]:
@@ -42,7 +42,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
 
         image_names = []
         for image in images_to_search_for:
-            image_names.extend(image().get_image_names())
+            image_names.extend(image.get_image_names())
 
         for service in self.services.values():
             if (

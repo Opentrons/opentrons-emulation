@@ -159,7 +159,8 @@ def test_modules_exist_is_true(config: Dict[str, Any]) -> None:
 )
 def test_modules_exist_is_false(config: Dict[str, Any]) -> None:
     """Test that modules_exist property is false when it is supposed to be."""
-    assert not SystemConfigurationModel.from_dict(config).modules_exist
+    configuration_file = SystemConfigurationModel.from_dict(config)
+    assert not configuration_file.modules_exist(configuration_file.modules)
 
 
 @pytest.mark.parametrize(
@@ -172,7 +173,8 @@ def test_modules_exist_is_false(config: Dict[str, Any]) -> None:
 )
 def test_robot_exists_is_true(config: Dict[str, Any]) -> None:
     """Test that robot_exists property is true when it is supposed to be."""
-    assert SystemConfigurationModel.from_dict(config).robot_exists
+    configuration_model = SystemConfigurationModel.from_dict(config)
+    assert configuration_model.robot_exists(configuration_model.robot)
 
 
 @pytest.mark.parametrize(
@@ -180,7 +182,8 @@ def test_robot_exists_is_true(config: Dict[str, Any]) -> None:
 )
 def test_robot_exists_is_false(config: Dict[str, Any]) -> None:
     """Test that robot_exists property is false when it is supposed to be."""
-    assert not SystemConfigurationModel.from_dict(config).robot_exists
+    configuration_model = SystemConfigurationModel.from_dict(config)
+    assert not configuration_model.robot_exists(configuration_model.robot)
 
 
 def test_containers_property(ot2_and_modules: Dict[str, Any]) -> None:

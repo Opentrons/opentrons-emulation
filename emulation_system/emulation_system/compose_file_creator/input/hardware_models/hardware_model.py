@@ -1,6 +1,7 @@
 """Parent class for all hardware."""
 from __future__ import annotations
 
+from itertools import combinations
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field, validator
@@ -35,7 +36,7 @@ class HardwareModel(BaseModel):
     class Config:
         """Config class used by pydantic."""
 
-        allow_population_by_field_name = False
+        allow_population_by_field_name = True
         validate_assignment = True
         use_enum_values = True
         extra = "forbid"
@@ -45,14 +46,13 @@ class HardwareModel(BaseModel):
         super().__init__(**data)
 
     @validator("mounts")
-    def check_for_duplicate_mount_names(
+    def check_for_duplicate_mounts(
         cls, v: List[Mount], values: Dict[str, Any]
     ) -> List[Mount]:
-        """Confirms that there are not mounts with duplicate names."""
-        names = [mount.name for mount in v]
-        assert len(names) == len(
-            set(names)
-        ), f"\"{values['id']}\" has mounts with duplicate names"
+        """Confirms that there are not duplicate mounts."""
+        assert all(
+            [not mount_1 == mount_2 for mount_1, mount_2 in combinations(v, 2)]
+        ), "Cannot have duplicate mounts"
         return v
 
     def get_image_name(self) -> str:

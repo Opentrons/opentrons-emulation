@@ -1,6 +1,6 @@
 """Mapping for getting image names for hardware."""
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from typing_extensions import Literal
 
@@ -163,7 +163,7 @@ class CANServerImage(SingleImage):
     image_name: str = "can-server"
 
 
-IMAGE_MAPPING = {
+IMAGE_MAPPING: Dict[str, FirmwareAndHardwareImages | SingleImage] = {
     Hardware.HEATER_SHAKER_MODULE.value: HeaterShakerModuleImages(),
     Hardware.MAGNETIC_MODULE.value: MagneticModuleImages(),
     Hardware.THERMOCYCLER_MODULE.value: ThermocyclerModuleImages(),
@@ -175,9 +175,7 @@ IMAGE_MAPPING = {
 
 def get_image_name(hardware: str, emulation_level: EmulationLevels) -> str:
     """Load image name."""
-    image_class: FirmwareAndHardwareImages | SingleImage | None = IMAGE_MAPPING[
-        hardware
-    ]
+    image_class: FirmwareAndHardwareImages | SingleImage = IMAGE_MAPPING[hardware]
     image_name: str | None
     if issubclass(image_class.__class__, SingleImage):
         image_name = image_class.image_name
