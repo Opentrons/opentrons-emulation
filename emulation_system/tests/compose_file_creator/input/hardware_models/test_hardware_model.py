@@ -227,7 +227,7 @@ def test_duplicate_mounts(file_mount: Dict[str, str]) -> None:
 def test_exception_thrown_when_local_source_code_does_not_exist() -> None:
     """Confirm LocalSourceDoesNotExistError is thrown when local path does not exist."""
     bad_path = "/this/surely/must/be/a/bad/path"
-    with pytest.raises(ValidationError) as err:
+    with pytest.raises(ValidationError):
         HeaterShakerModuleInputModel.parse_obj(
             {
                 "id": "my-heater-shaker",

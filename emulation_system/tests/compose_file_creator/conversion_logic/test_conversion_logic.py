@@ -12,7 +12,7 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
 )
 from emulation_system.compose_file_creator.output.compose_file_model import Network
 from emulation_system.consts import DEFAULT_NETWORK_NAME, DOCKERFILE_DIR_LOCATION
-from tests.compose_file_creator.conftest import (
+from tests.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,
     LOCAL_MONOREPO_BUILDER_ID,
@@ -169,7 +169,6 @@ def test_can_server_port_exposed(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that when can-server-exposed-port is specified, ports are added to the can-server"""
-
     ot3_only["robot"]["can-server-exposed-port"] = 9898
     runtime_compose_file_model = convert_from_obj(
         ot3_only, testing_global_em_config, False

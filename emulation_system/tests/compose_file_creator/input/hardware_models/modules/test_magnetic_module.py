@@ -35,9 +35,7 @@ def test_magnetic_module_with_bad_emulation_level(
 ) -> None:
     """Confirm that there is a validation error when a bad emulation level is passed."""
     with pytest.raises(ValidationError):
-        mag = parse_obj_as(
-            MagneticModuleInputModel, magnetic_module_bad_emulation_level
-        )
+        parse_obj_as(MagneticModuleInputModel, magnetic_module_bad_emulation_level)
 
 
 def test_magnetic_module_source_repos(magdeck_model: Dict[str, Any]) -> None:

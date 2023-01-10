@@ -22,6 +22,7 @@ __all__ = [
     "ConcreteOT3ServiceBuilder",
     "ConcreteInputServiceBuilder",
     "ConcreteOT3StateManagerBuilder",
+    "ConcreteLocalMonorepoBuilderBuilder",
     "ConcreteLocalOT3FirmwareBuilderBuilder",
     "ConcreteLocalOpentronsModulesBuilderBuilder",
 ]

@@ -16,7 +16,7 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 
 
 @pytest.fixture
-def heater_shaker_use_stdin(heater_shaker_model) -> Dict[str, Any]:
+def heater_shaker_use_stdin(heater_shaker_model: Dict[str, Any]) -> Dict[str, Any]:
     """Heater-shaker dictionary with mode set to stdin."""
     heater_shaker_model["hardware-specific-attributes"] = {
         "mode": HeaterShakerModes.STDIN

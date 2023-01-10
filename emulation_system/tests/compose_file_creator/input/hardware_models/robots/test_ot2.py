@@ -9,7 +9,8 @@ from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
 )
 from emulation_system.compose_file_creator.input.hardware_models import OT2InputModel
-from tests.compose_file_creator.conftest import OT2_ID, EmulationLevels
+from tests.compose_file_creator.conftest import EmulationLevels
+from tests.conftest import OT2_ID
 
 
 @pytest.fixture
@@ -89,4 +90,4 @@ def test_ot2_with_custom_pipettes(ot2_with_pipettes: Dict[str, Any]) -> None:
 def test_ot2_with_bad_emulation_level(ot2_bad_emulation_level: Dict[str, Any]) -> None:
     """Confirm that there is a validation error when a bad emulation level is passed."""
     with pytest.raises(ValidationError):
-        ot2 = parse_obj_as(OT2InputModel, ot2_bad_emulation_level)
+        parse_obj_as(OT2InputModel, ot2_bad_emulation_level)

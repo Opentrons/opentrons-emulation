@@ -2,8 +2,9 @@
 from __future__ import annotations
 
 from collections import Counter
-from typing import Dict, List, Mapping, Optional, TypeGuard, cast
+from typing import Any, Dict, List, Mapping, Optional, TypeGuard, cast
 
+import yaml
 from pydantic import BaseModel, Field, parse_file_as, parse_obj_as, root_validator
 
 from emulation_system.consts import DEFAULT_NETWORK_NAME
@@ -15,6 +16,7 @@ from ..types.input_types import Containers, Modules, Robots
 from ..types.intermediate_types import IntermediateNetworks
 from ..utilities.hardware_utils import is_ot3
 from ..utilities.shared_functions import to_kebab
+from ..utilities.yaml_utils import OpentronsEmulationYamlDumper
 from .hardware_models import (
     ModuleInputModel,
     OT2InputModel,
@@ -32,10 +34,14 @@ class SystemConfigurationModel(BaseModel):
     system_unique_id: Optional[str] = Field(regex=r"^[A-Za-z0-9-]+$", min_length=1)
     robot: Optional[Robots]
     modules: Optional[List[Modules]] = Field(default=[])
-    monorepo_source: MonorepoSource = Field(default=MonorepoSource("latest"))
-    ot3_firmware_source: OT3FirmwareSource = Field(default=OT3FirmwareSource("latest"))
+    monorepo_source: MonorepoSource = Field(
+        default=MonorepoSource(source_location="latest")
+    )
+    ot3_firmware_source: OT3FirmwareSource = Field(
+        default=OT3FirmwareSource(source_location="latest")
+    )
     opentrons_modules_source: OpentronsModulesSource = Field(
-        default=OpentronsModulesSource("latest")
+        default=OpentronsModulesSource(source_location="latest")
     )
 
     class Config:
@@ -89,6 +95,7 @@ class SystemConfigurationModel(BaseModel):
     # be able to TypeGuard it
     @staticmethod
     def modules_exist(modules: Optional[List[Modules]]) -> TypeGuard[List[Modules]]:
+        """Confirm that modules exist in configuration."""
         return (
             modules is not None
             and len(modules) > 0
@@ -100,7 +107,7 @@ class SystemConfigurationModel(BaseModel):
     # Same as above comment but with the robot
     @staticmethod
     def robot_exists(robot: Optional[Robots]) -> TypeGuard[Robots]:
-        """Returns True if a robot was defined in config file, False if not."""
+        """Confirm that robot exist in configuration."""
         return robot is not None and issubclass(robot.__class__, RobotInputModel)
 
     @property
@@ -188,6 +195,7 @@ class SystemConfigurationModel(BaseModel):
 
     @property
     def hardware_level_modules(self) -> List[Modules]:
+        """Gets list of all hardware level modules in configuration."""
         user_specified_modules = self.modules
         modules: List[Modules] = []
         if self.modules_exist(user_specified_modules):
@@ -201,6 +209,7 @@ class SystemConfigurationModel(BaseModel):
 
     @property
     def firmware_level_modules(self) -> List[Modules]:
+        """Gets list of all firmware level modules in configuration."""
         user_specified_modules = self.modules
         if self.modules_exist(user_specified_modules):
             modules = [
@@ -237,4 +246,34 @@ class SystemConfigurationModel(BaseModel):
 
         return any(
             [emulator_proxy, self.robot_exists(self.robot), modules_are_firmware_level]
+        )
+
+    @property
+    def source_repo_field_aliases(self) -> List[str]:
+        """Get list of source field aliases."""
+        return [
+            field_name.replace("_", "-")
+            for field_name in self.__fields__.keys()
+            if "source" in field_name
+        ]
+
+    # Don't want to worry about having to deal with the signature of the
+    # parent method. So just type ignoring it.
+
+    def dict(self, *args, **kwargs) -> Dict[str, Any]:  # noqa: ANN002, ANN003
+        """Override default dict logic and add custom logic for source feilds."""
+        default_dict = super().dict(*args, **kwargs)
+        default_dict["monorepo-source"] = self.monorepo_source.source_location
+        default_dict["ot3-firmware-source"] = self.ot3_firmware_source.source_location
+        default_dict[
+            "opentrons-modules-source"
+        ] = self.opentrons_modules_source.source_location
+        return default_dict
+
+    def to_yaml(self) -> str:
+        """Convert to yaml string."""
+        return yaml.dump(
+            data=self.dict(by_alias=True),
+            default_flow_style=False,
+            Dumper=OpentronsEmulationYamlDumper,
         )

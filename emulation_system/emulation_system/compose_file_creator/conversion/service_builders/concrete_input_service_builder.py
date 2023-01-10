@@ -1,5 +1,5 @@
 """Module containing ConcreteInputServiceBuilder."""
-from typing import Optional
+from typing import Optional, Union
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator.types.intermediate_types import (
@@ -11,14 +11,48 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.source import Source
+from emulation_system.source import MonorepoSource, OpentronsModulesSource, Source
 
 from ...config_file_settings import OpentronsRepository
+from ...input.hardware_models.hardware_model import HardwareModel
 from ...logging import InputLoggingClient
 from ...types.input_types import Containers
-from ...utilities.conversion_utils import get_input_container_source
 from ...utilities.hardware_utils import is_module, is_ot2, is_ot3, is_robot
 from .abstract_service_builder import AbstractServiceBuilder
+
+
+def is_hardware_level_module(container: HardwareModel) -> bool:
+    """Helper function for confirming container is a hardware level module."""
+    return is_module(container) and container.is_hardware_emulation_level()
+
+
+def is_firmware_level_module(container: HardwareModel) -> bool:
+    """Helper function for confirming container is a firmware level module."""
+    return is_module(container) and container.is_firmware_emulation_level()
+
+
+def get_input_container_source(
+    container: HardwareModel, config_model: SystemConfigurationModel
+) -> Union[MonorepoSource, OpentronsModulesSource]:
+    """Helper function for getting source from container and config model.
+
+    Note that this can never be ot3-firmware repo because all containers that use
+    ot3-firmware are generated.
+    """
+    source: Union[MonorepoSource, OpentronsModulesSource]
+
+    if is_robot(container):
+        source = config_model.monorepo_source
+    elif is_firmware_level_module(container):
+        source = config_model.monorepo_source
+    elif is_hardware_level_module(container):
+        source = config_model.opentrons_modules_source
+    else:
+        raise ValueError(
+            f"Cannot determine source for {container.id} (Hardware Type: {container.hardware})"
+        )
+
+    return source
 
 
 class ConcreteInputServiceBuilder(AbstractServiceBuilder):

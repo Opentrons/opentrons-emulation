@@ -13,7 +13,7 @@ from emulation_system.source import (
     OpentronsModulesSource,
     OT3FirmwareSource,
 )
-from tests.compose_file_creator.conftest import FAKE_COMMIT_ID
+from tests.conftest import FAKE_COMMIT_ID
 
 
 @pytest.mark.parametrize(
@@ -73,5 +73,5 @@ def test_get_build_args(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that get_build_args is working as expected."""
-    source_obj = source(source_location)
+    source_obj = source(source_location=source_location)
     assert get_build_args(source_obj, testing_global_em_config) == expected_value

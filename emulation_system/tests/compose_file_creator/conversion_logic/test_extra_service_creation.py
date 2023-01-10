@@ -24,7 +24,7 @@ from emulation_system.compose_file_creator.images import (
     OT3PipettesImage,
     SmoothieImage,
 )
-from tests.compose_file_creator.conftest import EMULATOR_PROXY_ID
+from tests.conftest import EMULATOR_PROXY_ID
 from tests.validation_helper_functions import partial_string_in_mount
 
 

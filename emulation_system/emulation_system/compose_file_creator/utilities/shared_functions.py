@@ -13,7 +13,6 @@ def get_build_args(
     source: Source, global_settings: OpentronsEmulationConfiguration
 ) -> IntermediateBuildArgs | None:
     """Get build arguments for service."""
-
     if source.is_local():
         return None
 
@@ -30,4 +29,5 @@ def get_build_args(
 
 
 def to_kebab(string: str) -> str:
+    """Converts snake case formatted string to kebab case."""
     return string.replace("_", "-")

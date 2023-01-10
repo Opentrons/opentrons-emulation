@@ -87,7 +87,9 @@ class HardwareModel(BaseModel):
         return None
 
     def is_firmware_emulation_level(self) -> bool:
+        """Whether or not module is firmware emulation level."""
         return self.emulation_level == EmulationLevels.FIRMWARE
 
     def is_hardware_emulation_level(self) -> bool:
+        """Whether or not module is hardware emulation level."""
         return self.emulation_level == EmulationLevels.HARDWARE

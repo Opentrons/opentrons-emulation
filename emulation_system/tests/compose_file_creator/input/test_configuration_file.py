@@ -18,7 +18,7 @@ from emulation_system.compose_file_creator.input.hardware_models import (
     TemperatureModuleInputModel,
     ThermocyclerModuleInputModel,
 )
-from tests.compose_file_creator.conftest import (
+from tests.conftest import (
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,
     OT2_ID,

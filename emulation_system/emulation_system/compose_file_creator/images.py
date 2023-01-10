@@ -10,7 +10,7 @@ from .errors import ImageNotDefinedError
 
 @dataclass
 class FirmwareAndHardwareImages:
-    """Stores names of images for each piece of hardware."""
+    """Represents images that have a hardware and firmware version."""
 
     firmware_image_name: Optional[str]
     hardware_image_name: Optional[str]
@@ -26,6 +26,8 @@ class FirmwareAndHardwareImages:
 
 @dataclass
 class SingleImage:
+    """Represents images that only have a single version."""
+
     image_name: str
 
     def get_image_names(self) -> List[str]:

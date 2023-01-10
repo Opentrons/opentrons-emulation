@@ -78,7 +78,7 @@ def test_local_ot3_firmware_remote_monorepo(
 
 
 def test_remote_ot3_firmware_local_monorepo(
-    ot3_remote_ot3_firmware_local_monorepo,
+    ot3_remote_ot3_firmware_local_monorepo: Dict[str, Any],
     ot3_firmware_head: str,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:

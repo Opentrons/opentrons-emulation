@@ -37,7 +37,7 @@ def test_ot3_build_args(
     opentrons_head: str,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
-
+    """Confirm build args are created correctly for OT-3."""
     config_file = convert_from_obj(config, testing_global_em_config, False)
     robot_server = config_file.robot_server
     can_server = config_file.can_server
@@ -106,6 +106,7 @@ def test_ot2_build_args(
     opentrons_head: str,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
+    """Confirm build args are created correctly for OT-2."""
     config_file = convert_from_obj(config, testing_global_em_config, False)
     robot = config_file.robot_server
     emulator_proxy = config_file.emulator_proxy
@@ -148,6 +149,7 @@ def test_module_monorepo_build_args(
     monorepo_is_local: bool,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
+    """Confirm build args are created correctly for modules using monorepo."""
     config_file = convert_from_obj(config, testing_global_em_config, False)
     modules = config_file.module_emulators
     local_monorepo_builder = config_file.local_monorepo_builder
@@ -181,6 +183,7 @@ def test_module_opentrons_modules_build_args(
     opentrons_modules_is_local: bool,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
+    """Confirm build args are created correctly for modules using opentrons-modules."""
     config_file = convert_from_obj(config, testing_global_em_config, False)
     modules = config_file.module_emulators
     local_opentrons_modules_builder = config_file.local_opentrons_modules_builder
@@ -218,6 +221,7 @@ def test_ot3_mounts(
     opentrons_head: str,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
+    """Test mounts are created correctly when creating an OT-3."""
     config_file = convert_from_obj(config, testing_global_em_config, False)
     robot_server = config_file.robot_server
     can_server = config_file.can_server
@@ -302,11 +306,7 @@ def test_ot2_mounts(
     opentrons_head: str,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
-    """Test build-args when robot-server-source-type is set to local.
-
-    Confirm that robot server has no build arguments
-    Confirm that smoothie is looking for the opentrons repo head.
-    """
+    """Test mounts are created correctly when creating an OT-2."""
     config_file = convert_from_obj(config, testing_global_em_config, False)
     robot = config_file.robot_server
     emulator_proxy = config_file.emulator_proxy
@@ -358,12 +358,7 @@ def test_module_monorepo_mounts(
     config: Dict[str, Any],
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
-    """Test mounts when source-type is set to local.
-
-    Confirm that thermocycler module has opentrons, entrypoint.sh mounted in.
-    Also confirm that named volumes: opentrons-python-dist bound to the correct
-    location.
-    """
+    """Test mounts are created correctly when creating modules that use monorepo."""
     config_file = convert_from_obj(config, testing_global_em_config, False)
     modules = config_file.module_emulators
     local_monorepo_builder = config_file.local_monorepo_builder
@@ -390,12 +385,7 @@ def test_module_opentrons_modules_mounts(
     config: Dict[str, Any],
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
-    """Test mounts when source-type is set to local.
-
-    Confirm that thermocycler module has opentrons, entrypoint.sh mounted in.
-    Also confirm that named volumes: opentrons-python-dist bound to the correct
-    location.
-    """
+    """Test mounts are created correctly when creating modules that use opentrons-modules."""
     config_file = convert_from_obj(config, testing_global_em_config, False)
     modules = config_file.module_emulators
     local_opentrons_modules_builder = config_file.local_opentrons_modules_builder

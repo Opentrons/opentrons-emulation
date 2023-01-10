@@ -52,8 +52,6 @@ from emulation_system.consts import (
     DOCKERFILE_DIR_LOCATION,
     DOCKERFILE_NAME,
     ENTRYPOINT_FILE_LOCATION,
-    LOCAL_OT3_FIRMWARE_BUILDER_SCRIPT_NAME,
-    LOCAL_OT3_FIRMWARE_BUILDER_SCRIPT_PATH,
 )
 from emulation_system.source import (
     MonorepoSource,
@@ -122,10 +120,6 @@ class AbstractServiceBuilder(ABC):
         robot = cls._get_robot(config_model, Hardware.OT3, OT3InputModel)
         assert is_ot3(robot)
         return robot
-
-    @classmethod
-    def get_local_ot3_firmware_builder_script_mount_string(cls) -> str:
-        return f"{LOCAL_OT3_FIRMWARE_BUILDER_SCRIPT_PATH}:/{LOCAL_OT3_FIRMWARE_BUILDER_SCRIPT_NAME}"
 
     @property
     @abstractmethod

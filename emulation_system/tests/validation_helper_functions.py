@@ -1,3 +1,9 @@
+"""Functions to use inside of tests.
+
+Contains functions for easily returning wanted values on service.
+Also contains functions for validating values on a service.
+"""
+
 from typing import Any, Dict, Optional, cast
 
 from emulation_system.compose_file_creator import BuildItem, Service
@@ -8,7 +14,7 @@ from emulation_system.compose_file_creator.images import (
     TemperatureModuleImages,
     ThermocyclerModuleImages,
 )
-from tests.compose_file_creator.conftest import (
+from tests.conftest import (
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,
     OT2_ID,
@@ -41,12 +47,14 @@ def partial_string_in_mount(string: str, service: Service) -> bool:
 
 
 def mount_string_is(string: str, service: Service) -> bool:
+    """Confirm that mount string exists in volumes."""
     volumes = service.volumes
     assert volumes is not None
     return any([string == volume for volume in volumes])
 
 
 def check_correct_number_of_volumes(container: Service, expected_number: int) -> None:
+    """Confirm container has correct number of volumes."""
     volumes = container.volumes
     if expected_number == 0:
         assert (
@@ -79,6 +87,7 @@ def build_args_are_none(service: Service) -> bool:
 
 
 def get_env(container: Service) -> Dict[str, Any] | None:
+    """Get environment variables for container."""
     return (
         None
         if container.environment is None

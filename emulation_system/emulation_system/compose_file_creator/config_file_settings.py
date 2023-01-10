@@ -20,18 +20,22 @@ class Hardware(str, Enum):
 
     @classmethod
     def opentrons_modules_hardware(cls) -> List["Hardware"]:
+        """Get names of of hardware that uses opentrons-modules repo."""
         return [cls.HEATER_SHAKER_MODULE, cls.THERMOCYCLER_MODULE]
 
     @property
     def hw_name(self) -> str:
+        """Get name of hardware."""
         return self.value.replace("-module", "").replace("-", "_")
 
     @property
     def named_volume_name(self) -> str:
+        """Get name of volume that will be shared between services."""
         return f"{self.hw_name}_executable"
 
     @property
     def container_volume_storage_path(self) -> str:
+        """Where the builder container stores it's volumes."""
         return f"/volumes/{self.hw_name}_volume/"
 
     @property
@@ -52,14 +56,17 @@ class OT3Hardware(str, Enum):
 
     @property
     def hw_name(self) -> str:
+        """Get name of hardware."""
         return self.value.replace("ot3-", "").replace("-", "_")
 
     @property
     def named_volume_name(self) -> str:
+        """Get name of volume that will be shared between services."""
         return f"{self.hw_name}_executable"
 
     @property
     def container_volume_storage_path(self) -> str:
+        """Where the builder container stores it's volumes."""
         return f"/volumes/{self.hw_name}_volume/"
 
     @property
@@ -127,6 +134,7 @@ class RepoToBuildArgMapping(str, Enum):
 
     @staticmethod
     def get_mapping(repo: OpentronsRepository) -> "RepoToBuildArgMapping":
+        """Get mapping by Opentrons Repository"""
         mapping: RepoToBuildArgMapping
         match repo:
             case OpentronsRepository.OPENTRONS:

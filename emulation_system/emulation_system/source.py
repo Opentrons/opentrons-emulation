@@ -8,7 +8,9 @@ import pathlib
 import re
 from abc import ABC, abstractmethod
 from enum import Enum, auto
-from typing import List
+from typing import List, Union
+
+from pydantic import BaseModel
 
 from emulation_system.compose_file_creator.config_file_settings import (
     FileMount,
@@ -130,12 +132,16 @@ class EmulatorSourceMixin:
         ]
 
 
-class MonorepoSource(Source):
+class MonorepoSource(BaseModel, Source):
     """Source class for opentrons monorepo."""
 
-    def __init__(self, source_location: str) -> None:
-        """Instantiate MonorepoSource object"""
-        super().__init__(source_location, OpentronsRepository.OPENTRONS)
+    source_location: str
+    repo: OpentronsRepository = OpentronsRepository.OPENTRONS
+
+    class Config:
+        """Config class used by pydantic."""
+
+        use_enum_values = True
 
     @classmethod
     def validate(cls, v: str) -> "MonorepoSource":
@@ -166,12 +172,16 @@ class MonorepoSource(Source):
         return default_values
 
 
-class OT3FirmwareSource(Source, EmulatorSourceMixin):
+class OT3FirmwareSource(BaseModel, Source, EmulatorSourceMixin):
     """Source class for opentrons ot3-firmware repo."""
 
-    def __init__(self, source: str) -> None:
-        """Instantiate OT3FirmwareSource object."""
-        super().__init__(source, OpentronsRepository.OT3_FIRMWARE)
+    source_location: str
+    repo: OpentronsRepository = OpentronsRepository.OT3_FIRMWARE
+
+    class Config:
+        """Config class used by pydantic."""
+
+        use_enum_values = True
 
     @classmethod
     def validate(cls, v: str) -> "OT3FirmwareSource":
@@ -181,7 +191,7 @@ class OT3FirmwareSource(Source, EmulatorSourceMixin):
         except ValueError:
             raise
         else:
-            return OT3FirmwareSource(source=v)
+            return OT3FirmwareSource(source_location=v)
 
     def __repr__(self) -> str:
         """Override __repr__."""
@@ -201,20 +211,29 @@ class OT3FirmwareSource(Source, EmulatorSourceMixin):
         return default_values
 
 
-class OpentronsModulesSource(Source, EmulatorSourceMixin):
-    def __init__(self, source: str) -> None:
-        super().__init__(source, OpentronsRepository.OPENTRONS_MODULES)
+class OpentronsModulesSource(BaseModel, Source, EmulatorSourceMixin):
+    """Source class for opentrons opentrons-modules repo."""
+
+    source_location: str
+    repo: OpentronsRepository = OpentronsRepository.OPENTRONS_MODULES
+
+    class Config:
+        """Config class used by pydantic."""
+
+        use_enum_values = True
 
     @classmethod
     def validate(cls, v: str) -> "OpentronsModulesSource":
+        """Confirm that parsing source-location string to SourceState does not throw an error."""
         try:
             SourceState.to_source_state(v)
         except ValueError:
             raise
         else:
-            return OpentronsModulesSource(source=v)
+            return OpentronsModulesSource(source_location=v)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Override __repr__."""
         return f"OpentronsModulesSource({super().__repr__()})"
 
     def generate_builder_mount_strings(self) -> List[str]:
@@ -229,3 +248,6 @@ class OpentronsModulesSource(Source, EmulatorSourceMixin):
             default_values.append(f"{self.source_location}:/{self.repo.value}")
 
         return default_values
+
+
+OpentronsSource = Union[MonorepoSource, OpentronsModulesSource, OT3FirmwareSource]
