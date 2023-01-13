@@ -1,17 +1,23 @@
 """Tests to confirm that local-ot3-firmware-builder container is created correctly."""
 
-from typing import Any, Dict
+from typing import (
+    Any,
+    Dict,
+)
 
 import pytest
 from pydantic import parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
 from emulation_system.compose_file_creator.config_file_settings import (
     RepoToBuildArgMapping,
 )
 from emulation_system.compose_file_creator.conversion.service_builders import (
-    ConcreteLocalOT3FirmwareBuilderBuilder,
+    ConcreteOT3FirmwareBuilderBuilder,
 )
 from tests.validation_helper_functions import (
     build_args_are_none,
@@ -33,7 +39,7 @@ def test_simple_values(
 ) -> None:
     """Test values common to all 3 configs."""
     model = parse_obj_as(SystemConfigurationModel, config_model)
-    service = ConcreteLocalOT3FirmwareBuilderBuilder(
+    service = ConcreteOT3FirmwareBuilderBuilder(
         model, testing_global_em_config, False
     ).build_service()
 
@@ -60,7 +66,7 @@ def test_local_ot3_firmware_remote_monorepo(
     model = parse_obj_as(
         SystemConfigurationModel, ot3_local_ot3_firmware_remote_monorepo
     )
-    service = ConcreteLocalOT3FirmwareBuilderBuilder(
+    service = ConcreteOT3FirmwareBuilderBuilder(
         model, testing_global_em_config, False
     ).build_service()
 
@@ -86,7 +92,7 @@ def test_remote_ot3_firmware_local_monorepo(
     model = parse_obj_as(
         SystemConfigurationModel, ot3_remote_ot3_firmware_local_monorepo
     )
-    service = ConcreteLocalOT3FirmwareBuilderBuilder(
+    service = ConcreteOT3FirmwareBuilderBuilder(
         model, testing_global_em_config, False
     ).build_service()
 
@@ -110,7 +116,7 @@ def test_local_everything(
 ) -> None:
     """Tests for when you are using local ot3-firmware and local monorepo."""
     model = parse_obj_as(SystemConfigurationModel, ot3_local_everything)
-    service = ConcreteLocalOT3FirmwareBuilderBuilder(
+    service = ConcreteOT3FirmwareBuilderBuilder(
         model, testing_global_em_config, False
     ).build_service()
 

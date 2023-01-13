@@ -1,10 +1,17 @@
 """Mapping for getting image names for hardware."""
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import (
+    Dict,
+    List,
+    Optional,
+)
 
 from typing_extensions import Literal
 
-from .config_file_settings import EmulationLevels, Hardware
+from .config_file_settings import (
+    EmulationLevels,
+    Hardware,
+)
 from .errors import ImageNotDefinedError
 
 
@@ -138,24 +145,24 @@ class OT3StateManagerImage(SingleImage):
 
 
 @dataclass
-class LocalOT3FirmwareBuilderImage(SingleImage):
+class OT3FirmwareBuilderImage(SingleImage):
     """Image names for OT3 Bootloader."""
 
-    image_name: str = "local-ot3-firmware-builder"
+    image_name: str = "ot3-firmware-builder"
 
 
 @dataclass
-class LocalMonorepoBuilderImage(SingleImage):
+class MonorepoBuilderImage(SingleImage):
     """Image names for OT3 Bootloader."""
 
-    image_name: str = "local-monorepo-builder"
+    image_name: str = "monorepo-builder"
 
 
 @dataclass
-class LocalOpentronsModulesBuilderImage(SingleImage):
+class OpentronsModulesBuilderImage(SingleImage):
     """Image names for OT3 Bootloader."""
 
-    image_name: str = "local-opentrons-modules-builder"
+    image_name: str = "opentrons-modules-builder"
 
 
 @dataclass
@@ -167,11 +174,11 @@ class CANServerImage(SingleImage):
 
 IMAGE_MAPPING: Dict[str, FirmwareAndHardwareImages | SingleImage] = {
     Hardware.HEATER_SHAKER_MODULE.value: HeaterShakerModuleImages(),
-    Hardware.MAGNETIC_MODULE.value: MagneticModuleImages(),
-    Hardware.THERMOCYCLER_MODULE.value: ThermocyclerModuleImages(),
-    Hardware.TEMPERATURE_MODULE.value: TemperatureModuleImages(),
-    Hardware.OT2.value: RobotServerImage(),
-    Hardware.OT3.value: RobotServerImage(),
+    Hardware.MAGNETIC_MODULE.value:      MagneticModuleImages(),
+    Hardware.THERMOCYCLER_MODULE.value:  ThermocyclerModuleImages(),
+    Hardware.TEMPERATURE_MODULE.value:   TemperatureModuleImages(),
+    Hardware.OT2.value:                  RobotServerImage(),
+    Hardware.OT3.value:                  RobotServerImage(),
 }
 
 

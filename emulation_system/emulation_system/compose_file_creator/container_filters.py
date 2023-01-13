@@ -11,17 +11,17 @@ from .images import (
     EmulatorProxyImage,
     FirmwareAndHardwareImages,
     HeaterShakerModuleImages,
-    LocalMonorepoBuilderImage,
-    LocalOpentronsModulesBuilderImage,
-    LocalOT3FirmwareBuilderImage,
     MagneticModuleImages,
+    MonorepoBuilderImage,
     OT3BootloaderImage,
+    OT3FirmwareBuilderImage,
     OT3GantryXImage,
     OT3GantryYImage,
     OT3GripperImage,
     OT3HeadImage,
     OT3PipettesImage,
     OT3StateManagerImage,
+    OpentronsModulesBuilderImage,
     RobotServerImage,
     SingleImage,
     SmoothieImage,
@@ -51,17 +51,17 @@ class ContainerFilters(Enum):
     OT3_GRIPPER = ("ot3-gripper", [OT3GripperImage()])
     OT3_STATE_MANAGER = ("ot3-state-manager", [OT3StateManagerImage()])
 
-    LOCAL_OT3_FIRMWARE_BUILDER = (
-        "local-ot3-firmware-builder",
-        [LocalOT3FirmwareBuilderImage()],
+    OT3_FIRMWARE_BUILDER = (
+        "ot3-firmware-builder",
+        [OT3FirmwareBuilderImage()],
     )
-    LOCAL_MONOREPO_BUILDER = (
-        "local-monorepo-builder",
-        [LocalMonorepoBuilderImage()],
+    MONOREPO_BUILDER = (
+        "monorepo-builder",
+        [MonorepoBuilderImage()],
     )
-    LOCAL_OPENTRONS_MODULES_BUILDER = (
-        "local-opentrons-modules-builder",
-        [LocalOpentronsModulesBuilderImage()],
+    OPENTRONS_MODULES_BUILDER = (
+        "opentrons-modules-builder",
+        [OpentronsModulesBuilderImage()],
     )
 
     MODULES = (
@@ -105,9 +105,9 @@ class ContainerFilters(Enum):
             TemperatureModuleImages(),
             ThermocyclerModuleImages(),
             OT3StateManagerImage(),
-            LocalOT3FirmwareBuilderImage(),
-            LocalMonorepoBuilderImage(),
-            LocalOpentronsModulesBuilderImage(),
+            OT3FirmwareBuilderImage(),
+            MonorepoBuilderImage(),
+            OpentronsModulesBuilderImage(),
         ],
     )
 

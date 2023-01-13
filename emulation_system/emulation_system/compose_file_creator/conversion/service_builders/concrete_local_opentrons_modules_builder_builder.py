@@ -1,7 +1,10 @@
 """Module containing ConcreteOT3ServiceBuilder class."""
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
@@ -11,14 +14,13 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-
-from ...images import LocalOpentronsModulesBuilderImage
-from ...utilities.shared_functions import get_build_args
 from .abstract_service_builder import AbstractServiceBuilder
+from ...images import OpentronsModulesBuilderImage
+from ...utilities.shared_functions import get_build_args
 
 
-class ConcreteLocalOpentronsModulesBuilderBuilder(AbstractServiceBuilder):
-    """Concrete implementation of AbstractServiceBuilder for building local-opentrons-modules-builder Service."""
+class ConcreteOpentronsModulesBuilderBuilder(AbstractServiceBuilder):
+    """Concrete implementation of AbstractServiceBuilder for building opentrons-modules-builder Service."""
 
     def __init__(
         self,
@@ -31,7 +33,7 @@ class ConcreteLocalOpentronsModulesBuilderBuilder(AbstractServiceBuilder):
 
     @property
     def _image(self) -> str:
-        return LocalOpentronsModulesBuilderImage().image_name
+        return OpentronsModulesBuilderImage().image_name
 
     def generate_container_name(self) -> str:
         """Generates value for container_name parameter."""

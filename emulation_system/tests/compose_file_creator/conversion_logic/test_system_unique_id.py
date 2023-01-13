@@ -1,6 +1,10 @@
 """Tests related to system-unique-id property."""
 
-from typing import Any, Dict, cast
+from typing import (
+    Any,
+    Dict,
+    cast,
+)
 
 import pytest
 
@@ -10,8 +14,8 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
     convert_from_obj,
 )
 from emulation_system.compose_file_creator.images import (
-    LocalMonorepoBuilderImage,
-    LocalOpentronsModulesBuilderImage,
+    MonorepoBuilderImage,
+    OpentronsModulesBuilderImage,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import Network
 from emulation_system.consts import DEFAULT_NETWORK_NAME
@@ -52,8 +56,8 @@ def test_service_keys_with_system_unique_id(
         f"{HEATER_SHAKER_MODULE_ID}-1",
         f"{TEMPERATURE_MODULE_ID}-1",
         f"{MAGNETIC_MODULE_ID}-1",
-        LocalMonorepoBuilderImage.image_name,
-        LocalOpentronsModulesBuilderImage.image_name,
+        MonorepoBuilderImage.image_name,
+        OpentronsModulesBuilderImage.image_name,
         EMULATOR_PROXY_ID,
         SMOOTHIE_ID,
     ]
@@ -62,8 +66,8 @@ def test_service_keys_with_system_unique_id(
         f"{SYSTEM_UNIQUE_ID}-{service_name}" for service_name in service_names
     }
     assert (
-        set(with_system_unique_id_services.keys())
-        == service_names_with_system_unique_id
+            set(with_system_unique_id_services.keys())
+            == service_names_with_system_unique_id
     )
 
 
@@ -74,8 +78,8 @@ def test_service_container_name_with_system_unique_id(
     """Verify container name matches service name."""
     modded_service_name = f"{SYSTEM_UNIQUE_ID}-{service_name}"
     assert (
-        with_system_unique_id_services[modded_service_name].container_name
-        == modded_service_name
+            with_system_unique_id_services[modded_service_name].container_name
+            == modded_service_name
     )
 
 

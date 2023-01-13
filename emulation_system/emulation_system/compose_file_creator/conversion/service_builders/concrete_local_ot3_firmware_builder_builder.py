@@ -1,7 +1,10 @@
 """Module containing ConcreteOT3ServiceBuilder class."""
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
@@ -11,17 +14,13 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-
-from ...images import LocalOT3FirmwareBuilderImage
-from ...utilities.shared_functions import get_build_args
 from .abstract_service_builder import AbstractServiceBuilder
+from ...images import OT3FirmwareBuilderImage
+from ...utilities.shared_functions import get_build_args
 
 
-class ConcreteLocalOT3FirmwareBuilderBuilder(AbstractServiceBuilder):
-    """Concrete implementation of AbstractServiceBuilder for building local-ot3-firmware-builder Service."""
-
-    IMAGE_NAME = "local-ot3-firmware-builder"
-    CONTAINER_NAME = IMAGE_NAME
+class ConcreteOT3FirmwareBuilderBuilder(AbstractServiceBuilder):
+    """Concrete implementation of AbstractServiceBuilder for building ot3-firmware-builder Service."""
 
     def __init__(
         self,
@@ -35,19 +34,19 @@ class ConcreteLocalOT3FirmwareBuilderBuilder(AbstractServiceBuilder):
 
     @property
     def _image(self) -> str:
-        return LocalOT3FirmwareBuilderImage().image_name
+        return OT3FirmwareBuilderImage().image_name
 
     def generate_container_name(self) -> str:
         """Generates value for container_name parameter."""
         system_unique_id = self._config_model.system_unique_id
         container_name = super()._generate_container_name(
-            self.CONTAINER_NAME, system_unique_id
+            self._image, system_unique_id
         )
         return container_name
 
     def generate_image(self) -> str:
         """Generates value for image parameter."""
-        return self.IMAGE_NAME
+        return self._image
 
     def is_tty(self) -> bool:
         """Generates value for tty parameter."""

@@ -1,9 +1,26 @@
 """Module containing ServiceBuilderOrchestrator class."""
-from typing import List, Optional
+from typing import (
+    List,
+    Optional,
+)
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import (
+    OpentronsEmulationConfiguration,
+    SystemConfigurationModel,
+)
 from emulation_system.compose_file_creator import Service
-
+from . import (
+    ConcreteCANServerServiceBuilder,
+    ConcreteEmulatorProxyServiceBuilder,
+    ConcreteInputServiceBuilder,
+    ConcreteMonorepoBuilderBuilder,
+    ConcreteOT3FirmwareBuilderBuilder,
+    ConcreteOT3ServiceBuilder,
+    ConcreteOT3StateManagerBuilder,
+    ConcreteOpentronsModulesBuilderBuilder,
+    ConcreteSmoothieServiceBuilder,
+)
+from .service_info import ServiceInfo
 from ...config_file_settings import OT3Hardware
 from ...images import (
     OT3BootloaderImage,
@@ -14,18 +31,6 @@ from ...images import (
     OT3PipettesImage,
 )
 from ...types.intermediate_types import DockerServices
-from . import (
-    ConcreteCANServerServiceBuilder,
-    ConcreteEmulatorProxyServiceBuilder,
-    ConcreteInputServiceBuilder,
-    ConcreteLocalMonorepoBuilderBuilder,
-    ConcreteLocalOpentronsModulesBuilderBuilder,
-    ConcreteLocalOT3FirmwareBuilderBuilder,
-    ConcreteOT3ServiceBuilder,
-    ConcreteOT3StateManagerBuilder,
-    ConcreteSmoothieServiceBuilder,
-)
-from .service_info import ServiceInfo
 
 
 class ServiceBuilderOrchestrator:
@@ -161,14 +166,14 @@ class ServiceBuilderOrchestrator:
             self._services[service.container_name] = service
 
     def __add_local_ot3_builder(self) -> None:
-        local_ot3_builder = ConcreteLocalOT3FirmwareBuilderBuilder(
+        local_ot3_builder = ConcreteOT3FirmwareBuilderBuilder(
             self._config_model, self._global_settings, self._dev
         ).build_service()
         assert local_ot3_builder.container_name is not None
         self._services[local_ot3_builder.container_name] = local_ot3_builder
 
     def __add_local_opentrons_modules_builder(self) -> None:
-        local_opentrons_modules_builder = ConcreteLocalOpentronsModulesBuilderBuilder(
+        local_opentrons_modules_builder = ConcreteOpentronsModulesBuilderBuilder(
             self._config_model, self._global_settings, self._dev
         ).build_service()
         assert local_opentrons_modules_builder.container_name is not None
@@ -177,7 +182,7 @@ class ServiceBuilderOrchestrator:
         ] = local_opentrons_modules_builder
 
     def __add_local_monorepo_builder(self) -> None:
-        local_monorepo_builder = ConcreteLocalMonorepoBuilderBuilder(
+        local_monorepo_builder = ConcreteMonorepoBuilderBuilder(
             self._config_model, self._global_settings, self._dev
         ).build_service()
         assert local_monorepo_builder.container_name is not None
