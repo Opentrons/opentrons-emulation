@@ -190,7 +190,18 @@ can-mon:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="can-server" \
-		| xargs -o -I{} docker exec -it {} monorepo_python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
+		| xargs -orn 1 -I{} docker exec -it {} monorepo_python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
+
+.PHONY: refresh-dev
+refresh-dev:
+	$(if $(file_path),,$(error file_path variable required))
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="source-builders" \
+		| xargs -P 4 -rn 1 -I{} docker exec -t {} /build.sh
+
 
 ###########################################
 ############## Misc Commands ##############
@@ -219,13 +230,18 @@ push-docker-image-bases:
 .PHONY: pretty-print
 pretty-print:
 	$(if $(container_name),,$(error container_name variable required))
-	@printf '%s\n' "--------STATUS--------"
-	@docker inspect $(container_name) --format '{{printf "Status: "}}{{.State.Status}}'
-	@docker inspect $(container_name) --format '{{printf "Error: "}}{{.State.Error}}'
-	@docker inspect $(container_name) --format '{{printf "Exit Code: "}}{{.State.ExitCode}}'
-	@docker inspect $(container_name) --format '{{printf "Health Status: "}}{{.State.Health.Status}}'
-	@printf '\n%s' "--------VOLUMES & MOUNTS--------"
-	@docker inspect $(container_name) --format '{{ range .Mounts }}{{ printf "\n" }}{{ if eq .Type "bind" }}{{ .Source }}{{ end }}{{ .Name }}:{{ .Destination }}{{ end }}{{ printf "\n" }}'
+	@printf '%s\n' "--------OVERVIEW--------"
+	@docker inspect $(container_name) --format '{{printf "Name:\t\t"}}{{.Name}}'
+	@docker inspect $(container_name) --format '{{printf "Image Name:\t"}}{{.Config.Image}}'
+	@docker inspect $(container_name) --format '{{printf "Status:\t\t"}}{{.State.Status}}'
+	@docker inspect $(container_name) --format '{{printf "Error:\t\t"}}{{.State.Error}}'
+	@docker inspect $(container_name) --format '{{printf "Exit Code:\t"}}{{.State.ExitCode}}'
+	@docker inspect $(container_name) --format '{{printf "Health Status:\t"}}{{.State.Health.Status}}'
+	@printf '\n%s' "--------BIND MOUNTS--------"
+	@docker inspect $(container_name) --format '{{ range .Mounts }}{{ if eq .Type "bind" }}{{ printf "\n" }}{{ .Source }}{{ end }}{{ end }}'
+
+	@printf '\n%s' "--------NAMED VOLUMES--------"
+	@docker inspect $(container_name) --format '{{ range .Mounts }}{{ if eq .Type "volume" }}{{ printf "\n" }}{{ .Name }}:{{ .Destination }}{{ end }}{{ end }}'
 
 OT2CONFIG ?= ./samples/ot2/ot2_with_all_modules.yaml
 
