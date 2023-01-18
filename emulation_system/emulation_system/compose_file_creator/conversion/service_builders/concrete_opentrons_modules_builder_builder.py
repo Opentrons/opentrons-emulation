@@ -1,10 +1,7 @@
 """Module containing ConcreteOT3ServiceBuilder class."""
 from typing import Optional
 
-from emulation_system import (
-    OpentronsEmulationConfiguration,
-    SystemConfigurationModel,
-)
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
@@ -14,13 +11,14 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from .abstract_service_builder import AbstractServiceBuilder
-from ...images import MonorepoBuilderImage
+
+from ...images import OpentronsModulesBuilderImage
 from ...utilities.shared_functions import get_build_args
+from .abstract_service_builder import AbstractServiceBuilder
 
 
-class ConcreteMonorepoBuilderBuilder(AbstractServiceBuilder):
-    """Concrete implementation of AbstractServiceBuilder for building monorepo-builder Service."""
+class ConcreteOpentronsModulesBuilderBuilder(AbstractServiceBuilder):
+    """Concrete implementation of AbstractServiceBuilder for building opentrons-modules-builder Service."""
 
     def __init__(
         self,
@@ -33,7 +31,7 @@ class ConcreteMonorepoBuilderBuilder(AbstractServiceBuilder):
 
     @property
     def _image(self) -> str:
-        return MonorepoBuilderImage().image_name
+        return OpentronsModulesBuilderImage().image_name
 
     def generate_container_name(self) -> str:
         """Generates value for container_name parameter."""
@@ -60,21 +58,23 @@ class ConcreteMonorepoBuilderBuilder(AbstractServiceBuilder):
             interval=10,
             retries=6,
             timeout=10,
-            command="(cd /opentrons)",
+            command="(cd /opentrons-modules)",
         )
 
     def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""
         build_args: Optional[IntermediateBuildArgs] = None
 
-        if self._monorepo_source.is_remote():
-            build_args = get_build_args(self._monorepo_source, self._global_settings)
+        if self._opentrons_modules_source.is_remote():
+            build_args = get_build_args(
+                self._opentrons_modules_source, self._global_settings
+            )
 
         return build_args
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        return self._monorepo_source.generate_builder_mount_strings()
+        return self._opentrons_modules_source.generate_builder_mount_strings()
 
     def generate_command(self) -> Optional[IntermediateCommand]:
         """Generates value for command parameter."""

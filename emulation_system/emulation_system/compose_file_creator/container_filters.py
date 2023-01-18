@@ -13,6 +13,7 @@ from .images import (
     HeaterShakerModuleImages,
     MagneticModuleImages,
     MonorepoBuilderImage,
+    OpentronsModulesBuilderImage,
     OT3BootloaderImage,
     OT3FirmwareBuilderImage,
     OT3GantryXImage,
@@ -21,7 +22,6 @@ from .images import (
     OT3HeadImage,
     OT3PipettesImage,
     OT3StateManagerImage,
-    OpentronsModulesBuilderImage,
     RobotServerImage,
     SingleImage,
     SmoothieImage,
@@ -62,6 +62,15 @@ class ContainerFilters(Enum):
     OPENTRONS_MODULES_BUILDER = (
         "opentrons-modules-builder",
         [OpentronsModulesBuilderImage()],
+    )
+
+    SOURCE_BUILDERS = (
+        "source-builders",
+        [
+            OT3FirmwareBuilderImage(),
+            MonorepoBuilderImage(),
+            OpentronsModulesBuilderImage(),
+        ],
     )
 
     MODULES = (

@@ -1,10 +1,7 @@
 """Module containing ConcreteOT3ServiceBuilder class."""
 from typing import Optional
 
-from emulation_system import (
-    OpentronsEmulationConfiguration,
-    SystemConfigurationModel,
-)
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
@@ -14,13 +11,14 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from .abstract_service_builder import AbstractServiceBuilder
-from ...images import OpentronsModulesBuilderImage
+
+from ...images import OT3FirmwareBuilderImage
 from ...utilities.shared_functions import get_build_args
+from .abstract_service_builder import AbstractServiceBuilder
 
 
-class ConcreteOpentronsModulesBuilderBuilder(AbstractServiceBuilder):
-    """Concrete implementation of AbstractServiceBuilder for building opentrons-modules-builder Service."""
+class ConcreteOT3FirmwareBuilderBuilder(AbstractServiceBuilder):
+    """Concrete implementation of AbstractServiceBuilder for building ot3-firmware-builder Service."""
 
     def __init__(
         self,
@@ -30,10 +28,11 @@ class ConcreteOpentronsModulesBuilderBuilder(AbstractServiceBuilder):
     ) -> None:
         """Instantiates a ConcreteOT3ServiceBuilder object."""
         super().__init__(config_model, global_settings, dev)
+        self._ot3 = self.get_ot3(self._config_model)
 
     @property
     def _image(self) -> str:
-        return OpentronsModulesBuilderImage().image_name
+        return OT3FirmwareBuilderImage().image_name
 
     def generate_container_name(self) -> str:
         """Generates value for container_name parameter."""
@@ -60,23 +59,31 @@ class ConcreteOpentronsModulesBuilderBuilder(AbstractServiceBuilder):
             interval=10,
             retries=6,
             timeout=10,
-            command="(cd /opentrons-modules)",
+            command="(cd /ot3-firmware) && (cd /opentrons)",
         )
 
     def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""
-        build_args: Optional[IntermediateBuildArgs] = None
-
-        if self._opentrons_modules_source.is_remote():
-            build_args = get_build_args(
-                self._opentrons_modules_source, self._global_settings
+        build_args: IntermediateBuildArgs = {}
+        if self._ot3_source.is_remote():
+            ot3_firmware_build_args = get_build_args(
+                self._ot3_source, self._global_settings
             )
+            assert ot3_firmware_build_args is not None
+            build_args.update(ot3_firmware_build_args)
 
-        return build_args
+        if self._monorepo_source.is_remote():
+            monorepo_build_args = get_build_args(
+                self._monorepo_source, self._global_settings
+            )
+            assert monorepo_build_args is not None
+            build_args.update(monorepo_build_args)
+
+        return build_args if len(build_args) > 0 else None
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        return self._opentrons_modules_source.generate_builder_mount_strings()
+        return self._ot3_source.generate_builder_mount_strings()
 
     def generate_command(self) -> Optional[IntermediateCommand]:
         """Generates value for command parameter."""

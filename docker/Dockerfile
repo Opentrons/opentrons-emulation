@@ -133,8 +133,8 @@ RUN (cd / &&  \
     rm -f opentrons.zip && \
     mv opentrons* opentrons)
 
-FROM ot3-firmware-source as local-ot3-firmware-builder
-COPY entrypoints/local_ot3_firmware_builder.sh /build.sh
+FROM ot3-firmware-source as ot3-firmware-builder
+COPY entrypoints/ot3_firmware_builder.sh /build.sh
 
 ##################
 # modules-source #
@@ -149,8 +149,8 @@ RUN (cd / &&  \
     rm -f opentrons-modules.zip && \
     mv opentrons-modules* opentrons-modules)
 
-FROM opentrons-modules-source as local-opentrons-modules-builder
-COPY entrypoints/local_opentrons_modules_builder.sh /build.sh
+FROM opentrons-modules-source as opentrons-modules-builder
+COPY entrypoints/opentrons_modules_builder.sh /build.sh
 
 
 ####################
@@ -165,5 +165,5 @@ RUN (cd / &&  \
     rm -f opentrons.zip && \
     mv opentrons* opentrons)
 
-FROM opentrons-source as local-monorepo-builder
-COPY entrypoints/local_monorepo_builder.sh /build.sh
+FROM opentrons-source as monorepo-builder
+COPY entrypoints/monorepo_builder.sh /build.sh

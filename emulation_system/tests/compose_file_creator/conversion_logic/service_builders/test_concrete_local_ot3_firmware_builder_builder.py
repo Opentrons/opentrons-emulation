@@ -1,18 +1,12 @@
 """Tests to confirm that local-ot3-firmware-builder container is created correctly."""
 
-from typing import (
-    Any,
-    Dict,
-)
+from typing import Any, Dict
 
 import pytest
 from pydantic import parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system import (
-    OpentronsEmulationConfiguration,
-    SystemConfigurationModel,
-)
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator.config_file_settings import (
     RepoToBuildArgMapping,
 )
@@ -44,9 +38,9 @@ def test_simple_values(
     ).build_service()
 
     assert service.image is not None
-    assert service.image == "local-ot3-firmware-builder"
+    assert service.image == "ot3-firmware-builder"
     assert service.container_name is not None
-    assert service.container_name == "local-ot3-firmware-builder"
+    assert service.container_name == "ot3-firmware-builder"
     assert service.tty
     assert isinstance(service.networks, list)
     assert len(service.networks) == 2

@@ -2,13 +2,11 @@
 from .concrete_can_server_service_builder import ConcreteCANServerServiceBuilder
 from .concrete_emulator_proxy_service_builder import ConcreteEmulatorProxyServiceBuilder
 from .concrete_input_service_builder import ConcreteInputServiceBuilder
-from .concrete_local_monorepo_builder_builder import ConcreteMonorepoBuilderBuilder
-from .concrete_local_opentrons_modules_builder_builder import (
+from .concrete_monorepo_builder_builder import ConcreteMonorepoBuilderBuilder
+from .concrete_opentrons_modules_builder_builder import (
     ConcreteOpentronsModulesBuilderBuilder,
 )
-from .concrete_local_ot3_firmware_builder_builder import (
-    ConcreteOT3FirmwareBuilderBuilder,
-)
+from .concrete_ot3_firmware_builder_builder import ConcreteOT3FirmwareBuilderBuilder
 from .concrete_ot3_service_builder import ConcreteOT3ServiceBuilder
 from .concrete_ot3_state_manager_builder import ConcreteOT3StateManagerBuilder
 from .concrete_smoothie_service_builder import ConcreteSmoothieServiceBuilder

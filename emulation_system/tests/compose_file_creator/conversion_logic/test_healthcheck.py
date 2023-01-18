@@ -41,7 +41,7 @@ def test_ot3_services_heathcheck(
         for service in services.values()
         if service.image is not None
         and "state-manager" not in service.image
-        and "local-ot3-firmware-builder" not in service.image
+        and "ot3-firmware-builder" not in service.image
         and ("ot3" in service.image or "can-server" in service.image)
     ]
     assert len(services_to_check) == 7
@@ -76,7 +76,7 @@ def test_local_ot3_firmware_builder_heathcheck(
     services_to_check = [
         service
         for service in services.values()
-        if service.image is not None and "local-ot3-firmware-builder" in service.image
+        if service.image is not None and "ot3-firmware-builder" in service.image
     ]
     assert len(services_to_check) == 1
     for service in services_to_check:

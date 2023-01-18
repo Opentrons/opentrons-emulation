@@ -1,17 +1,10 @@
 """Mapping for getting image names for hardware."""
 from dataclasses import dataclass
-from typing import (
-    Dict,
-    List,
-    Optional,
-)
+from typing import Dict, List, Optional
 
 from typing_extensions import Literal
 
-from .config_file_settings import (
-    EmulationLevels,
-    Hardware,
-)
+from .config_file_settings import EmulationLevels, Hardware
 from .errors import ImageNotDefinedError
 
 
@@ -174,11 +167,11 @@ class CANServerImage(SingleImage):
 
 IMAGE_MAPPING: Dict[str, FirmwareAndHardwareImages | SingleImage] = {
     Hardware.HEATER_SHAKER_MODULE.value: HeaterShakerModuleImages(),
-    Hardware.MAGNETIC_MODULE.value:      MagneticModuleImages(),
-    Hardware.THERMOCYCLER_MODULE.value:  ThermocyclerModuleImages(),
-    Hardware.TEMPERATURE_MODULE.value:   TemperatureModuleImages(),
-    Hardware.OT2.value:                  RobotServerImage(),
-    Hardware.OT3.value:                  RobotServerImage(),
+    Hardware.MAGNETIC_MODULE.value: MagneticModuleImages(),
+    Hardware.THERMOCYCLER_MODULE.value: ThermocyclerModuleImages(),
+    Hardware.TEMPERATURE_MODULE.value: TemperatureModuleImages(),
+    Hardware.OT2.value: RobotServerImage(),
+    Hardware.OT3.value: RobotServerImage(),
 }
 
 

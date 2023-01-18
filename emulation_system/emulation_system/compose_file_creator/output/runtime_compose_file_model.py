@@ -151,28 +151,36 @@ class RuntimeComposeFileModel(ComposeSpecification):
         return service_list[0] if len(service_list) > 0 else None
 
     @property
-    def local_ot3_firmware_builder(self) -> Optional[Service]:
+    def ot3_firmware_builder(self) -> Optional[Service]:
         """Returns local ot3-firmware builder service if one exists."""
         service_list = self.load_containers_by_filter(
-            ContainerFilters.LOCAL_OT3_FIRMWARE_BUILDER.filter_name
+            ContainerFilters.OT3_FIRMWARE_BUILDER.filter_name
         )
         return service_list[0] if len(service_list) > 0 else None
 
     @property
-    def local_monorepo_builder(self) -> Optional[Service]:
+    def monorepo_builder(self) -> Optional[Service]:
         """Returns local monorepo builder service if one exists."""
         service_list = self.load_containers_by_filter(
-            ContainerFilters.LOCAL_MONOREPO_BUILDER.filter_name
+            ContainerFilters.MONOREPO_BUILDER.filter_name
         )
         return service_list[0] if len(service_list) > 0 else None
 
     @property
-    def local_opentrons_modules_builder(self) -> Optional[Service]:
+    def opentrons_modules_builder(self) -> Optional[Service]:
         """Returns local ot3-firmware builder service if one exists."""
         service_list = self.load_containers_by_filter(
-            ContainerFilters.LOCAL_OPENTRONS_MODULES_BUILDER.filter_name
+            ContainerFilters.OPENTRONS_MODULES_BUILDER.filter_name
         )
         return service_list[0] if len(service_list) > 0 else None
+
+    @property
+    def source_builders(self) -> Optional[List[Service]]:
+        """Returns all source builders if they exist."""
+        service_list = self.load_containers_by_filter(
+            ContainerFilters.SOURCE_BUILDERS.filter_name
+        )
+        return service_list if len(service_list) > 0 else None
 
     @property
     def can_server(self) -> Optional[Service]:

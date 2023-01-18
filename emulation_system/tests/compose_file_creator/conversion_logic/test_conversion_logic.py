@@ -15,11 +15,11 @@ from emulation_system.consts import DEFAULT_NETWORK_NAME, DOCKERFILE_DIR_LOCATIO
 from tests.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,
-    LOCAL_MONOREPO_BUILDER_ID,
-    LOCAL_OPENTRONS_MODULES_BUILDER_ID,
-    LOCAL_OT3_FIRMWARE_BUILDER_ID,
     MAGNETIC_MODULE_ID,
+    MONOREPO_BUILDER_ID,
+    OPENTRONS_MODULES_BUILDER_ID,
     OT2_ID,
+    OT3_FIRMWARE_BUILDER_ID,
     OT3_ID,
     OT3_STATE_MANAGER_ID,
     SMOOTHIE_ID,
@@ -49,8 +49,8 @@ def test_service_keys(
         f"{HEATER_SHAKER_MODULE_ID}-1",
         f"{TEMPERATURE_MODULE_ID}-1",
         f"{MAGNETIC_MODULE_ID}-1",
-        LOCAL_MONOREPO_BUILDER_ID,
-        LOCAL_OPENTRONS_MODULES_BUILDER_ID,
+        MONOREPO_BUILDER_ID,
+        OPENTRONS_MODULES_BUILDER_ID,
         EMULATOR_PROXY_ID,
     }
 
@@ -58,7 +58,7 @@ def test_service_keys(
         default_values.update([item.value for item in OT3Hardware.__members__.values()])
         default_values.add("can-server")
         default_values.add(OT3_ID)
-        default_values.add(LOCAL_OT3_FIRMWARE_BUILDER_ID)
+        default_values.add(OT3_FIRMWARE_BUILDER_ID)
         default_values.add(OT3_STATE_MANAGER_ID)
     else:
         default_values.add(OT2_ID)

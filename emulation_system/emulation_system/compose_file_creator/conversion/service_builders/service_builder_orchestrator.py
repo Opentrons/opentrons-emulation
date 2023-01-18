@@ -1,26 +1,9 @@
 """Module containing ServiceBuilderOrchestrator class."""
-from typing import (
-    List,
-    Optional,
-)
+from typing import List, Optional
 
-from emulation_system import (
-    OpentronsEmulationConfiguration,
-    SystemConfigurationModel,
-)
+from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import Service
-from . import (
-    ConcreteCANServerServiceBuilder,
-    ConcreteEmulatorProxyServiceBuilder,
-    ConcreteInputServiceBuilder,
-    ConcreteMonorepoBuilderBuilder,
-    ConcreteOT3FirmwareBuilderBuilder,
-    ConcreteOT3ServiceBuilder,
-    ConcreteOT3StateManagerBuilder,
-    ConcreteOpentronsModulesBuilderBuilder,
-    ConcreteSmoothieServiceBuilder,
-)
-from .service_info import ServiceInfo
+
 from ...config_file_settings import OT3Hardware
 from ...images import (
     OT3BootloaderImage,
@@ -31,6 +14,18 @@ from ...images import (
     OT3PipettesImage,
 )
 from ...types.intermediate_types import DockerServices
+from . import (
+    ConcreteCANServerServiceBuilder,
+    ConcreteEmulatorProxyServiceBuilder,
+    ConcreteInputServiceBuilder,
+    ConcreteMonorepoBuilderBuilder,
+    ConcreteOpentronsModulesBuilderBuilder,
+    ConcreteOT3FirmwareBuilderBuilder,
+    ConcreteOT3ServiceBuilder,
+    ConcreteOT3StateManagerBuilder,
+    ConcreteSmoothieServiceBuilder,
+)
+from .service_info import ServiceInfo
 
 
 class ServiceBuilderOrchestrator:

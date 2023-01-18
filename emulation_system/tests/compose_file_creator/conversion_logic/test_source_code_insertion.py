@@ -42,15 +42,15 @@ def test_ot3_build_args(
     robot_server = config_file.robot_server
     can_server = config_file.can_server
     emulators = config_file.ot3_emulators
-    local_ot3_firmware_builder = config_file.local_ot3_firmware_builder
-    local_monorepo_builder = config_file.local_monorepo_builder
+    ot3_firmware_builder = config_file.ot3_firmware_builder
+    monorepo_builder = config_file.monorepo_builder
     state_manager = config_file.ot3_state_manager
 
     assert robot_server is not None
     assert can_server is not None
     assert emulators is not None
-    assert local_ot3_firmware_builder is not None
-    assert local_monorepo_builder is not None
+    assert ot3_firmware_builder is not None
+    assert monorepo_builder is not None
     assert state_manager is not None
 
     assert build_args_are_none(robot_server)
@@ -59,12 +59,12 @@ def test_ot3_build_args(
     assert build_args_are_none(state_manager)
 
     if monorepo_is_local and ot3_firmware_is_local:
-        assert build_args_are_none(local_ot3_firmware_builder)
+        assert build_args_are_none(ot3_firmware_builder)
     else:
 
         num_local_ot3_firmware_build_args = 0
 
-        build_args = get_source_code_build_args(local_ot3_firmware_builder)
+        build_args = get_source_code_build_args(ot3_firmware_builder)
         assert build_args is not None
         assert RepoToBuildArgMapping.OPENTRONS_MODULES not in build_args
 
@@ -83,9 +83,9 @@ def test_ot3_build_args(
         assert len(build_args) == num_local_ot3_firmware_build_args
 
     if monorepo_is_local:
-        assert build_args_are_none(local_monorepo_builder)
+        assert build_args_are_none(monorepo_builder)
     else:
-        build_args = get_source_code_build_args(local_monorepo_builder)
+        build_args = get_source_code_build_args(monorepo_builder)
         assert build_args is not None
         assert len(build_args) == 1
         assert RepoToBuildArgMapping.OPENTRONS in build_args
@@ -111,21 +111,21 @@ def test_ot2_build_args(
     robot = config_file.robot_server
     emulator_proxy = config_file.emulator_proxy
     smoothie = config_file.smoothie_emulator
-    local_monorepo_builder = config_file.local_monorepo_builder
+    monorepo_builder = config_file.monorepo_builder
 
     assert robot is not None
     assert emulator_proxy is not None
     assert smoothie is not None
-    assert local_monorepo_builder is not None
+    assert monorepo_builder is not None
 
     assert build_args_are_none(robot)
     assert build_args_are_none(emulator_proxy)
     assert build_args_are_none(smoothie)
 
     if monorepo_is_local:
-        assert build_args_are_none(local_monorepo_builder)
+        assert build_args_are_none(monorepo_builder)
     else:
-        build_args = get_source_code_build_args(local_monorepo_builder)
+        build_args = get_source_code_build_args(monorepo_builder)
         assert build_args is not None
         assert len(build_args) == 1
         assert RepoToBuildArgMapping.OPENTRONS in build_args
@@ -152,18 +152,18 @@ def test_module_monorepo_build_args(
     """Confirm build args are created correctly for modules using monorepo."""
     config_file = convert_from_obj(config, testing_global_em_config, False)
     modules = config_file.module_emulators
-    local_monorepo_builder = config_file.local_monorepo_builder
+    monorepo_builder = config_file.monorepo_builder
 
     assert modules is not None
     assert all(module is not None for module in modules)
-    assert local_monorepo_builder is not None
+    assert monorepo_builder is not None
 
     assert all(build_args_are_none(module) for module in modules)
 
     if monorepo_is_local:
-        assert build_args_are_none(local_monorepo_builder)
+        assert build_args_are_none(monorepo_builder)
     else:
-        build_args = get_source_code_build_args(local_monorepo_builder)
+        build_args = get_source_code_build_args(monorepo_builder)
         assert build_args is not None
         assert len(build_args) == 1
         assert RepoToBuildArgMapping.OPENTRONS in build_args
@@ -186,18 +186,18 @@ def test_module_opentrons_modules_build_args(
     """Confirm build args are created correctly for modules using opentrons-modules."""
     config_file = convert_from_obj(config, testing_global_em_config, False)
     modules = config_file.module_emulators
-    local_opentrons_modules_builder = config_file.local_opentrons_modules_builder
+    opentrons_modules_builder = config_file.opentrons_modules_builder
 
     assert modules is not None
     assert all(module is not None for module in modules)
-    assert local_opentrons_modules_builder is not None
+    assert opentrons_modules_builder is not None
 
     assert all(build_args_are_none(module) for module in modules)
 
     if opentrons_modules_is_local:
-        assert build_args_are_none(local_opentrons_modules_builder)
+        assert build_args_are_none(opentrons_modules_builder)
     else:
-        build_args = get_source_code_build_args(local_opentrons_modules_builder)
+        build_args = get_source_code_build_args(opentrons_modules_builder)
         assert build_args is not None
         assert len(build_args) == 1
         assert RepoToBuildArgMapping.OPENTRONS_MODULES in build_args
@@ -226,15 +226,15 @@ def test_ot3_mounts(
     robot_server = config_file.robot_server
     can_server = config_file.can_server
     emulators = config_file.ot3_emulators
-    local_ot3_firmware_builder = config_file.local_ot3_firmware_builder
-    local_monorepo_builder = config_file.local_monorepo_builder
+    ot3_firmware_builder = config_file.ot3_firmware_builder
+    monorepo_builder = config_file.monorepo_builder
     state_manager = config_file.ot3_state_manager
 
     assert robot_server is not None
     assert can_server is not None
     assert emulators is not None
-    assert local_ot3_firmware_builder is not None
-    assert local_monorepo_builder is not None
+    assert ot3_firmware_builder is not None
+    assert monorepo_builder is not None
     assert state_manager is not None
 
     # robot-server, can-server, and local-monorepo-builder
@@ -243,32 +243,26 @@ def test_ot3_mounts(
     check_correct_number_of_volumes(can_server, 2)
     check_correct_number_of_volumes(state_manager, 3)
 
-    check_correct_number_of_volumes(
-        local_monorepo_builder, 3 if monorepo_is_local else 2
-    )
+    check_correct_number_of_volumes(monorepo_builder, 3 if monorepo_is_local else 2)
 
     check_correct_number_of_volumes(
-        local_ot3_firmware_builder, len(emulators) + (2 if ot3_firmware_is_local else 1)
+        ot3_firmware_builder, len(emulators) + (2 if ot3_firmware_is_local else 1)
     )
 
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", robot_server)
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", can_server)
-    assert partial_string_in_mount(
-        "entrypoint.sh:/entrypoint.sh", local_ot3_firmware_builder
-    )
-    assert partial_string_in_mount(
-        "entrypoint.sh:/entrypoint.sh", local_monorepo_builder
-    )
+    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", ot3_firmware_builder)
+    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", monorepo_builder)
     assert partial_string_in_mount("monorepo-wheels:/dist", robot_server)
     assert partial_string_in_mount("monorepo-wheels:/dist", can_server)
-    assert partial_string_in_mount("monorepo-wheels:/dist", local_monorepo_builder)
+    assert partial_string_in_mount("monorepo-wheels:/dist", monorepo_builder)
 
     if monorepo_is_local:
-        assert partial_string_in_mount("/opentrons:/opentrons", local_monorepo_builder)
+        assert partial_string_in_mount("/opentrons:/opentrons", monorepo_builder)
 
     if ot3_firmware_is_local:
         assert partial_string_in_mount(
-            "/ot3-firmware:/ot3-firmware", local_ot3_firmware_builder
+            "/ot3-firmware:/ot3-firmware", ot3_firmware_builder
         )
 
     for emulator in emulators:
@@ -284,10 +278,10 @@ def test_ot3_mounts(
             f"{hardware_name}_executable:/executable", emulator
         )
 
-        # Note checking volumes on local_ot3_firmware_builder here
+        # Note checking volumes on ot3_firmware_builder here
         assert partial_string_in_mount(
             f"{hardware_name}_executable:/volumes/{hardware_name}_volume",
-            local_ot3_firmware_builder,
+            ot3_firmware_builder,
         )
 
 
@@ -311,7 +305,7 @@ def test_ot2_mounts(
     robot = config_file.robot_server
     emulator_proxy = config_file.emulator_proxy
     smoothie = config_file.smoothie_emulator
-    local_monorepo_builder = config_file.local_monorepo_builder
+    monorepo_builder = config_file.monorepo_builder
 
     assert robot is not None
     check_correct_number_of_volumes(robot, 2)
@@ -328,17 +322,13 @@ def test_ot2_mounts(
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", smoothie)
     assert partial_string_in_mount("monorepo-wheels:/dist", smoothie)
 
-    assert local_monorepo_builder is not None
-    check_correct_number_of_volumes(
-        local_monorepo_builder, 3 if monorepo_is_local else 2
-    )
-    assert partial_string_in_mount(
-        "entrypoint.sh:/entrypoint.sh", local_monorepo_builder
-    )
-    assert partial_string_in_mount("monorepo-wheels:/dist", local_monorepo_builder)
+    assert monorepo_builder is not None
+    check_correct_number_of_volumes(monorepo_builder, 3 if monorepo_is_local else 2)
+    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", monorepo_builder)
+    assert partial_string_in_mount("monorepo-wheels:/dist", monorepo_builder)
 
     if monorepo_is_local:
-        assert partial_string_in_mount("/opentrons:/opentrons", local_monorepo_builder)
+        assert partial_string_in_mount("/opentrons:/opentrons", monorepo_builder)
 
 
 @pytest.mark.parametrize(
@@ -361,10 +351,10 @@ def test_module_monorepo_mounts(
     """Test mounts are created correctly when creating modules that use monorepo."""
     config_file = convert_from_obj(config, testing_global_em_config, False)
     modules = config_file.module_emulators
-    local_monorepo_builder = config_file.local_monorepo_builder
+    monorepo_builder = config_file.monorepo_builder
 
     assert modules is not None
-    assert local_monorepo_builder is not None
+    assert monorepo_builder is not None
     assert len(modules) == 1
 
     module = modules[0]
@@ -388,10 +378,10 @@ def test_module_opentrons_modules_mounts(
     """Test mounts are created correctly when creating modules that use opentrons-modules."""
     config_file = convert_from_obj(config, testing_global_em_config, False)
     modules = config_file.module_emulators
-    local_opentrons_modules_builder = config_file.local_opentrons_modules_builder
+    opentrons_modules_builder = config_file.opentrons_modules_builder
 
     assert modules is not None
-    assert local_opentrons_modules_builder is not None
+    assert opentrons_modules_builder is not None
     assert len(modules) == 1
 
     module = modules[0]
