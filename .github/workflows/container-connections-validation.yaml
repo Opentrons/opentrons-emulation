@@ -69,3 +69,6 @@ jobs:
         with:
           input-file: ${PWD}/samples/ot3/ot3_remote.yaml
           command: run
+
+      - name: Run e2e tests
+        run: make test-e2e

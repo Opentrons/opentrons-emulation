@@ -291,3 +291,8 @@ format:
 .PHONY: test
 test:
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) test
+
+
+.PHONY: test-e2e
+test-e2e:
+	$(MAKE) -C $(EMULATION_SYSTEM_DIR) test-e2e
