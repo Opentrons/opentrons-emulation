@@ -58,7 +58,7 @@ jobs:
       - name: Setup opentrons-emulation project
         uses: Opentrons/opentrons-emulation@main
         with:
-          input-file: ${PWD}/samples/ot3/ot3_remote.yaml
+          input-file: ${PWD}/samples/common_use_cases/basic/ot3_only.yaml
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup
 
