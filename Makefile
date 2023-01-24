@@ -200,7 +200,7 @@ refresh-dev:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="source-builders" \
-		| xargs -P 4 -rn 1 -I{} docker exec -t {} /build.sh
+		| xargs -P 4 -orn 1 -I{} docker exec -t {} /build.sh
 
 
 ###########################################
@@ -291,7 +291,6 @@ format:
 .PHONY: test
 test:
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) test
-
 
 .PHONY: test-e2e
 test-e2e:
