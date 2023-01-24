@@ -1,9 +1,8 @@
 from typing import Callable
 
-from e2e.utilities.build_arg_configurations import BuildArgConfigurations
-from e2e.utilities.ot3_system_validation_model import OT3SystemValidationModel
-
 from tests.e2e.conftest import OT3System
+from tests.e2e.utilities.build_arg_configurations import BuildArgConfigurations
+from tests.e2e.utilities.ot3_system_validation_model import OT3SystemValidationModel
 
 OT3_ONLY_RELATIVE_PATH = "samples/common_use_cases/basic/ot3_only.yaml"
 

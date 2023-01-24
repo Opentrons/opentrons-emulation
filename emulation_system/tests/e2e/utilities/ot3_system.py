@@ -1,13 +1,13 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import List, Optional
 
 from docker.models.containers import Container
-from e2e.utilities.build_arg_configurations import BuildArgConfigurations
-from e2e.utilities.helper_functions import get_mounts
 
 from emulation_system.compose_file_creator.config_file_settings import (
     RepoToBuildArgMapping,
 )
+from tests.e2e.utilities.build_arg_configurations import BuildArgConfigurations
+from tests.e2e.utilities.helper_functions import get_mounts
 
 
 @dataclass
@@ -106,3 +106,28 @@ class OT3System:
             "opentrons-modules/archive/refs/heads/edge.zip",
             RepoToBuildArgMapping.OPENTRONS_MODULES,
         )
+
+    @property
+    def expected_containers_with_entrypoint_script(self) -> List[Container]:
+        return [
+            self.gantry_x,
+            self.gantry_y,
+            self.head,
+            self.gripper,
+            self.pipettes,
+            self.bootloader,
+            self.state_manager,
+            self.robot_server,
+            self.can_server,
+            self.emulator_proxy,
+        ]
+
+    @property
+    def expected_containers_with_monorepo_wheel_volume(self) -> List[Container]:
+        return [
+            self.monorepo_builder,
+            self.emulator_proxy,
+            self.robot_server,
+            self.state_manager,
+            self.can_server,
+        ]

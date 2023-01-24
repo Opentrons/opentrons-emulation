@@ -1,11 +1,10 @@
 import os
 from dataclasses import dataclass
 
-from e2e.utilities.build_arg_configurations import BuildArgConfigurations
-from e2e.utilities.helper_functions import mount_exists, named_volume_exists
-from e2e.utilities.ot3_system import OT3System
-
 from emulation_system.consts import DOCKERFILE_DIR_LOCATION
+from tests.e2e.utilities.build_arg_configurations import BuildArgConfigurations
+from tests.e2e.utilities.helper_functions import mount_exists, named_volume_exists
+from tests.e2e.utilities.ot3_system import OT3System
 
 
 @dataclass
@@ -52,19 +51,7 @@ class OT3SystemValidationModel:
         self._confirm_local_mounts(ot3_system)
         self._confirm_build_args(ot3_system)
 
-        expected_containers_w_entrypoint_script = [
-            ot3_system.gantry_x,
-            ot3_system.gantry_y,
-            ot3_system.head,
-            ot3_system.gripper,
-            ot3_system.pipettes,
-            ot3_system.bootloader,
-            ot3_system.state_manager,
-            ot3_system.robot_server,
-            ot3_system.can_server,
-            ot3_system.emulator_proxy,
-        ]
-        for container in expected_containers_w_entrypoint_script:
+        for container in ot3_system.expected_containers_with_entrypoint_script:
             assert mount_exists(
                 container,
                 os.path.join(DOCKERFILE_DIR_LOCATION, "entrypoint.sh"),
@@ -72,12 +59,5 @@ class OT3SystemValidationModel:
             )
 
         if self.monorepo_builder_created:
-            expected_containers_w_monorepo_wheel_volume = [
-                ot3_system.monorepo_builder,
-                ot3_system.emulator_proxy,
-                ot3_system.robot_server,
-                ot3_system.state_manager,
-                ot3_system.can_server,
-            ]
-            for container in expected_containers_w_monorepo_wheel_volume:
+            for container in ot3_system.expected_containers_with_monorepo_wheel_volume:
                 assert named_volume_exists(container, "monorepo-wheels", "/dist")
