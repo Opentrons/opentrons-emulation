@@ -1,9 +1,4 @@
-from typing import (
-    Any,
-    Dict,
-    List,
-    Optional,
-)
+from typing import Any, Dict, List, Optional
 
 import docker
 from docker.models.containers import Container
@@ -29,9 +24,9 @@ def named_volume_exists(
         volume
         for volume in volumes
         if (
-                volume["Type"] == "volume"
-                and volume["Name"] == expected_name
-                and volume["Destination"] == expected_path
+            volume["Type"] == "volume"
+            and volume["Name"] == expected_name
+            and volume["Destination"] == expected_path
         )
     ]
     return len(filtered_volume) == 1
@@ -45,9 +40,9 @@ def mount_exists(container: Container, expected_src: str, expected_dest: str) ->
         mount
         for mount in mounts
         if (
-                mount["Type"] == "bind"
-                and mount["Source"] == expected_src
-                and mount["Destination"] == expected_dest
+            mount["Type"] == "bind"
+            and mount["Source"] == expected_src
+            and mount["Destination"] == expected_dest
         )
     ]
     return len(filtered_mount) == 1

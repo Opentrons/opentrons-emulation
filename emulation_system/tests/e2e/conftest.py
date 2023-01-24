@@ -1,13 +1,9 @@
 import os
-from typing import (
-    Callable,
-)
+from typing import Callable
 
 import pytest
 import yaml
 
-from e2e.utilities.helper_functions import get_container
-from e2e.utilities.ot3_system import OT3System
 from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
@@ -15,9 +11,9 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
 from emulation_system.compose_file_creator.output.runtime_compose_file_model import (
     RuntimeComposeFileModel,
 )
-from emulation_system.consts import (
-    ROOT_DIR,
-)
+from emulation_system.consts import ROOT_DIR
+from tests.e2e.utilities.helper_functions import get_container
+from tests.e2e.utilities.ot3_system import OT3System
 
 
 @pytest.fixture

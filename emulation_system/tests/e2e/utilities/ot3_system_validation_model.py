@@ -2,11 +2,9 @@ import os
 from dataclasses import dataclass
 
 from e2e.utilities.build_arg_configurations import BuildArgConfigurations
-from e2e.utilities.helper_functions import (
-    mount_exists,
-    named_volume_exists,
-)
+from e2e.utilities.helper_functions import mount_exists, named_volume_exists
 from e2e.utilities.ot3_system import OT3System
+
 from emulation_system.consts import DOCKERFILE_DIR_LOCATION
 
 
@@ -27,26 +25,26 @@ class OT3SystemValidationModel:
     def _confirm_created_builders(self, ot3_system: OT3System) -> None:
         assert ot3_system.monorepo_builder_created == self.monorepo_builder_created
         assert (
-                ot3_system.ot3_firmware_builder_created == self.ot3_firmware_builder_created
+            ot3_system.ot3_firmware_builder_created == self.ot3_firmware_builder_created
         )
         assert (
-                ot3_system.opentrons_modules_builder_created
-                == self.opentrons_modules_builder_created
+            ot3_system.opentrons_modules_builder_created
+            == self.opentrons_modules_builder_created
         )
 
     def _confirm_local_mounts(self, ot3_system: OT3System) -> None:
         assert ot3_system.local_monorepo_mounted == self.local_monorepo_mounted
         assert ot3_system.local_ot3_firmware_mounted == self.local_ot3_firmware_mounted
         assert (
-                ot3_system.local_opentrons_modules_mounted
-                == self.local_opentrons_modules_mounted
+            ot3_system.local_opentrons_modules_mounted
+            == self.local_opentrons_modules_mounted
         )
 
     def _confirm_build_args(self, ot3_system: OT3System) -> None:
         assert ot3_system.monorepo_build_args == self.monorepo_build_args
         assert ot3_system.ot3_firmware_build_args == self.ot3_firmware_build_args
         assert (
-                ot3_system.opentrons_modules_build_args == self.opentrons_modules_build_args
+            ot3_system.opentrons_modules_build_args == self.opentrons_modules_build_args
         )
 
     def compare(self, ot3_system: OT3System) -> None:

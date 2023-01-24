@@ -2,9 +2,9 @@ from dataclasses import dataclass
 from typing import Optional
 
 from docker.models.containers import Container
-
 from e2e.utilities.build_arg_configurations import BuildArgConfigurations
 from e2e.utilities.helper_functions import get_mounts
+
 from emulation_system.compose_file_creator.config_file_settings import (
     RepoToBuildArgMapping,
 )
