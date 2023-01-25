@@ -164,7 +164,7 @@ class MonorepoSource(BaseModel, Source):
 
     def generate_builder_mount_strings(self) -> List[str]:
         """Generates volume and bind mount strings for LocalMonorepoBuilderBuilder container."""
-        default_values = [MONOREPO_NAMED_VOLUME_STRING, ENTRYPOINT_MOUNT_STRING]
+        default_values = [MONOREPO_NAMED_VOLUME_STRING]
 
         if self.is_local():
             default_values.append(f"{self.source_location}:/{self.repo.value}")
@@ -204,7 +204,6 @@ class OT3FirmwareSource(BaseModel, Source, EmulatorSourceMixin):
             for member in OT3Hardware.__members__.values()
         ]
 
-        default_values.append(ENTRYPOINT_MOUNT_STRING)
         if self.is_local():
             default_values.append(f"{self.source_location}:/{self.repo.value}")
 
@@ -242,7 +241,6 @@ class OpentronsModulesSource(BaseModel, Source, EmulatorSourceMixin):
             f"{hardware.named_volume_name}:{hardware.container_volume_storage_path}"
             for hardware in Hardware.opentrons_modules_hardware()
         ]
-        default_values.append(ENTRYPOINT_MOUNT_STRING)
 
         if self.is_local():
             default_values.append(f"{self.source_location}:/{self.repo.value}")
