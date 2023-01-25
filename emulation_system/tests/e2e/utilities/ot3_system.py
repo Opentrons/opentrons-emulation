@@ -108,7 +108,7 @@ class OT3System:
         )
 
     @property
-    def expected_containers_with_entrypoint_script(self) -> List[Container]:
+    def containers_with_entrypoint_script(self) -> List[Container]:
         return [
             self.gantry_x,
             self.gantry_y,
@@ -123,7 +123,7 @@ class OT3System:
         ]
 
     @property
-    def expected_containers_with_monorepo_wheel_volume(self) -> List[Container]:
+    def containers_with_monorepo_wheel_volume(self) -> List[Container]:
         return [
             self.monorepo_builder,
             self.emulator_proxy,

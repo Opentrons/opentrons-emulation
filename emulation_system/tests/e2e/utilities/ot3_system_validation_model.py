@@ -46,12 +46,37 @@ class OT3SystemValidationModel:
             ot3_system.opentrons_modules_build_args == self.opentrons_modules_build_args
         )
 
+    @staticmethod
+    def _confirm_ot3_emulator_named_volumes(ot3_system: OT3System) -> None:
+        assert named_volume_exists(
+            ot3_system.gantry_x, "gantry_x_executable", "/executable"
+        )
+
+        assert named_volume_exists(
+            ot3_system.gantry_y, "gantry_y_executable", "/executable"
+        )
+
+        assert named_volume_exists(ot3_system.head, "head_executable", "/executable")
+
+        assert named_volume_exists(
+            ot3_system.gripper, "gripper_executable", "/executable"
+        )
+
+        assert named_volume_exists(
+            ot3_system.pipettes, "pipettes_executable", "/executable"
+        )
+
+        assert named_volume_exists(
+            ot3_system.bootloader, "bootloader_executable", "/executable"
+        )
+
     def compare(self, ot3_system: OT3System) -> None:
         self._confirm_created_builders(ot3_system)
         self._confirm_local_mounts(ot3_system)
         self._confirm_build_args(ot3_system)
 
         for container in ot3_system.expected_containers_with_entrypoint_script:
+        for container in ot3_system.containers_with_entrypoint_script:
             assert mount_exists(
                 container,
                 os.path.join(DOCKERFILE_DIR_LOCATION, "entrypoint.sh"),
@@ -59,5 +84,8 @@ class OT3SystemValidationModel:
             )
 
         if self.monorepo_builder_created:
-            for container in ot3_system.expected_containers_with_monorepo_wheel_volume:
+            for container in ot3_system.containers_with_monorepo_wheel_volume:
                 assert named_volume_exists(container, "monorepo-wheels", "/dist")
+
+        if self.ot3_firmware_builder_created:
+            self._confirm_ot3_emulator_named_volumes(ot3_system)
