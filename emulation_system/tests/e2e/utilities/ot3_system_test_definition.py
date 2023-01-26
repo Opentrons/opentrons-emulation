@@ -17,7 +17,8 @@ from tests.e2e.utilities.ot3_system import OT3System
 
 
 @dataclass
-class OT3SystemValidationModel:
+class OT3SystemTestDefinition:
+    yaml_config_relative_path: str
     monorepo_builder_created: bool
     ot3_firmware_builder_created: bool
     opentrons_modules_builder_created: bool
@@ -80,7 +81,7 @@ class OT3SystemValidationModel:
 
     @staticmethod
     def _confirm_ot3_firmware_state_manager_mounts_and_volumes(
-        ot3_system: OT3System
+        ot3_system: OT3System,
     ) -> None:
         for expected_volume in OT3StateManagerNamedVolumes.VOLUMES:
             confirm_named_volume_exists(ot3_system.state_manager, expected_volume)

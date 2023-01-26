@@ -8,11 +8,11 @@ from typing import (
 import docker
 from docker.models.containers import Container
 
-from e2e.utilities.consts import (
+from emulation_system.compose_file_creator import Service
+from tests.e2e.utilities.consts import (
     ExpectedMount,
     ExpectedNamedVolume,
 )
-from emulation_system.compose_file_creator import Service
 
 
 def get_volumes(container: Container) -> Optional[List[Dict[str, Any]]]:
