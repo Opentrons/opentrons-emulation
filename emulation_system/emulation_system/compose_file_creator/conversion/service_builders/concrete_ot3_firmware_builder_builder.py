@@ -83,7 +83,12 @@ class ConcreteOT3FirmwareBuilderBuilder(AbstractServiceBuilder):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        return self._ot3_source.generate_builder_mount_strings()
+        volumes: IntermediateVolumes = [
+            "state_manager_venv:/ot3-firmware/build-host/.venv",
+        ]
+        volumes.extend(self._ot3_source.generate_builder_mount_strings())
+
+        return volumes
 
     def generate_command(self) -> Optional[IntermediateCommand]:
         """Generates value for command parameter."""

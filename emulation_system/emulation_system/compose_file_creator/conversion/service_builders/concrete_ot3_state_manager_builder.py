@@ -69,7 +69,7 @@ class ConcreteOT3StateManagerBuilder(AbstractServiceBuilder):
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
         volumes: IntermediateVolumes = [
-            "state_manager_venv:/ot3-firmware/build-host/.venv",
+            "state_manager_venv:/.venv",
         ]
         volumes.extend(self._monorepo_source.generate_emulator_mount_strings())
 
