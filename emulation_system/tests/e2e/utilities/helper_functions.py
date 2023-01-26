@@ -23,13 +23,27 @@ def get_mounts(container: Container) -> Optional[List[Dict[str, Any]]]:
     return [mount for mount in container.attrs["Mounts"] if mount["Type"] == "bind"]
 
 
-def named_volume_exists(
-    container: Container,
-    expected_vol: ExpectedNamedVolume
-    ) -> bool:
+def _filter_mounts(
+    container: Container, expected_mount: ExpectedMount
+) -> List[Dict[str, Any]]:
+    mounts = get_mounts(container)
+    assert mounts is not None, "mounts are None"
+    return [
+        mount
+        for mount in mounts
+        if (
+                mount["Type"] == "bind"
+                and mount["Source"] == expected_mount.SOURCE_PATH
+                and mount["Destination"] == expected_mount.DEST_PATH
+        )
+    ]
+
+
+def _filter_volumes(
+    container: Container, expected_vol: ExpectedNamedVolume
+) -> List[Dict[str, Any]]:
     volumes = get_volumes(container)
-    if volumes is None:
-        return False
+    assert volumes is not None, "volumes are None"
     filtered_volume = [
         volume
         for volume in volumes
@@ -40,36 +54,29 @@ def named_volume_exists(
         )
     ]
 
-    num_volumes = len(filtered_volume)
-    if num_volumes == 0:
-        return False
-    elif num_volumes == 1:
-        return True
-    else:
-        raise ValueError("More than 1 volume matched filter.")
+    return filtered_volume
 
 
-def mount_exists(container: Container, expected_mount: ExpectedMount) -> bool:
-    mounts = get_mounts(container)
-    if mounts is None:
-        return False
-    filtered_mount = [
-        mount
-        for mount in mounts
-        if (
-                mount["Type"] == "bind"
-                and mount["Source"] == expected_mount.SOURCE_PATH
-                and mount["Destination"] == expected_mount.DEST_PATH
-        )
-    ]
+def confirm_named_volume_exists(
+    container: Container, expected_vol: ExpectedNamedVolume
+) -> None:
+    assert len(_filter_volumes(container, expected_vol)) == 1
 
-    num_mounts = len(filtered_mount)
-    if num_mounts == 0:
-        return False
-    elif num_mounts == 1:
-        return True
-    else:
-        raise ValueError("More than 1 mount matched filter.")
+
+def confirm_named_volume_does_not_exist(
+    container: Container, expected_vol: ExpectedNamedVolume
+) -> None:
+    assert len(_filter_volumes(container, expected_vol)) == 0
+
+
+def confirm_mount_exists(container: Container, expected_mount: ExpectedMount) -> None:
+    assert len(_filter_mounts(container, expected_mount)) == 1
+
+
+def confirm_mount_does_not_exist(
+    container: Container, expected_mount: ExpectedMount
+) -> None:
+    assert len(_filter_mounts(container, expected_mount)) == 0
 
 
 def get_container(service: Service) -> Optional[Container]:
