@@ -1,8 +1,17 @@
-from typing import Any, Dict, List, Optional
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+)
 
 import docker
 from docker.models.containers import Container
 
+from e2e.utilities.consts import (
+    ExpectedMount,
+    ExpectedNamedVolume,
+)
 from emulation_system.compose_file_creator import Service
 
 
@@ -15,8 +24,9 @@ def get_mounts(container: Container) -> Optional[List[Dict[str, Any]]]:
 
 
 def named_volume_exists(
-    container: Container, expected_name: str, expected_path: str
-) -> bool:
+    container: Container,
+    expected_vol: ExpectedNamedVolume
+    ) -> bool:
     volumes = get_volumes(container)
     if volumes is None:
         return False
@@ -24,15 +34,22 @@ def named_volume_exists(
         volume
         for volume in volumes
         if (
-            volume["Type"] == "volume"
-            and volume["Name"] == expected_name
-            and volume["Destination"] == expected_path
+                volume["Type"] == "volume"
+                and volume["Name"] == expected_vol.VOLUME_NAME
+                and volume["Destination"] == expected_vol.DEST_PATH
         )
     ]
-    return len(filtered_volume) == 1
+
+    num_volumes = len(filtered_volume)
+    if num_volumes == 0:
+        return False
+    elif num_volumes == 1:
+        return True
+    else:
+        raise ValueError("More than 1 volume matched filter.")
 
 
-def mount_exists(container: Container, expected_src: str, expected_dest: str) -> bool:
+def mount_exists(container: Container, expected_mount: ExpectedMount) -> bool:
     mounts = get_mounts(container)
     if mounts is None:
         return False
@@ -40,12 +57,19 @@ def mount_exists(container: Container, expected_src: str, expected_dest: str) ->
         mount
         for mount in mounts
         if (
-            mount["Type"] == "bind"
-            and mount["Source"] == expected_src
-            and mount["Destination"] == expected_dest
+                mount["Type"] == "bind"
+                and mount["Source"] == expected_mount.SOURCE_PATH
+                and mount["Destination"] == expected_mount.DEST_PATH
         )
     ]
-    return len(filtered_mount) == 1
+
+    num_mounts = len(filtered_mount)
+    if num_mounts == 0:
+        return False
+    elif num_mounts == 1:
+        return True
+    else:
+        raise ValueError("More than 1 mount matched filter.")
 
 
 def get_container(service: Service) -> Optional[Container]:

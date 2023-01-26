@@ -1,7 +1,11 @@
-import os
 from dataclasses import dataclass
 
-from emulation_system.consts import DOCKERFILE_DIR_LOCATION
+from e2e.utilities.consts import (
+    CommonMounts,
+    MonorepoBuilderNamedVolumes,
+    OT3FirmwareBuilderNamedVolumes,
+)
+
 from tests.e2e.utilities.build_arg_configurations import BuildArgConfigurations
 from tests.e2e.utilities.helper_functions import mount_exists, named_volume_exists
 from tests.e2e.utilities.ot3_system import OT3System
@@ -48,44 +52,36 @@ class OT3SystemValidationModel:
 
     @staticmethod
     def _confirm_ot3_emulator_named_volumes(ot3_system: OT3System) -> None:
-        assert named_volume_exists(
-            ot3_system.gantry_x, "gantry_x_executable", "/executable"
+        data = (
+            (ot3_system.gantry_x, OT3FirmwareBuilderNamedVolumes.GANTRY_X),
+            (ot3_system.gantry_y, OT3FirmwareBuilderNamedVolumes.GANTRY_Y),
+            (ot3_system.head, OT3FirmwareBuilderNamedVolumes.HEAD),
+            (ot3_system.gripper, OT3FirmwareBuilderNamedVolumes.GRIPPER),
+            (ot3_system.pipettes, OT3FirmwareBuilderNamedVolumes.PIPETTES),
+            (ot3_system.bootloader, OT3FirmwareBuilderNamedVolumes.BOOTLOADER),
         )
-
-        assert named_volume_exists(
-            ot3_system.gantry_y, "gantry_y_executable", "/executable"
-        )
-
-        assert named_volume_exists(ot3_system.head, "head_executable", "/executable")
-
-        assert named_volume_exists(
-            ot3_system.gripper, "gripper_executable", "/executable"
-        )
-
-        assert named_volume_exists(
-            ot3_system.pipettes, "pipettes_executable", "/executable"
-        )
-
-        assert named_volume_exists(
-            ot3_system.bootloader, "bootloader_executable", "/executable"
-        )
+        for container, named_volume in data:
+            assert named_volume_exists(container, named_volume)
 
     def compare(self, ot3_system: OT3System) -> None:
         self._confirm_created_builders(ot3_system)
         self._confirm_local_mounts(ot3_system)
         self._confirm_build_args(ot3_system)
 
-        for container in ot3_system.expected_containers_with_entrypoint_script:
         for container in ot3_system.containers_with_entrypoint_script:
-            assert mount_exists(
-                container,
-                os.path.join(DOCKERFILE_DIR_LOCATION, "entrypoint.sh"),
-                "/entrypoint.sh",
-            )
+            assert mount_exists(container, CommonMounts.ENTRYPOINT_MOUNT)
 
         if self.monorepo_builder_created:
+            assert not mount_exists(
+                ot3_system.monorepo_builder, CommonMounts.ENTRYPOINT_MOUNT
+            )
             for container in ot3_system.containers_with_monorepo_wheel_volume:
-                assert named_volume_exists(container, "monorepo-wheels", "/dist")
+                assert named_volume_exists(
+                    container, MonorepoBuilderNamedVolumes.MONOREPO_WHEELS
+                )
 
         if self.ot3_firmware_builder_created:
+            assert not mount_exists(
+                ot3_system.firmware_builder, CommonMounts.ENTRYPOINT_MOUNT
+            )
             self._confirm_ot3_emulator_named_volumes(ot3_system)
