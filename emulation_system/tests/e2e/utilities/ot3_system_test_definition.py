@@ -1,19 +1,102 @@
-from dataclasses import dataclass
+from dataclasses import (
+    dataclass,
+    field,
+)
+from typing import (
+    Any,
+    Dict,
+    List,
+)
+
+from docker.models.containers import Container
 
 from tests.e2e.utilities.build_arg_configurations import BuildArgConfigurations
 from tests.e2e.utilities.consts import (
     CommonMounts,
+    ExpectedMount,
+    ExpectedNamedVolume,
     MonorepoBuilderNamedVolumes,
     OT3FirmwareBuilderNamedVolumes,
     OT3FirmwareEmulatorNamedVolumesMap,
     OT3StateManagerNamedVolumes,
 )
 from tests.e2e.utilities.helper_functions import (
-    confirm_mount_does_not_exist,
-    confirm_mount_exists,
-    confirm_named_volume_exists,
+    get_mounts,
+    get_volumes,
 )
 from tests.e2e.utilities.ot3_system import OT3System
+from tests.e2e.utilities.ot3_system_test_messages import (
+    E2ETestOutput,
+    MONOREPO_BUILDER_CREATED,
+    MONOREPO_BUILDER_NOT_CREATED,
+    MONOREPO_SOURCE_MOUNTED,
+    MONOREPO_SOURCE_NOT_MOUNTED,
+    OPENTRONS_MODULES_BUILDER_CREATED,
+    OPENTRONS_MODULES_BUILDER_NOT_CREATED,
+    OPENTRONS_MODULES_SOURCE_MOUNTED,
+    OPENTRONS_MODULES_SOURCE_NOT_MOUNTED,
+    OT3_FIRMWARE_BUILDER_CREATED,
+    OT3_FIRMWARE_BUILDER_NOT_CREATED,
+    OT3_FIRMWARE_SOURCE_MOUNTED,
+    OT3_FIRMWARE_SOURCE_NOT_MOUNTED,
+    TestResult,
+)
+
+
+def _filter_mounts(
+    container: Container, expected_mount: ExpectedMount
+) -> List[Dict[str, Any]]:
+    mounts = get_mounts(container)
+    assert mounts is not None, "mounts are None"
+    return [
+        mount
+        for mount in mounts
+        if (
+                mount["Type"] == "bind"
+                and mount["Source"] == expected_mount.SOURCE_PATH
+                and mount["Destination"] == expected_mount.DEST_PATH
+        )
+    ]
+
+
+def _filter_volumes(
+    container: Container, expected_vol: ExpectedNamedVolume
+) -> List[Dict[str, Any]]:
+    volumes = get_volumes(container)
+    assert volumes is not None, "volumes are None"
+    filtered_volume = [
+        volume
+        for volume in volumes
+        if (
+                volume["Type"] == "volume"
+                and volume["Name"] == expected_vol.VOLUME_NAME
+                and volume["Destination"] == expected_vol.DEST_PATH
+        )
+    ]
+
+    return filtered_volume
+
+
+def confirm_named_volume_exists(
+    container: Container, expected_vol: ExpectedNamedVolume
+) -> bool:
+    return len(_filter_volumes(container, expected_vol)) == 1
+
+
+def confirm_named_volume_does_not_exist(
+    container: Container, expected_vol: ExpectedNamedVolume
+) -> bool:
+    return len(_filter_volumes(container, expected_vol)) == 0
+
+
+def confirm_mount_exists(container: Container, expected_mount: ExpectedMount) -> bool:
+    return len(_filter_mounts(container, expected_mount)) == 1
+
+
+def confirm_mount_does_not_exist(
+    container: Container, expected_mount: ExpectedMount
+) -> bool:
+    return len(_filter_mounts(container, expected_mount)) == 0
 
 
 @dataclass
@@ -30,34 +113,103 @@ class OT3SystemTestDefinition:
     monorepo_build_args: BuildArgConfigurations
     ot3_firmware_build_args: BuildArgConfigurations
     opentrons_modules_build_args: BuildArgConfigurations
+    _test_output: E2ETestOutput = field(
+        init=False,
+        repr=False,
+        compare=False,
+        default=E2ETestOutput()
+    )
 
     def _confirm_created_builders(self, ot3_system: OT3System) -> None:
-        assert ot3_system.monorepo_builder_created == self.monorepo_builder_created
-        assert (
-                ot3_system.ot3_firmware_builder_created == self.ot3_firmware_builder_created
+        monorepo_builder_test_result: TestResult = (
+            MONOREPO_BUILDER_CREATED
+            if self.monorepo_builder_created
+            else MONOREPO_BUILDER_NOT_CREATED
         )
-        assert (
-                ot3_system.opentrons_modules_builder_created
-                == self.opentrons_modules_builder_created
+        ot3_firmware_builder_test_result: TestResult = (
+            OT3_FIRMWARE_BUILDER_CREATED
+            if self.ot3_firmware_builder_created
+            else OT3_FIRMWARE_BUILDER_NOT_CREATED
+        )
+
+        opentrons_modules_builder_test_result: TestResult = (
+            OPENTRONS_MODULES_BUILDER_CREATED
+            if self.opentrons_modules_builder_created
+            else OPENTRONS_MODULES_BUILDER_NOT_CREATED
+        )
+
+        self._test_output.append_result(
+            ot3_system.monorepo_builder_created == self.monorepo_builder_created,
+            monorepo_builder_test_result
+        )
+
+        self._test_output.append_result(
+            ot3_system.opentrons_modules_builder_created == self.opentrons_modules_builder_created,
+            ot3_firmware_builder_test_result
+        )
+        self._test_output.append_result(
+            ot3_system.opentrons_modules_builder_created
+            == self.opentrons_modules_builder_created,
+            opentrons_modules_builder_test_result
         )
 
     def _confirm_local_mounts(self, ot3_system: OT3System) -> None:
-        assert ot3_system.local_monorepo_mounted == self.local_monorepo_mounted
-        assert ot3_system.local_ot3_firmware_mounted == self.local_ot3_firmware_mounted
-        assert (
-                ot3_system.local_opentrons_modules_mounted
-                == self.local_opentrons_modules_mounted
+        monorepo_source_mounted_test_result: TestResult = (
+            MONOREPO_SOURCE_MOUNTED
+            if self.local_monorepo_mounted
+            else MONOREPO_SOURCE_NOT_MOUNTED
+        )
+        ot3_firmware_source_mounted_test_result: TestResult = (
+            OT3_FIRMWARE_SOURCE_MOUNTED
+            if self.local_ot3_firmware_mounted
+            else OT3_FIRMWARE_SOURCE_NOT_MOUNTED
+        )
+
+        opentrons_modules_source_mounted_test_result: TestResult = (
+            OPENTRONS_MODULES_SOURCE_MOUNTED
+            if self.local_opentrons_modules_mounted
+            else OPENTRONS_MODULES_SOURCE_NOT_MOUNTED
+        )
+
+        self._test_output.append_result(
+            ot3_system.local_monorepo_mounted == self.local_monorepo_mounted,
+            monorepo_source_mounted_test_result
+        )
+        self._test_output.append_result(
+            ot3_system.local_ot3_firmware_mounted == self.local_ot3_firmware_mounted,
+            ot3_firmware_source_mounted_test_result
+        )
+
+        self._test_output.append_result(
+            ot3_system.local_opentrons_modules_mounted == self.local_opentrons_modules_mounted,
+            opentrons_modules_source_mounted_test_result
         )
 
     def _confirm_build_args(self, ot3_system: OT3System) -> None:
-        assert ot3_system.monorepo_build_args == self.monorepo_build_args
-        assert ot3_system.ot3_firmware_build_args == self.ot3_firmware_build_args
-        assert (
-                ot3_system.opentrons_modules_build_args == self.opentrons_modules_build_args
+        monorepo_build_args_test_result = TestResult(
+            desc=f"Confirming monorepo build args are: {self.monorepo_build_args.name}"
+        )
+        ot3_firmware_build_args_test_result = TestResult(
+            desc=f"Confirming ot3-firmware build args are: {self.ot3_firmware_build_args.name}"
+        )
+        opentrons_modules_build_args_test_result = TestResult(
+            desc=f"Confirming opentrons-modules build args are: {self.opentrons_modules_build_args.name}"
         )
 
-    @staticmethod
-    def _confirm_ot3_emulator_named_volumes(ot3_system: OT3System) -> None:
+        self._test_output.append_result(
+            ot3_system.monorepo_build_args == self.monorepo_build_args,
+            monorepo_build_args_test_result
+        )
+        self._test_output.append_result(
+            ot3_system.ot3_firmware_build_args == self.ot3_firmware_build_args,
+            ot3_firmware_build_args_test_result
+        )
+        self._test_output.append_result(
+            ot3_system.opentrons_modules_build_args == self.opentrons_modules_build_args,
+            opentrons_modules_build_args_test_result
+        )
+
+    def _confirm_ot3_emulator_named_volumes(self, ot3_system: OT3System) -> None:
         data = (
             (ot3_system.gantry_x, OT3FirmwareEmulatorNamedVolumesMap.GANTRY_X),
             (ot3_system.gantry_y, OT3FirmwareEmulatorNamedVolumesMap.GANTRY_Y),
@@ -67,12 +219,30 @@ class OT3SystemTestDefinition:
             (ot3_system.bootloader, OT3FirmwareEmulatorNamedVolumesMap.BOOTLOADER),
         )
         for container, named_volume in data:
-            confirm_named_volume_exists(container, named_volume)
+            test_result = TestResult(
+                desc=(
+                    f"Confirming named volume \"{named_volume.VOLUME_NAME}\" "
+                    f"with path \"{named_volume.DEST_PATH}\" exists"
+                ),
+            )
+            self._test_output.append_result(
+                confirm_named_volume_exists(container, named_volume),
+                test_result
+            )
 
-    @staticmethod
-    def _confirm_entrypoint_mounts(ot3_system: OT3System) -> None:
+    def _confirm_entrypoint_mounts(self, ot3_system: OT3System) -> None:
         for container in ot3_system.containers_with_entrypoint_script:
-            confirm_mount_exists(container, CommonMounts.ENTRYPOINT_MOUNT)
+            expected_mount = CommonMounts.ENTRYPOINT_MOUNT
+            test_result = TestResult(
+                desc=(
+                    f"Confirming mount with path"
+                    f"\"{expected_mount.SOURCE_PATH}:{expected_mount.DEST_PATH}\" exists"
+                ),
+            )
+            self._test_output.append_result(
+                confirm_mount_exists(container, CommonMounts.ENTRYPOINT_MOUNT),
+                test_result
+            )
 
     @staticmethod
     def _confirm_ot3_firmware_builder_named_volumes(ot3_system: OT3System):
@@ -112,3 +282,6 @@ class OT3SystemTestDefinition:
             self._confirm_ot3_emulator_named_volumes(ot3_system)
             self._confirm_ot3_firmware_builder_named_volumes(ot3_system)
             self._confirm_ot3_firmware_state_manager_mounts_and_volumes(ot3_system)
+
+    def print_output(self) -> str:
+        return self._test_output.get_results()

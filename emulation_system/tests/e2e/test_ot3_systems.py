@@ -51,3 +51,4 @@ def test_e2e(
         relative_path=test_def.yaml_config_relative_path
     )
     test_def.compare(ot3_system)
+    print(test_def.print_output())
