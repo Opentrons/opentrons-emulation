@@ -1,11 +1,46 @@
 from dataclasses import dataclass
 from typing import List
 
+from docker.models.containers import Container
+
+from e2e.utilities.consts import (
+    ExpectedMount,
+    ExpectedNamedVolume,
+)
+
 
 @dataclass
 class TestResult:
-
     desc: str
+
+    @classmethod
+    def from_named_volume(
+        cls,
+        container: Container,
+        named_volume: ExpectedNamedVolume,
+        confirm_not_exists: bool = False
+    ) -> "TestResult":
+        expectation = "does not have" if confirm_not_exists else "has"
+        return cls(
+            desc=f"Confirming container \"{container.name}\" {expectation} named volume "
+                 f"\"{named_volume.VOLUME_NAME}\" with path "
+                 f"\"{named_volume.DEST_PATH}\""
+        )
+
+    @classmethod
+    def from_mount(
+        cls,
+        container: Container,
+        mount: ExpectedMount,
+        confirm_not_exists: bool = False
+    ) -> "TestResult":
+        expectation = "does not have" if confirm_not_exists else "has"
+        return cls(
+            desc=(
+                f"Confirming container \"{container.name}\" {expectation} has mount with path "
+                f"\"{mount.SOURCE_PATH}:{mount.DEST_PATH}\""
+            )
+        )
 
     def generate_pass_message(self) -> str:
         return f"PASS: {self.desc}"

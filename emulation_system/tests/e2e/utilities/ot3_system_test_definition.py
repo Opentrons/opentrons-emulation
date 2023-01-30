@@ -219,12 +219,7 @@ class OT3SystemTestDefinition:
             (ot3_system.bootloader, OT3FirmwareEmulatorNamedVolumesMap.BOOTLOADER),
         )
         for container, named_volume in data:
-            test_result = TestResult(
-                desc=(
-                    f"Confirming named volume \"{named_volume.VOLUME_NAME}\" "
-                    f"with path \"{named_volume.DEST_PATH}\" exists"
-                ),
-            )
+            test_result = TestResult.from_named_volume(container, named_volume)
             self._test_output.append_result(
                 confirm_named_volume_exists(container, named_volume),
                 test_result
@@ -233,34 +228,51 @@ class OT3SystemTestDefinition:
     def _confirm_entrypoint_mounts(self, ot3_system: OT3System) -> None:
         for container in ot3_system.containers_with_entrypoint_script:
             expected_mount = CommonMounts.ENTRYPOINT_MOUNT
-            test_result = TestResult(
-                desc=(
-                    f"Confirming mount with path"
-                    f"\"{expected_mount.SOURCE_PATH}:{expected_mount.DEST_PATH}\" exists"
-                ),
-            )
+            test_result = TestResult.from_mount(container, expected_mount)
             self._test_output.append_result(
                 confirm_mount_exists(container, CommonMounts.ENTRYPOINT_MOUNT),
                 test_result
             )
 
-    @staticmethod
-    def _confirm_ot3_firmware_builder_named_volumes(ot3_system: OT3System):
+    def _confirm_ot3_firmware_builder_named_volumes(
+        self,
+        ot3_system: OT3System
+    ) -> None:
         for volume in OT3FirmwareBuilderNamedVolumes.VOLUMES:
-            confirm_named_volume_exists(ot3_system.firmware_builder, volume)
+            test_result = TestResult.from_named_volume(
+                ot3_system.firmware_builder,
+                volume
+            )
+            self._test_output.append_result(
+                confirm_named_volume_exists(ot3_system.firmware_builder, volume),
+                test_result
+            )
 
-    @staticmethod
     def _confirm_ot3_firmware_state_manager_mounts_and_volumes(
+        self,
         ot3_system: OT3System,
     ) -> None:
         for expected_volume in OT3StateManagerNamedVolumes.VOLUMES:
-            confirm_named_volume_exists(ot3_system.state_manager, expected_volume)
+            test_result = TestResult.from_named_volume(
+                ot3_system.state_manager,
+                expected_volume
+            )
+            self._test_output.append_result(
+                confirm_named_volume_exists(ot3_system.state_manager, expected_volume),
+                test_result
+            )
 
-    @staticmethod
-    def _confirm_containers_with_monorepo_wheel_volumes(ot3_system: OT3System) -> None:
+    def _confirm_containers_with_monorepo_wheel_volumes(
+        self,
+        ot3_system: OT3System
+    ) -> None:
         for container in ot3_system.containers_with_monorepo_wheel_volume:
             for expected_volume in MonorepoBuilderNamedVolumes.VOLUMES:
-                confirm_named_volume_exists(container, expected_volume)
+                test_result = TestResult.from_named_volume(container, expected_volume)
+                self._test_output.append_result(
+                    confirm_named_volume_exists(container, expected_volume),
+                    test_result
+                )
 
     def compare(self, ot3_system: OT3System) -> None:
         self._confirm_created_builders(ot3_system)
@@ -269,14 +281,31 @@ class OT3SystemTestDefinition:
         self._confirm_entrypoint_mounts(ot3_system)
 
         if self.monorepo_builder_created:
-            confirm_mount_does_not_exist(
-                ot3_system.monorepo_builder, CommonMounts.ENTRYPOINT_MOUNT
+            test_result = TestResult.from_mount(
+                ot3_system.monorepo_builder,
+                CommonMounts.ENTRYPOINT_MOUNT,
+                confirm_not_exists=True
             )
+            self._test_output.append_result(
+                confirm_mount_does_not_exist(
+                    ot3_system.monorepo_builder, CommonMounts.ENTRYPOINT_MOUNT
+                ),
+                test_result
+            )
+
             self._confirm_containers_with_monorepo_wheel_volumes(ot3_system)
 
         if self.ot3_firmware_builder_created:
-            confirm_mount_does_not_exist(
-                ot3_system.firmware_builder, CommonMounts.ENTRYPOINT_MOUNT
+            test_result = TestResult.from_mount(
+                ot3_system.firmware_builder,
+                CommonMounts.ENTRYPOINT_MOUNT,
+                confirm_not_exists=True
+            )
+            self._test_output.append_result(
+                confirm_mount_does_not_exist(
+                    ot3_system.firmware_builder, CommonMounts.ENTRYPOINT_MOUNT
+                ),
+                test_result
             )
 
             self._confirm_ot3_emulator_named_volumes(ot3_system)
