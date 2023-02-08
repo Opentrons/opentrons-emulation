@@ -4,7 +4,6 @@ from typing import Optional
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
-    IntermediateCommand,
     IntermediateEnvironmentVariables,
     IntermediateHealthcheck,
     IntermediateNetworks,
@@ -127,12 +126,6 @@ class ConcreteOT3ServiceBuilder(AbstractServiceBuilder):
 
         self._logging_client.log_volumes(volumes)
         return volumes
-
-    def generate_command(self) -> Optional[IntermediateCommand]:
-        """Generates value for command parameter."""
-        command = None
-        self._logging_client.log_command(command)
-        return command
 
     def generate_ports(self) -> Optional[IntermediatePorts]:
         """Generates value for ports parameter."""

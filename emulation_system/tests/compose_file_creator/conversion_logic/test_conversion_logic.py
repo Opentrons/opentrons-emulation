@@ -1,5 +1,5 @@
 """Tests for converting input file to DockerComposeFile."""
-from typing import Any, Dict, List, cast
+from typing import Any, Dict, cast
 
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
@@ -189,44 +189,3 @@ def test_can_server_port_not_exposed(
     can_server = runtime_compose_file_model.can_server
     assert can_server is not None
     assert can_server.ports is None
-
-
-@pytest.mark.parametrize(
-    "service_name, expected_value",
-    [
-        [
-            f"{THERMOCYCLER_MODULE_ID}-1",
-            ["--socket", f"http://{EMULATOR_PROXY_ID}:10003"],
-        ],
-        [f"{TEMPERATURE_MODULE_ID}-1", [EMULATOR_PROXY_ID]],
-        [f"{MAGNETIC_MODULE_ID}-1", [EMULATOR_PROXY_ID]],
-        [
-            f"{HEATER_SHAKER_MODULE_ID}-1",
-            ["--socket", f"http://{EMULATOR_PROXY_ID}:10004"],
-        ],
-    ],
-)
-def test_module_command(
-    service_name: str,
-    expected_value: List[str],
-    ot2_and_modules: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Confirm that modules depend on emulator proxy."""
-    services = convert_from_obj(
-        ot2_and_modules, testing_global_em_config, dev=False
-    ).services
-    assert services is not None
-    assert services[service_name].command == expected_value
-
-
-def test_robot_command(
-    ot2_and_modules: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Confirm that modules depend on emulator proxy."""
-    services = convert_from_obj(
-        ot2_and_modules, testing_global_em_config, dev=False
-    ).services
-    assert services is not None
-    assert services[OT2_ID].command is None

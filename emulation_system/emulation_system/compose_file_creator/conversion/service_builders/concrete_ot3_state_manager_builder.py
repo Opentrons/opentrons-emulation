@@ -4,7 +4,6 @@ from typing import Optional
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
-    IntermediateCommand,
     IntermediateEnvironmentVariables,
     IntermediateHealthcheck,
     IntermediateNetworks,
@@ -74,11 +73,6 @@ class ConcreteOT3StateManagerBuilder(AbstractServiceBuilder):
         volumes.extend(self._monorepo_source.generate_emulator_mount_strings())
 
         return volumes
-
-    def generate_command(self) -> Optional[IntermediateCommand]:
-        """Generates value for command parameter."""
-        command = None
-        return command
 
     def generate_ports(self) -> Optional[IntermediatePorts]:
         """Generates value for ports parameter."""

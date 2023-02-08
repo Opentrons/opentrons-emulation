@@ -24,7 +24,6 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.compose_file_creator.types.final_types import (
     ServiceBuild,
-    ServiceCommand,
     ServiceContainerName,
     ServiceEnvironment,
     ServiceHealthcheck,
@@ -36,7 +35,6 @@ from emulation_system.compose_file_creator.types.final_types import (
 from emulation_system.compose_file_creator.types.input_types import Robots
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
-    IntermediateCommand,
     IntermediateEnvironmentVariables,
     IntermediateHealthcheck,
     IntermediateNetworks,
@@ -201,11 +199,6 @@ class AbstractServiceBuilder(ABC):
         """Method to, if necessary, generate value for environment parameter for Service."""
         ...
 
-    @abstractmethod
-    def generate_command(self) -> Optional[IntermediateCommand]:
-        """Method to, if necessary, generate value for command parameter for Service."""
-        ...
-
     def build_service(self) -> Service:
         """Method calling all generate* methods to build Service object."""
         intermediate_healthcheck = self.generate_healthcheck()
@@ -218,7 +211,6 @@ class AbstractServiceBuilder(ABC):
             volumes=cast(ServiceVolumes, self.generate_volumes()),
             ports=cast(ServicePorts, self.generate_ports()),
             environment=cast(ServiceEnvironment, self.generate_env_vars()),
-            command=cast(ServiceCommand, self.generate_command()),
             networks=self.generate_networks(),
             healthcheck=ServiceHealthcheck(
                 interval=f"{intermediate_healthcheck.interval}s",

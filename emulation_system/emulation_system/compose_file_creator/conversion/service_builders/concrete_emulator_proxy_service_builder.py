@@ -12,7 +12,6 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 )
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
-    IntermediateCommand,
     IntermediateEnvironmentVariables,
     IntermediateHealthcheck,
     IntermediateNetworks,
@@ -106,12 +105,6 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
         return self._monorepo_source.generate_emulator_mount_strings()
-
-    def generate_command(self) -> Optional[IntermediateCommand]:
-        """Generates value for command parameter."""
-        command = None
-        self._logging_client.log_command(command)
-        return command
 
     def generate_ports(self) -> Optional[IntermediatePorts]:
         """Generates value for ports parameter."""
