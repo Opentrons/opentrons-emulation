@@ -243,7 +243,7 @@ def test_ot3_mounts(
     check_correct_number_of_volumes(can_server, 2)
     check_correct_number_of_volumes(state_manager, 3)
 
-    check_correct_number_of_volumes(monorepo_builder, 3 if monorepo_is_local else 2)
+    check_correct_number_of_volumes(monorepo_builder, 2 if monorepo_is_local else 1)
 
     check_correct_number_of_volumes(
         ot3_firmware_builder, len(emulators) + (2 if ot3_firmware_is_local else 1)
@@ -251,8 +251,6 @@ def test_ot3_mounts(
 
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", robot_server)
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", can_server)
-    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", ot3_firmware_builder)
-    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", monorepo_builder)
     assert partial_string_in_mount("monorepo-wheels:/dist", robot_server)
     assert partial_string_in_mount("monorepo-wheels:/dist", can_server)
     assert partial_string_in_mount("monorepo-wheels:/dist", monorepo_builder)
@@ -323,8 +321,7 @@ def test_ot2_mounts(
     assert partial_string_in_mount("monorepo-wheels:/dist", smoothie)
 
     assert monorepo_builder is not None
-    check_correct_number_of_volumes(monorepo_builder, 3 if monorepo_is_local else 2)
-    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", monorepo_builder)
+    check_correct_number_of_volumes(monorepo_builder, 2 if monorepo_is_local else 1)
     assert partial_string_in_mount("monorepo-wheels:/dist", monorepo_builder)
 
     if monorepo_is_local:
