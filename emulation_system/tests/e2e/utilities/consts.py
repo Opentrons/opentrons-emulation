@@ -57,6 +57,22 @@ class MonorepoBuilderNamedVolumes(NamedVolumeList):
 
 
 @dataclass(frozen=True)
+class OpentronsModulesBuilderNamedVolumes(NamedVolumeList):
+    VOLUMES: Tuple[ExpectedNamedVolume] = (
+        ExpectedNamedVolume(
+            "heater_shaker_executable", "/volumes/heater_shaker_volume"
+        ),
+        ExpectedNamedVolume("thermocycler_executable", "/volumes/thermocycler_volume"),
+    )
+
+
+@dataclass(frozen=True)
+class OpentronsModulesEmulatorNamedVolumes:
+    HEATER_SHAKER = ExpectedNamedVolume("heater_shaker_executable", "/executable")
+    THERMOCYCLER = ExpectedNamedVolume("thermocycler_executable", "/executable")
+
+
+@dataclass(frozen=True)
 class CommonMounts:
     ENTRYPOINT_MOUNT = ExpectedMount(
         os.path.join(DOCKERFILE_DIR_LOCATION, "entrypoint.sh"), "/entrypoint.sh"

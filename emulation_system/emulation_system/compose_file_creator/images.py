@@ -15,13 +15,24 @@ class FirmwareAndHardwareImages:
     firmware_image_name: Optional[str]
     hardware_image_name: Optional[str]
 
-    def get_image_names(self) -> List[str]:
+    def get_image_names(
+        self,
+        only_firmware_level: bool = False,
+        only_hardware_level: bool = False,
+    ) -> List[str]:
         """Get list of image names for image."""
-        return [
-            image_name
-            for image_name in [self.firmware_image_name, self.hardware_image_name]
-            if image_name is not None
-        ]
+        images: List[str]
+        if only_hardware_level and self.hardware_image_name is not None:
+            images = [self.hardware_image_name]
+        elif only_firmware_level and self.firmware_image_name is not None:
+            images = [self.firmware_image_name]
+        else:
+            images = [
+                image_name
+                for image_name in [self.firmware_image_name, self.hardware_image_name]
+                if image_name is not None
+            ]
+        return images
 
 
 @dataclass
@@ -30,7 +41,11 @@ class SingleImage:
 
     image_name: str
 
-    def get_image_names(self) -> List[str]:
+    def get_image_names(
+        self,
+        only_firmware_level: bool = False,
+        only_hardware_level: bool = False,
+    ) -> List[str]:
         """Get list of image names for image."""
         return [self.image_name]
 

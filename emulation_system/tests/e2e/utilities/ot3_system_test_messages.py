@@ -3,14 +3,11 @@ from typing import List
 
 from docker.models.containers import Container
 
-from e2e.utilities.consts import (
-    ExpectedMount,
-    ExpectedNamedVolume,
-)
+from tests.e2e.utilities.consts import ExpectedMount, ExpectedNamedVolume
 
 
 @dataclass
-class TestResult:
+class TestDescription:
     desc: str
 
     @classmethod
@@ -18,13 +15,13 @@ class TestResult:
         cls,
         container: Container,
         named_volume: ExpectedNamedVolume,
-        confirm_not_exists: bool = False
-    ) -> "TestResult":
+        confirm_not_exists: bool = False,
+    ) -> "TestDescription":
         expectation = "does not have" if confirm_not_exists else "has"
         return cls(
-            desc=f"Confirming container \"{container.name}\" {expectation} named volume "
-                 f"\"{named_volume.VOLUME_NAME}\" with path "
-                 f"\"{named_volume.DEST_PATH}\""
+            desc=f'Confirming container "{container.name}" {expectation} named volume '
+            f'"{named_volume.VOLUME_NAME}" with path '
+            f'"{named_volume.DEST_PATH}"'
         )
 
     @classmethod
@@ -32,13 +29,13 @@ class TestResult:
         cls,
         container: Container,
         mount: ExpectedMount,
-        confirm_not_exists: bool = False
-    ) -> "TestResult":
+        confirm_not_exists: bool = False,
+    ) -> "TestDescription":
         expectation = "does not have" if confirm_not_exists else "has"
         return cls(
             desc=(
-                f"Confirming container \"{container.name}\" {expectation} has mount with path "
-                f"\"{mount.SOURCE_PATH}:{mount.DEST_PATH}\""
+                f'Confirming container "{container.name}" {expectation} has mount with path '
+                f'"{mount.SOURCE_PATH}:{mount.DEST_PATH}"'
             )
         )
 
@@ -49,51 +46,51 @@ class TestResult:
         return f"FAIL: {self.desc}"
 
 
-MONOREPO_BUILDER_CREATED = TestResult(
+MONOREPO_BUILDER_CREATED = TestDescription(
     desc="Confirming monorepo builder was created",
 )
 
-MONOREPO_BUILDER_NOT_CREATED = TestResult(
+MONOREPO_BUILDER_NOT_CREATED = TestDescription(
     desc="Confirming monorepo builder was not created",
 )
 
-OT3_FIRMWARE_BUILDER_CREATED = TestResult(
+OT3_FIRMWARE_BUILDER_CREATED = TestDescription(
     desc="Confirming ot3-firmware builder was created",
 )
 
-OT3_FIRMWARE_BUILDER_NOT_CREATED = TestResult(
+OT3_FIRMWARE_BUILDER_NOT_CREATED = TestDescription(
     desc="Confirming ot3-firmware builder was not created",
 )
 
-OPENTRONS_MODULES_BUILDER_CREATED = TestResult(
+OPENTRONS_MODULES_BUILDER_CREATED = TestDescription(
     desc="Confirming opentrons-modules builder was created",
 )
 
-OPENTRONS_MODULES_BUILDER_NOT_CREATED = TestResult(
+OPENTRONS_MODULES_BUILDER_NOT_CREATED = TestDescription(
     desc="Confirming opentrons-modules builder was not created",
 )
 
-MONOREPO_SOURCE_MOUNTED = TestResult(
+MONOREPO_SOURCE_MOUNTED = TestDescription(
     desc="Confirming monorepo builder has local source mounted",
 )
 
-MONOREPO_SOURCE_NOT_MOUNTED = TestResult(
+MONOREPO_SOURCE_NOT_MOUNTED = TestDescription(
     desc="Confirming monorepo builder does not have local source mounted",
 )
 
-OT3_FIRMWARE_SOURCE_MOUNTED = TestResult(
+OT3_FIRMWARE_SOURCE_MOUNTED = TestDescription(
     desc="Confirming ot3-firmware builder has local source mounted",
 )
 
-OT3_FIRMWARE_SOURCE_NOT_MOUNTED = TestResult(
+OT3_FIRMWARE_SOURCE_NOT_MOUNTED = TestDescription(
     desc="Confirming ot3-firmware builder does not have local source mounted",
 )
 
-OPENTRONS_MODULES_SOURCE_MOUNTED = TestResult(
+OPENTRONS_MODULES_SOURCE_MOUNTED = TestDescription(
     desc="Confirming opentrons-modules builder has local source mounted",
 )
 
-OPENTRONS_MODULES_SOURCE_NOT_MOUNTED = TestResult(
+OPENTRONS_MODULES_SOURCE_NOT_MOUNTED = TestDescription(
     desc="Confirming opentrons-modules builder does not have local source mounted",
 )
 
@@ -104,11 +101,7 @@ class E2ETestOutput:
         self._failure = False
         self._failure_count = 0
 
-    def append_result(
-        self,
-        assertion: bool,
-        result: TestResult
-    ) -> None:
+    def append_result(self, assertion: bool, result: TestDescription) -> None:
         if assertion:
             self._output.append(result.generate_pass_message())
         else:
@@ -117,7 +110,7 @@ class E2ETestOutput:
             self._output.append(result.generate_fail_message())
 
     def get_results(self) -> str:
-        return "\n" + '\n'.join(self._output)
+        return "\n" + "\n".join(self._output)
 
     @property
     def is_failure(self) -> bool:
