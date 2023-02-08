@@ -95,6 +95,7 @@ def confirm_mount_does_not_exist(
 
 @dataclass
 class SystemTestDefinition:
+    test_id: str
     yaml_config_relative_path: str
     monorepo_builder_created: bool
     ot3_firmware_builder_created: bool

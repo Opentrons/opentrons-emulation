@@ -19,11 +19,11 @@ teardown:
 
 .PHONY: test
 test:
-	poetry run py.test tests/compose_file_creator --cov=emulation_system --cov-report term-missing:skip-covered --cov-report xml:coverage.xml
+	poetry run pytest tests/compose_file_creator --cov=emulation_system --cov-report term-missing:skip-covered --cov-report xml:coverage.xml
 
-.PHONY: test-e2e-ot3-only
-test-e2e-ot3-only:
-	poetry run py.test tests/e2e -k "ot3_only"
+.PHONY: get-e2e-test-names
+get-e2e-test-names:
+	@poetry run python tests/e2e/test_mappings.py
 
 .PHONY: lint
 lint:

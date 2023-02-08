@@ -295,3 +295,8 @@ test:
 .PHONY: test-e2e
 test-e2e:
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) test-e2e
+
+
+.PHONY: get-e2e-test-names
+get-e2e-test-names:
+	@$(MAKE) --no-print-directory -C $(EMULATION_SYSTEM_DIR) get-e2e-test-names
