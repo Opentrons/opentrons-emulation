@@ -202,6 +202,16 @@ refresh-dev:
 		filter="source-builders" \
 		| xargs -P 4 -orn 1 -I{} docker exec -t {} /build.sh
 
+.PHONY: refresh-dev-ci
+refresh-dev-ci:
+	$(if $(file_path),,$(error file_path variable required))
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="source-builders" \
+		| xargs -P 4 -rn 1 -I{} docker exec -t {} /build.sh
+
 
 ###########################################
 ############## Misc Commands ##############
@@ -292,11 +302,16 @@ format:
 test:
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) test
 
-.PHONY: test-e2e
-test-e2e:
-	$(MAKE) -C $(EMULATION_SYSTEM_DIR) test-e2e
+.PHONY: get-e2e-test-ids
+get-e2e-test-ids:
+	@$(MAKE) --no-print-directory -C $(EMULATION_SYSTEM_DIR) get-e2e-test-ids
 
+.PHONY: get-e2e-test-path
+get-e2e-test-path:
+	$(if $(test_id),,$(error test_id variable required))
+	@$(MAKE) --no-print-directory -C $(EMULATION_SYSTEM_DIR) get-e2e-test-path test_id=${test_id}
 
-.PHONY: get-e2e-test-names
-get-e2e-test-names:
-	@$(MAKE) --no-print-directory -C $(EMULATION_SYSTEM_DIR) get-e2e-test-names
+.PHONY: execute-e2e-test
+execute-e2e-test:
+	$(if $(test_id),,$(error test_id variable required))
+	@$(MAKE) --no-print-directory -C $(EMULATION_SYSTEM_DIR) execute-e2e-test test_id=${test_id}

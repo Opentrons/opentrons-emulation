@@ -1,0 +1,114 @@
+name: Opentrons Emulation End-to-End Testing
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'release-*'
+      - '.github/workflows/e2e-tests.yaml' # Make sure to remove
+  pull_request:
+    paths:
+      - 'emulation_system/**'
+      - '.github/workflows/e2e-tests.yaml'
+      - '.github/actions/**'
+  workflow_dispatch:
+    inputs:
+      cache-break:
+        description: Break the Cache
+        required: false
+        default: default
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  matrix_generation:
+    name: Generate E2E Testing Matrix
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout opentrons-emulation repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.sha }}
+
+      # Only change `main` in Opentrons/opentrons-emulation@main
+      # if making changes to .github/actions or action.yaml
+      - name: Setup emulation_system project
+        uses: Opentrons/opentrons-emulation@main
+        with:
+          cache-break: ${{ github.event.inputs.cache-break }}
+          command: setup-python-only
+
+      - name: Generate Test Matrix
+        id: set-matrix
+        run: |
+          echo "matrix={\"test_id\":$(make get-e2e-test-ids)}" >> $GITHUB_OUTPUT
+
+  run-e2e-testing:
+    name: Run E2E testing
+    needs: matrix_generation
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix: ${{fromJson(needs.matrix_generation.outputs.matrix)}}
+      fail-fast: false
+    steps:
+      - name: Checkout opentrons-emulation repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.sha }}
+          path: "opentrons-emulation"
+
+      - name: Checkout opentrons repository
+        uses: actions/checkout@v3
+        with:
+          repository: "Opentrons/opentrons"
+          path: "opentrons"
+
+      - name: Checkout ot3-firmware repository
+        uses: actions/checkout@v3
+        with:
+          repository: "Opentrons/ot3-firmware"
+          path: "ot3-firmware"
+
+      - name: Checkout opentrons-modules repository
+        uses: actions/checkout@v3
+        with:
+          repository: "Opentrons/opentrons-modules"
+          path: "opentrons-modules"
+
+      - name: Setup emulation_system project
+        uses: ./opentrons-emulation/.github/actions/setup-python-only
+        with:
+          cache-break: ${{ github.event.inputs.cache-break }}
+          cache-dir: ${{ github.workspace }}/opentrons-emulation
+
+      - name: Get Test Path
+        id: get_test_path
+        run: echo "test_path=$(make get-e2e-test-path test_id=${{matrix.test_id}})" >> $GITHUB_OUTPUT
+        working-directory: opentrons-emulation
+
+      - name: Build Docker Images
+        run: make build file_path=./${{ steps.get_test_path.outputs.test_path }}
+        working-directory: opentrons-emulation
+
+      - name: Start Emulated System
+        run: make run-detached file_path=./${{ steps.get_test_path.outputs.test_path }}
+        working-directory: opentrons-emulation
+
+      - name: Run Source Builds
+        run: make refresh-dev-ci file_path=./${{ steps.get_test_path.outputs.test_path }}
+        working-directory: opentrons-emulation
+
+      - name: Run E2E Test
+        run: make execute-e2e-test test_id=${{matrix.test_id}}
+        working-directory: opentrons-emulation

@@ -5,11 +5,15 @@
 # On local-ot3-firwmare-builder container create a volume for each simulator and bind each simulator directory to it
 # On each OT-3 Firmware emulator container attach its respective volume
 
+echo "Building ot3-firmware"
+
 (
   cd /ot3-firmware && \
   cmake --preset host-gcc10 && \
   cmake --build ./build-host -j $(expr $(nproc) - 1)
 )
+
+echo "Creating simulator directories"
 
 mkdir -p \
   /volumes/pipettes_volume \
@@ -20,6 +24,8 @@ mkdir -p \
   /volumes/bootloader_volume \
   /volumes/gripper_volume \
   /volumes/state_manager_venv
+
+echo "Copying simulator files to simulator directories"
 
 cp /ot3-firmware/build-host/pipettes/simulator/pipettes-single-simulator /volumes/pipettes_volume/pipettes-simulator
 cp /ot3-firmware/build-host/head/simulator/head-simulator /volumes/head_volume/head-simulator

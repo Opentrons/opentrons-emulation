@@ -1,5 +1,6 @@
+import argparse
 import json
-from typing import List
+from typing import Dict, List
 
 import pytest
 from _pytest.mark.structures import ParameterSet
@@ -7,8 +8,8 @@ from _pytest.mark.structures import ParameterSet
 from tests.e2e.utilities.build_arg_configurations import BuildArgConfigurations
 from tests.e2e.utilities.system_test_definition import SystemTestDefinition
 
-_TEST_DEFS = [
-    SystemTestDefinition(
+_TEST_DEFS: Dict[str, SystemTestDefinition] = {
+    "ot3_only": SystemTestDefinition(
         test_id="ot3_only",
         yaml_config_relative_path="samples/common_use_cases/basic/ot3_only.yaml",
         monorepo_builder_created=True,
@@ -21,7 +22,7 @@ _TEST_DEFS = [
         ot3_firmware_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
         opentrons_modules_build_args=BuildArgConfigurations.NO_BUILD_ARGS,
     ),
-    SystemTestDefinition(
+    "ot3_firmware_dev": SystemTestDefinition(
         test_id="ot3_firmware_dev",
         yaml_config_relative_path="samples/common_use_cases/bind/ot3_firmware.yaml",
         monorepo_builder_created=True,
@@ -36,7 +37,7 @@ _TEST_DEFS = [
         ot3_firmware_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
         opentrons_modules_build_args=BuildArgConfigurations.NO_BUILD_ARGS,
     ),
-    SystemTestDefinition(
+    "ot3_and_modules": SystemTestDefinition(
         test_id="ot3_and_modules",
         yaml_config_relative_path="samples/common_use_cases/basic/ot3_and_modules.yaml",
         monorepo_builder_created=True,
@@ -49,16 +50,40 @@ _TEST_DEFS = [
         ot3_firmware_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
         opentrons_modules_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
     ),
-]
+}
 
 
 def get_e2e_test_parmeters() -> List[ParameterSet]:
-    return [pytest.param(mapping, id=mapping.test_id) for mapping in _TEST_DEFS]
+    return [
+        pytest.param(mapping, id=mapping.test_id) for mapping in _TEST_DEFS.values()
+    ]
 
 
 def get_test_ids() -> str:
-    return json.dumps([mapping.test_id for mapping in _TEST_DEFS])
+    return json.dumps([mapping.test_id for mapping in _TEST_DEFS.values()])
+
+
+def get_test_path(test_id: str) -> str:
+    return _TEST_DEFS[test_id].yaml_config_relative_path
 
 
 if __name__ == "__main__":
-    print(get_test_ids())
+    parser = argparse.ArgumentParser(
+        description="Interaction layer for opentrons-emulation e2e test mappings."
+    )
+    subparsers = parser.add_subparsers(dest="command")
+
+    test_ids = subparsers.add_parser(
+        "get-test-ids", help="Get list of available test IDs"
+    )
+
+    test_path = subparsers.add_parser(
+        "get-test-path", help="Get path for test based on test ID"
+    )
+    test_path.add_argument("test-id", type=str, help="Pass a test id")
+    args = parser.parse_args()
+
+    if args.command == "get-test-ids":
+        print(get_test_ids())
+    elif args.command == "get-test-path":
+        print(get_test_path(vars(args)["test-id"]))

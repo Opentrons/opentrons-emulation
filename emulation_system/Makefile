@@ -21,9 +21,21 @@ teardown:
 test:
 	poetry run pytest tests/compose_file_creator --cov=emulation_system --cov-report term-missing:skip-covered --cov-report xml:coverage.xml
 
-.PHONY: get-e2e-test-names
-get-e2e-test-names:
-	@poetry run python tests/e2e/test_mappings.py
+.PHONY: get-e2e-test-ids
+get-e2e-test-ids:
+	@poetry run python tests/e2e/test_mappings.py get-test-ids
+
+.PHONY: get-e2e-test-path
+get-e2e-test-path:
+	$(if $(test_id),,$(error test_id variable required))
+	@poetry run python tests/e2e/test_mappings.py get-test-path ${test_id}
+
+
+.PHONY: execute-e2e-test
+execute-e2e-test:
+	$(if $(test_id),,$(error test_id variable required))
+	poetry run pytest tests/e2e -k "${test_id}"
+
 
 .PHONY: lint
 lint:
