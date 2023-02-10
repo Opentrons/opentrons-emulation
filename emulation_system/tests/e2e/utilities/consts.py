@@ -85,3 +85,13 @@ class OT3StateManagerNamedVolumes:
         CommonNamedVolumes.MONOREPO_WHEELS,
         ExpectedNamedVolume("state_manager_venv", "/.venv"),
     )
+
+
+@dataclass(frozen=True)
+class OT3FirmwareExpectedBinaryNames:
+    GANTRY_X = "gantry-x-simulator"
+    GANTRY_Y = "gantry-y-simulator"
+    HEAD = "head-simulator"
+    GRIPPER = "gripper-simulator"
+    PIPETTES = "pipettes-simulator"
+    BOOTLOADER = "bootloader-simulator"

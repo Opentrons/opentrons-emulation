@@ -13,10 +13,15 @@ from tests.e2e.utilities.consts import (
     OpentronsModulesEmulatorNamedVolumes,
     OT3FirmwareBuilderNamedVolumes,
     OT3FirmwareEmulatorNamedVolumesMap,
+    OT3FirmwareExpectedBinaryNames,
     OT3StateManagerNamedVolumes,
 )
 from tests.e2e.utilities.expected_bind_mounts import ExpectedBindMounts
-from tests.e2e.utilities.helper_functions import get_mounts, get_volumes
+from tests.e2e.utilities.helper_functions import (
+    exec_in_container,
+    get_mounts,
+    get_volumes,
+)
 from tests.e2e.utilities.module_containers import ModuleContainers
 from tests.e2e.utilities.ot3_containers import OT3Containers
 from tests.e2e.utilities.ot3_system_test_messages import (
@@ -313,6 +318,24 @@ class SystemTestDefinition:
                 test_description,
             )
 
+    def _confirm_ot3_firmware_build_artifacts(self, ot3_system: OT3Containers) -> None:
+        test_matrix = (
+            (ot3_system.gantry_x, OT3FirmwareExpectedBinaryNames.GANTRY_X),
+            (ot3_system.gantry_y, OT3FirmwareExpectedBinaryNames.GANTRY_Y),
+            (ot3_system.head, OT3FirmwareExpectedBinaryNames.HEAD),
+            (ot3_system.gripper, OT3FirmwareExpectedBinaryNames.GRIPPER),
+            (ot3_system.pipettes, OT3FirmwareExpectedBinaryNames.PIPETTES),
+            (ot3_system.bootloader, OT3FirmwareExpectedBinaryNames.BOOTLOADER),
+        )
+        for container, expected_sim_name in test_matrix:
+            test_description = TestDescription(
+                f"Confirming container {container.name} has simulator binary inside of /executable"
+            )
+            self._test_output.append_result(
+                exec_in_container(container, "ls /executable") == expected_sim_name,
+                test_description,
+            )
+
     def compare(
         self,
         ot3_system: OT3Containers,
@@ -355,6 +378,7 @@ class SystemTestDefinition:
             self._confirm_ot3_emulator_named_volumes(ot3_system)
             self._confirm_ot3_firmware_builder_named_volumes(ot3_system)
             self._confirm_ot3_firmware_state_manager_mounts_and_volumes(ot3_system)
+            self._confirm_ot3_firmware_build_artifacts(ot3_system)
 
         if self.opentrons_modules_builder_created:
             test_description = TestDescription.from_mount(
