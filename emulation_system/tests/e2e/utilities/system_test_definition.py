@@ -8,6 +8,7 @@ from tests.e2e.utilities.consts import (
     CommonMounts,
     ExpectedMount,
     ExpectedNamedVolume,
+    ModulesExpectedBinaryNames,
     MonorepoBuilderNamedVolumes,
     OpentronsModulesBuilderNamedVolumes,
     OpentronsModulesEmulatorNamedVolumes,
@@ -336,6 +337,29 @@ class SystemTestDefinition:
                 test_description,
             )
 
+    def _confirm_opentrons_modules_build_artifacts(
+        self, modules: ModuleContainers
+    ) -> None:
+        test_matrix = (
+            (
+                modules.hardware_emulation_thermocycler_modules,
+                ModulesExpectedBinaryNames.THERMOCYCLER,
+            ),
+            (
+                modules.hardware_emulation_heater_shaker_modules,
+                ModulesExpectedBinaryNames.HEATER_SHAKER,
+            ),
+        )
+        for container_list, expected_sim_name in test_matrix:
+            for container in container_list:
+                test_description = TestDescription(
+                    f"Confirming container {container.name} has simulator binary named {expected_sim_name} inside of /executable"
+                )
+                self._test_output.append_result(
+                    exec_in_container(container, "ls /executable") == expected_sim_name,
+                    test_description,
+                )
+
     def compare(
         self,
         ot3_system: OT3Containers,
@@ -394,6 +418,7 @@ class SystemTestDefinition:
             )
             self._confirm_opentrons_modules_builder_named_volumes(ot3_system)
             self._confirm_opentrons_modules_emulator_named_volumes(modules)
+            self._confirm_opentrons_modules_build_artifacts(modules)
 
         if self.local_monorepo_mounted and self.monorepo_builder_created:
             test_description = TestDescription.from_mount(

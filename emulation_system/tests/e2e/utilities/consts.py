@@ -95,3 +95,9 @@ class OT3FirmwareExpectedBinaryNames:
     GRIPPER = "gripper-simulator"
     PIPETTES = "pipettes-simulator"
     BOOTLOADER = "bootloader-simulator"
+
+
+@dataclass(frozen=True)
+class ModulesExpectedBinaryNames:
+    THERMOCYCLER = "thermocycler-simulator"
+    HEATER_SHAKER = "heater-shaker-simulator"
