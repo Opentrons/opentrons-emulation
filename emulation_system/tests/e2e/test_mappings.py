@@ -1,6 +1,9 @@
 import argparse
 import json
-from typing import Dict, List
+from typing import (
+    Dict,
+    List,
+)
 
 import pytest
 from _pytest.mark.structures import ParameterSet
@@ -9,9 +12,9 @@ from tests.e2e.utilities.build_arg_configurations import BuildArgConfigurations
 from tests.e2e.utilities.system_test_definition import SystemTestDefinition
 
 _TEST_DEFS: Dict[str, SystemTestDefinition] = {
-    "ot3_only": SystemTestDefinition(
-        test_id="ot3_only",
-        yaml_config_relative_path="samples/common_use_cases/basic/ot3_only.yaml",
+    "ot3_remote":       SystemTestDefinition(
+        test_id="ot3_remote",
+        yaml_config_relative_path="samples/ci/ot3/ot3_remote.yaml",
         monorepo_builder_created=True,
         ot3_firmware_builder_created=True,
         opentrons_modules_builder_created=False,
@@ -24,7 +27,7 @@ _TEST_DEFS: Dict[str, SystemTestDefinition] = {
     ),
     "ot3_firmware_dev": SystemTestDefinition(
         test_id="ot3_firmware_dev",
-        yaml_config_relative_path="samples/common_use_cases/bind/ot3_firmware.yaml",
+        yaml_config_relative_path="samples/ci/team_specific_setups/ot3_firmware_development.yaml",
         monorepo_builder_created=True,
         ot3_firmware_builder_created=True,
         opentrons_modules_builder_created=False,
@@ -37,9 +40,9 @@ _TEST_DEFS: Dict[str, SystemTestDefinition] = {
         ot3_firmware_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
         opentrons_modules_build_args=BuildArgConfigurations.NO_BUILD_ARGS,
     ),
-    "ot3_and_modules": SystemTestDefinition(
+    "ot3_and_modules":  SystemTestDefinition(
         test_id="ot3_and_modules",
-        yaml_config_relative_path="samples/common_use_cases/basic/ot3_and_modules.yaml",
+        yaml_config_relative_path="samples/ci/ot3/ot3_and_modules.yaml",
         monorepo_builder_created=True,
         ot3_firmware_builder_created=True,
         opentrons_modules_builder_created=True,
