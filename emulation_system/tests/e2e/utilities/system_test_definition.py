@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
-from docker.models.containers import Container
+from docker.models.containers import Container  # type: ignore[import]
 
 from tests.e2e.utilities.build_arg_configurations import BuildArgConfigurations
 from tests.e2e.utilities.consts import (
@@ -300,24 +300,28 @@ class SystemTestDefinition:
             OpentronsModulesEmulatorNamedVolumes.HEATER_SHAKER
         )
         thermocycler_hardware_volume = OpentronsModulesEmulatorNamedVolumes.THERMOCYCLER
-        for heater_shaker in modules.hardware_emulation_heater_shaker_modules:
-            test_description = TestDescription.from_named_volume(
-                heater_shaker, heater_shaker_hardware_volume
-            )
-            self._test_output.append_result(
-                confirm_named_volume_exists(
+        if modules.hardware_emulation_heater_shaker_modules is not None:
+            for heater_shaker in modules.hardware_emulation_heater_shaker_modules:
+                test_description = TestDescription.from_named_volume(
                     heater_shaker, heater_shaker_hardware_volume
-                ),
-                test_description,
-            )
-        for thermocycler in modules.hardware_emulation_thermocycler_modules:
-            test_description = TestDescription.from_named_volume(
-                thermocycler, thermocycler_hardware_volume
-            )
-            self._test_output.append_result(
-                confirm_named_volume_exists(thermocycler, thermocycler_hardware_volume),
-                test_description,
-            )
+                )
+                self._test_output.append_result(
+                    confirm_named_volume_exists(
+                        heater_shaker, heater_shaker_hardware_volume
+                    ),
+                    test_description,
+                )
+        if modules.hardware_emulation_thermocycler_modules is not None:
+            for thermocycler in modules.hardware_emulation_thermocycler_modules:
+                test_description = TestDescription.from_named_volume(
+                    thermocycler, thermocycler_hardware_volume
+                )
+                self._test_output.append_result(
+                    confirm_named_volume_exists(
+                        thermocycler, thermocycler_hardware_volume
+                    ),
+                    test_description,
+                )
 
     def _confirm_ot3_firmware_build_artifacts(self, ot3_system: OT3Containers) -> None:
         test_matrix = (
@@ -351,14 +355,16 @@ class SystemTestDefinition:
             ),
         )
         for container_list, expected_sim_name in test_matrix:
-            for container in container_list:
-                test_description = TestDescription(
-                    f"Confirming container {container.name} has simulator binary named {expected_sim_name} inside of /executable"
-                )
-                self._test_output.append_result(
-                    exec_in_container(container, "ls /executable") == expected_sim_name,
-                    test_description,
-                )
+            if container_list is not None:
+                for container in container_list:
+                    test_description = TestDescription(
+                        f"Confirming container {container.name} has simulator binary named {expected_sim_name} inside of /executable"
+                    )
+                    self._test_output.append_result(
+                        exec_in_container(container, "ls /executable")
+                        == expected_sim_name,
+                        test_description,
+                    )
 
     def compare(
         self,
@@ -420,7 +426,11 @@ class SystemTestDefinition:
             self._confirm_opentrons_modules_emulator_named_volumes(modules)
             self._confirm_opentrons_modules_build_artifacts(modules)
 
-        if self.local_monorepo_mounted and self.monorepo_builder_created:
+        if (
+            self.local_monorepo_mounted
+            and self.monorepo_builder_created
+            and mounts.MONOREPO is not None
+        ):
             test_description = TestDescription.from_mount(
                 ot3_system.monorepo_builder, mounts.MONOREPO
             )
@@ -430,7 +440,11 @@ class SystemTestDefinition:
                 test_description,
             )
 
-        if self.local_ot3_firmware_mounted and self.ot3_firmware_builder_created:
+        if (
+            self.local_ot3_firmware_mounted
+            and self.ot3_firmware_builder_created
+            and mounts.FIRMWARE is not None
+        ):
             test_description = TestDescription.from_mount(
                 ot3_system.firmware_builder, mounts.FIRMWARE
             )
@@ -443,6 +457,7 @@ class SystemTestDefinition:
         if (
             self.local_opentrons_modules_mounted
             and self.opentrons_modules_builder_created
+            and mounts.MODULES is not None
         ):
             test_description = TestDescription.from_mount(
                 ot3_system.modules_builder, mounts.MODULES

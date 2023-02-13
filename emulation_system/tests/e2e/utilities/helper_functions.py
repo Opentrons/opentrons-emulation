@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
 
-import docker
-from docker.models.containers import Container
+import docker  # type: ignore[import]
+from docker.models.containers import Container  # type: ignore[import]
 
 from emulation_system.compose_file_creator import Service
 
@@ -16,7 +16,7 @@ def get_mounts(container: Container) -> Optional[List[Dict[str, Any]]]:
 
 def get_container(service: Optional[Service]) -> Optional[Container]:
     if service is None:
-        return
+        return None
     else:
         return docker.from_env().containers.get(service.container_name)
 

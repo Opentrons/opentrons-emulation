@@ -30,12 +30,12 @@ class OT3FirmwareEmulatorNamedVolumesMap:
 
 @dataclass(frozen=True)
 class NamedVolumeList(abc.ABC):
-    VOLUMES: Tuple[ExpectedNamedVolume]
+    VOLUMES: Tuple[ExpectedNamedVolume, ...]
 
 
 @dataclass(frozen=True)
 class OT3FirmwareBuilderNamedVolumes(NamedVolumeList):
-    VOLUMES: Tuple[ExpectedNamedVolume] = (
+    VOLUMES: Tuple[ExpectedNamedVolume, ...] = (
         ExpectedNamedVolume("gantry_x_executable", "/volumes/gantry_x_volume"),
         ExpectedNamedVolume("gantry_y_executable", "/volumes/gantry_y_volume"),
         ExpectedNamedVolume("head_executable", "/volumes/head_volume"),
@@ -58,7 +58,7 @@ class MonorepoBuilderNamedVolumes(NamedVolumeList):
 
 @dataclass(frozen=True)
 class OpentronsModulesBuilderNamedVolumes(NamedVolumeList):
-    VOLUMES: Tuple[ExpectedNamedVolume] = (
+    VOLUMES: Tuple[ExpectedNamedVolume, ...] = (
         ExpectedNamedVolume(
             "heater_shaker_executable", "/volumes/heater_shaker_volume"
         ),
@@ -81,7 +81,7 @@ class CommonMounts:
 
 @dataclass(frozen=True)
 class OT3StateManagerNamedVolumes:
-    VOLUMES: Tuple[ExpectedNamedVolume] = (
+    VOLUMES: Tuple[ExpectedNamedVolume, ...] = (
         CommonNamedVolumes.MONOREPO_WHEELS,
         ExpectedNamedVolume("state_manager_venv", "/.venv"),
     )

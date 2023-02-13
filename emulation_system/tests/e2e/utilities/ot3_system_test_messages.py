@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from docker.models.containers import Container
+from docker.models.containers import Container  # type: ignore[import]
 
 from tests.e2e.utilities.consts import ExpectedMount, ExpectedNamedVolume
 

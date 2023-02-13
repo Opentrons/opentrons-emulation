@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from docker.models.containers import Container
+from docker.models.containers import Container  # type: ignore[import]
 
 from emulation_system.compose_file_creator.config_file_settings import (
     RepoToBuildArgMapping,
@@ -43,8 +43,13 @@ class OT3Containers:
             return False
 
         monorepo_builder_mounts = get_mounts(self.monorepo_builder)
-        return self.monorepo_builder_created and any(
-            mount["Destination"] == "/opentrons" for mount in monorepo_builder_mounts
+        return (
+            self.monorepo_builder_created
+            and monorepo_builder_mounts is not None
+            and any(
+                mount["Destination"] == "/opentrons"
+                for mount in monorepo_builder_mounts
+            )
         )
 
     @property
@@ -68,8 +73,13 @@ class OT3Containers:
             return False
 
         firmware_builder_mounts = get_mounts(self.firmware_builder)
-        return self.ot3_firmware_builder_created and any(
-            mount["Destination"] == "/ot3-firmware" for mount in firmware_builder_mounts
+        return (
+            self.ot3_firmware_builder_created
+            and firmware_builder_mounts is not None
+            and any(
+                mount["Destination"] == "/ot3-firmware"
+                for mount in firmware_builder_mounts
+            )
         )
 
     @property
@@ -93,9 +103,13 @@ class OT3Containers:
             return False
 
         modules_builder_mounts = get_mounts(self.modules_builder)
-        return self.opentrons_modules_builder_created and any(
-            mount["Destination"] == "/opentrons-modules"
-            for mount in modules_builder_mounts
+        return (
+            self.opentrons_modules_builder_created
+            and modules_builder_mounts is not None
+            and any(
+                mount["Destination"] == "/opentrons-modules"
+                for mount in modules_builder_mounts
+            )
         )
 
     @property

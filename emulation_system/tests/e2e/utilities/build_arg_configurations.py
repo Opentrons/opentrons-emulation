@@ -2,7 +2,7 @@ import re
 from enum import Enum, auto
 from typing import Dict
 
-from docker.models.containers import Container
+from docker.models.containers import Container  # type: ignore[import]
 
 from emulation_system.consts import COMMIT_SHA_REGEX
 
