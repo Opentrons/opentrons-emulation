@@ -228,10 +228,6 @@ check-remote-only:
 	@$(subst $(SUB), ${abs_path}, $(REMOTE_ONLY_EMULATION_SYSTEM_CMD)) > /dev/null
 	@echo "All services are remote"
 
-.PHONY: test-samples
-test-samples:
-	@./scripts/makefile/helper_scripts/test_samples.sh
-
 .PHONY: push-docker-image-bases
 push-docker-image-bases:
 	$(if $(branch_name),,$(error branch_name variable required))
