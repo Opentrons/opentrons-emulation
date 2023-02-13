@@ -13,7 +13,7 @@
 system-unique-id: ot3-only
 robot:
   id: otie
-  hardware: ot3`
+  hardware: ot3
   emulation-level: hardware
   exposed-port: 31950
   can-server-exposed-port: 9898
