@@ -30,5 +30,5 @@ modules:
     hardware: temperature-module
     emulation-level: firmware
 
-monorepo-source: /home/derek-maggio/Documents/repos/opentrons
-opentrons-modules-source: /home/derek-maggio/Documents/repos/opentrons-modules
+monorepo-source: /absolute/path/to/opentrons
+ot3-firmware-source: /absolute/path/to/ot3-firmware

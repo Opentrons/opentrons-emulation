@@ -17,6 +17,6 @@ robot:
   hardware: ot3
   emulation-level: hardware
   exposed-port: 31950
-monorepo-source: /home/derek-maggio/Documents/repos/opentrons
-ot3-firmware-source: /home/derek-maggio/Documents/repos/ot3-firmware
-opentrons-modules-source: /home/derek-maggio/Documents/repos/opentrons-modules
+monorepo-source: /absolute/path/to/opentrons
+ot3-firmware-source: /absolute/path/to/ot3-firmware
+opentrons-modules-source: /absolute/path/to/opentrons-modules

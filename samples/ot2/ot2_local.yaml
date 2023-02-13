@@ -8,9 +8,7 @@
 # Required Source Code #
 ########################
 
-# You are required to supply source code paths for `source-location` and `robot-server-source-location`
-# `source-location` supplies source code for the smoothie emulator
-# `robot-server-source-location` supplies source code for the robot-server
+# You are required to supply source code paths for `monorepo-source`
 
 system-unique-id: ot2-local
 robot:
@@ -18,4 +16,4 @@ robot:
   hardware: ot2
   emulation-level: firmware
   exposed-port: 31950
-monorepo-source: /home/derek-maggio/Documents/repos/opentrons
+monorepo-source: /absolute/path/to/opentrons
