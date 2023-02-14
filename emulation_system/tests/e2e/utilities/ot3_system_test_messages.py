@@ -1,3 +1,5 @@
+"""Dataclass and constants representing test result descripiptions."""
+
 from dataclasses import dataclass
 from typing import List
 
@@ -8,6 +10,8 @@ from tests.e2e.utilities.consts import ExpectedMount, ExpectedNamedVolume
 
 @dataclass
 class TestDescription:
+    """Class representing description of test result."""
+
     desc: str
 
     @classmethod
@@ -17,6 +21,7 @@ class TestDescription:
         named_volume: ExpectedNamedVolume,
         confirm_not_exists: bool = False,
     ) -> "TestDescription":
+        """Helper method to generate TestDescrition from a ExpectedNamedVolume object"""
         expectation = "does not have" if confirm_not_exists else "has"
         return cls(
             desc=f'Confirming container "{container.name}" {expectation} named volume '
@@ -31,6 +36,7 @@ class TestDescription:
         mount: ExpectedMount,
         confirm_not_exists: bool = False,
     ) -> "TestDescription":
+        """Helper method to genreate TestDescription object from ExpectedMount object"""
         expectation = "does not have" if confirm_not_exists else "has"
         return cls(
             desc=(
@@ -40,9 +46,11 @@ class TestDescription:
         )
 
     def generate_pass_message(self) -> str:
+        """Call this method if test passes."""
         return f"PASS: {self.desc}"
 
     def generate_fail_message(self) -> str:
+        """Call this method if test fails."""
         return f"FAIL: {self.desc}"
 
 
@@ -96,12 +104,15 @@ OPENTRONS_MODULES_SOURCE_NOT_MOUNTED = TestDescription(
 
 
 class E2ETestOutput:
+    """Class containing all results from e2e test being ran."""
+
     def __init__(self) -> None:
         self._output: List[str] = []
         self._failure = False
         self._failure_count = 0
 
     def append_result(self, assertion: bool, result: TestDescription) -> None:
+        """Add a result to test output."""
         if assertion:
             self._output.append(result.generate_pass_message())
         else:
@@ -110,12 +121,15 @@ class E2ETestOutput:
             self._output.append(result.generate_fail_message())
 
     def get_results(self) -> str:
+        """Return formatted results."""
         return "\n" + "\n".join(self._output)
 
     @property
     def is_failure(self) -> bool:
+        """Whether or not test failed."""
         return self._failure
 
     @property
     def failure_count(self) -> int:
+        """Number of failures."""
         return self._failure_count

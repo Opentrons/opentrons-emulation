@@ -1,3 +1,5 @@
+"""Dataaclass to easily access all module containers in system."""
+
 from dataclasses import dataclass
 from typing import List, Optional
 
@@ -17,6 +19,7 @@ class ModuleContainers:
 
     @property
     def all_modules(self) -> List[Container]:
+        """Returns list of all modules in emulated system."""
         result_list = []
 
         for mod_list in [
@@ -34,6 +37,7 @@ class ModuleContainers:
 
     @property
     def firmware_level_modules(self) -> List[Container]:
+        """Returns list of all modules that are using firmware emulation in the emulated system."""
         result_list = []
 
         for mod_list in [

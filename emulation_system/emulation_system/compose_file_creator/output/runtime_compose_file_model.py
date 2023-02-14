@@ -219,6 +219,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
 
     @property
     def hardware_level_heater_shaker_module_emulators(self) -> Optional[List[Service]]:
+        """Return any hardware level emulation heater-shaker modules."""
         return self.load_containers_by_filter(
             ContainerFilters.HEATER_SHAKER_MODULE.filter_name,
             only_hardware_level=True
@@ -226,6 +227,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
 
     @property
     def firmware_level_heater_shaker_module_emulators(self) -> Optional[List[Service]]:
+        """Return any firmware level emulation heater-shaker modules."""
         return self.load_containers_by_filter(
             ContainerFilters.HEATER_SHAKER_MODULE.filter_name,
             only_firmware_level=True
@@ -240,6 +242,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
 
     @property
     def hardware_level_thermocycler_module_emulators(self) -> Optional[List[Service]]:
+        """Return any hardware level emulation thermocycler modules."""
         return self.load_containers_by_filter(
             ContainerFilters.THERMOCYCLER_MODULE.filter_name,
             only_hardware_level=True
@@ -247,6 +250,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
 
     @property
     def firmware_level_thermocycler_module_emulators(self) -> Optional[List[Service]]:
+        """Return any firmware level emulation thermocycler modules."""
         return self.load_containers_by_filter(
             ContainerFilters.THERMOCYCLER_MODULE.filter_name,
             only_firmware_level=True

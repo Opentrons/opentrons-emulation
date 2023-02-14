@@ -1,3 +1,5 @@
+"""Module containg helper class to access OT-3 Containers for local system"""
+
 from dataclasses import dataclass
 from typing import List, Optional
 
@@ -123,6 +125,7 @@ class OT3Containers:
 
     @property
     def containers_with_entrypoint_script(self) -> List[Container]:
+        """List of containers that are expected to have an entrypoint script."""
         return [
             self.gantry_x,
             self.gantry_y,
@@ -138,6 +141,7 @@ class OT3Containers:
 
     @property
     def containers_with_monorepo_wheel_volume(self) -> List[Container]:
+        """List of containers that are expected to have the monorepo wheel volume (/dist) folder."""
         return [
             self.monorepo_builder,
             self.emulator_proxy,

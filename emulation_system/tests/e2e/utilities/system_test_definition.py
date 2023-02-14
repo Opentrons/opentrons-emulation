@@ -1,3 +1,4 @@
+"""Module containing logic for e2e tests."""
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
@@ -80,27 +81,33 @@ def _filter_volumes(
 def confirm_named_volume_exists(
     container: Container, expected_vol: ExpectedNamedVolume
 ) -> bool:
+    """Helper method to assert that exected named volume exists on Docker container."""
     return len(_filter_volumes(container, expected_vol)) == 1
 
 
 def confirm_named_volume_does_not_exist(
     container: Container, expected_vol: ExpectedNamedVolume
 ) -> bool:
+    """Helper method to assert that expected named volue does NOT exist on Docker container."""
     return len(_filter_volumes(container, expected_vol)) == 0
 
 
 def confirm_mount_exists(container: Container, expected_mount: ExpectedMount) -> bool:
+    """Helper method to assert that mount exists on Docker container."""
     return len(_filter_mounts(container, expected_mount)) == 1
 
 
 def confirm_mount_does_not_exist(
     container: Container, expected_mount: ExpectedMount
 ) -> bool:
+    """Helper method to assert that mount does NOT exist on Docker container."""
     return len(_filter_mounts(container, expected_mount)) == 0
 
 
 @dataclass
 class SystemTestDefinition:
+    """Class representing expected results for a specific yaml configuration file."""
+
     test_id: str
     yaml_config_relative_path: str
     monorepo_builder_created: bool
@@ -119,6 +126,7 @@ class SystemTestDefinition:
     )
 
     def _confirm_created_builders(self, ot3_system: OT3Containers) -> None:
+        """Confirm that the correct builder containers were created."""
         monorepo_builder_test_description: TestDescription = (
             MONOREPO_BUILDER_CREATED
             if self.monorepo_builder_created
@@ -153,6 +161,7 @@ class SystemTestDefinition:
         )
 
     def _confirm_local_mounts(self, ot3_system: OT3Containers) -> None:
+        """Confirm local mounts are created as expected."""
         monorepo_source_mounted_test_description: TestDescription = (
             MONOREPO_SOURCE_MOUNTED
             if self.local_monorepo_mounted
@@ -372,6 +381,7 @@ class SystemTestDefinition:
         modules: ModuleContainers,
         mounts: ExpectedBindMounts,
     ) -> None:
+        """Public facing method to run all above protected assertion methods."""
         self._confirm_created_builders(ot3_system)
         self._confirm_local_mounts(ot3_system)
         self._confirm_build_args(ot3_system)
@@ -469,7 +479,9 @@ class SystemTestDefinition:
             )
 
     def is_failure(self) -> bool:
+        """Public facing method to expose whether any test cases failed."""
         return self._test_output.is_failure
 
     def print_output(self) -> str:
+        """Public facing method to print output of test."""
         return self._test_output.get_results()

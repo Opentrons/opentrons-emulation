@@ -1,3 +1,4 @@
+"""pytest conftest file for e2e testing"""
 import os
 from typing import Callable
 
@@ -24,6 +25,11 @@ from tests.e2e.utilities.ot3_containers import OT3Containers
 def ot3_model_under_test(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> Callable:
+    """Pytest fixture to generate OT3Containers object based of a path to a yaml configuration file.
+
+    This method will actually create a Callable object that when called is the OT3Containers object.
+    """
+
     def _model_under_test(relative_path: str) -> OT3Containers:
         abs_path = os.path.join(ROOT_DIR, relative_path)
         with open(abs_path, "r") as file:
@@ -55,6 +61,11 @@ def ot3_model_under_test(
 def modules_under_test(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> Callable:
+    """Pytest fixture to generate ModuleContainers object based of a path to a yaml configuration file.
+
+    This method will actually create a Callable object that when called is the ModuleContainers object.
+    """
+
     def _model_under_test(relative_path: str) -> ModuleContainers:
         abs_path = os.path.join(ROOT_DIR, relative_path)
         with open(abs_path, "r") as file:
@@ -91,6 +102,11 @@ def modules_under_test(
 def local_mounts_under_test(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> Callable:
+    """Pytest fixture to generate ExpectedBindMount object based of a path to a yaml configuration file.
+
+    This method will actually create a Callable object that when called is the ExpectedBindMount object.
+    """
+
     def _model_under_test(relative_path: str) -> ExpectedBindMounts:
         abs_path = os.path.join(ROOT_DIR, relative_path)
         with open(abs_path, "r") as file:

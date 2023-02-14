@@ -1,3 +1,5 @@
+"""Class representing where source code was pulled from for given container."""
+
 import re
 from enum import Enum, auto
 from typing import Dict

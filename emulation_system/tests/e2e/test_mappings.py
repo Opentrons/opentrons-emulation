@@ -1,3 +1,5 @@
+"""Module for storing e2e test configurations."""
+
 import argparse
 import json
 from typing import Dict, List
@@ -54,16 +56,19 @@ _TEST_DEFS: Dict[str, SystemTestDefinition] = {
 
 
 def get_e2e_test_parmeters() -> List[ParameterSet]:
+    """Generates pytest parameters based off of above list of TestMapping objects."""
     return [
         pytest.param(mapping, id=mapping.test_id) for mapping in _TEST_DEFS.values()
     ]
 
 
 def get_test_ids() -> str:
+    """Generates list of test ids to past to pytest.mark.parameterize with above get_e2e_test_parameters."""
     return json.dumps([mapping.test_id for mapping in _TEST_DEFS.values()])
 
 
 def get_test_path(test_id: str) -> str:
+    """Gets relative path to test for passed test id."""
     return _TEST_DEFS[test_id].yaml_config_relative_path
 
 
