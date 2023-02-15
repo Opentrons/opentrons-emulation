@@ -29,6 +29,7 @@ from emulation_system.compose_file_creator.errors import (
 from emulation_system.compose_file_creator.images import get_image_name
 from emulation_system.consts import RESTRICTED_MOUNT_NAMES, SOURCE_CODE_MOUNT_NAME
 
+from ...utilities.shared_functions import to_kebab
 from .hardware_specific_attributes import HardwareSpecificAttributes
 
 COMMIT_SHA_REGEX = r"^[0-9a-f]{40}"
@@ -39,15 +40,10 @@ class HardwareModel(BaseModel):
 
     id: str = Field(..., regex=r"^[a-zA-Z0-9-_]+$")
     hardware: str
-    source_type: SourceType = Field(alias="source-type")
-    source_location: str = Field(alias="source-location")
     # This is being called mounts because all mounts will be stored in it.
     # Just going to start by adding the extra-mounts to it and adding any
     # generated mounts during _post_init().
-    mounts: List[Union[FileMount, DirectoryMount]] = Field(
-        alias="extra-mounts", default=[]
-    )
-
+    mounts: List[Union[FileMount, DirectoryMount]] = Field(alias="mounts", default=[])
     source_repos: SourceRepositories = NotImplemented
     emulation_level: EmulationLevels = NotImplemented
     hardware_specific_attributes: HardwareSpecificAttributes = NotImplemented
@@ -59,6 +55,7 @@ class HardwareModel(BaseModel):
         validate_assignment = True
         use_enum_values = True
         extra = "forbid"
+        alias_generator = to_kebab
 
     def __init__(self, **data: Any) -> None:
         super().__init__(**data)
@@ -69,21 +66,6 @@ class HardwareModel(BaseModel):
         # Note that at this point, any extra-mounts defined in the configuration
         # file, exist in the mounts list.
         self.mounts.extend(self._get_source_code_mount())
-
-    @staticmethod
-    def validate_source_location(key: str, v: str, values: Dict[str, Any]) -> str:
-        """If source type is local, confirms directory path specified exists."""
-        if values[key] == SourceType.LOCAL:
-            if not os.path.isdir(v):
-                raise LocalSourceDoesNotExistError(v)
-        else:
-            lower_case_v = v.lower()
-            if (
-                lower_case_v != "latest"
-                and re.compile(COMMIT_SHA_REGEX).match(lower_case_v) is None
-            ):
-                raise InvalidRemoteSourceError(v)
-        return v
 
     def _get_source_code_mount(self) -> List[DirectoryMount]:
         """If running a local type image add the mount to the mounts attribute."""
@@ -99,13 +81,6 @@ class HardwareModel(BaseModel):
             ]
             if self.source_type == SourceType.LOCAL
             else []
-        )
-
-    @validator("source_location")
-    def check_source_location(cls, v: str, values: Dict[str, Any]) -> str:
-        """If source type is local, confirms directory path specified exists."""
-        return cls.validate_source_location("source_type", v, values)
-
     @validator("mounts", pre=True, each_item=True)
     def check_for_restricted_names(cls, v: Dict[str, str]) -> Dict[str, str]:
         """Confirms that none of the mount names use restricted values."""
@@ -138,17 +113,6 @@ class HardwareModel(BaseModel):
             else:
                 return found_mounts[0]
 
-    def get_source_repo(self) -> OpentronsRepository:
-        """Get source repo for HardwareModel."""
-        if self.emulation_level == EmulationLevels.HARDWARE:
-            repo = self.source_repos.hardware_repo_name
-        else:
-            repo = self.source_repos.firmware_repo_name
-
-        if repo is None:
-            raise EmulationLevelNotSupportedError(self.emulation_level, self.hardware)
-
-        return repo
 
     def get_image_name(self) -> str:
         """Get image name to run based off of passed parameters."""

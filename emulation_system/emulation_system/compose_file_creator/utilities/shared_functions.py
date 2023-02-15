@@ -26,16 +26,9 @@ def get_build_args(
     return {env_var_to_use: value}
 
 
-def _add_named_volumes(
-    mount_list: List[str],
-    directory_to_search_for: str,
-    build_dirs: List[str],
-) -> None:
-    """Adds named volumes for build files."""
-    for mount in mount_list:
-        if directory_to_search_for in mount:
-            mount_list.extend(build_dirs)
-            return
+def to_kebab(string: str) -> str:
+    """Converts snake case formatted string to kebab case."""
+    return string.replace("_", "-")
 
 
 def add_ot3_firmware_named_volumes(mount_list: List[str]) -> None:

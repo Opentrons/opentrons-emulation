@@ -13,7 +13,7 @@ from ..errors import DuplicateHardwareNameError
 from ..types.input_types import Containers, Modules, Robots
 from ..types.intermediate_types import IntermediateNetworks
 from ..utilities.hardware_utils import is_ot2, is_ot3
-from .hardware_models import OT2InputModel, OT3InputModel
+from ..utilities.shared_functions import to_kebab
 
 
 class SystemConfigurationModel(BaseModel):
@@ -22,9 +22,7 @@ class SystemConfigurationModel(BaseModel):
     Represents an entire system to be brought up.
     """
 
-    system_unique_id: Optional[str] = Field(
-        alias="system-unique-id", regex=r"^[A-Za-z0-9-]+$", min_length=1
-    )
+    system_unique_id: Optional[str] = Field(regex=r"^[A-Za-z0-9-]+$", min_length=1)
     robot: Optional[Robots]
     modules: Optional[List[Modules]] = Field(default=[])
 
@@ -32,6 +30,8 @@ class SystemConfigurationModel(BaseModel):
         """Config class used by pydantic."""
 
         extra = "forbid"
+        allow_population_by_field_name = True
+        alias_generator = to_kebab
 
     @root_validator(pre=True)
     def validate_names(cls, values) -> Dict[str, Dict[str, Containers]]:  # noqa: ANN001

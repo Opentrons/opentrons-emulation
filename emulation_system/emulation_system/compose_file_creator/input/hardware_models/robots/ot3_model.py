@@ -56,51 +56,21 @@ class OT3InputModel(RobotInputModel):
     source_repos: OT3SourceRepositories = Field(
         default=OT3SourceRepositories(), const=True, exclude=True
     )
-    can_server_source_type: SourceType = Field(alias="can-server-source-type")
-    can_server_source_location: str = Field(alias="can-server-source-location")
+    hardware_specific_attributes: OT3Attributes = Field(default=OT3Attributes())
+    emulation_level: Literal[EmulationLevels.HARDWARE]
+    bound_port: int = Field(default=31950)
+    can_server_exposed_port: Optional[int]
+    can_server_bound_port: int = Field(default=9898)
+    ot3_state_manager_exposed_port: int = Field(default=OT3_STATE_MANAGER_BOUND_PORT)
 
-    opentrons_hardware_source_type: SourceType = Field(
-        alias="opentrons-hardware-source-type"
-    )
-    opentrons_hardware_source_location: str = Field(
-        alias="opentrons-hardware-source-location"
-    )
-
-    hardware_specific_attributes: OT3Attributes = Field(
-        alias="hardware-specific-attributes", default=OT3Attributes()
-    )
-    emulation_level: Literal[EmulationLevels.HARDWARE] = Field(alias="emulation-level")
-    bound_port: int = Field(alias="bound-port", default=31950)
-    can_server_exposed_port: Optional[int] = Field(alias="can-server-exposed-port")
-    can_server_bound_port: int = Field(alias="can-server-bound-port", default=9898)
-    ot3_state_manager_exposed_port: int = Field(
-        alias="ot3-state-manager-exposed-port", default=OT3_STATE_MANAGER_BOUND_PORT
-    )
-
-    can_server_env_vars: IntermediateEnvironmentVariables | None = Field(
-        alias="can-server-env-vars"
-    )
-    gripper_env_vars: IntermediateEnvironmentVariables | None = Field(
-        alias="gripper-env-vars"
-    )
-    gantry_x_env_vars: IntermediateEnvironmentVariables | None = Field(
-        alias="gantry-x-env-vars"
-    )
-    gantry_y_env_vars: IntermediateEnvironmentVariables | None = Field(
-        alias="gantry-y-env-vars"
-    )
-    pipettes_env_vars: IntermediateEnvironmentVariables | None = Field(
-        alias="pipettes-env-vars"
-    )
-    head_env_vars: IntermediateEnvironmentVariables | None = Field(
-        alias="head-env-vars"
-    )
-    bootloader_env_vars: IntermediateEnvironmentVariables | None = Field(
-        alias="bootloader-env-vars"
-    )
-    state_manager_env_vars: IntermediateEnvironmentVariables | None = Field(
-        alias="state-manager-env-vars"
-    )
+    can_server_env_vars: IntermediateEnvironmentVariables | None
+    gripper_env_vars: IntermediateEnvironmentVariables | None
+    gantry_x_env_vars: IntermediateEnvironmentVariables | None
+    gantry_y_env_vars: IntermediateEnvironmentVariables | None
+    pipettes_env_vars: IntermediateEnvironmentVariables | None
+    head_env_vars: IntermediateEnvironmentVariables | None
+    bootloader_env_vars: IntermediateEnvironmentVariables | None
+    state_manager_env_vars: IntermediateEnvironmentVariables | None
 
     def get_can_mount_strings(self) -> List[str]:
         """Get mount strings for can service."""

@@ -56,11 +56,9 @@ class HeaterShakerModuleInputModel(ModuleInputModel):
         default=HeaterShakerModuleSourceRepositories(), const=True, exclude=True
     )
     hardware_specific_attributes: HeaterShakerModuleAttributes = Field(
-        alias="hardware-specific-attributes", default=HeaterShakerModuleAttributes()
+        default=HeaterShakerModuleAttributes()
     )
-    emulation_level: Literal[
-        EmulationLevels.HARDWARE, EmulationLevels.FIRMWARE
-    ] = Field(alias="emulation-level")
+    emulation_level: Literal[EmulationLevels.HARDWARE, EmulationLevels.FIRMWARE]
 
     def get_hardware_level_command(
         self, emulator_proxy_name: str
