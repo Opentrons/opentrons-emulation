@@ -59,28 +59,6 @@ class HardwareModel(BaseModel):
 
     def __init__(self, **data: Any) -> None:
         super().__init__(**data)
-        self._post_init()
-
-    def _post_init(self) -> None:
-        """Methods to always run after initialization."""
-        # Note that at this point, any extra-mounts defined in the configuration
-        # file, exist in the mounts list.
-        self.mounts.extend(self._get_source_code_mount())
-
-    def _get_source_code_mount(self) -> List[DirectoryMount]:
-        """If running a local type image add the mount to the mounts attribute."""
-        service_mount_path = os.path.basename(os.path.normpath(self.source_location))
-        return (
-            [
-                DirectoryMount(
-                    name=SOURCE_CODE_MOUNT_NAME,
-                    type=MountTypes.DIRECTORY,
-                    source_path=pathlib.Path(self.source_location),
-                    mount_path=f"/{service_mount_path}",
-                )
-            ]
-            if self.source_type == SourceType.LOCAL
-            else []
     @validator("mounts", pre=True, each_item=True)
     def check_for_restricted_names(cls, v: Dict[str, str]) -> Dict[str, str]:
         """Confirms that none of the mount names use restricted values."""
