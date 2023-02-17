@@ -1,0 +1,22 @@
+######################
+# System Description #
+######################
+
+# This system builds a single OT3
+
+########################
+# Required Source Code #
+########################
+
+# All source code is pulled from the latest version in Github
+
+system-unique-id: ot3-only
+robot:
+  id: otie
+  hardware: ot3
+  emulation-level: hardware
+  exposed-port: 31950
+  can-server-exposed-port: 9898
+
+monorepo-source: /home/runner/work/opentrons-emulation/opentrons-emulation/opentrons
+ot3-firmware-source: /home/runner/work/opentrons-emulation/opentrons-emulation/ot3-firmware
