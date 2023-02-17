@@ -236,6 +236,7 @@ def test_get_image_name_from_hardware_model() -> None:
         source_type=SourceType.REMOTE,
         source_location="latest",
         emulation_level=EmulationLevels.HARDWARE,
+        module_env_vars=None,
     )
     assert model.get_image_name() == "heater-shaker-hardware-remote"
 
