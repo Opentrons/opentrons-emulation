@@ -29,17 +29,13 @@ class RobotInputModel(HardwareModel):
     Used to group all robots together and distinguish them from modules.
     """
 
-    exposed_port: int = Field(..., alias="exposed-port")
+    exposed_port: int
     bound_port: int
-    robot_server_source_type: SourceType = Field(..., alias="robot-server-source-type")
-    robot_server_source_location: str = Field(..., alias="robot-server-source-location")
+    robot_server_source_type: SourceType
+    robot_server_source_location: str
 
-    robot_server_env_vars: IntermediateEnvironmentVariables | None = Field(
-        alias="robot-server-env-vars"
-    )
-    emulator_proxy_env_vars: IntermediateEnvironmentVariables | None = Field(
-        alias="emulator-proxy-env-vars"
-    )
+    robot_server_env_vars: IntermediateEnvironmentVariables | None
+    emulator_proxy_env_vars: IntermediateEnvironmentVariables | None
 
     @validator("robot_server_source_location")
     def robot_server_check_source_location(cls, v: str, values: Dict[str, Any]) -> str:

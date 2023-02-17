@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field, parse_obj_as
 
 from .compose_file_creator.config_file_settings import OpentronsRepository
 from .compose_file_creator.errors import RepoDoesNotExistError
+from .compose_file_creator.utilities.shared_functions import to_kebab
 from .consts import (
     CONFIGURATION_FILE_LOCATION_VAR_NAME,
     DEFAULT_CONFIGURATION_FILE_PATH,
@@ -25,16 +26,30 @@ class Heads(BaseModel):
     """Where to download the head of the repos from."""
 
     opentrons: str
-    ot3_firmware: str = Field(..., alias="ot3-firmware")
+    ot3_firmware: str
     modules: str
+
+    class Config:
+        """Config class used by pydantic."""
+
+        extra = "forbid"
+        allow_population_by_field_name = True
+        alias_generator = to_kebab
 
 
 class Commits(BaseModel):
     """Format string for where to download a specific commit sha from."""
 
     opentrons: str
-    ot3_firmware: str = Field(..., alias="ot3-firmware")
+    ot3_firmware: str
     modules: str
+
+    class Config:
+        """Config class used by pydantic."""
+
+        extra = "forbid"
+        allow_population_by_field_name = True
+        alias_generator = to_kebab
 
 
 class SourceDownloadLocations(BaseModel):
@@ -47,15 +62,27 @@ class SourceDownloadLocations(BaseModel):
 class EmulationSettings(BaseModel):
     """All settings related to `em` command."""
 
-    source_download_locations: SourceDownloadLocations = Field(
-        ..., alias="source-download-locations"
-    )
+    source_download_locations: SourceDownloadLocations
+
+    class Config:
+        """Config class used by pydantic."""
+
+        extra = "forbid"
+        allow_population_by_field_name = True
+        alias_generator = to_kebab
 
 
 class OpentronsEmulationConfiguration(BaseModel):
     """Model representing entire configuration file."""
 
-    emulation_settings: EmulationSettings = Field(..., alias="emulation-settings")
+    emulation_settings: EmulationSettings
+
+    class Config:
+        """Config class used by pydantic."""
+
+        extra = "forbid"
+        allow_population_by_field_name = True
+        alias_generator = to_kebab
 
     @classmethod
     def from_file_path(cls, json_file_path: str) -> OpentronsEmulationConfiguration:

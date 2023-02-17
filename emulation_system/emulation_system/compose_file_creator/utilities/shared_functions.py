@@ -69,3 +69,7 @@ def add_opentrons_modules_named_volumes(mount_list: List[str]) -> None:
             "opentrons-modules-stm32-tools:/opentrons-modules/stm32-tools",
         ],
     )
+
+def to_kebab(string: str) -> str:
+    """Converts snake case formatted string to kebab case."""
+    return string.replace("_", "-")

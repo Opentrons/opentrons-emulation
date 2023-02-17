@@ -22,8 +22,8 @@ from .robot_model import RobotInputModel
 class OT2Attributes(HardwareSpecificAttributes):
     """Attributes specific to OT2."""
 
-    left: PipetteSettings = Field(alias="left-pipette", default=PipetteSettings())
-    right: PipetteSettings = Field(alias="right-pipette", default=PipetteSettings())
+    left: PipetteSettings = Field(default=PipetteSettings())
+    right: PipetteSettings = Field(default=PipetteSettings())
 
 
 class OT2SourceRepositories(SourceRepositories):
@@ -40,11 +40,7 @@ class OT2InputModel(RobotInputModel):
     source_repos: OT2SourceRepositories = Field(
         default=OT2SourceRepositories(), const=True, exclude=True
     )
-    hardware_specific_attributes: OT2Attributes = Field(
-        alias="hardware-specific-attributes", default=OT2Attributes()
-    )
-    emulation_level: Literal[EmulationLevels.FIRMWARE] = Field(alias="emulation-level")
-    bound_port: int = Field(alias="bound-port", default=31950)
-    smoothie_env_vars: IntermediateEnvironmentVariables | None = Field(
-        alias="smoothie-env-vars"
-    )
+    hardware_specific_attributes: OT2Attributes = Field(default=OT2Attributes())
+    emulation_level: Literal[EmulationLevels.FIRMWARE]
+    bound_port: int = Field(default=31950)
+    smoothie_env_vars: IntermediateEnvironmentVariables | None

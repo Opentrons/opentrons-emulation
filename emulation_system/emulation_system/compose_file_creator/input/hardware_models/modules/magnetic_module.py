@@ -47,9 +47,9 @@ class MagneticModuleInputModel(ModuleInputModel):
         default=MagneticModuleSourceRepositories(), const=True, exclude=True
     )
     hardware_specific_attributes: MagneticModuleAttributes = Field(
-        alias="hardware-specific-attributes", default=MagneticModuleAttributes()
+        default=MagneticModuleAttributes()
     )
-    emulation_level: Literal[EmulationLevels.FIRMWARE] = Field(alias="emulation-level")
+    emulation_level: Literal[EmulationLevels.FIRMWARE]
 
     def get_firmware_level_command(
         self, emulator_proxy_name: str

@@ -41,15 +41,12 @@ class ModuleInputModel(HardwareModel):
     """
 
     firmware_serial_number_info: ClassVar[Optional[FirmwareSerialNumberModel]] = Field(
-        alias="firmware-serial-number-info", allow_mutation=False
+        allow_mutation=False
     )
     proxy_info: ClassVar[ProxyInfoModel] = Field(
-        alias="proxy-info", allow_mutation=False
+        allow_mutation=False
     )
-
-    module_env_vars: IntermediateEnvironmentVariables | None = Field(
-        alias="module-env-vars"
-    )
+    module_env_vars: IntermediateEnvironmentVariables | None
 
     def _get_firmware_serial_number_env_var(self) -> Dict[str, str]:
         """Builds firmware level serial number environment variable."""

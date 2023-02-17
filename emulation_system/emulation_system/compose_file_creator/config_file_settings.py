@@ -5,6 +5,7 @@ from typing import Optional, Union
 from pydantic import BaseModel, DirectoryPath, Field, FilePath
 from typing_extensions import Literal
 
+from emulation_system.compose_file_creator.utilities.shared_functions import to_kebab
 from emulation_system.consts import ROOM_TEMPERATURE
 
 
@@ -73,15 +74,29 @@ class HeaterShakerModes(str, Enum):
 class TemperatureModelSettings(BaseModel):
     """Temperature behavior model."""
 
-    degrees_per_tick: float = Field(alias="degrees-per-tick", default=2.0)
+    degrees_per_tick: float = Field(default=2.0)
     starting: float = float(ROOM_TEMPERATURE)
+
+    class Config:
+        """Config class used by pydantic."""
+
+        extra = "forbid"
+        allow_population_by_field_name = True
+        alias_generator = to_kebab
 
 
 class RPMModelSettings(BaseModel):
     """RPM behavior model."""
 
-    rpm_per_tick: float = Field(alias="rpm-per-tick", default=100.0)
+    rpm_per_tick: float = Field(default=100.0)
     starting: float = 0.0
+
+    class Config:
+        """Config class used by pydantic."""
+
+        extra = "forbid"
+        allow_population_by_field_name = True
+        alias_generator = to_kebab
 
 
 class PipetteSettings(BaseModel):
@@ -126,8 +141,15 @@ class Mount(BaseModel):
 
     name: str = Field(..., regex=r"^[A-Z0-9_]+$")
     type: str
-    mount_path: str = Field(..., alias="mount-path")
-    source_path: Union[DirectoryPath, FilePath] = Field(..., alias="source-path")
+    mount_path: str
+    source_path: Union[DirectoryPath, FilePath]
+
+    class Config:
+        """Config class used by pydantic."""
+
+        extra = "forbid"
+        allow_population_by_field_name = True
+        alias_generator = to_kebab
 
     def is_duplicate(self, other: "Mount") -> bool:
         """Compare everything except name."""
@@ -153,11 +175,12 @@ class DirectoryMount(Mount):
     """Directory type Mount."""
 
     type: Literal[MountTypes.DIRECTORY]
-    source_path: DirectoryPath = Field(..., alias="source-path")
+    source_path: DirectoryPath
+
 
 
 class FileMount(Mount):
     """File type Mount."""
 
     type: Literal[MountTypes.FILE]
-    source_path: FilePath = Field(..., alias="source-path")
+    source_path: FilePath

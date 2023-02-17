@@ -30,6 +30,7 @@ from emulation_system.compose_file_creator.images import get_image_name
 from emulation_system.consts import RESTRICTED_MOUNT_NAMES, SOURCE_CODE_MOUNT_NAME
 
 from .hardware_specific_attributes import HardwareSpecificAttributes
+from ...utilities.shared_functions import to_kebab
 
 COMMIT_SHA_REGEX = r"^[0-9a-f]{40}"
 
@@ -39,14 +40,12 @@ class HardwareModel(BaseModel):
 
     id: str = Field(..., regex=r"^[a-zA-Z0-9-_]+$")
     hardware: str
-    source_type: SourceType = Field(alias="source-type")
-    source_location: str = Field(alias="source-location")
+    source_type: SourceType
+    source_location: str
     # This is being called mounts because all mounts will be stored in it.
     # Just going to start by adding the extra-mounts to it and adding any
     # generated mounts during _post_init().
-    mounts: List[Union[FileMount, DirectoryMount]] = Field(
-        alias="extra-mounts", default=[]
-    )
+    mounts: List[Union[FileMount, DirectoryMount]] = Field(default=[])
 
     source_repos: SourceRepositories = NotImplemented
     emulation_level: EmulationLevels = NotImplemented
@@ -59,6 +58,7 @@ class HardwareModel(BaseModel):
         validate_assignment = True
         use_enum_values = True
         extra = "forbid"
+        alias_generator = to_kebab
 
     def __init__(self, **data: Any) -> None:
         super().__init__(**data)
