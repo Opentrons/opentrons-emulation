@@ -15,9 +15,7 @@ system-unique-id: ot2-only
 robot:
   id: otie
   hardware: ot2
-  source-type: remote
-  source-location: latest
-  robot-server-source-type: remote
-  robot-server-source-location: latest
   emulation-level: firmware
   exposed-port: 31950
+
+monorepo-source: latest
