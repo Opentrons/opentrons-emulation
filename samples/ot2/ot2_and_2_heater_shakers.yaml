@@ -2,7 +2,7 @@
 # System Description #
 ######################
 
-# This system builds an OT2 and 2 heaters-shakers
+# This system builds an OT2 and 2 heater-shakers
 
 ########################
 # Required Source Code #
@@ -14,20 +14,16 @@ system-unique-id: ot2-and-2-heater-shakers
 robot:
   id: otie
   hardware: ot2
-  source-type: remote
-  source-location: latest
-  robot-server-source-type: remote
-  robot-server-source-location: latest
   emulation-level: firmware
   exposed-port: 31950
 modules:
   - id: shakey-and-warm
     hardware: heater-shaker-module
-    source-type: remote
-    source-location: latest
-    emulation_level: hardware
+    emulation-level: hardware
   - id: warm-and-shakey
     hardware: heater-shaker-module
-    source-type: remote
-    source-location: latest
-    emulation_level: hardware
+    emulation-level: hardware
+
+monorepo-source: latest
+ot3-firmware-source: latest
+opentrons-modules-source: latest
