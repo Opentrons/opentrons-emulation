@@ -124,13 +124,15 @@ class MountTypes(str, Enum):
 class Mount(BaseModel):
     """Contains infomation about a single extra bind mount."""
 
-    name: str = Field(..., regex=r"^[A-Z0-9_]+$")
     type: str
     mount_path: str = Field(..., alias="mount-path")
     source_path: Union[DirectoryPath, FilePath] = Field(..., alias="source-path")
 
-    def is_duplicate(self, other: "Mount") -> bool:
+    def __eq__(self, other: object) -> bool:
         """Compare everything except name."""
+        if not isinstance(other, Mount):
+            return False
+
         return all(
             [
                 self.type == other.type,

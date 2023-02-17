@@ -19,7 +19,7 @@ from emulation_system.compose_file_creator.input.hardware_models import (
     ThermocyclerModuleInputModel,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import Service
-from tests.compose_file_creator.conftest import (
+from tests.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,

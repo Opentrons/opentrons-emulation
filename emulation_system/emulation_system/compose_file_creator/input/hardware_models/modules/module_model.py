@@ -11,11 +11,12 @@ from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     Hardware,
 )
+from emulation_system.compose_file_creator.errors import EmulationLevelNotSupportedError
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateEnvironmentVariables,
 )
 
-from ..hardware_model import EmulationLevelNotSupportedError, HardwareModel
+from ..hardware_model import HardwareModel
 
 
 class FirmwareSerialNumberModel(BaseModel):

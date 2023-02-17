@@ -53,11 +53,9 @@ class ThermocyclerModuleInputModel(ModuleInputModel):
         default=ThermocyclerModuleSourceRepositories(), const=True, exclude=True
     )
     hardware_specific_attributes: ThermocyclerModuleAttributes = Field(
-        alias="hardware-specific-attributes", default=ThermocyclerModuleAttributes()
+        default=ThermocyclerModuleAttributes()
     )
-    emulation_level: Literal[
-        EmulationLevels.FIRMWARE, EmulationLevels.HARDWARE
-    ] = Field(alias="emulation-level")
+    emulation_level: Literal[EmulationLevels.FIRMWARE, EmulationLevels.HARDWARE]
 
     def get_hardware_level_command(
         self, emulator_proxy_name: str

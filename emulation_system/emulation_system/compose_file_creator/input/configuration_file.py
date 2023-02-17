@@ -2,18 +2,27 @@
 from __future__ import annotations
 
 from collections import Counter
-from typing import Dict, List, Mapping, Optional, cast
+from typing import Any, Dict, List, Mapping, Optional, TypeGuard, cast
 
+import yaml
 from pydantic import BaseModel, Field, parse_file_as, parse_obj_as, root_validator
 
 from emulation_system.consts import DEFAULT_NETWORK_NAME
 
-from ..config_file_settings import EmulationLevels, Hardware, SourceType
+from ...source import MonorepoSource, OpentronsModulesSource, OT3FirmwareSource
+from ..config_file_settings import EmulationLevels, Hardware
 from ..errors import DuplicateHardwareNameError
 from ..types.input_types import Containers, Modules, Robots
 from ..types.intermediate_types import IntermediateNetworks
-from ..utilities.hardware_utils import is_ot2, is_ot3
-from .hardware_models import OT2InputModel, OT3InputModel
+from ..utilities.hardware_utils import is_ot3
+from ..utilities.shared_functions import to_kebab
+from ..utilities.yaml_utils import OpentronsEmulationYamlDumper
+from .hardware_models import (
+    ModuleInputModel,
+    OT2InputModel,
+    OT3InputModel,
+    RobotInputModel,
+)
 
 
 class SystemConfigurationModel(BaseModel):
@@ -22,16 +31,25 @@ class SystemConfigurationModel(BaseModel):
     Represents an entire system to be brought up.
     """
 
-    system_unique_id: Optional[str] = Field(
-        alias="system-unique-id", regex=r"^[A-Za-z0-9-]+$", min_length=1
-    )
+    system_unique_id: Optional[str] = Field(regex=r"^[A-Za-z0-9-]+$", min_length=1)
     robot: Optional[Robots]
     modules: Optional[List[Modules]] = Field(default=[])
+    monorepo_source: MonorepoSource = Field(
+        default=MonorepoSource(source_location="latest")
+    )
+    ot3_firmware_source: OT3FirmwareSource = Field(
+        default=OT3FirmwareSource(source_location="latest")
+    )
+    opentrons_modules_source: OpentronsModulesSource = Field(
+        default=OpentronsModulesSource(source_location="latest")
+    )
 
     class Config:
         """Config class used by pydantic."""
 
         extra = "forbid"
+        allow_population_by_field_name = True
+        alias_generator = to_kebab
 
     @root_validator(pre=True)
     def validate_names(cls, values) -> Dict[str, Dict[str, Containers]]:  # noqa: ANN001
@@ -73,22 +91,34 @@ class SystemConfigurationModel(BaseModel):
 
         return values
 
-    @property
-    def modules_exist(self) -> bool:
-        """Returns True if modules were defined in config file, False if not."""
-        return self.modules is not None and len(self.modules) > 0
+    # Have to have a static method that gets passed the self.modules object to
+    # be able to TypeGuard it
+    @staticmethod
+    def modules_exist(modules: Optional[List[Modules]]) -> TypeGuard[List[Modules]]:
+        """Confirm that modules exist in configuration."""
+        return (
+            modules is not None
+            and len(modules) > 0
+            and all(
+                issubclass(module.__class__, ModuleInputModel) for module in modules
+            )
+        )
 
-    @property
-    def robot_exists(self) -> bool:
-        """Returns True if a robot was defined in config file, False if not."""
-        return self.robot is not None
+    # Same as above comment but with the robot
+    @staticmethod
+    def robot_exists(robot: Optional[Robots]) -> TypeGuard[Robots]:
+        """Confirm that robot exist in configuration."""
+        return robot is not None and issubclass(robot.__class__, RobotInputModel)
 
     @property
     def requires_can_network(self) -> bool:
         """Whether or not the system requires a CAN network."""
         # Have to cast self.robot because mypy is not picking up that robot_exists
         # is checking for the value of self.robot being None
-        return self.robot_exists and cast(Robots, self.robot).hardware == Hardware.OT3
+        return (
+            self.robot_exists(self.robot)
+            and cast(Robots, self.robot).hardware == Hardware.OT3
+        )
 
     @property
     def can_network_name(self) -> str:
@@ -106,7 +136,7 @@ class SystemConfigurationModel(BaseModel):
         # robot_exists and modules_exists is checking if self.robot or self.modules
         # can be None. So it is throwing linting errors about them being None.
         new_dict: Dict[str, Containers] = {}
-        if self.robot_exists:
+        if self.robot_exists(self.robot):
             new_dict[self.robot.id] = self.robot  # type: ignore[union-attr, assignment]
         if self.modules_exist:
             for module in self.modules:  # type: ignore[union-attr]
@@ -120,14 +150,13 @@ class SystemConfigurationModel(BaseModel):
     @property
     def is_remote(self) -> bool:
         """Checks if all modules and robots are remote."""
-        robot_is_remote = self.robot.is_remote if self.robot is not None else True
-        modules_are_remote = (
-            all(module.is_remote for module in self.modules)
-            if self.modules is not None and len(self.modules) > 0
-            else True
+        return all(
+            [
+                self.monorepo_source.is_remote(),
+                self.ot3_firmware_source.is_remote(),
+                self.opentrons_modules_source.is_remote(),
+            ]
         )
-
-        return robot_is_remote and modules_are_remote
 
     @property
     def required_networks(self) -> IntermediateNetworks:
@@ -165,65 +194,86 @@ class SystemConfigurationModel(BaseModel):
         return parse_obj_as(cls, obj)
 
     @property
+    def hardware_level_modules(self) -> List[Modules]:
+        """Gets list of all hardware level modules in configuration."""
+        user_specified_modules = self.modules
+        modules: List[Modules] = []
+        if self.modules_exist(user_specified_modules):
+            modules = [
+                module
+                for module in user_specified_modules
+                if module.emulation_level is EmulationLevels.HARDWARE
+            ]
+
+        return modules
+
+    @property
+    def firmware_level_modules(self) -> List[Modules]:
+        """Gets list of all firmware level modules in configuration."""
+        user_specified_modules = self.modules
+        if self.modules_exist(user_specified_modules):
+            modules = [
+                module
+                for module in user_specified_modules
+                if module.emulation_level is EmulationLevels.FIRMWARE
+            ]
+        else:
+            modules = []
+        return modules
+
+    @property
     def local_ot3_builder_required(self) -> bool:
         """Whether or not a local-ot3-firmware-builder container is required."""
-        if self.robot is None:
-            return False
-        return is_ot3(self.robot) and self.robot.source_type == SourceType.LOCAL
+        return is_ot3(self.robot) if self.robot_exists(self.robot) else False
 
     @property
     def local_opentrons_modules_builder_required(self) -> bool:
         """Whether or not a local-opentrons-modules-builder container is required."""
-        if self.modules is None:
-            return False
-        return any(
-            [
-                module.emulation_level == EmulationLevels.HARDWARE
-                and module.source_type == SourceType.LOCAL
-                for module in self.modules
-            ]
-        )
+        needed: bool
+        if not self.modules_exist(self.modules):
+            needed = False
+        else:
+            needed = len(self.hardware_level_modules) > 0
+        return needed
 
     @property
     def local_monorepo_builder_required(self) -> bool:
         """Whether or not a local-monorepo-builder container is required."""
         # emulator-proxy cannot be local as of 11/8/2022, including the variable
         # so it is clear that evaluating the source-type of emulator proxy was not missed
-        local_emulator_proxy = False
-        local_can_server = (
-            self.robot is not None
-            and is_ot3(self.robot)
-            and self.robot.can_server_source_type == SourceType.LOCAL
-        )
-        local_opentrons_hardware = (
-            self.robot is not None
-            and is_ot3(self.robot)
-            and self.robot.opentrons_hardware_source_type == SourceType.LOCAL
-        )
-        local_smoothie = (
-            self.robot is not None
-            and is_ot2(self.robot)
-            and self.robot.source_type == SourceType.LOCAL
-        )
-        local_modules = self.modules is not None and any(
-            (
-                module.emulation_level == EmulationLevels.FIRMWARE
-                and module.source_type == SourceType.LOCAL
-            )
-            for module in self.modules
-        )
-        local_robot_server = (
-            self.robot is not None
-            and self.robot.robot_server_source_type == SourceType.LOCAL
-        )
+        emulator_proxy = False
+        modules_are_firmware_level = len(self.firmware_level_modules) > 0
 
         return any(
-            [
-                local_emulator_proxy,
-                local_can_server,
-                local_opentrons_hardware,
-                local_smoothie,
-                local_modules,
-                local_robot_server,
-            ]
+            [emulator_proxy, self.robot_exists(self.robot), modules_are_firmware_level]
+        )
+
+    @property
+    def source_repo_field_aliases(self) -> List[str]:
+        """Get list of source field aliases."""
+        return [
+            field_name.replace("_", "-")
+            for field_name in self.__fields__.keys()
+            if "source" in field_name
+        ]
+
+    # Don't want to worry about having to deal with the signature of the
+    # parent method. So just type ignoring it.
+
+    def dict(self, *args, **kwargs) -> Dict[str, Any]:  # noqa: ANN002, ANN003
+        """Override default dict logic and add custom logic for source feilds."""
+        default_dict = super().dict(*args, **kwargs)
+        default_dict["monorepo-source"] = self.monorepo_source.source_location
+        default_dict["ot3-firmware-source"] = self.ot3_firmware_source.source_location
+        default_dict[
+            "opentrons-modules-source"
+        ] = self.opentrons_modules_source.source_location
+        return default_dict
+
+    def to_yaml(self) -> str:
+        """Convert to yaml string."""
+        return yaml.dump(
+            data=self.dict(by_alias=True),
+            default_flow_style=False,
+            Dumper=OpentronsEmulationYamlDumper,
         )

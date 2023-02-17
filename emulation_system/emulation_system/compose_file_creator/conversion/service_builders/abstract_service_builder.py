@@ -55,7 +55,6 @@ from emulation_system.consts import (
     DOCKERFILE_DIR_LOCATION,
     DOCKERFILE_NAME,
     ENTRYPOINT_FILE_LOCATION,
-    ENTRYPOINT_MOUNT_NAME,
 )
 
 
@@ -63,7 +62,6 @@ class AbstractServiceBuilder(ABC):
     """Abstract class defining all necessary functions to build a service."""
 
     ENTRYPOINT_MOUNT_STRING = FileMount(
-        name=ENTRYPOINT_MOUNT_NAME,
         type=MountTypes.FILE,
         source_path=pathlib.Path(ENTRYPOINT_FILE_LOCATION),
         mount_path="/entrypoint.sh",

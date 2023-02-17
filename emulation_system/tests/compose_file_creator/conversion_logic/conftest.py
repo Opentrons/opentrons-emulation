@@ -24,7 +24,7 @@ from emulation_system.compose_file_creator.images import (
     ThermocyclerModuleImages,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import Volume1
-from tests.compose_file_creator.conftest import (
+from tests.conftest import (
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,
     OT2_ID,
