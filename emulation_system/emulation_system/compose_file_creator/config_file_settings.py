@@ -121,6 +121,21 @@ class RepoToBuildArgMapping(str, Enum):
     OT3_FIRMWARE = "FIRMWARE_SOURCE_DOWNLOAD_LOCATION"
     OPENTRONS_MODULES = "MODULE_SOURCE_DOWNLOAD_LOCATION"
 
+    @staticmethod
+    def get_mapping(repo: OpentronsRepository) -> "RepoToBuildArgMapping":
+        """Get mapping by Opentrons Repository"""
+        mapping: RepoToBuildArgMapping
+        match repo:
+            case OpentronsRepository.OPENTRONS:
+                mapping = RepoToBuildArgMapping.OPENTRONS
+            case OpentronsRepository.OT3_FIRMWARE:
+                mapping = RepoToBuildArgMapping.OT3_FIRMWARE
+            case OpentronsRepository.OPENTRONS_MODULES:
+                mapping = RepoToBuildArgMapping.OPENTRONS_MODULES
+            case _:
+                raise ValueError(f"Opentrons repository {repo.value} is not valid.")
+        return mapping
+
 
 class SourceRepositories(BaseModel):
     """Stores names of source code repos for each piece of hardware."""
@@ -139,7 +154,6 @@ class MountTypes(str, Enum):
 class Mount(BaseModel):
     """Contains infomation about a single extra bind mount."""
 
-    name: str = Field(..., regex=r"^[A-Z0-9_]+$")
     type: str
     mount_path: str
     source_path: Union[DirectoryPath, FilePath]
@@ -151,8 +165,11 @@ class Mount(BaseModel):
         allow_population_by_field_name = True
         alias_generator = to_kebab
 
-    def is_duplicate(self, other: "Mount") -> bool:
+    def __eq__(self, other: object) -> bool:
         """Compare everything except name."""
+        if not isinstance(other, Mount):
+            return False
+
         return all(
             [
                 self.type == other.type,

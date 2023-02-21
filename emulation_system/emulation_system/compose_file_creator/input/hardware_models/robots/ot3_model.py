@@ -10,7 +10,6 @@ from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     PipetteSettings,
     SourceRepositories,
-    SourceType,
 )
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateEnvironmentVariables,
@@ -48,11 +47,6 @@ class OT3InputModel(RobotInputModel):
     source_repos: OT3SourceRepositories = Field(
         default=OT3SourceRepositories(), const=True, exclude=True
     )
-    can_server_source_type: SourceType
-    can_server_source_location: str
-    opentrons_hardware_source_type: SourceType
-    opentrons_hardware_source_location: str
-
     hardware_specific_attributes: OT3Attributes = Field(default=OT3Attributes())
     emulation_level: Literal[EmulationLevels.HARDWARE]
     bound_port: int = Field(default=31950)
