@@ -18,7 +18,9 @@ from . import (
     ConcreteCANServerServiceBuilder,
     ConcreteEmulatorProxyServiceBuilder,
     ConcreteInputServiceBuilder,
-    ConcreteLocalOT3FirmwareBuilderBuilder,
+    MonorepoBuilderService,
+    OpentronsModulesBuilderService,
+    OT3FirmwareBuilderService,
     ConcreteOT3ServiceBuilder,
     ConcreteOT3StateManagerBuilder,
     ConcreteSmoothieServiceBuilder,
@@ -158,18 +160,28 @@ class ServiceBuilderOrchestrator:
             assert service.container_name is not None
             self._services[service.container_name] = service
 
-    def __add_local_ot3_builder(self) -> None:
-        local_ot3_builder = ConcreteLocalOT3FirmwareBuilderBuilder(
+    def __add_ot3_firmware_builder(self) -> None:
+        ot3_firmware_builder = OT3FirmwareBuilderService(
             self._config_model, self._global_settings, self._dev
         ).build_service()
-        assert local_ot3_builder.container_name is not None
-        self._services[local_ot3_builder.container_name] = local_ot3_builder
+        assert ot3_firmware_builder.container_name is not None
+        self._services[ot3_firmware_builder.container_name] = ot3_firmware_builder
 
-    def __add_local_opentrons_modules_builder(self) -> None:
-        print("Local opentrons-modules builder required")
+    def __add_opentrons_modules_builder(self) -> None:
+        opentrons_modules_builder = OpentronsModulesBuilderService(
+            self._config_model, self._global_settings, self._dev
+        ).build_service()
+        assert opentrons_modules_builder.container_name is not None
+        self._services[
+            opentrons_modules_builder.container_name
+        ] = opentrons_modules_builder
 
-    def __add_local_monorepo_builder(self) -> None:
-        print("Local monorepo builder required")
+    def __add_monorepo_builder(self) -> None:
+        monorepo_builder = MonorepoBuilderService(
+            self._config_model, self._global_settings, self._dev
+        ).build_service()
+        assert monorepo_builder.container_name is not None
+        self._services[monorepo_builder.container_name] = monorepo_builder
 
     def build_services(self) -> DockerServices:
         """Build services."""
@@ -184,12 +196,12 @@ class ServiceBuilderOrchestrator:
             emulator_proxy_name, smoothie_name, can_server_service_name
         )
         if self._config_model.local_ot3_builder_required:
-            self.__add_local_ot3_builder()
+            self.__add_ot3_firmware_builder()
 
         if self._config_model.local_opentrons_modules_builder_required:
-            self.__add_local_opentrons_modules_builder()
+            self.__add_opentrons_modules_builder()
 
         if self._config_model.local_monorepo_builder_required:
-            self.__add_local_monorepo_builder()
+            self.__add_monorepo_builder()
 
         return DockerServices(self._services)
