@@ -12,6 +12,7 @@ from typing import List, Union
 
 from pydantic import BaseModel
 
+from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.config_file_settings import (
     FileMount,
     Hardware,
@@ -20,6 +21,7 @@ from emulation_system.compose_file_creator.config_file_settings import (
     OT3Hardware,
     RepoToBuildArgMapping,
 )
+from emulation_system.compose_file_creator.types.intermediate_types import IntermediateBuildArgs
 from emulation_system.consts import (
     COMMIT_SHA_REGEX,
     ENTRYPOINT_FILE_LOCATION,
@@ -108,6 +110,23 @@ class Source(ABC):
     def repo_to_build_arg_mapping(self) -> RepoToBuildArgMapping:
         """Build arg name for repo."""
         return RepoToBuildArgMapping.get_mapping(self.repo)
+
+    def generate_build_args(
+        self, global_settings: OpentronsEmulationConfiguration
+    ) -> IntermediateBuildArgs | None:
+        if self.is_local():
+            return None
+
+        env_var_to_use = str(self.repo_to_build_arg_mapping.value)
+        head = global_settings.get_repo_head(self.repo)
+        format_string = global_settings.get_repo_commit(self.repo)
+        source_location = self.source_location
+        value = (
+            head
+            if source_location == "latest"
+            else format_string.replace("{{commit-sha}}", source_location)
+        )
+        return {env_var_to_use: value}
 
     def is_remote(self) -> bool:
         """Returns True if source is remote."""

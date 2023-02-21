@@ -12,7 +12,6 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
 )
 
 from ...images import OT3FirmwareBuilderImage
-from ...utilities.shared_functions import get_build_args
 from .abstract_service import AbstractService
 
 
@@ -64,16 +63,12 @@ class OT3FirmwareBuilderService(AbstractService):
         """Generates value for build parameter."""
         build_args: IntermediateBuildArgs = {}
         if self._ot3_source.is_remote():
-            ot3_firmware_build_args = get_build_args(
-                self._ot3_source, self._global_settings
-            )
+            ot3_firmware_build_args = self._ot3_source.generate_build_args(self._global_settings)
             assert ot3_firmware_build_args is not None
             build_args.update(ot3_firmware_build_args)
 
         if self._monorepo_source.is_remote():
-            monorepo_build_args = get_build_args(
-                self._monorepo_source, self._global_settings
-            )
+            monorepo_build_args = self._monorepo_source.generate_build_args(self._global_settings)
             assert monorepo_build_args is not None
             build_args.update(monorepo_build_args)
 

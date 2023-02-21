@@ -12,7 +12,6 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
 )
 
 from ...images import MonorepoBuilderImage
-from ...utilities.shared_functions import get_build_args
 from .abstract_service import AbstractService
 
 
@@ -64,7 +63,7 @@ class MonorepoBuilderService(AbstractService):
         build_args: Optional[IntermediateBuildArgs] = None
 
         if self._monorepo_source.is_remote():
-            build_args = get_build_args(self._monorepo_source, self._global_settings)
+            build_args = self._monorepo_source.generate_build_args(self._global_settings)
 
         return build_args
 
