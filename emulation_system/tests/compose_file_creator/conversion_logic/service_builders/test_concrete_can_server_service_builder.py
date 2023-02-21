@@ -1,4 +1,4 @@
-"""Tests to confirm that ConcreteCANServerServiceBuilder builds the CAN Server Service correctly."""
+"""Tests to confirm that CANServerService builds the CAN Server Service correctly."""
 
 from typing import Any, Dict
 
@@ -12,7 +12,7 @@ from emulation_system.compose_file_creator.config_file_settings import (
     RepoToBuildArgMapping,
 )
 from emulation_system.compose_file_creator.conversion import (
-    ConcreteCANServerServiceBuilder,
+    CANServerService,
 )
 from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
 from tests.compose_file_creator.conversion_logic.conftest import (
@@ -74,7 +74,7 @@ def test_simple_can_server_values(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Tests for values that are the same for all configurations of a CANServer."""
-    service = ConcreteCANServerServiceBuilder(
+    service = CANServerService(
         config_model, testing_global_em_config, dev=dev
     ).build_service()
 
@@ -110,7 +110,7 @@ def test_can_server_remote(
     expected_url: str,
 ) -> None:
     """Tests for values that are the same for all remote configurations of a CANServer."""
-    service = ConcreteCANServerServiceBuilder(
+    service = CANServerService(
         config, testing_global_em_config, dev=True
     ).build_service()
     assert service.image == "can-server-remote"
@@ -128,7 +128,7 @@ def test_can_server_local(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Test for values for local configuration of a CANServer."""
-    service = ConcreteCANServerServiceBuilder(
+    service = CANServerService(
         local_can, testing_global_em_config, dev=True
     ).build_service()
     assert service.image == "can-server-local"

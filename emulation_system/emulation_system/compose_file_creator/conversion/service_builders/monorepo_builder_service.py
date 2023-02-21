@@ -1,4 +1,4 @@
-"""Module containing ConcreteOT3ServiceBuilder class."""
+"""Module containing OT3Services class."""
 from typing import Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
@@ -13,11 +13,11 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
 
 from ...images import MonorepoBuilderImage
 from ...utilities.shared_functions import get_build_args
-from .abstract_service_builder import AbstractServiceBuilder
+from .abstract_service import AbstractService
 
 
-class MonorepoBuilderService(AbstractServiceBuilder):
-    """Concrete implementation of AbstractServiceBuilder for building monorepo-builder Service."""
+class MonorepoBuilderService(AbstractService):
+    """Concrete implementation of AbstractService for building monorepo-builder Service."""
 
     def __init__(
         self,
@@ -25,7 +25,7 @@ class MonorepoBuilderService(AbstractServiceBuilder):
         global_settings: OpentronsEmulationConfiguration,
         dev: bool,
     ) -> None:
-        """Instantiates a ConcreteOT3ServiceBuilder object."""
+        """Instantiates a MonorepoBuilderService object."""
         super().__init__(config_model, global_settings, dev)
 
     @property

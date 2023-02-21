@@ -1,4 +1,4 @@
-"""Module containing ServiceBuilderOrchestrator class."""
+"""Module containing ServiceOrchestrator class."""
 from typing import List, Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
@@ -6,38 +6,38 @@ from emulation_system.compose_file_creator import Service
 
 from ...config_file_settings import OT3Hardware
 from ...images import (
-    OT3BootloaderImages,
-    OT3GantryXImages,
-    OT3GantryYImages,
-    OT3GripperImages,
-    OT3HeadImages,
-    OT3PipettesImages,
+    OT3BootloaderImage,
+    OT3GantryXImage,
+    OT3GantryYImage,
+    OT3GripperImage,
+    OT3HeadImage,
+    OT3PipettesImage,
 )
 from ...types.intermediate_types import DockerServices
 from . import (
-    ConcreteCANServerServiceBuilder,
-    ConcreteEmulatorProxyServiceBuilder,
-    ConcreteInputServiceBuilder,
+    CANServerService,
+    EmulatorProxyService,
+    InputServices,
     MonorepoBuilderService,
     OpentronsModulesBuilderService,
     OT3FirmwareBuilderService,
-    ConcreteOT3ServiceBuilder,
-    ConcreteOT3StateManagerBuilder,
-    ConcreteSmoothieServiceBuilder,
+    OT3Services,
+    OT3StateManagerService,
+    SmoothieService,
 )
 from .service_info import ServiceInfo
 
 
-class ServiceBuilderOrchestrator:
+class ServiceOrchestrator:
     """Class that client uses to interface with builders."""
 
     OT3_SERVICES_TO_CREATE = [
-        ServiceInfo(OT3HeadImages(), OT3Hardware.HEAD),
-        ServiceInfo(OT3PipettesImages(), OT3Hardware.PIPETTES),
-        ServiceInfo(OT3GantryXImages(), OT3Hardware.GANTRY_X),
-        ServiceInfo(OT3GantryYImages(), OT3Hardware.GANTRY_Y),
-        ServiceInfo(OT3BootloaderImages(), OT3Hardware.BOOTLOADER),
-        ServiceInfo(OT3GripperImages(), OT3Hardware.GRIPPER),
+        ServiceInfo(OT3HeadImage(), OT3Hardware.HEAD),
+        ServiceInfo(OT3PipettesImage(), OT3Hardware.PIPETTES),
+        ServiceInfo(OT3GantryXImage(), OT3Hardware.GANTRY_X),
+        ServiceInfo(OT3GantryYImage(), OT3Hardware.GANTRY_Y),
+        ServiceInfo(OT3BootloaderImage(), OT3Hardware.BOOTLOADER),
+        ServiceInfo(OT3GripperImage(), OT3Hardware.GRIPPER),
     ]
 
     def __init__(
@@ -46,7 +46,7 @@ class ServiceBuilderOrchestrator:
         global_settings: OpentronsEmulationConfiguration,
         dev: bool,
     ) -> None:
-        """Instantiates a ServiceBuilderOrchestrator object."""
+        """Instantiates a ServiceOrchestrator object."""
         self._config_model = config_model
         self._global_settings = global_settings
         self._dev = dev
@@ -54,19 +54,19 @@ class ServiceBuilderOrchestrator:
 
     def _build_can_server_service(self) -> Service:
         """Method to generate and return a CAN Server Service."""
-        return ConcreteCANServerServiceBuilder(
+        return CANServerService(
             self._config_model, self._global_settings, self._dev
         ).build_service()
 
     def _build_emulator_proxy_service(self) -> Service:
         """Method to generate and return an Emulator Proxy Service."""
-        return ConcreteEmulatorProxyServiceBuilder(
+        return EmulatorProxyService(
             self._config_model, self._global_settings, self._dev
         ).build_service()
 
     def _build_smoothie_service(self) -> Service:
         """Method to generate and return a Smoothie Service."""
-        return ConcreteSmoothieServiceBuilder(
+        return SmoothieService(
             self._config_model, self._global_settings, self._dev
         ).build_service()
 
@@ -75,7 +75,7 @@ class ServiceBuilderOrchestrator:
     ) -> List[Service]:
         """Generates OT-3 Firmware Services."""
         return [
-            ConcreteOT3ServiceBuilder(
+            OT3Services(
                 self._config_model,
                 self._global_settings,
                 self._dev,
@@ -87,7 +87,7 @@ class ServiceBuilderOrchestrator:
         ]
 
     def _build_ot3_state_manager_service(self) -> Service:
-        return ConcreteOT3StateManagerBuilder(
+        return OT3StateManagerService(
             self._config_model, self._global_settings, self._dev
         ).build_service()
 
@@ -99,7 +99,7 @@ class ServiceBuilderOrchestrator:
     ) -> List[Service]:
         """Build services directly specified in input file."""
         return [
-            ConcreteInputServiceBuilder(
+            InputServices(
                 self._config_model,
                 self._global_settings,
                 self._dev,
