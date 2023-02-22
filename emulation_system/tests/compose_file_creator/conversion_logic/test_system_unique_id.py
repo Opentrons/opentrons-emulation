@@ -9,9 +9,13 @@ from emulation_system.compose_file_creator import Service
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
+from emulation_system.compose_file_creator.images import (
+    MonorepoBuilderImage,
+    OpentronsModulesBuilderImage,
+)
 from emulation_system.compose_file_creator.output.compose_file_model import Network
 from emulation_system.consts import DEFAULT_NETWORK_NAME
-from tests.compose_file_creator.conftest import (
+from tests.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,
@@ -21,7 +25,7 @@ from tests.compose_file_creator.conftest import (
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
 )
-from tests.compose_file_creator.conversion_logic.conftest import SERVICE_NAMES
+from tests.validation_helper_functions import SERVICE_NAMES
 
 
 @pytest.fixture
@@ -44,10 +48,12 @@ def test_service_keys_with_system_unique_id(
     """Confirms service names are created correctly."""
     service_names = [
         OT2_ID,
-        THERMOCYCLER_MODULE_ID,
-        HEATER_SHAKER_MODULE_ID,
-        TEMPERATURE_MODULE_ID,
-        MAGNETIC_MODULE_ID,
+        f"{THERMOCYCLER_MODULE_ID}-1",
+        f"{HEATER_SHAKER_MODULE_ID}-1",
+        f"{TEMPERATURE_MODULE_ID}-1",
+        f"{MAGNETIC_MODULE_ID}-1",
+        MonorepoBuilderImage.image_name,
+        OpentronsModulesBuilderImage.image_name,
         EMULATOR_PROXY_ID,
         SMOOTHIE_ID,
     ]

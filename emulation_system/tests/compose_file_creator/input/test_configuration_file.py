@@ -188,36 +188,45 @@ def test_robot_exists_is_false(config: Dict[str, Any]) -> None:
 
 def test_containers_property(ot2_and_modules: Dict[str, Any]) -> None:
     """Test the containers property is constructed correctly."""
-    containers = create_system_configuration(ot2_and_modules).containers
+    containers = SystemConfigurationModel.from_dict(ot2_and_modules).containers
+    magnetic_module_id = f"{MAGNETIC_MODULE_ID}-1"
+    temperature_module_id = f"{TEMPERATURE_MODULE_ID}-1"
+    thermocycler_module_id = f"{THERMOCYCLER_MODULE_ID}-1"
+    heater_shaker_module_id = f"{HEATER_SHAKER_MODULE_ID}-1"
+
     assert set(containers.keys()) == {
         OT2_ID,
-        MAGNETIC_MODULE_ID,
-        TEMPERATURE_MODULE_ID,
-        THERMOCYCLER_MODULE_ID,
-        HEATER_SHAKER_MODULE_ID,
+        magnetic_module_id,
+        temperature_module_id,
+        thermocycler_module_id,
+        heater_shaker_module_id,
     }
     assert isinstance(containers[OT2_ID], OT2InputModel)
-    assert isinstance(containers[MAGNETIC_MODULE_ID], MagneticModuleInputModel)
-    assert isinstance(containers[TEMPERATURE_MODULE_ID], TemperatureModuleInputModel)
-    assert isinstance(containers[THERMOCYCLER_MODULE_ID], ThermocyclerModuleInputModel)
-    assert isinstance(containers[HEATER_SHAKER_MODULE_ID], HeaterShakerModuleInputModel)
+    assert isinstance(containers[magnetic_module_id], MagneticModuleInputModel)
+    assert isinstance(containers[temperature_module_id], TemperatureModuleInputModel)
+    assert isinstance(containers[thermocycler_module_id], ThermocyclerModuleInputModel)
+    assert isinstance(containers[heater_shaker_module_id], HeaterShakerModuleInputModel)
 
 
 def test_get_by_id(ot2_and_modules: Dict[str, Any]) -> None:
     """Test that loading containers by id works correctly."""
-    system_config = create_system_configuration(ot2_and_modules)
+    system_config = SystemConfigurationModel.from_dict(ot2_and_modules)
+    magnetic_module_id = f"{MAGNETIC_MODULE_ID}-1"
+    temperature_module_id = f"{TEMPERATURE_MODULE_ID}-1"
+    thermocycler_module_id = f"{THERMOCYCLER_MODULE_ID}-1"
+    heater_shaker_module_id = f"{HEATER_SHAKER_MODULE_ID}-1"
     assert isinstance(system_config.get_by_id(OT2_ID), OT2InputModel)
     assert isinstance(
-        system_config.get_by_id(HEATER_SHAKER_MODULE_ID), HeaterShakerModuleInputModel
+        system_config.get_by_id(heater_shaker_module_id), HeaterShakerModuleInputModel
     )
     assert isinstance(
-        system_config.get_by_id(MAGNETIC_MODULE_ID), MagneticModuleInputModel
+        system_config.get_by_id(magnetic_module_id), MagneticModuleInputModel
     )
     assert isinstance(
-        system_config.get_by_id(TEMPERATURE_MODULE_ID), TemperatureModuleInputModel
+        system_config.get_by_id(temperature_module_id), TemperatureModuleInputModel
     )
     assert isinstance(
-        system_config.get_by_id(THERMOCYCLER_MODULE_ID), ThermocyclerModuleInputModel
+        system_config.get_by_id(thermocycler_module_id), ThermocyclerModuleInputModel
     )
 
 
