@@ -59,7 +59,7 @@ jobs:
     needs: matrix_generation
     runs-on: ubuntu-20.04
     strategy:
-      matrix: ${{fromJson(needs.matrix_generation.outputs.matrix)}}
+      matrix: ${{ fromJson(needs.matrix_generation.outputs.matrix) }}
       fail-fast: false
     steps:
       - name: Checkout opentrons-emulation repository
