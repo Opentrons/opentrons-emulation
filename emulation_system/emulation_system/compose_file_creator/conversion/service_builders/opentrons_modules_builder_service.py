@@ -64,7 +64,9 @@ class OpentronsModulesBuilderService(AbstractService):
         build_args: Optional[IntermediateBuildArgs] = None
 
         if self._opentrons_modules_source.is_remote():
-            build_args = self._opentrons_modules_source.generate_build_args(self._global_settings)
+            build_args = self._opentrons_modules_source.generate_build_args(
+                self._global_settings
+            )
 
         return build_args
 

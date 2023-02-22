@@ -63,12 +63,16 @@ class OT3FirmwareBuilderService(AbstractService):
         """Generates value for build parameter."""
         build_args: IntermediateBuildArgs = {}
         if self._ot3_source.is_remote():
-            ot3_firmware_build_args = self._ot3_source.generate_build_args(self._global_settings)
+            ot3_firmware_build_args = self._ot3_source.generate_build_args(
+                self._global_settings
+            )
             assert ot3_firmware_build_args is not None
             build_args.update(ot3_firmware_build_args)
 
         if self._monorepo_source.is_remote():
-            monorepo_build_args = self._monorepo_source.generate_build_args(self._global_settings)
+            monorepo_build_args = self._monorepo_source.generate_build_args(
+                self._global_settings
+            )
             assert monorepo_build_args is not None
             build_args.update(monorepo_build_args)
 

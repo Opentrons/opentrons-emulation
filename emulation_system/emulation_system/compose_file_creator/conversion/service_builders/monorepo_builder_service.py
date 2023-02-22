@@ -47,7 +47,7 @@ class MonorepoBuilderService(AbstractService):
 
     def generate_networks(self) -> IntermediateNetworks:
         """Generates value for networks parameter."""
-        return  self._config_model.required_networks
+        return self._config_model.required_networks
 
     def generate_healthcheck(self) -> Optional[IntermediateHealthcheck]:
         """Check to see if ot3-firmware and monorepo exist."""
@@ -63,7 +63,9 @@ class MonorepoBuilderService(AbstractService):
         build_args: Optional[IntermediateBuildArgs] = None
 
         if self._monorepo_source.is_remote():
-            build_args = self._monorepo_source.generate_build_args(self._global_settings)
+            build_args = self._monorepo_source.generate_build_args(
+                self._global_settings
+            )
 
         return build_args
 

@@ -9,9 +9,7 @@ from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.config_file_settings import PipetteSettings
-from emulation_system.compose_file_creator.conversion import (
-    SmoothieService,
-)
+from emulation_system.compose_file_creator.conversion import SmoothieService
 from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
 from tests.validation_helper_functions import (

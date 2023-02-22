@@ -19,9 +19,11 @@ from .module_model import FirmwareSerialNumberModel, ModuleInputModel, ProxyInfo
 class ThermocyclerModuleAttributes(HardwareSpecificAttributes):
     """Attributes specific to Thermocycler module."""
 
-    lid_temperature: TemperatureModelSettings = Field(default=TemperatureModelSettings()
+    lid_temperature: TemperatureModelSettings = Field(
+        default=TemperatureModelSettings()
     )
-    plate_temperature: TemperatureModelSettings = Field(default=TemperatureModelSettings()
+    plate_temperature: TemperatureModelSettings = Field(
+        default=TemperatureModelSettings()
     )
 
 
