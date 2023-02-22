@@ -4,22 +4,22 @@ import argparse
 import json
 import sys
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 import yaml
 from pydantic import parse_obj_as
-from pydantic.utils import deepcopy
 
 from emulation_system import SystemConfigurationModel
+from emulation_system.source import OpentronsSource
 
 
 @dataclass
 class Substitution:
     """Definition of what to substitute in yaml file."""
 
-    service_name: str
     value_to_replace: str
     replacement_value: str
+    service_name: Optional[str] = None
 
 
 @dataclass
@@ -29,19 +29,38 @@ class YamlSubstitution:
     raw_string: str
     subs: List[Substitution]
 
+    def __replace_val(
+        self, model_wip: SystemConfigurationModel, sub: Substitution
+    ) -> None:
+        obj_to_replace_on = (
+            model_wip.get_by_id(sub.service_name)
+            if sub.service_name is not None
+            else model_wip
+        )
+        val_to_replace_w_underscores = sub.value_to_replace.replace("-", "_")
+
+        if sub.value_to_replace in model_wip.source_repo_field_aliases:
+            source_obj: OpentronsSource = getattr(
+                obj_to_replace_on, val_to_replace_w_underscores
+            )
+            source_obj.source_location = sub.replacement_value
+
+        else:
+            setattr(
+                obj_to_replace_on,
+                val_to_replace_w_underscores,
+                sub.replacement_value,
+            )
+
     def perform_substitution(self) -> SystemConfigurationModel:
         """Substitute all values in sub and return new model."""
         system_config = parse_obj_as(
             SystemConfigurationModel, yaml.safe_load(self.raw_string)
         )
 
-        copied_model = deepcopy(system_config)
+        copied_model = system_config.copy(deep=True)
         for sub in self.subs:
-            setattr(
-                copied_model.get_by_id(sub.service_name),
-                sub.value_to_replace.replace("-", "_"),
-                sub.replacement_value,
-            )
+            self.__replace_val(copied_model, sub)
         return copied_model
 
 
@@ -82,4 +101,5 @@ def main() -> SystemConfigurationModel:
 
 
 if __name__ == "__main__":
-    print(yaml.dump(main().dict(by_alias=True)))
+
+    print(main().to_yaml())
