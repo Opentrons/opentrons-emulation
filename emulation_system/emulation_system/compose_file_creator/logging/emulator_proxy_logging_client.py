@@ -5,7 +5,6 @@ from typing import Optional
 from ..types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
-    IntermediateDependsOn,
     IntermediateEnvironmentVariables,
     IntermediatePorts,
     IntermediateVolumes,
@@ -67,12 +66,6 @@ class EmulatorProxyLoggingClient(AbstractLoggingClient):
         assert ports is None
         self._logging_console.h2_print("ports")
         self._logging_console.double_tabbed_print("Does not require ports field.")
-
-    def log_depends_on(self, depends_on: Optional[IntermediateDependsOn]) -> None:
-        """Logs that no depends_ons are being added."""
-        assert depends_on is None
-        self._logging_console.h2_print("depends_on")
-        self._logging_console.double_tabbed_print("Does not require depends_on field.")
 
     def log_env_vars(
         self, env_vars: Optional[IntermediateEnvironmentVariables]

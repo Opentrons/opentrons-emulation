@@ -5,7 +5,6 @@ from typing import Optional
 from ..types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
-    IntermediateDependsOn,
     IntermediateEnvironmentVariables,
     IntermediatePorts,
     IntermediateVolumes,
@@ -68,19 +67,6 @@ class InputLoggingClient(AbstractLoggingClient):
                 *tabbed_ports,
             ]
         self._logging_console.h2_print("ports")
-        self._logging_console.double_tabbed_print(*output)
-
-    def log_depends_on(self, depends_on: Optional[IntermediateDependsOn]) -> None:
-        """Logs that no depends_ons are being added."""
-        if depends_on is None:
-            output = ["No depends_on will be added."]
-        else:
-            tabbed_depends_on = [f'\t"{name}"' for name in depends_on.keys()]
-            output = [
-                "Adding the following depends_on:",
-                *tabbed_depends_on,
-            ]
-        self._logging_console.h2_print("depends_on")
         self._logging_console.double_tabbed_print(*output)
 
     def log_env_vars(
