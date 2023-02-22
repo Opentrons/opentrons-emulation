@@ -23,6 +23,10 @@ on:
         required: false
         default: default
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   yaml-sub-sanity-check:
     runs-on: "ubuntu-20.04"
