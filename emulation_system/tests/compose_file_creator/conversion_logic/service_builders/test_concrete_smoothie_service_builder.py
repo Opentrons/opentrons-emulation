@@ -91,11 +91,11 @@ def test_simple_smoothie_values(
     assert "OT_EMULATOR_smoothie" in env_root
     smoothie_env_dict = json.loads(env_root["OT_EMULATOR_smoothie"])
     assert smoothie_env_dict is not None
-    assert "left" in smoothie_env_dict
-    assert "right" in smoothie_env_dict
+    assert "left_pipette" in smoothie_env_dict
+    assert "right_pipette" in smoothie_env_dict
     assert "port" in smoothie_env_dict
-    assert smoothie_env_dict["left"] == default_pipette_definition
-    assert smoothie_env_dict["right"] == default_pipette_definition
+    assert smoothie_env_dict["left_pipette"] == default_pipette_definition
+    assert smoothie_env_dict["right_pipette"] == default_pipette_definition
     assert smoothie_env_dict["port"] == 11000
 
     assert service.tty
