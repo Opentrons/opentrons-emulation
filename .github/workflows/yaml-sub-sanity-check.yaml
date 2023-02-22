@@ -45,6 +45,9 @@ jobs:
           cache-break: ${{ github.event.inputs.cache-break }}
           command: setup-python-only
 
+      - name: Add yq package
+        run: pip3 install yq
+
       # Only change `main` in Opentrons/opentrons-emulation@main
       # if making changes to .github/actions or action.yaml
       - name: YAML Substitution
@@ -53,10 +56,28 @@ jobs:
           command: yaml-sub
           substitutions: >-
             [
-              ["otie", "exposed-port", "5000"]
+              ["exposed-port", "5000", "otie"],
+              ["monorepo-source", "test"]
             ]
           input-file: ${{ github.workspace }}/samples/ot3/ot3_remote.yaml
           output-file-location: ${{ github.workspace }}/output.yaml
 
-      - name: See file
-        run: cat ${{ github.workspace }}/output.yaml
+      - name: Get first sub value
+        id: first-sub
+        run: echo "FIRST=$(yq -r '.robot."exposed-port"' ${{ github.workspace }}/output.yaml)" >> $GITHUB_OUTPUT
+
+      - name: Get second sub value
+        id: second-sub
+        run: echo "SECOND=$(yq -r '."monorepo-source"' ${{ github.workspace }}/output.yaml)" >> $GITHUB_OUTPUT
+
+      - name: Confirm Values 1
+        if: ${{ steps.first-sub.outputs.FIRST != '5000' }}
+        run: |
+          echo "First Sub - ${{ steps.first-sub.outputs.FIRST }}"
+          exit 1
+
+      - name: Confirm Values 2
+        if: ${{ steps.second-sub.outputs.SECOND != 'test' }}
+        run: |
+          echo "Second Sub - ${{ steps.second-sub.outputs.SECOND }}"
+          exit 1
