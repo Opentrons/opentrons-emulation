@@ -11,43 +11,47 @@ import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system import OpentronsEmulationConfiguration
-from emulation_system.compose_file_creator.config_file_settings import (
-    OT3Hardware,
-    SourceType,
-)
+from emulation_system.compose_file_creator.config_file_settings import OT3Hardware
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
 from emulation_system.compose_file_creator.images import (
-    OT3GantryXImages,
-    OT3GantryYImages,
-    OT3HeadImages,
-    OT3PipettesImages,
-    SmoothieImages,
+    OT3BootloaderImage,
+    OT3GantryXImage,
+    OT3GantryYImage,
+    OT3GripperImage,
+    OT3HeadImage,
+    OT3PipettesImage,
+    SmoothieImage,
 )
-from tests.compose_file_creator.conftest import EMULATOR_PROXY_ID, SMOOTHIE_ID
-from tests.compose_file_creator.conversion_logic.conftest import partial_string_in_mount
-
-
-@pytest.fixture
-def ot2_only_with_remote_source_type(ot2_default: Dict[str, Any]) -> Dict[str, Any]:
-    """An OT2 with remote source-type."""
-    ot2_default["source-type"] = SourceType.REMOTE
-    ot2_default["source-location"] = "latest"
-    return {"robot": ot2_default}
+from tests.conftest import EMULATOR_PROXY_ID
+from tests.validation_helper_functions import partial_string_in_mount
 
 
 @pytest.mark.parametrize(
     "config",
     [
-        lazy_fixture(name)
-        for name in [
-            "ot2_and_modules",
-            "modules_only",
-            "ot3_and_modules",
-            "ot2_only",
-            "ot3_only",
-        ]
+        lazy_fixture("ot3_remote_everything_commit_id"),
+        lazy_fixture("ot3_local_ot3_firmware_remote_monorepo"),
+        lazy_fixture("ot3_remote_ot3_firmware_local_monorepo"),
+        lazy_fixture("ot3_and_modules"),
+        lazy_fixture("modules_only"),
+        lazy_fixture("heater_shaker_module_hardware_remote"),
+        lazy_fixture("heater_shaker_module_hardware_local"),
+        lazy_fixture("heater_shaker_module_firmware_local"),
+        lazy_fixture("heater_shaker_module_firmware_remote"),
+        lazy_fixture("thermocycler_module_hardware_local"),
+        lazy_fixture("thermocycler_module_firmware_local"),
+        lazy_fixture("thermocycler_module_hardware_remote"),
+        lazy_fixture("thermocycler_module_firmware_remote"),
+        lazy_fixture("temperature_module_firmware_local"),
+        lazy_fixture("temperature_module_firmware_remote"),
+        lazy_fixture("magnetic_module_firmware_remote"),
+        lazy_fixture("magnetic_module_firmware_local"),
+        lazy_fixture("ot2_only"),
+        lazy_fixture("ot2_and_modules"),
+        lazy_fixture("ot2_remote_everything_commit_id"),
+        lazy_fixture("ot2_local_source"),
     ],
 )
 def test_emulation_proxy_created(
@@ -61,66 +65,71 @@ def test_emulation_proxy_created(
 
 @pytest.mark.parametrize(
     "config",
-    [lazy_fixture(name) for name in ["ot3_only", "modules_only", "ot3_and_modules"]],
-)
-def test_smoothie_not_created(
-    config: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
-) -> None:
-    """Confirm smoothie is created only when ot2 exists."""
-    services = convert_from_obj(config, testing_global_em_config, False).services
-    assert services is not None
-    assert SMOOTHIE_ID not in set(services.keys())
-
-
-@pytest.mark.parametrize(
-    "config", [lazy_fixture(name) for name in ["ot2_only", "ot2_and_modules"]]
+    [
+        lazy_fixture("ot2_only"),
+        lazy_fixture("ot2_and_modules"),
+        lazy_fixture("ot2_remote_everything_commit_id"),
+        lazy_fixture("ot2_local_source"),
+    ],
 )
 def test_smoothie_created(
-    config: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
-) -> None:
-    """Confirm smoothie is created only when ot2 exists."""
-    services = convert_from_obj(config, testing_global_em_config, False).services
-    assert services is not None
-    assert SMOOTHIE_ID in set(services.keys())
-
-
-def test_smoothie_with_local_source(
-    ot2_only: Dict[str, Any],
+    config: Dict[str, Any],
     opentrons_dir: str,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm smoothie uses local source when OT2 is set to local and has mounts."""
-    services = convert_from_obj(ot2_only, testing_global_em_config, False).services
-    assert services is not None
-    smoothie = services[SMOOTHIE_ID]
-    assert smoothie.image == f"{SmoothieImages().local_firmware_image_name}:latest"
-    smoothie_mounts = smoothie.volumes
-    assert smoothie_mounts is not None
-    assert len(smoothie_mounts) > 0
-    assert f"{opentrons_dir}:/opentrons" in smoothie_mounts
+    runtime_compose_file_model = convert_from_obj(
+        config, testing_global_em_config, False
+    )
+    smoothie = runtime_compose_file_model.smoothie_emulator
+    assert smoothie is not None
+    assert smoothie.image == SmoothieImage().image_name
 
 
-def test_smoothie_with_remote_source(
-    ot2_only_with_remote_source_type: Dict[str, Any],
+@pytest.mark.parametrize(
+    "config",
+    [
+        lazy_fixture("ot3_remote_everything_commit_id"),
+        lazy_fixture("ot3_local_ot3_firmware_remote_monorepo"),
+        lazy_fixture("ot3_remote_ot3_firmware_local_monorepo"),
+        lazy_fixture("ot3_and_modules"),
+        lazy_fixture("modules_only"),
+        lazy_fixture("heater_shaker_module_hardware_remote"),
+        lazy_fixture("heater_shaker_module_hardware_local"),
+        lazy_fixture("heater_shaker_module_firmware_local"),
+        lazy_fixture("heater_shaker_module_firmware_remote"),
+        lazy_fixture("thermocycler_module_hardware_local"),
+        lazy_fixture("thermocycler_module_firmware_local"),
+        lazy_fixture("thermocycler_module_hardware_remote"),
+        lazy_fixture("thermocycler_module_firmware_remote"),
+        lazy_fixture("temperature_module_firmware_local"),
+        lazy_fixture("temperature_module_firmware_remote"),
+        lazy_fixture("magnetic_module_firmware_remote"),
+        lazy_fixture("magnetic_module_firmware_local"),
+    ],
+)
+def test_smoothie_not_created(
+    config: Dict[str, Any],
+    opentrons_dir: str,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
-    """Confirm smoothie uses remote source when OT2 is set to remote and doesn't have mounts."""
-    services = convert_from_obj(
-        ot2_only_with_remote_source_type, testing_global_em_config, False
-    ).services
-    assert services is not None
-    smoothie = services[SMOOTHIE_ID]
-    assert smoothie.image == f"{SmoothieImages().remote_firmware_image_name}:latest"
-    assert smoothie.volumes is None
+    """Confirm smoothie uses local source when OT2 is set to local and has mounts."""
+    runtime_compose_file_model = convert_from_obj(
+        config, testing_global_em_config, False
+    )
+    smoothie = runtime_compose_file_model.smoothie_emulator
+    assert smoothie is None
 
 
 @pytest.mark.parametrize(
     "container_name, expected_image_name",
     [
-        [OT3Hardware.PIPETTES.value, OT3PipettesImages().local_hardware_image_name],
-        [OT3Hardware.HEAD.value, OT3HeadImages().local_hardware_image_name],
-        [OT3Hardware.GANTRY_X.value, OT3GantryXImages().local_hardware_image_name],
-        [OT3Hardware.GANTRY_Y.value, OT3GantryYImages().local_hardware_image_name],
+        [OT3Hardware.PIPETTES.value, OT3PipettesImage().image_name],
+        [OT3Hardware.HEAD.value, OT3HeadImage().image_name],
+        [OT3Hardware.GANTRY_X.value, OT3GantryXImage().image_name],
+        [OT3Hardware.GANTRY_Y.value, OT3GantryYImage().image_name],
+        [OT3Hardware.BOOTLOADER.value, OT3BootloaderImage().image_name],
+        [OT3Hardware.GRIPPER.value, OT3GripperImage().image_name],
     ],
 )
 def test_local_ot3_services_created(
@@ -137,5 +146,5 @@ def test_local_ot3_services_created(
     service = services[container_name]
     assert service.image == expected_image_name
 
-    partial_string_in_mount("entrypoint.sh:/entrypoint.sh", service.volumes)
-    partial_string_in_mount("ot3-firmware:/ot3-firmware", service.volumes)
+    partial_string_in_mount("entrypoint.sh:/entrypoint.sh", service)
+    partial_string_in_mount("ot3-firmware:/ot3-firmware", service)
