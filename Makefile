@@ -9,7 +9,7 @@ COMPOSE_RUN_COMMAND := DOCKER_BUILDKIT=1 docker-compose -f - up --remove-orphans
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_START_COMMAND := docker-compose -f - start
 COMPOSE_STOP_COMMAND := docker-compose -f - stop
-COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
+COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force && docker volume prune -f
 COMPOSE_LOGS_COMMAND := docker-compose -f - logs -f
 COMPOSE_RESTART_COMMAND := docker-compose -f - restart --timeout 1
 BUILD_COMMAND := docker buildx bake --load --file ~/tmp-compose.yaml
@@ -190,7 +190,17 @@ can-mon:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="can-server" \
-		| xargs -o -I{} docker exec -it {} monorepo_python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
+		| xargs -orn 1 -I{} docker exec -it {} monorepo_python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
+
+.PHONY: refresh-dev
+refresh-dev:
+	$(if $(file_path),,$(error file_path variable required))
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="source-builders" \
+		| xargs -P 4 -orn 1 -I{} docker exec -t {} /build.sh
 
 .PHONY: refresh-dev-ci
 refresh-dev-ci:
@@ -201,6 +211,7 @@ refresh-dev-ci:
 		file_path="${abs_path}" \
 		filter="source-builders" \
 		| xargs -P 4 -rn 1 -I{} docker exec -t {} /build.sh
+
 
 
 ###########################################
