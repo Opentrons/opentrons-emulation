@@ -20,4 +20,7 @@ __all__ = [
     "OT3Services",
     "InputServices",
     "OT3StateManagerService",
+    "MonorepoBuilderService",
+    "OT3FirmwareBuilderService",
+    "OpentronsModulesBuilderService",
 ]

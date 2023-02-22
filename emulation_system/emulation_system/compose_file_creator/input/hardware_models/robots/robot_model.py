@@ -3,8 +3,6 @@
 Used to group all robots together and distinguish them from modules.
 """
 
-from pydantic import Field
-
 from emulation_system.compose_file_creator.images import get_image_name
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateEnvironmentVariables,

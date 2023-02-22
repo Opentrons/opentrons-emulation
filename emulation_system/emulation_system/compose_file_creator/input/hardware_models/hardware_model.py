@@ -4,7 +4,7 @@ from __future__ import annotations
 from itertools import combinations
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel, Field, validator
+from pydantic import Field, validator
 
 from emulation_system.compose_file_creator import BuildItem, Service
 from emulation_system.compose_file_creator.config_file_settings import (
