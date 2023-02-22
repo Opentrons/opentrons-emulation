@@ -146,6 +146,7 @@ COPY entrypoints/ot3_firmware_builder.sh /build.sh
 FROM ghcr.io/opentrons/cpp-base-${TARGETARCH}:latest as opentrons-modules-source
 ARG MODULE_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip"
 
+ENV MODULE_SOURCE_DOWNLOAD_LOCATION=$MODULE_SOURCE_DOWNLOAD_LOCATION
 
 ADD $MODULE_SOURCE_DOWNLOAD_LOCATION /opentrons-modules.zip
 
@@ -165,6 +166,7 @@ COPY entrypoints/opentrons_modules_builder.sh /build.sh
 FROM ghcr.io/opentrons/python-base:latest as opentrons-source
 ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip"
 
+ENV OPENTRONS_SOURCE_DOWNLOAD_LOCATION=$OPENTRONS_SOURCE_DOWNLOAD_LOCATION
 
 ADD $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons.zip
 
