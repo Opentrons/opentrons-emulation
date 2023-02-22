@@ -7,7 +7,6 @@ import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system import OpentronsEmulationConfiguration
-from emulation_system.compose_file_creator.config_file_settings import EmulationLevels
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
@@ -18,76 +17,50 @@ from emulation_system.compose_file_creator.input.hardware_models import (
     TemperatureModuleInputModel,
     ThermocyclerModuleInputModel,
 )
-from emulation_system.compose_file_creator.output.compose_file_model import Service
-from tests.compose_file_creator.conftest import (
+from tests.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,
     OT2_ID,
-    OT3_ID,
     SMOOTHIE_ID,
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
 )
-
-
-@pytest.fixture
-def ot2_only_services(
-    ot2_only: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> Dict[str, Service]:
-    """Structure of SystemConfigurationModel with OT-2 only."""
-    return cast(
-        Dict[str, Service],
-        convert_from_obj(ot2_only, testing_global_em_config, dev=False).services,
-    )
-
-
-@pytest.fixture
-def thermocycler_module_firmware_emulation_level(
-    thermocycler_module_default: Dict[str, Any]
-) -> Dict[str, Any]:
-    """Return heater-shaker configuration with an invalid emulation level."""
-    thermocycler_module_default["emulation-level"] = EmulationLevels.FIRMWARE.value
-    return thermocycler_module_default
+from tests.validation_helper_functions import get_env
 
 
 @pytest.mark.parametrize(
-    "services",
+    "config",
     [
-        lazy_fixture("robot_with_mount_and_modules_services"),
-        lazy_fixture("ot2_only_services"),
+        lazy_fixture("ot2_only"),
     ],
 )
 def test_robot_server_emulator_proxy_env_vars_added(
-    services: Dict[str, Service],
+    config: Dict[str, Any],
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm env vars are set correctly."""
-    assert services is not None
-    env = services[OT2_ID].environment
+    robot = convert_from_obj(config, testing_global_em_config, False).robot_server
+    assert robot is not None
+    env = get_env(robot)
     assert env is not None
-    env_root = cast(Dict[str, Any], env.__root__)
 
-    assert env_root is not None
-    assert "OT_SMOOTHIE_EMULATOR_URI" in env_root
-    assert env_root["OT_SMOOTHIE_EMULATOR_URI"] == f"socket://{SMOOTHIE_ID}:11000"
-    assert "OT_EMULATOR_module_server" in env_root
-    assert env_root["OT_EMULATOR_module_server"] == f'{{"host": "{EMULATOR_PROXY_ID}"}}'
+    assert "OT_SMOOTHIE_EMULATOR_URI" in env
+    assert env["OT_SMOOTHIE_EMULATOR_URI"] == f"socket://{SMOOTHIE_ID}:11000"
+    assert "OT_EMULATOR_module_server" in env
+    assert env["OT_EMULATOR_module_server"] == f'{{"host": "{EMULATOR_PROXY_ID}"}}'
 
 
 def test_ot3_feature_flag_added(
     ot3_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
 ) -> None:
     """Confirm feature flag is added when robot is an OT3."""
-    robot_services = convert_from_obj(
-        ot3_only, testing_global_em_config, dev=False
-    ).services
-    assert robot_services is not None
-    env = robot_services[OT3_ID].environment
+    robot = convert_from_obj(ot3_only, testing_global_em_config, dev=False).robot_server
+    assert robot is not None
+    env = get_env(robot)
     assert env is not None
-    assert "OT_API_FF_enableOT3HardwareController" in env.__root__
-    root = cast(Dict[str, str], env.__root__)
+    assert "OT_API_FF_enableOT3HardwareController" in env
+    root = cast(Dict[str, str], env)
     assert root["OT_API_FF_enableOT3HardwareController"] == "True"
 
 
@@ -95,29 +68,29 @@ def test_ot3_feature_flag_added(
     "model,input_class,expected_value",
     [
         [
-            lazy_fixture("temperature_module_default"),
+            lazy_fixture("temperature_module_firmware_remote"),
             TemperatureModuleInputModel,
             {
-                "serial_number": "temperamental",
+                "serial_number": "temperamental-1",
                 "model": "temp_deck_v20",
                 "version": "v2.0.1",
                 "temperature": {"degrees_per_tick": 2.0, "starting": 23.0},
             },
         ],
         [
-            lazy_fixture("magnetic_module_default"),
+            lazy_fixture("magnetic_module_firmware_remote"),
             MagneticModuleInputModel,
             {
-                "serial_number": "fatal-attraction",
+                "serial_number": "fatal-attraction-1",
                 "model": "mag_deck_v20",
                 "version": "2.0.0",
             },
         ],
         [
-            lazy_fixture("thermocycler_module_firmware_emulation_level"),
+            lazy_fixture("thermocycler_module_firmware_remote"),
             ThermocyclerModuleInputModel,
             {
-                "serial_number": "t00-hot-to-handle",
+                "serial_number": "t00-hot-to-handle-1",
                 "model": "v02",
                 "version": "v1.1.0",
                 "lid_temperature": {"degrees_per_tick": 2.0, "starting": 23.0},
@@ -133,18 +106,18 @@ def test_firmware_serial_number_env_vars(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that serial number env vars are created correctly on firmware modules."""
-    services = convert_from_obj(
-        {"modules": [model]}, testing_global_em_config, dev=False
-    ).services
-    assert services is not None
+    modules = convert_from_obj(
+        model, testing_global_em_config, dev=False
+    ).module_emulators
+    assert modules is not None and len(modules) == 1
+    module = modules[0]
 
-    module_env = services[model["id"]].environment
+    module_env = get_env(module)
     assert module_env is not None
     assert input_class.firmware_serial_number_info is not None
-    assert input_class.firmware_serial_number_info.env_var_name in module_env.__root__
+    assert input_class.firmware_serial_number_info.env_var_name in module_env
 
-    module_root = cast(Dict[str, str], module_env.__root__)
-    assert module_root[
+    assert module_env[
         input_class.firmware_serial_number_info.env_var_name
     ] == json.dumps(expected_value)
 
@@ -152,49 +125,58 @@ def test_firmware_serial_number_env_vars(
 @pytest.mark.parametrize(
     "service_name",
     [
-        THERMOCYCLER_MODULE_ID,
-        HEATER_SHAKER_MODULE_ID,
+        f"{THERMOCYCLER_MODULE_ID}-1",
+        f"{HEATER_SHAKER_MODULE_ID}-1",
     ],
 )
 def test_hardware_serial_number_env_vars(
-    service_name: str, robot_with_mount_and_modules_services: Dict[str, Service]
+    service_name: str,
+    ot2_and_modules: Dict[str, Any],
+    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that serial number env vars are created correctly on hardware modules."""
-    services = robot_with_mount_and_modules_services
-    assert services is not None
+    service = convert_from_obj(
+        ot2_and_modules, testing_global_em_config, dev=False
+    ).services
+    assert service is not None
+    module = service[service_name]
+    assert module is not None
 
-    module_env = services[service_name].environment
+    module_env = get_env(module)
     assert module_env is not None
-    assert "SERIAL_NUMBER" in module_env.__root__
+    assert "SERIAL_NUMBER" in module_env
 
-    module_root = cast(Dict[str, str], module_env.__root__)
-    assert module_root["SERIAL_NUMBER"] == service_name
+    assert module_env["SERIAL_NUMBER"] == service_name
 
 
 @pytest.mark.parametrize(
     "service_name, input_class",
     [
-        [TEMPERATURE_MODULE_ID, TemperatureModuleInputModel],
-        [THERMOCYCLER_MODULE_ID, ThermocyclerModuleInputModel],
-        [HEATER_SHAKER_MODULE_ID, HeaterShakerModuleInputModel],
-        [MAGNETIC_MODULE_ID, MagneticModuleInputModel],
+        [f"{TEMPERATURE_MODULE_ID}-1", TemperatureModuleInputModel],
+        [f"{THERMOCYCLER_MODULE_ID}-1", ThermocyclerModuleInputModel],
+        [f"{HEATER_SHAKER_MODULE_ID}-1", HeaterShakerModuleInputModel],
+        [f"{MAGNETIC_MODULE_ID}-1", MagneticModuleInputModel],
     ],
 )
 def test_em_proxy_info_env_vars_on_modules(
     service_name: str,
     input_class: Type[ModuleInputModel],
-    robot_with_mount_and_modules_services: Dict[str, Service],
+    ot2_and_modules: Dict[str, Any],
+    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that serial number env vars are created correctly on hardware modules."""
-    services = robot_with_mount_and_modules_services
-    assert services is not None
+    service = convert_from_obj(
+        ot2_and_modules, testing_global_em_config, dev=False
+    ).services
+    assert service is not None
+    module = service[service_name]
 
-    module_env = services[service_name].environment
+    assert module is not None
+    module_env = get_env(module)
     assert module_env is not None
-    assert input_class.proxy_info.env_var_name in module_env.__root__
+    assert input_class.proxy_info.env_var_name in module_env
 
-    module_root = cast(Dict[str, str], module_env.__root__)
-    assert module_root[input_class.proxy_info.env_var_name] == json.dumps(
+    assert module_env[input_class.proxy_info.env_var_name] == json.dumps(
         {
             "emulator_port": input_class.proxy_info.emulator_port,
             "driver_port": input_class.proxy_info.driver_port,
@@ -213,18 +195,21 @@ def test_em_proxy_info_env_vars_on_modules(
 )
 def test_em_proxy_info_env_vars_on_proxy(
     input_class: Type[ModuleInputModel],
-    robot_with_mount_and_modules_services: Dict[str, Service],
+    ot2_and_modules: Dict[str, Any],
+    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that serial number env vars are created correctly on emulator proxy."""
-    services = robot_with_mount_and_modules_services
-    assert services is not None
+    emulator_proxy = convert_from_obj(
+        ot2_and_modules, testing_global_em_config, dev=False
+    ).emulator_proxy
 
-    emulator_proxy_env = services[EMULATOR_PROXY_ID].environment
+    assert emulator_proxy is not None
+
+    emulator_proxy_env = get_env(emulator_proxy)
     assert emulator_proxy_env is not None
-    assert input_class.proxy_info.env_var_name in emulator_proxy_env.__root__
+    assert input_class.proxy_info.env_var_name in emulator_proxy_env
 
-    module_root = cast(Dict[str, str], emulator_proxy_env.__root__)
-    assert module_root[input_class.proxy_info.env_var_name] == json.dumps(
+    assert emulator_proxy_env[input_class.proxy_info.env_var_name] == json.dumps(
         {
             "emulator_port": input_class.proxy_info.emulator_port,
             "driver_port": input_class.proxy_info.driver_port,
