@@ -23,7 +23,7 @@ def _get_top_level_volumes(service_list: List[Service]) -> Optional[Dict[str, Vo
             mount = cast(str, mount)
             if not mount.startswith("/"):
                 mount_name = mount[: mount.find(":")]
-                volume_dict[mount_name] = Volume()
+                volume_dict[mount_name] = Volume(name=mount_name)
         return volume_dict
     else:
         return None
