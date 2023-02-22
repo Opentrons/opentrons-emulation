@@ -6,7 +6,8 @@ import yaml
 from emulation_system.compose_file_creator import BuildItem, Service
 from emulation_system.compose_file_creator.container_filters import ContainerFilters
 
-from ..images import Images
+from ..images import FirmwareAndHardwareImages, SingleImage
+from ..utilities.yaml_utils import OpentronsEmulationYamlDumper
 
 # Have to ignore attr-defined errors from mypy because we are calling type: ignore at
 # the top of compose_file_model. This causes mypy to think that ComposeSpecification
@@ -33,16 +34,25 @@ class RuntimeComposeFileModel(ComposeSpecification):
 
     def _search_for_services(
         self,
-        images_to_search_for: List[Type[Images]],
+        images_to_search_for: List[FirmwareAndHardwareImages | SingleImage],
         inverse: bool = False,
-        only_local: bool = False
+        only_local: bool = False,
+        only_firmware_level: bool = False,
+        only_hardware_level: bool = False,
     ) -> Optional[List[Service]]:
         service_list = []
         assert self.services is not None
 
+        if only_hardware_level and only_firmware_level:
+            raise ValueError(
+                "Can not have both \"only_firmware_level\" and \"only_hardware_level\" set to True"
+            )
+
         image_names = []
         for image in images_to_search_for:
-            image_names.extend(image().get_image_names())
+            image_names.extend(
+                image.get_image_names(only_firmware_level, only_hardware_level)
+            )
 
         for service in self.services.values():
             if (
@@ -178,7 +188,11 @@ class RuntimeComposeFileModel(ComposeSpecification):
         )
 
     def load_containers_by_filter(
-        self, container_filter: str, local_only: bool = False
+        self,
+        container_filter: str,
+        local_only: bool = False,
+        only_firmware_level: bool = False,
+        only_hardware_level: bool = False,
     ) -> List[Service]:
         """Get a list of services based on filter string."""
         inverse = False
@@ -187,7 +201,13 @@ class RuntimeComposeFileModel(ComposeSpecification):
             container_filter = container_filter.replace("not-", "")
 
         images_to_load = ContainerFilters.load_by_filter_name(container_filter).images
-        containers = self._search_for_services(images_to_load, inverse, local_only)
+        containers = self._search_for_services(
+            images_to_load,
+            inverse,
+            local_only,
+            only_firmware_level,
+            only_hardware_level
+        )
 
         return (
             [container for container in containers]
