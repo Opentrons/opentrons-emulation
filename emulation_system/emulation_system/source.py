@@ -18,7 +18,9 @@ from emulation_system.compose_file_creator.config_file_settings import (
     OT3Hardware,
     RepoToBuildArgMapping,
 )
-from emulation_system.compose_file_creator.types.intermediate_types import IntermediateBuildArgs
+from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateBuildArgs,
+)
 from emulation_system.consts import (
     COMMIT_SHA_REGEX,
     ENTRYPOINT_FILE_LOCATION,

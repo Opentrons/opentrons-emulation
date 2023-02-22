@@ -47,7 +47,6 @@ class CANServerService(AbstractService):
         """
         return CANServerImage().image_name
 
-
     def generate_container_name(self) -> str:
         """Generates value for container_name parameter."""
         system_unique_id = self._config_model.system_unique_id

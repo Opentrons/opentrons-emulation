@@ -5,7 +5,7 @@ from collections import Counter
 from typing import Any, Dict, List, Mapping, Optional, TypeGuard, cast
 
 import yaml
-from pydantic import  Field, parse_file_as, parse_obj_as, root_validator
+from pydantic import Field, parse_file_as, parse_obj_as, root_validator
 
 from emulation_system.consts import DEFAULT_NETWORK_NAME
 from opentrons_pydantic_base_model import OpentronsBaseModel
