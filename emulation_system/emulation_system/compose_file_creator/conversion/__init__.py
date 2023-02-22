@@ -7,6 +7,9 @@ from .service_builders import (
     OT3StateManagerService,
     SmoothieService,
     ServiceOrchestrator,
+    OT3FirmwareBuilderService,
+    MonorepoBuilderService,
+    OpentronsModulesBuilderService
 )
 
 __all__ = [

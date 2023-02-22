@@ -2,11 +2,11 @@
 from enum import Enum
 from typing import Optional, Union
 
-from pydantic import BaseModel, DirectoryPath, Field, FilePath
+from pydantic import DirectoryPath, Field, FilePath
 from typing_extensions import Literal
 
-from emulation_system.compose_file_creator.utilities.shared_functions import to_kebab
 from emulation_system.consts import ROOM_TEMPERATURE
+from opentrons_pydantic_base_model import OpentronsBaseModel
 
 
 class Hardware(str, Enum):
@@ -71,35 +71,21 @@ class HeaterShakerModes(str, Enum):
     SOCKET = "socket"
 
 
-class TemperatureModelSettings(BaseModel):
+class TemperatureModelSettings(OpentronsBaseModel):
     """Temperature behavior model."""
 
     degrees_per_tick: float = Field(default=2.0)
     starting: float = float(ROOM_TEMPERATURE)
 
-    class Config:
-        """Config class used by pydantic."""
 
-        extra = "forbid"
-        allow_population_by_field_name = True
-        alias_generator = to_kebab
-
-
-class RPMModelSettings(BaseModel):
+class RPMModelSettings(OpentronsBaseModel):
     """RPM behavior model."""
 
     rpm_per_tick: float = Field(default=100.0)
     starting: float = 0.0
 
-    class Config:
-        """Config class used by pydantic."""
 
-        extra = "forbid"
-        allow_population_by_field_name = True
-        alias_generator = to_kebab
-
-
-class PipetteSettings(BaseModel):
+class PipetteSettings(OpentronsBaseModel):
     """Pipette defintions for OT-2 and OT-3."""
 
     model: str = "p20_single_v2.0"
@@ -137,7 +123,7 @@ class RepoToBuildArgMapping(str, Enum):
         return mapping
 
 
-class SourceRepositories(BaseModel):
+class SourceRepositories(OpentronsBaseModel):
     """Stores names of source code repos for each piece of hardware."""
 
     firmware_repo_name: Optional[OpentronsRepository]
@@ -151,19 +137,12 @@ class MountTypes(str, Enum):
     DIRECTORY = "directory"
 
 
-class Mount(BaseModel):
+class Mount(OpentronsBaseModel):
     """Contains infomation about a single extra bind mount."""
 
     type: str
     mount_path: str
     source_path: Union[DirectoryPath, FilePath]
-
-    class Config:
-        """Config class used by pydantic."""
-
-        extra = "forbid"
-        allow_population_by_field_name = True
-        alias_generator = to_kebab
 
     def __eq__(self, other: object) -> bool:
         """Compare everything except name."""
@@ -177,11 +156,6 @@ class Mount(BaseModel):
                 self.source_path == other.source_path,
             ]
         )
-
-    class Config:
-        """Config class used by pydantic."""
-
-        allow_population_by_field_name = True
 
     def get_bind_mount_string(self) -> str:
         """Return bind mount string to add compose file."""

@@ -5,9 +5,10 @@ from collections import Counter
 from typing import Any, Dict, List, Mapping, Optional, TypeGuard, cast
 
 import yaml
-from pydantic import BaseModel, Field, parse_file_as, parse_obj_as, root_validator
+from pydantic import  Field, parse_file_as, parse_obj_as, root_validator
 
 from emulation_system.consts import DEFAULT_NETWORK_NAME
+from opentrons_pydantic_base_model import OpentronsBaseModel
 
 from ...source import MonorepoSource, OpentronsModulesSource, OT3FirmwareSource
 from ..config_file_settings import EmulationLevels, Hardware
@@ -15,7 +16,6 @@ from ..errors import DuplicateHardwareNameError
 from ..types.input_types import Containers, Modules, Robots
 from ..types.intermediate_types import IntermediateNetworks
 from ..utilities.hardware_utils import is_ot3
-from ..utilities.shared_functions import to_kebab
 from ..utilities.yaml_utils import OpentronsEmulationYamlDumper
 from .hardware_models import (
     ModuleInputModel,
@@ -25,7 +25,7 @@ from .hardware_models import (
 )
 
 
-class SystemConfigurationModel(BaseModel):
+class SystemConfigurationModel(OpentronsBaseModel):
     """Model for overall system configuration specified in a JSON file.
 
     Represents an entire system to be brought up.
@@ -43,13 +43,6 @@ class SystemConfigurationModel(BaseModel):
     opentrons_modules_source: OpentronsModulesSource = Field(
         default=OpentronsModulesSource(source_location="latest")
     )
-
-    class Config:
-        """Config class used by pydantic."""
-
-        extra = "forbid"
-        allow_population_by_field_name = True
-        alias_generator = to_kebab
 
     @root_validator(pre=True)
     def validate_names(cls, values) -> Dict[str, Dict[str, Containers]]:  # noqa: ANN001

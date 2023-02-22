@@ -10,9 +10,6 @@ from abc import ABC, abstractmethod
 from enum import Enum, auto
 from typing import List, Union
 
-from pydantic import BaseModel
-
-from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.config_file_settings import (
     FileMount,
     Hardware,
@@ -27,6 +24,7 @@ from emulation_system.consts import (
     ENTRYPOINT_FILE_LOCATION,
     MONOREPO_NAMED_VOLUME_STRING,
 )
+from opentrons_pydantic_base_model import OpentronsBaseModel
 
 ENTRYPOINT_MOUNT_STRING = FileMount(
     type=MountTypes.FILE,
@@ -112,7 +110,7 @@ class Source(ABC):
         return RepoToBuildArgMapping.get_mapping(self.repo)
 
     def generate_build_args(
-        self, global_settings: OpentronsEmulationConfiguration
+        self, global_settings: "OpentronsEmulationConfiguration"
     ) -> IntermediateBuildArgs | None:
         if self.is_local():
             return None
@@ -151,16 +149,11 @@ class EmulatorSourceMixin:
         ]
 
 
-class MonorepoSource(BaseModel, Source):
+class MonorepoSource(OpentronsBaseModel, Source):
     """Source class for opentrons monorepo."""
 
     source_location: str
     repo: OpentronsRepository = OpentronsRepository.OPENTRONS
-
-    class Config:
-        """Config class used by pydantic."""
-
-        use_enum_values = True
 
     @classmethod
     def validate(cls, v: str) -> "MonorepoSource":
@@ -191,16 +184,11 @@ class MonorepoSource(BaseModel, Source):
         return default_values
 
 
-class OT3FirmwareSource(BaseModel, Source, EmulatorSourceMixin):
+class OT3FirmwareSource(OpentronsBaseModel, Source, EmulatorSourceMixin):
     """Source class for opentrons ot3-firmware repo."""
 
     source_location: str
     repo: OpentronsRepository = OpentronsRepository.OT3_FIRMWARE
-
-    class Config:
-        """Config class used by pydantic."""
-
-        use_enum_values = True
 
     @classmethod
     def validate(cls, v: str) -> "OT3FirmwareSource":
@@ -229,16 +217,11 @@ class OT3FirmwareSource(BaseModel, Source, EmulatorSourceMixin):
         return default_values
 
 
-class OpentronsModulesSource(BaseModel, Source, EmulatorSourceMixin):
+class OpentronsModulesSource(OpentronsBaseModel, Source, EmulatorSourceMixin):
     """Source class for opentrons opentrons-modules repo."""
 
     source_location: str
     repo: OpentronsRepository = OpentronsRepository.OPENTRONS_MODULES
-
-    class Config:
-        """Config class used by pydantic."""
-
-        use_enum_values = True
 
     @classmethod
     def validate(cls, v: str) -> "OpentronsModulesSource":

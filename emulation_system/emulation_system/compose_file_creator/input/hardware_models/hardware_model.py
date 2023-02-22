@@ -15,13 +15,12 @@ from emulation_system.compose_file_creator.config_file_settings import (
     SourceRepositories,
 )
 from emulation_system.compose_file_creator.images import get_image_name
+from opentrons_pydantic_base_model import OpentronsBaseModel
 
-from ...utilities.shared_functions import to_kebab
 from .hardware_specific_attributes import HardwareSpecificAttributes
-from ...utilities.shared_functions import to_kebab
 
 
-class HardwareModel(BaseModel):
+class HardwareModel(OpentronsBaseModel):
     """Parent class of all hardware. Define attributes common to all hardware."""
 
     id: str = Field(..., regex=r"^[a-zA-Z0-9-_]+$")
@@ -34,14 +33,6 @@ class HardwareModel(BaseModel):
     emulation_level: EmulationLevels = NotImplemented
     hardware_specific_attributes: HardwareSpecificAttributes = NotImplemented
 
-    class Config:
-        """Config class used by pydantic."""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
-        use_enum_values = True
-        extra = "forbid"
-        alias_generator = to_kebab
 
     def __init__(self, **data: Any) -> None:
         super().__init__(**data)
