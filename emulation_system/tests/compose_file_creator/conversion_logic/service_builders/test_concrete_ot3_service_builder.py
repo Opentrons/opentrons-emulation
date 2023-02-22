@@ -104,24 +104,26 @@ def test_simple_ot3_values(
 
 
 @pytest.mark.parametrize(
-    "config_model",
+    "model_dict",
     [
-        lazy_fixture("remote_source_latest"),
-        lazy_fixture("remote_source_commit_id"),
-        lazy_fixture("local_source"),
+        lazy_fixture("ot3_remote_everything_commit_id"),
+        lazy_fixture("ot3_only"),
+        lazy_fixture("ot3_local_ot3_firmware_remote_monorepo"),
+        lazy_fixture("ot3_remote_ot3_firmware_local_monorepo"),
+        lazy_fixture("ot3_local_everything"),
     ],
 )
 def test_ot3_service_environment_variables(
-    config_model: SystemConfigurationModel,
+    model_dict: SystemConfigurationModel,
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Tests for values that are the same for all configurations of a Smoothie Service."""
+    config_model = parse_obj_as(SystemConfigurationModel, model_dict)
     services = ServiceOrchestrator(
         config_model, testing_global_em_config, dev=True
     )._build_ot3_services(
         can_server_service_name="can-server", state_manager_name="state-manager"
     )
-
     # The number of items in ServiceOrchestrator.OT3_SERVICES_TO_CREATE
     assert len(services) == 6
     head = get_ot3_service(services, OT3Hardware.HEAD)

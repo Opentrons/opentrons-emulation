@@ -49,10 +49,10 @@ def test_default_ot2(ot2_model: Dict[str, Any]) -> None:
     assert ot2.emulation_level == EmulationLevels.FIRMWARE.value
     assert ot2.exposed_port == 5000
     assert ot2.bound_port == 31950
-    assert ot2.hardware_specific_attributes.left.model == "p20_single_v2.0"
-    assert ot2.hardware_specific_attributes.left.id == "P20SV202020070101"
-    assert ot2.hardware_specific_attributes.right.model == "p20_single_v2.0"
-    assert ot2.hardware_specific_attributes.right.id == "P20SV202020070101"
+    assert ot2.hardware_specific_attributes.left_pipette.model == "p20_single_v2.0"
+    assert ot2.hardware_specific_attributes.left_pipette.id == "P20SV202020070101"
+    assert ot2.hardware_specific_attributes.right_pipette.model == "p20_single_v2.0"
+    assert ot2.hardware_specific_attributes.right_pipette.id == "P20SV202020070101"
     assert ot2.source_repos.firmware_repo_name == OpentronsRepository.OPENTRONS
     assert ot2.source_repos.hardware_repo_name is None
 
@@ -67,10 +67,10 @@ def test_ot2_with_overridden_bound_port(
     assert ot2.emulation_level == EmulationLevels.FIRMWARE.value
     assert ot2.exposed_port == 5000
     assert ot2.bound_port == 2500
-    assert ot2.hardware_specific_attributes.left.model == "p20_single_v2.0"
-    assert ot2.hardware_specific_attributes.left.id == "P20SV202020070101"
-    assert ot2.hardware_specific_attributes.right.model == "p20_single_v2.0"
-    assert ot2.hardware_specific_attributes.right.id == "P20SV202020070101"
+    assert ot2.hardware_specific_attributes.left_pipette.model == "p20_single_v2.0"
+    assert ot2.hardware_specific_attributes.left_pipette.id == "P20SV202020070101"
+    assert ot2.hardware_specific_attributes.right_pipette.model == "p20_single_v2.0"
+    assert ot2.hardware_specific_attributes.right_pipette.id == "P20SV202020070101"
 
 
 def test_ot2_with_custom_pipettes(ot2_with_pipettes: Dict[str, Any]) -> None:
@@ -81,10 +81,10 @@ def test_ot2_with_custom_pipettes(ot2_with_pipettes: Dict[str, Any]) -> None:
     assert ot2.emulation_level == EmulationLevels.FIRMWARE.value
     assert ot2.exposed_port == 5000
     assert ot2.bound_port == 31950
-    assert ot2.hardware_specific_attributes.left.model == "test_1"
-    assert ot2.hardware_specific_attributes.left.id == "test_1_id"
-    assert ot2.hardware_specific_attributes.right.model == "test_2"
-    assert ot2.hardware_specific_attributes.right.id == "test_2_id"
+    assert ot2.hardware_specific_attributes.left_pipette.model == "test_1"
+    assert ot2.hardware_specific_attributes.left_pipette.id == "test_1_id"
+    assert ot2.hardware_specific_attributes.right_pipette.model == "test_2"
+    assert ot2.hardware_specific_attributes.right_pipette.id == "test_2_id"
 
 
 def test_ot2_with_bad_emulation_level(ot2_bad_emulation_level: Dict[str, Any]) -> None:
