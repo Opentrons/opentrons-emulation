@@ -14,11 +14,11 @@ from emulation_system.compose_file_creator.output.runtime_compose_file_model imp
     RuntimeComposeFileModel,
 )
 from emulation_system.consts import ROOT_DIR
+from tests.e2e.fixtures.expected_bind_mounts import ExpectedBindMounts
+from tests.e2e.fixtures.module_containers import ModuleContainers
+from tests.e2e.fixtures.ot3_containers import OT3Containers
 from tests.e2e.utilities.consts import ExpectedMount
-from tests.e2e.utilities.expected_bind_mounts import ExpectedBindMounts
 from tests.e2e.utilities.helper_functions import get_container, get_containers
-from tests.e2e.utilities.module_containers import ModuleContainers
-from tests.e2e.utilities.ot3_containers import OT3Containers
 
 
 @pytest.fixture

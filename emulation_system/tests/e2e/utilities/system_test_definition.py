@@ -4,6 +4,9 @@ from typing import Any, Dict, List
 
 from docker.models.containers import Container  # type: ignore[import]
 
+from tests.e2e.fixtures.expected_bind_mounts import ExpectedBindMounts
+from tests.e2e.fixtures.module_containers import ModuleContainers
+from tests.e2e.fixtures.ot3_containers import OT3Containers
 from tests.e2e.utilities.build_arg_configurations import BuildArgConfigurations
 from tests.e2e.utilities.consts import (
     CommonMounts,
@@ -18,14 +21,11 @@ from tests.e2e.utilities.consts import (
     OT3FirmwareExpectedBinaryNames,
     OT3StateManagerNamedVolumes,
 )
-from tests.e2e.utilities.expected_bind_mounts import ExpectedBindMounts
 from tests.e2e.utilities.helper_functions import (
     exec_in_container,
     get_mounts,
     get_volumes,
 )
-from tests.e2e.utilities.module_containers import ModuleContainers
-from tests.e2e.utilities.ot3_containers import OT3Containers
 from tests.e2e.utilities.ot3_system_test_messages import (
     MONOREPO_BUILDER_CREATED,
     MONOREPO_BUILDER_NOT_CREATED,

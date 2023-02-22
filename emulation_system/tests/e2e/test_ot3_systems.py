@@ -3,10 +3,10 @@ from typing import Callable
 
 import pytest
 
+from tests.e2e.fixtures.expected_bind_mounts import ExpectedBindMounts
+from tests.e2e.fixtures.module_containers import ModuleContainers
+from tests.e2e.fixtures.ot3_containers import OT3Containers
 from tests.e2e.test_mappings import get_e2e_test_parmeters
-from tests.e2e.utilities.expected_bind_mounts import ExpectedBindMounts
-from tests.e2e.utilities.module_containers import ModuleContainers
-from tests.e2e.utilities.ot3_containers import OT3Containers
 from tests.e2e.utilities.system_test_definition import SystemTestDefinition
 
 
