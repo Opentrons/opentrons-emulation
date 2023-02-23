@@ -1,8 +1,5 @@
 """Module containing logic for e2e tests."""
 from dataclasses import dataclass, field
-from typing import Any, Dict, List
-
-from docker.models.containers import Container  # type: ignore[import]
 
 from tests.e2e.fixtures.expected_bind_mounts import ExpectedBindMounts
 from tests.e2e.fixtures.module_containers import ModuleContainers
@@ -10,8 +7,6 @@ from tests.e2e.fixtures.ot3_containers import OT3Containers
 from tests.e2e.utilities.build_arg_configurations import BuildArgConfigurations
 from tests.e2e.utilities.consts import (
     CommonMounts,
-    ExpectedMount,
-    ExpectedNamedVolume,
     ModulesExpectedBinaryNames,
     MonorepoBuilderNamedVolumes,
     OpentronsModulesBuilderNamedVolumes,
@@ -22,11 +17,13 @@ from tests.e2e.utilities.consts import (
     OT3StateManagerNamedVolumes,
 )
 from tests.e2e.utilities.helper_functions import (
+    confirm_mount_does_not_exist,
+    confirm_mount_exists,
+    confirm_named_volume_exists,
     exec_in_container,
-    get_mounts,
-    get_volumes,
 )
-from tests.e2e.utilities.ot3_system_test_messages import (
+from tests.e2e.utilities.results.e2e_test_output import E2ETestOutput
+from tests.e2e.utilities.results.ot3_system_test_messages import (
     MONOREPO_BUILDER_CREATED,
     MONOREPO_BUILDER_NOT_CREATED,
     MONOREPO_SOURCE_MOUNTED,
@@ -39,69 +36,8 @@ from tests.e2e.utilities.ot3_system_test_messages import (
     OT3_FIRMWARE_BUILDER_NOT_CREATED,
     OT3_FIRMWARE_SOURCE_MOUNTED,
     OT3_FIRMWARE_SOURCE_NOT_MOUNTED,
-    E2ETestOutput,
-    TestDescription,
 )
-
-
-def _filter_mounts(
-    container: Container, expected_mount: ExpectedMount
-) -> List[Dict[str, Any]]:
-    mounts = get_mounts(container)
-    assert mounts is not None, "mounts are None"
-    return [
-        mount
-        for mount in mounts
-        if (
-            mount["Type"] == "bind"
-            and mount["Source"] == expected_mount.SOURCE_PATH
-            and mount["Destination"] == expected_mount.DEST_PATH
-        )
-    ]
-
-
-def _filter_volumes(
-    container: Container, expected_vol: ExpectedNamedVolume
-) -> List[Dict[str, Any]]:
-    volumes = get_volumes(container)
-    assert volumes is not None, "volumes are None"
-    filtered_volume = [
-        volume
-        for volume in volumes
-        if (
-            volume["Type"] == "volume"
-            and volume["Name"] == expected_vol.VOLUME_NAME
-            and volume["Destination"] == expected_vol.DEST_PATH
-        )
-    ]
-
-    return filtered_volume
-
-
-def confirm_named_volume_exists(
-    container: Container, expected_vol: ExpectedNamedVolume
-) -> bool:
-    """Helper method to assert that exected named volume exists on Docker container."""
-    return len(_filter_volumes(container, expected_vol)) == 1
-
-
-def confirm_named_volume_does_not_exist(
-    container: Container, expected_vol: ExpectedNamedVolume
-) -> bool:
-    """Helper method to assert that expected named volue does NOT exist on Docker container."""
-    return len(_filter_volumes(container, expected_vol)) == 0
-
-
-def confirm_mount_exists(container: Container, expected_mount: ExpectedMount) -> bool:
-    """Helper method to assert that mount exists on Docker container."""
-    return len(_filter_mounts(container, expected_mount)) == 1
-
-
-def confirm_mount_does_not_exist(
-    container: Container, expected_mount: ExpectedMount
-) -> bool:
-    """Helper method to assert that mount does NOT exist on Docker container."""
-    return len(_filter_mounts(container, expected_mount)) == 0
+from tests.e2e.utilities.results.single_test_description import TestDescription
 
 
 @dataclass
@@ -375,6 +311,14 @@ class SystemTestDefinition:
                         test_description,
                     )
 
+    def is_failure(self) -> bool:
+        """Public facing method to expose whether any test cases failed."""
+        return self._test_output.is_failure
+
+    def print_output(self) -> str:
+        """Public facing method to print output of test."""
+        return self._test_output.get_results()
+
     def compare(
         self,
         ot3_system: OT3Containers,
@@ -477,11 +421,3 @@ class SystemTestDefinition:
                 confirm_mount_exists(ot3_system.modules_builder, mounts.MODULES),
                 test_description,
             )
-
-    def is_failure(self) -> bool:
-        """Public facing method to expose whether any test cases failed."""
-        return self._test_output.is_failure
-
-    def print_output(self) -> str:
-        """Public facing method to print output of test."""
-        return self._test_output.get_results()
