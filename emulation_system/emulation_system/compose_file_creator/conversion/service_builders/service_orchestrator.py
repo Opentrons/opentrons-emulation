@@ -111,7 +111,7 @@ class ServiceOrchestrator:
             for container in self._config_model.containers.values()
         ]
 
-    def __add_ot2_services(self) -> str:
+    def _add_ot2_services(self) -> str:
         smoothie_service = self._build_smoothie_service()
         smoothie_name = smoothie_service.container_name
         assert smoothie_name is not None
@@ -119,7 +119,7 @@ class ServiceOrchestrator:
 
         return smoothie_name
 
-    def __add_ot3_services(self) -> str:
+    def _add_ot3_services(self) -> str:
         can_server_service = self._build_can_server_service()
         can_server_service_name = can_server_service.container_name
         ot3_state_manager_service = self._build_ot3_state_manager_service()
@@ -139,7 +139,7 @@ class ServiceOrchestrator:
 
         return can_server_service_name
 
-    def __add_emulator_proxy_service(self) -> str:
+    def _add_emulator_proxy_service(self) -> str:
         emulator_proxy_service = self._build_emulator_proxy_service()
         emulator_proxy_name = emulator_proxy_service.container_name
         assert emulator_proxy_name is not None  # For mypy
@@ -147,7 +147,7 @@ class ServiceOrchestrator:
 
         return emulator_proxy_name
 
-    def __add_input_services(
+    def _add_input_services(
         self,
         emulator_proxy_name: str,
         smoothie_name: Optional[str],
@@ -160,14 +160,14 @@ class ServiceOrchestrator:
             assert service.container_name is not None
             self._services[service.container_name] = service
 
-    def __add_ot3_firmware_builder(self) -> None:
+    def _add_ot3_firmware_builder(self) -> None:
         ot3_firmware_builder = OT3FirmwareBuilderService(
             self._config_model, self._global_settings, self._dev
         ).build_service()
         assert ot3_firmware_builder.container_name is not None
         self._services[ot3_firmware_builder.container_name] = ot3_firmware_builder
 
-    def __add_opentrons_modules_builder(self) -> None:
+    def _add_opentrons_modules_builder(self) -> None:
         opentrons_modules_builder = OpentronsModulesBuilderService(
             self._config_model, self._global_settings, self._dev
         ).build_service()
@@ -176,7 +176,7 @@ class ServiceOrchestrator:
             opentrons_modules_builder.container_name
         ] = opentrons_modules_builder
 
-    def __add_monorepo_builder(self) -> None:
+    def _add_monorepo_builder(self) -> None:
         monorepo_builder = MonorepoBuilderService(
             self._config_model, self._global_settings, self._dev
         ).build_service()
@@ -185,23 +185,23 @@ class ServiceOrchestrator:
 
     def build_services(self) -> DockerServices:
         """Build services."""
-        emulator_proxy_name = self.__add_emulator_proxy_service()
+        emulator_proxy_name = self._add_emulator_proxy_service()
         smoothie_name = (
-            self.__add_ot2_services() if self._config_model.has_ot2 else None
+            self._add_ot2_services() if self._config_model.has_ot2 else None
         )
         can_server_service_name = (
-            self.__add_ot3_services() if self._config_model.has_ot3 else None
+            self._add_ot3_services() if self._config_model.has_ot3 else None
         )
-        self.__add_input_services(
+        self._add_input_services(
             emulator_proxy_name, smoothie_name, can_server_service_name
         )
         if self._config_model.local_ot3_builder_required:
-            self.__add_ot3_firmware_builder()
+            self._add_ot3_firmware_builder()
 
         if self._config_model.local_opentrons_modules_builder_required:
-            self.__add_opentrons_modules_builder()
+            self._add_opentrons_modules_builder()
 
         if self._config_model.local_monorepo_builder_required:
-            self.__add_monorepo_builder()
+            self._add_monorepo_builder()
 
         return DockerServices(self._services)
