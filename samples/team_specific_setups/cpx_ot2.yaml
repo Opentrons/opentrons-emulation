@@ -15,31 +15,21 @@ system-unique-id: cpx-ot2
 robot:
   id: ot2
   hardware: ot2
-  source-type: remote
-  source-location: latest
-  robot-server-source-type: local
-  ### Replace the path below ###
-  robot-server-source-location: /path/to/your/monorepo
   emulation-level: firmware
   exposed-port: 31950
 modules:
   - id: shakey-and-warm
     hardware: heater-shaker-module
-    source-type: remote
-    source-location: latest
-    emulation_level: hardware
+    emulation-level: hardware
   - id: t00-hot-to-handle
     hardware: thermocycler-module
-    source-type: remote
-    source-location: latest
-    emulation_level: firmware
+    emulation-level: firmware
   - id: fatal-attraction
     hardware: magnetic-module
-    source-type: remote
-    source-location: latest
-    emulation_level: firmware
+    emulation-level: firmware
   - id: temperamental
     hardware: temperature-module
-    source-type: remote
-    source-location: latest
-    emulation_level: firmware
+    emulation-level: firmware
+
+monorepo-source: /absolute/path/to/opentrons
+opentrons-modules-source: /absolute/path/to/opentrons-modules
