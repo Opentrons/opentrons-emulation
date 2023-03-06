@@ -3,11 +3,6 @@
 name: "Run Hardware Tests"
 
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/run-hardware-tests.yaml'
-      - '.github/actions/**'
-      - 'action.yaml'
   schedule:
     # Running at 1:37 AM, so we don't get delays from so many people running nightly actions at midnight/top of hour
     - cron: '37 1 * * 1-5'
@@ -17,6 +12,10 @@ on:
         description: Break the Cache
         required: false
         default: default
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   run-hardware-tests:
