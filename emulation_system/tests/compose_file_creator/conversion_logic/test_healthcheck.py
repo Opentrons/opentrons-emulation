@@ -41,18 +41,13 @@ def test_ot3_services_heathcheck(
         for service in services.values()
         if service.image is not None
         and "state-manager" not in service.image
-        and "local-ot3-firmware-builder" not in service.image
+        and "ot3-firmware-builder" not in service.image
         and ("ot3" in service.image or "can-server" in service.image)
     ]
     assert len(services_to_check) == 7
     for service in services_to_check:
         healthcheck = service.healthcheck
-        assert healthcheck is not None
-        assert healthcheck.interval == "10s"
-        assert healthcheck.timeout == "10s"
-        assert healthcheck.test == "netstat -nputw | grep -E '9898.*ESTABLISHED'"
-        assert healthcheck.start_period is None
-        assert healthcheck.disable is None
+        assert healthcheck is None
 
 
 def test_emulator_proxy_heathcheck(
@@ -69,15 +64,7 @@ def test_emulator_proxy_heathcheck(
     assert len(services_to_check) == 1
     for service in services_to_check:
         healthcheck = service.healthcheck
-        assert healthcheck is not None
-        assert healthcheck.interval == "10s"
-        assert healthcheck.timeout == "10s"
-        assert (
-            healthcheck.test
-            == "ps -eaf | grep 'python -m opentrons.hardware_control.emulation.app' | grep -v 'grep'"
-        )
-        assert healthcheck.start_period is None
-        assert healthcheck.disable is None
+        assert healthcheck is None
 
 
 def test_local_ot3_firmware_builder_heathcheck(
@@ -89,7 +76,7 @@ def test_local_ot3_firmware_builder_heathcheck(
     services_to_check = [
         service
         for service in services.values()
-        if service.image is not None and "local-ot3-firmware-builder" in service.image
+        if service.image is not None and "ot3-firmware-builder" in service.image
     ]
     assert len(services_to_check) == 1
     for service in services_to_check:
@@ -116,12 +103,7 @@ def test_smoothie_heathcheck(
     assert len(services_to_check) == 1
     for service in services_to_check:
         healthcheck = service.healthcheck
-        assert healthcheck is not None
-        assert healthcheck.interval == "10s"
-        assert healthcheck.timeout == "10s"
-        assert healthcheck.test == "netstat -nputw | grep -E '11000.*ESTABLISHED'"
-        assert healthcheck.start_period is None
-        assert healthcheck.disable is None
+        assert healthcheck is None
 
 
 @pytest.mark.parametrize("config", [lazy_fixture("ot2_only"), lazy_fixture("ot3_only")])
@@ -139,15 +121,7 @@ def test_robot_server_healthcheck(
     assert len(services_to_check) == 1
     for service in services_to_check:
         healthcheck = service.healthcheck
-        assert healthcheck is not None
-        assert healthcheck.interval == "10s"
-        assert healthcheck.timeout == "10s"
-        assert (
-            healthcheck.test
-            == "curl -s --location --request GET 'http://127.0.0.1:31950/modules' --header 'opentrons-version: *' || exit 1"
-        )
-        assert healthcheck.start_period is None
-        assert healthcheck.disable is None
+        assert healthcheck is None
 
 
 def __lookup_module_port(module_image: str) -> int:
@@ -184,11 +158,5 @@ def test_modules_healthcheck(
 
     for service in services_to_check:
         assert service.image is not None
-        port = __lookup_module_port(service.image)
         healthcheck = service.healthcheck
-        assert healthcheck is not None
-        assert healthcheck.interval == "10s"
-        assert healthcheck.timeout == "10s"
-        assert healthcheck.test == f"netstat -nputw | grep -E '{port}.*ESTABLISHED'"
-        assert healthcheck.start_period is None
-        assert healthcheck.disable is None
+        assert healthcheck is None

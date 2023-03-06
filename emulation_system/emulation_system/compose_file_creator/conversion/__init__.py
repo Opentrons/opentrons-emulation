@@ -3,13 +3,13 @@ from .service_builders import (
     CANServerService,
     EmulatorProxyService,
     InputServices,
+    MonorepoBuilderService,
+    OpentronsModulesBuilderService,
+    OT3FirmwareBuilderService,
     OT3Services,
     OT3StateManagerService,
-    SmoothieService,
     ServiceOrchestrator,
-    OT3FirmwareBuilderService,
-    MonorepoBuilderService,
-    OpentronsModulesBuilderService
+    SmoothieService,
 )
 
 __all__ = [
@@ -20,4 +20,7 @@ __all__ = [
     "OT3Services",
     "InputServices",
     "OT3StateManagerService",
+    "MonorepoBuilderService",
+    "OT3FirmwareBuilderService",
+    "OpentronsModulesBuilderService",
 ]

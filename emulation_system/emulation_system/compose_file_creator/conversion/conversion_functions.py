@@ -35,9 +35,7 @@ def _convert(
     dev: bool,
 ) -> RuntimeComposeFileModel:
     """Parses SystemConfigurationModel to compose file."""
-    services = ServiceOrchestrator(
-        config_model, global_settings, dev
-    ).build_services()
+    services = ServiceOrchestrator(config_model, global_settings, dev).build_services()
     return RuntimeComposeFileModel(
         is_remote=config_model.is_remote,
         services=services,

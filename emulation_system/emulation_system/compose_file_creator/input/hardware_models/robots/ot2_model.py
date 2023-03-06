@@ -22,8 +22,8 @@ from .robot_model import RobotInputModel
 class OT2Attributes(HardwareSpecificAttributes):
     """Attributes specific to OT2."""
 
-    left: PipetteSettings = Field(default=PipetteSettings())
-    right: PipetteSettings = Field(default=PipetteSettings())
+    left_pipette: PipetteSettings = Field(default=PipetteSettings())
+    right_pipette: PipetteSettings = Field(default=PipetteSettings())
 
 
 class OT2SourceRepositories(SourceRepositories):

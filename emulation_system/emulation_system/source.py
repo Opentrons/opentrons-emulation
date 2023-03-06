@@ -18,7 +18,9 @@ from emulation_system.compose_file_creator.config_file_settings import (
     OT3Hardware,
     RepoToBuildArgMapping,
 )
-from emulation_system.compose_file_creator.types.intermediate_types import IntermediateBuildArgs
+from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateBuildArgs,
+)
 from emulation_system.consts import (
     COMMIT_SHA_REGEX,
     ENTRYPOINT_FILE_LOCATION,
@@ -110,11 +112,11 @@ class Source(ABC):
         return RepoToBuildArgMapping.get_mapping(self.repo)
 
     def generate_build_args(
-        self, global_settings: "OpentronsEmulationConfiguration"
+        self, global_settings: "OpentronsEmulationConfiguration"  # type: ignore [name-defined] # noqa: F821
     ) -> IntermediateBuildArgs | None:
+        """Generate build args based off of global settings."""
         if self.is_local():
             return None
-
         env_var_to_use = str(self.repo_to_build_arg_mapping.value)
         head = global_settings.get_repo_head(self.repo)
         format_string = global_settings.get_repo_commit(self.repo)

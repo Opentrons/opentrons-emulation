@@ -8,7 +8,7 @@ from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
-from tests.compose_file_creator.conftest import (
+from tests.conftest import (
     EMULATOR_PROXY_ID,
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,
@@ -18,6 +18,7 @@ from tests.compose_file_creator.conftest import (
     TEMPERATURE_MODULE_ID,
     THERMOCYCLER_MODULE_ID,
 )
+from tests.validation_helper_functions import get_env
 
 OT2_ROBOT_SERVER_VAL_1 = "ot2"
 OT2_ROBOT_SERVER_VAL_2 = 1
@@ -87,10 +88,10 @@ OT3_CAN_SERVER_VAL_3 = 16.16
 @pytest.fixture
 def ot2_with_custom_env_vars(
     ot2_only: Dict[str, Any],
-    heater_shaker_module_default: Dict[str, Any],
-    thermocycler_module_default: Dict[str, Any],
-    temperature_module_default: Dict[str, Any],
-    magnetic_module_default: Dict[str, Any],
+    heater_shaker_model: Dict[str, Any],
+    thermocycler_model: Dict[str, Any],
+    temperature_model: Dict[str, Any],
+    magdeck_model: Dict[str, Any],
 ) -> Dict[str, Any]:
     """Create an OT2 configuration with custom env vars.
 
@@ -115,26 +116,26 @@ def ot2_with_custom_env_vars(
     emulator_proxy_env_vars["emulator-proxy-2"] = OT2_EM_PROXY_VAL_2
     emulator_proxy_env_vars["emulator-proxy-3"] = OT2_EM_PROXY_VAL_3
 
-    heater_shaker_module_default["module-env-vars"] = {}
-    hs_env_vars = heater_shaker_module_default["module-env-vars"]
+    heater_shaker_model["module-env-vars"] = {}
+    hs_env_vars = heater_shaker_model["module-env-vars"]
     hs_env_vars["heater-shaker-1"] = HS_VAL_1
     hs_env_vars["heater-shaker-2"] = HS_VAL_2
     hs_env_vars["heater-shaker-3"] = HS_VAL_3
 
-    thermocycler_module_default["module-env-vars"] = {}
-    therm_env_vars = thermocycler_module_default["module-env-vars"]
+    thermocycler_model["module-env-vars"] = {}
+    therm_env_vars = thermocycler_model["module-env-vars"]
     therm_env_vars["therm-1"] = THERM_VAL_1
     therm_env_vars["therm-2"] = THERM_VAL_2
     therm_env_vars["therm-3"] = THERM_VAL_3
 
-    temperature_module_default["module-env-vars"] = {}
-    temp_env_vars = temperature_module_default["module-env-vars"]
+    temperature_model["module-env-vars"] = {}
+    temp_env_vars = temperature_model["module-env-vars"]
     temp_env_vars["temp-1"] = TEMP_VAL_1
     temp_env_vars["temp-2"] = TEMP_VAL_2
     temp_env_vars["temp-3"] = TEMP_VAL_3
 
-    magnetic_module_default["module-env-vars"] = {}
-    mag_env_vars = magnetic_module_default["module-env-vars"]
+    magdeck_model["module-env-vars"] = {}
+    mag_env_vars = magdeck_model["module-env-vars"]
     mag_env_vars["mag-1"] = MAG_VAL_1
     mag_env_vars["mag-2"] = MAG_VAL_2
     mag_env_vars["mag-3"] = MAG_VAL_3
@@ -142,10 +143,10 @@ def ot2_with_custom_env_vars(
     ot2_only["modules"] = []
     ot2_only["modules"].extend(
         [
-            heater_shaker_module_default,
-            thermocycler_module_default,
-            temperature_module_default,
-            magnetic_module_default,
+            heater_shaker_model,
+            thermocycler_model,
+            temperature_model,
+            magdeck_model,
         ]
     )
 
@@ -233,10 +234,10 @@ def test_ot2_env_vars(
     robot_server = services[OT2_ID]
     emulator_proxy = services[EMULATOR_PROXY_ID]
     smoothie = services[SMOOTHIE_ID]
-    heater_shaker_module = services[HEATER_SHAKER_MODULE_ID]
-    magnetic_module = services[MAGNETIC_MODULE_ID]
-    temperature_module = services[TEMPERATURE_MODULE_ID]
-    thermocycler_module = services[THERMOCYCLER_MODULE_ID]
+    heater_shaker_module = services[f"{HEATER_SHAKER_MODULE_ID}-1"]
+    magnetic_module = services[f"{MAGNETIC_MODULE_ID}-1"]
+    temperature_module = services[f"{TEMPERATURE_MODULE_ID}-1"]
+    thermocycler_module = services[f"{THERMOCYCLER_MODULE_ID}-1"]
 
     assert robot_server is not None
     assert emulator_proxy is not None
@@ -256,13 +257,13 @@ def test_ot2_env_vars(
 
     # environment will only ever be a Dict due to implementation
     # so cast it
-    robot_server_env = cast(Dict, robot_server.environment.__root__)
-    emulator_proxy_env = cast(Dict, emulator_proxy.environment.__root__)
-    smoothie_env = cast(Dict, smoothie.environment.__root__)
-    heater_shaker_module_env = cast(Dict, heater_shaker_module.environment.__root__)
-    magnetic_module_env = cast(Dict, magnetic_module.environment.__root__)
-    temperature_module_env = cast(Dict, temperature_module.environment.__root__)
-    thermocycler_module_env = cast(Dict, thermocycler_module.environment.__root__)
+    robot_server_env = get_env(robot_server)
+    emulator_proxy_env = get_env(emulator_proxy)
+    smoothie_env = get_env(smoothie)
+    heater_shaker_module_env = get_env(heater_shaker_module)
+    magnetic_module_env = get_env(magnetic_module)
+    temperature_module_env = get_env(temperature_module)
+    thermocycler_module_env = get_env(thermocycler_module)
 
     assert robot_server_env is not None
     assert emulator_proxy_env is not None

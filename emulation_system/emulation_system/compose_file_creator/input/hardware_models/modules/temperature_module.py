@@ -47,7 +47,9 @@ class TemperatureModuleInputModel(ModuleInputModel):
     source_repos: TemperatureModuleSourceRepositories = Field(
         default=TemperatureModuleSourceRepositories(), const=True, exclude=True
     )
-    hardware_specific_attributes: TemperatureModuleAttributes = Field(default=TemperatureModuleAttributes())
+    hardware_specific_attributes: TemperatureModuleAttributes = Field(
+        default=TemperatureModuleAttributes()
+    )
 
     emulation_level: Literal[EmulationLevels.FIRMWARE]
 
