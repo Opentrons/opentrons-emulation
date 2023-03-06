@@ -1,4 +1,4 @@
-"""Tests to confirm that ConcreteCANServerServiceBuilder builds the CAN Server Service correctly."""
+"""Tests to confirm that CANServerService builds the CAN Server Service correctly."""
 from typing import Any, Dict, cast
 
 import pytest
@@ -11,7 +11,7 @@ from emulation_system.compose_file_creator.config_file_settings import (
     RepoToBuildArgMapping,
 )
 from emulation_system.compose_file_creator.conversion import (
-    ConcreteEmulatorProxyServiceBuilder,
+    EmulatorProxyService,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
@@ -48,7 +48,7 @@ def test_simple_can_server_values(
     opentrons_head: str,
 ) -> None:
     """Tests for values that are the same for all configurations of an Emulator Proxy."""
-    service = ConcreteEmulatorProxyServiceBuilder(
+    service = EmulatorProxyService(
         config_model, testing_global_em_config, dev=dev
     ).build_service()
 
@@ -106,7 +106,7 @@ def test_ot2_emulator_proxy_service_values(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Tests for EmulatorProxy Service that are specific to OT-2."""
-    service = ConcreteEmulatorProxyServiceBuilder(
+    service = EmulatorProxyService(
         ot2_system_config, testing_global_em_config, dev=dev
     ).build_service()
 
@@ -122,7 +122,7 @@ def test_ot3_emulator_proxy_service_values(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Tests for EmulatorProxy Service that are specific to OT-3."""
-    service = ConcreteEmulatorProxyServiceBuilder(
+    service = EmulatorProxyService(
         ot3_system_config, testing_global_em_config, dev=dev
     ).build_service()
 

@@ -5,8 +5,9 @@ from __future__ import annotations
 import json
 import os
 
-from pydantic import BaseModel, Field, parse_obj_as
+from pydantic import parse_obj_as
 
+from opentrons_pydantic_base_model import OpentronsBaseModel
 from .compose_file_creator.config_file_settings import OpentronsRepository
 from .compose_file_creator.errors import RepoDoesNotExistError
 from .consts import (
@@ -21,41 +22,39 @@ class ConfigurationFileNotFoundError(FileNotFoundError):
     pass
 
 
-class Heads(BaseModel):
+class Heads(OpentronsBaseModel):
     """Where to download the head of the repos from."""
 
     opentrons: str
-    ot3_firmware: str = Field(..., alias="ot3-firmware")
+    ot3_firmware: str
     modules: str
 
 
-class Commits(BaseModel):
+class Commits(OpentronsBaseModel):
     """Format string for where to download a specific commit sha from."""
 
     opentrons: str
-    ot3_firmware: str = Field(..., alias="ot3-firmware")
+    ot3_firmware: str
     modules: str
 
 
-class SourceDownloadLocations(BaseModel):
+class SourceDownloadLocations(OpentronsBaseModel):
     """Model representing where to download source code from."""
 
     heads: Heads
     commits: Commits
 
 
-class EmulationSettings(BaseModel):
+class EmulationSettings(OpentronsBaseModel):
     """All settings related to `em` command."""
 
-    source_download_locations: SourceDownloadLocations = Field(
-        ..., alias="source-download-locations"
-    )
+    source_download_locations: SourceDownloadLocations
 
 
-class OpentronsEmulationConfiguration(BaseModel):
+class OpentronsEmulationConfiguration(OpentronsBaseModel):
     """Model representing entire configuration file."""
 
-    emulation_settings: EmulationSettings = Field(..., alias="emulation-settings")
+    emulation_settings: EmulationSettings
 
     @classmethod
     def from_file_path(cls, json_file_path: str) -> OpentronsEmulationConfiguration:

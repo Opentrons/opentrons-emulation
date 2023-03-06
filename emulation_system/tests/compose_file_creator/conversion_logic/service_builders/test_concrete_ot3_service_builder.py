@@ -1,4 +1,4 @@
-"""Tests to confirm that ConcreteOT3ServiceBuilder builds the CAN Server Service correctly."""
+"""Tests to confirm that OT3Services builds the CAN Server Service correctly."""
 from typing import Any, Dict, List, cast
 
 import pytest
@@ -11,7 +11,7 @@ from emulation_system.compose_file_creator.config_file_settings import (
     OT3Hardware,
     RepoToBuildArgMapping,
 )
-from emulation_system.compose_file_creator.conversion import ServiceBuilderOrchestrator
+from emulation_system.compose_file_creator.conversion import ServiceOrchestrator
 from emulation_system.compose_file_creator.images import (
     OT3BootloaderImages,
     OT3GantryXImages,
@@ -89,7 +89,7 @@ def test_simple_ot3_values(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Tests for values that are the same for all configurations of a Smoothie Service."""
-    services = ServiceBuilderOrchestrator(
+    services = ServiceOrchestrator(
         config_model, testing_global_em_config, dev
     )._build_ot3_services(
         can_server_service_name="can-server", state_manager_name="state-manager"
@@ -128,13 +128,13 @@ def test_ot3_service_container_names_values(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Tests for container name for all configurations of a Smoothie Service."""
-    services = ServiceBuilderOrchestrator(
+    services = ServiceOrchestrator(
         config_model, testing_global_em_config, dev
     )._build_ot3_services(
         can_server_service_name="can-server", state_manager_name="state-manager"
     )
 
-    # The number of items in ServiceBuilderOrchestrator.OT3_SERVICES_TO_CREATE
+    # The number of items in ServiceOrchestrator.OT3_SERVICES_TO_CREATE
     assert len(services) == 6
     head = get_ot3_service(services, OT3Hardware.HEAD)
     pipettes = get_ot3_service(services, OT3Hardware.PIPETTES)
@@ -164,13 +164,13 @@ def test_ot3_service_environment_variables(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Tests for values that are the same for all configurations of a Smoothie Service."""
-    services = ServiceBuilderOrchestrator(
+    services = ServiceOrchestrator(
         config_model, testing_global_em_config, dev=True
     )._build_ot3_services(
         can_server_service_name="can-server", state_manager_name="state-manager"
     )
 
-    # The number of items in ServiceBuilderOrchestrator.OT3_SERVICES_TO_CREATE
+    # The number of items in ServiceOrchestrator.OT3_SERVICES_TO_CREATE
     assert len(services) == 6
     head = get_ot3_service(services, OT3Hardware.HEAD)
     gantry_x = get_ot3_service(services, OT3Hardware.GANTRY_X)
@@ -231,7 +231,7 @@ def test_ot3_service_remote(
     expected_monorepo_url: str,
 ) -> None:
     """Tests for values that are the same for all remote configurations of a Smoothie Service."""
-    services = ServiceBuilderOrchestrator(
+    services = ServiceOrchestrator(
         config_model, testing_global_em_config, dev=True
     )._build_ot3_services(
         can_server_service_name="can-server", state_manager_name="state-manager"
@@ -282,7 +282,7 @@ def test_ot3_services_local(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Test for values for local configuration of a Smoothie Service."""
-    services = ServiceBuilderOrchestrator(
+    services = ServiceOrchestrator(
         local_source, testing_global_em_config, dev=True
     )._build_ot3_services(
         can_server_service_name="can-server", state_manager_name="state-manager"

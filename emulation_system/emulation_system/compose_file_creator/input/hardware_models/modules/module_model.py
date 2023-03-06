@@ -5,20 +5,22 @@ Used to group all modules together and distinguish them from robots.
 import json
 from typing import ClassVar, Dict, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     Hardware,
 )
+from emulation_system.compose_file_creator.errors import EmulationLevelNotSupportedError
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateEnvironmentVariables,
 )
+from opentrons_pydantic_base_model import OpentronsBaseModel
 
-from ..hardware_model import EmulationLevelNotSupportedError, HardwareModel
+from ..hardware_model import HardwareModel
 
 
-class FirmwareSerialNumberModel(BaseModel):
+class FirmwareSerialNumberModel(OpentronsBaseModel):
     """Model for information needed to set a firmware emulator's serial number."""
 
     env_var_name: str
@@ -26,7 +28,7 @@ class FirmwareSerialNumberModel(BaseModel):
     version: str
 
 
-class ProxyInfoModel(BaseModel):
+class ProxyInfoModel(OpentronsBaseModel):
     """Model to provide information needed to connect module to proxy."""
 
     env_var_name: str
@@ -41,15 +43,12 @@ class ModuleInputModel(HardwareModel):
     """
 
     firmware_serial_number_info: ClassVar[Optional[FirmwareSerialNumberModel]] = Field(
-        alias="firmware-serial-number-info", allow_mutation=False
+        allow_mutation=False
     )
     proxy_info: ClassVar[ProxyInfoModel] = Field(
-        alias="proxy-info", allow_mutation=False
+        allow_mutation=False
     )
-
-    module_env_vars: IntermediateEnvironmentVariables | None = Field(
-        alias="module-env-vars"
-    )
+    module_env_vars: IntermediateEnvironmentVariables | None
 
     def _get_firmware_serial_number_env_var(self) -> Dict[str, str]:
         """Builds firmware level serial number environment variable."""

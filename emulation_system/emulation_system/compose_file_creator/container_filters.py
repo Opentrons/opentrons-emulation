@@ -3,23 +3,28 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import List, Type
+from typing import List
 
 from .errors import InvalidFilterError
 from .images import (
-    CANServerImages,
-    EmulatorProxyImages,
+    CANServerImage,
+    EmulatorProxyImage,
+    FirmwareAndHardwareImages,
     HeaterShakerModuleImages,
-    Images,
     MagneticModuleImages,
-    OT3BootloaderImages,
-    OT3GantryXImages,
-    OT3GantryYImages,
-    OT3GripperImages,
-    OT3HeadImages,
-    OT3PipettesImages,
-    RobotServerImages,
-    SmoothieImages,
+    MonorepoBuilderImage,
+    OpentronsModulesBuilderImage,
+    OT3BootloaderImage,
+    OT3FirmwareBuilderImage,
+    OT3GantryXImage,
+    OT3GantryYImage,
+    OT3GripperImage,
+    OT3HeadImage,
+    OT3PipettesImage,
+    OT3StateManagerImage,
+    RobotServerImage,
+    SingleImage,
+    SmoothieImage,
     TemperatureModuleImages,
     ThermocyclerModuleImages,
 )
@@ -28,66 +33,98 @@ from .images import (
 class ContainerFilters(Enum):
     """Enumeration of filters and the respective images to look up for them."""
 
-    HEATER_SHAKER_MODULE = ("heater-shaker-module", [HeaterShakerModuleImages])
-    MAGNETIC_MODULE = ("magnetic-module", [MagneticModuleImages])
-    THERMOCYCLER_MODULE = ("thermocycler-module", [ThermocyclerModuleImages])
-    TEMPERATURE_MODULE = ("temperature-module", [TemperatureModuleImages])
-    EMULATOR_PROXY = ("emulator-proxy", [EmulatorProxyImages])
+    HEATER_SHAKER_MODULE = ("heater-shaker-module", [HeaterShakerModuleImages()])
+    MAGNETIC_MODULE = ("magnetic-module", [MagneticModuleImages()])
+    THERMOCYCLER_MODULE = ("thermocycler-module", [ThermocyclerModuleImages()])
+    TEMPERATURE_MODULE = ("temperature-module", [TemperatureModuleImages()])
+    EMULATOR_PROXY = ("emulator-proxy", [EmulatorProxyImage()])
 
-    SMOOTHIE = ("smoothie", [SmoothieImages])
+    SMOOTHIE = ("smoothie", [SmoothieImage()])
 
-    CAN_SERVER = ("can-server", [CANServerImages])
-    OT3_GANTRY_X = ("ot3-gantry-x", [OT3GantryXImages])
-    OT3_GANTRY_Y = ("ot3-gantry-y", [OT3GantryYImages])
-    OT3_HEAD = ("ot3-head", [OT3HeadImages])
-    OT3_PIPETTES = ("ot3-pipettes", [OT3PipettesImages])
-    OT3_BOOTLOADER = ("ot3-bootloader", [OT3BootloaderImages])
-    OT3_GRIPPER = ("ot3-gripper", [OT3GripperImages])
+    CAN_SERVER = ("can-server", [CANServerImage()])
+
+    OT3_GANTRY_X = ("ot3-gantry-x", [OT3GantryXImage()])
+    OT3_GANTRY_Y = ("ot3-gantry-y", [OT3GantryYImage()])
+    OT3_HEAD = ("ot3-head", [OT3HeadImage()])
+    OT3_PIPETTES = ("ot3-pipettes", [OT3PipettesImage()])
+    OT3_BOOTLOADER = ("ot3-bootloader", [OT3BootloaderImage()])
+    OT3_GRIPPER = ("ot3-gripper", [OT3GripperImage()])
+    OT3_STATE_MANAGER = ("ot3-state-manager", [OT3StateManagerImage()])
+
+    OT3_FIRMWARE_BUILDER = (
+        "ot3-firmware-builder",
+        [OT3FirmwareBuilderImage()],
+    )
+    MONOREPO_BUILDER = (
+        "monorepo-builder",
+        [MonorepoBuilderImage()],
+    )
+    OPENTRONS_MODULES_BUILDER = (
+        "opentrons-modules-builder",
+        [OpentronsModulesBuilderImage()],
+    )
+
+    SOURCE_BUILDERS = (
+        "source-builders",
+        [
+            OT3FirmwareBuilderImage(),
+            MonorepoBuilderImage(),
+            OpentronsModulesBuilderImage(),
+        ],
+    )
 
     MODULES = (
         "modules",
         [
-            MagneticModuleImages,
-            ThermocyclerModuleImages,
-            TemperatureModuleImages,
-            HeaterShakerModuleImages,
+            MagneticModuleImages(),
+            ThermocyclerModuleImages(),
+            TemperatureModuleImages(),
+            HeaterShakerModuleImages(),
         ],
     )
     FIRMWARE = (
         "firmware",
         [
-            OT3GantryXImages,
-            OT3GantryYImages,
-            OT3HeadImages,
-            OT3PipettesImages,
-            OT3BootloaderImages,
-            OT3GripperImages,
-            SmoothieImages,
+            OT3GantryXImage(),
+            OT3GantryYImage(),
+            OT3HeadImage(),
+            OT3PipettesImage(),
+            OT3BootloaderImage(),
+            OT3GripperImage(),
+            SmoothieImage(),
         ],
     )
-    ROBOT_SERVER = ("robot-server", [RobotServerImages])
+    ROBOT_SERVER = ("robot-server", [RobotServerImage()])
 
     ALL = (
         "all",
         [
-            CANServerImages,
-            EmulatorProxyImages,
-            HeaterShakerModuleImages,
-            MagneticModuleImages,
-            OT3GantryXImages,
-            OT3GantryYImages,
-            OT3HeadImages,
-            OT3PipettesImages,
-            OT3BootloaderImages,
-            OT3GripperImages,
-            RobotServerImages,
-            SmoothieImages,
-            TemperatureModuleImages,
-            ThermocyclerModuleImages,
+            CANServerImage(),
+            EmulatorProxyImage(),
+            HeaterShakerModuleImages(),
+            MagneticModuleImages(),
+            OT3GantryXImage(),
+            OT3GantryYImage(),
+            OT3HeadImage(),
+            OT3PipettesImage(),
+            OT3BootloaderImage(),
+            OT3GripperImage(),
+            RobotServerImage(),
+            SmoothieImage(),
+            TemperatureModuleImages(),
+            ThermocyclerModuleImages(),
+            OT3StateManagerImage(),
+            OT3FirmwareBuilderImage(),
+            MonorepoBuilderImage(),
+            OpentronsModulesBuilderImage(),
         ],
     )
 
-    def __init__(self, filter_name: str, images: List[Type[Images]] = []) -> None:
+    def __init__(
+        self,
+        filter_name: str,
+        images: List[FirmwareAndHardwareImages | SingleImage] = [],
+    ) -> None:
         self.filter_name = filter_name
         self.images = images
 

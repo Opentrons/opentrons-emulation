@@ -1,4 +1,4 @@
-"""Tests to confirm that ConcreteSmoothieServiceBuilder builds the CAN Server Service correctly."""
+"""Tests to confirm that SmoothieService builds the CAN Server Service correctly."""
 import json
 from typing import Any, Dict, cast
 
@@ -13,7 +13,7 @@ from emulation_system.compose_file_creator.config_file_settings import (
     RepoToBuildArgMapping,
 )
 from emulation_system.compose_file_creator.conversion import (
-    ConcreteSmoothieServiceBuilder,
+    SmoothieService,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
 from emulation_system.consts import DEV_DOCKERFILE_NAME, DOCKERFILE_NAME
@@ -81,7 +81,7 @@ def test_simple_smoothie_values(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Tests for values that are the same for all configurations of a Smoothie Service."""
-    service = ConcreteSmoothieServiceBuilder(
+    service = SmoothieService(
         config_model, testing_global_em_config, dev=dev
     ).build_service()
 
@@ -135,7 +135,7 @@ def test_smoothie_remote(
     expected_url: str,
 ) -> None:
     """Tests for values that are the same for all remote configurations of a Smoothie Service."""
-    service = ConcreteSmoothieServiceBuilder(
+    service = SmoothieService(
         config, testing_global_em_config, dev=True
     ).build_service()
     assert service.image == "smoothie-remote:latest"
@@ -152,7 +152,7 @@ def test_smoothie_local(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Test for values for local configuration of a Smoothie Service."""
-    service = ConcreteSmoothieServiceBuilder(
+    service = SmoothieService(
         local_source, testing_global_em_config, dev=True
     ).build_service()
     assert service.image == "smoothie-local:latest"

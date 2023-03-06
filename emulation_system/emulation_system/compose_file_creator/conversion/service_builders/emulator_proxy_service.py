@@ -1,12 +1,8 @@
-"""Module containing ConcreteEmulatorProxyServiceBuilder class."""
+"""Module containing EmulatorProxyService class."""
 
 from typing import Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
-from emulation_system.compose_file_creator.config_file_settings import (
-    OpentronsRepository,
-)
-from emulation_system.compose_file_creator.images import EmulatorProxyImages
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
     MagneticModuleInputModel,
@@ -16,24 +12,20 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 )
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
-    IntermediateCommand,
-    IntermediateDependsOn,
     IntermediateEnvironmentVariables,
     IntermediateHealthcheck,
     IntermediateNetworks,
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.compose_file_creator.utilities.shared_functions import (
-    get_build_args,
-)
 
+from ...images import EmulatorProxyImage
 from ...logging import EmulatorProxyLoggingClient
-from .abstract_service_builder import AbstractServiceBuilder
+from .abstract_service import AbstractService
 
 
-class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
-    """Concrete implementation of AbstractServiceBuilder for building an Emulator Proxy."""
+class EmulatorProxyService(AbstractService):
+    """Concrete implementation of AbstractService for building an Emulator Proxy."""
 
     EMULATOR_PROXY_NAME = "emulator-proxy"
 
@@ -50,12 +42,13 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         global_settings: OpentronsEmulationConfiguration,
         dev: bool,
     ) -> None:
-        """Instantiates a ConcreteEmulatorProxyServiceBuilder object."""
+        """Instantiates a EmulatorProxyService object."""
         super().__init__(config_model, global_settings, dev)
         self._logging_client = EmulatorProxyLoggingClient(self._dev)
         self._emulator_image = self._generate_image()
 
-    def _generate_image(self) -> str:
+    @staticmethod
+    def _generate_image() -> str:
         """Inner method for generating image.
 
         Using an inner method and setting the value to self._image so when other
@@ -63,12 +56,7 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         This prevents, primarily, logging happening twice, but also the increased
         overhead of calculating the same thing twice.
         """
-        image_name = EmulatorProxyImages().remote_firmware_image_name
-        # Passing blank strings because EmulatorProxyLoggingClient overrides
-        # LoggingClient's log_image_name method, but doesn't need the last 2 parameters.
-        # But those parameters need to be there to match the parent's signature.
-        self._logging_client.log_image_name(image_name, "", "")
-        return image_name
+        return EmulatorProxyImage().image_name
 
     def generate_container_name(self) -> str:
         """Generates value for container_name parameter."""
@@ -83,7 +71,7 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
 
     def generate_image(self) -> str:
         """Generates value for image parameter."""
-        return f"{self._image}:latest"
+        return self._image
 
     @property
     def _image(self) -> str:
@@ -102,38 +90,17 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         self._logging_client.log_networks(networks)
         return networks
 
-    def generate_healthcheck(self) -> IntermediateHealthcheck:
+    def generate_healthcheck(self) -> Optional[IntermediateHealthcheck]:
         """Check to see if emulator proxy service has started it's python service."""
-        return IntermediateHealthcheck(
-            interval=10,
-            retries=6,
-            timeout=10,
-            command="ps -eaf | grep 'python -m opentrons.hardware_control.emulation.app' | grep -v 'grep'",
-        )
+        return None
 
     def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
         """Generates value for build parameter."""
-        repo = OpentronsRepository.OPENTRONS
-        build_args = get_build_args(
-            repo,
-            "latest",
-            self._global_settings.get_repo_commit(repo),
-            self._global_settings.get_repo_head(repo),
-        )
-        self._logging_client.log_build_args(build_args)
-        return build_args
+        return None
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        volumes = None
-        self._logging_client.log_volumes(volumes)
-        return volumes
-
-    def generate_command(self) -> Optional[IntermediateCommand]:
-        """Generates value for command parameter."""
-        command = None
-        self._logging_client.log_command(command)
-        return command
+        return self._monorepo_source.generate_emulator_mount_strings()
 
     def generate_ports(self) -> Optional[IntermediatePorts]:
         """Generates value for ports parameter."""
@@ -141,19 +108,13 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         self._logging_client.log_ports(ports)
         return ports
 
-    def generate_depends_on(self) -> Optional[IntermediateDependsOn]:
-        """Generates value for depends_on parameter."""
-        depends_on = None
-        self._logging_client.log_depends_on(depends_on)
-        return depends_on
-
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
-        env_vars = {
-            env_var_name: env_var_value
-            for module in self.MODULE_TYPES
-            for env_var_name, env_var_value in module.get_proxy_info_env_var().items()  # type: ignore [attr-defined]
-        }
+        env_vars = {}
+        for module in self.MODULE_TYPES:
+            proxy_info_items = module.get_proxy_info_env_var().items()  # type: ignore [attr-defined]
+            for env_var_name, env_var_value in proxy_info_items:
+                env_vars[env_var_name] = env_var_value
 
         if self._config_model.robot is not None:
             assert issubclass(self._config_model.robot.__class__, RobotInputModel)

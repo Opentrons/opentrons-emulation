@@ -47,11 +47,9 @@ class TemperatureModuleInputModel(ModuleInputModel):
     source_repos: TemperatureModuleSourceRepositories = Field(
         default=TemperatureModuleSourceRepositories(), const=True, exclude=True
     )
-    hardware_specific_attributes: TemperatureModuleAttributes = Field(
-        alias="hardware-specific-attributes", default=TemperatureModuleAttributes()
-    )
+    hardware_specific_attributes: TemperatureModuleAttributes = Field(default=TemperatureModuleAttributes())
 
-    emulation_level: Literal[EmulationLevels.FIRMWARE] = Field(alias="emulation-level")
+    emulation_level: Literal[EmulationLevels.FIRMWARE]
 
     def get_firmware_level_command(
         self, emulator_proxy_name: str

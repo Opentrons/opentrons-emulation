@@ -19,11 +19,9 @@ from .module_model import FirmwareSerialNumberModel, ModuleInputModel, ProxyInfo
 class ThermocyclerModuleAttributes(HardwareSpecificAttributes):
     """Attributes specific to Thermocycler module."""
 
-    lid_temperature: TemperatureModelSettings = Field(
-        alias="lid-temperature", default=TemperatureModelSettings()
+    lid_temperature: TemperatureModelSettings = Field(default=TemperatureModelSettings()
     )
-    plate_temperature: TemperatureModelSettings = Field(
-        alias="plate-temperature", default=TemperatureModelSettings()
+    plate_temperature: TemperatureModelSettings = Field(default=TemperatureModelSettings()
     )
 
 
@@ -53,11 +51,9 @@ class ThermocyclerModuleInputModel(ModuleInputModel):
         default=ThermocyclerModuleSourceRepositories(), const=True, exclude=True
     )
     hardware_specific_attributes: ThermocyclerModuleAttributes = Field(
-        alias="hardware-specific-attributes", default=ThermocyclerModuleAttributes()
+        default=ThermocyclerModuleAttributes()
     )
-    emulation_level: Literal[
-        EmulationLevels.FIRMWARE, EmulationLevels.HARDWARE
-    ] = Field(alias="emulation-level")
+    emulation_level: Literal[EmulationLevels.FIRMWARE, EmulationLevels.HARDWARE]
 
     def get_hardware_level_command(
         self, emulator_proxy_name: str
