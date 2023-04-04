@@ -245,7 +245,7 @@ class SystemTestDefinition:
             OpentronsModulesEmulatorNamedVolumes.HEATER_SHAKER
         )
         thermocycler_hardware_volume = OpentronsModulesEmulatorNamedVolumes.THERMOCYCLER
-        if modules.hardware_emulation_heater_shaker_modules is not None:
+        if len(modules.hardware_emulation_heater_shaker_modules) > 0:
             for heater_shaker in modules.hardware_emulation_heater_shaker_modules:
                 test_description = TestDescription.from_named_volume(
                     heater_shaker, heater_shaker_hardware_volume
@@ -256,7 +256,7 @@ class SystemTestDefinition:
                     ),
                     test_description,
                 )
-        if modules.hardware_emulation_thermocycler_modules is not None:
+        if len(modules.hardware_emulation_thermocycler_modules) > 0:
             for thermocycler in modules.hardware_emulation_thermocycler_modules:
                 test_description = TestDescription.from_named_volume(
                     thermocycler, thermocycler_hardware_volume
@@ -300,7 +300,7 @@ class SystemTestDefinition:
             ),
         )
         for container_list, expected_sim_name in test_matrix:
-            if container_list is not None:
+            if len(container_list) > 0:
                 for container in container_list:
                     test_description = TestDescription(
                         f"Confirming container {container.name} has simulator binary named {expected_sim_name} inside of /executable"

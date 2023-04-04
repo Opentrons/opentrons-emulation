@@ -1,4 +1,4 @@
-"""Module containg helper class to access OT-3 Containers for local system"""
+"""Module containing helper class to access OT-3 Containers for local system"""
 
 from dataclasses import dataclass
 from typing import List, Optional

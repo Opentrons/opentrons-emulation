@@ -24,7 +24,7 @@ from tests.e2e.utilities.helper_functions import get_container, get_containers
 @pytest.fixture
 def ot3_model_under_test(
     testing_global_em_config: OpentronsEmulationConfiguration,
-) -> Callable:
+) -> Callable[[str], OT3Containers]:
     """Pytest fixture to generate OT3Containers object based of a path to a yaml configuration file.
 
     This method will actually create a Callable object that when called is the OT3Containers object.
@@ -60,7 +60,7 @@ def ot3_model_under_test(
 @pytest.fixture
 def modules_under_test(
     testing_global_em_config: OpentronsEmulationConfiguration,
-) -> Callable:
+) -> Callable[[str], ModuleContainers]:
     """Pytest fixture to generate ModuleContainers object based of a path to a yaml configuration file.
 
     This method will actually create a Callable object that when called is the ModuleContainers object.
@@ -101,7 +101,7 @@ def modules_under_test(
 @pytest.fixture
 def local_mounts_under_test(
     testing_global_em_config: OpentronsEmulationConfiguration,
-) -> Callable:
+) -> Callable[[str], ExpectedBindMounts]:
     """Pytest fixture to generate ExpectedBindMount object based of a path to a yaml configuration file.
 
     This method will actually create a Callable object that when called is the ExpectedBindMount object.
