@@ -16,7 +16,7 @@ from emulation_system.compose_file_creator.output.runtime_compose_file_model imp
 from emulation_system.consts import ROOT_DIR
 from tests.e2e.fixtures.expected_bind_mounts import ExpectedBindMounts
 from tests.e2e.fixtures.module_containers import ModuleContainers
-from tests.e2e.fixtures.ot3_containers import OT3Containers
+from tests.e2e.fixtures.ot3_containers import OT3SystemUnderTest
 from tests.e2e.utilities.consts import ExpectedMount
 from tests.e2e.utilities.helper_functions import get_container, get_containers
 
@@ -24,13 +24,13 @@ from tests.e2e.utilities.helper_functions import get_container, get_containers
 @pytest.fixture
 def ot3_model_under_test(
     testing_global_em_config: OpentronsEmulationConfiguration,
-) -> Callable[[str], OT3Containers]:
-    """Pytest fixture to generate OT3Containers object based of a path to a yaml configuration file.
+) -> Callable[[str], OT3SystemUnderTest]:
+    """Pytest fixture to generate OT3SystemUnderTest object based of a path to a yaml configuration file.
 
-    This method will actually create a Callable object that when called is the OT3Containers object.
+    This method will actually create a Callable object that when called is the OT3SystemUnderTest object.
     """
 
-    def _model_under_test(relative_path: str) -> OT3Containers:
+    def _model_under_test(relative_path: str) -> OT3SystemUnderTest:
         abs_path = os.path.join(ROOT_DIR, relative_path)
         with open(abs_path, "r") as file:
             contents = yaml.safe_load(file)
@@ -38,7 +38,7 @@ def ot3_model_under_test(
             contents, testing_global_em_config, False
         )
 
-        return OT3Containers(
+        return OT3SystemUnderTest(
             gantry_x=get_container(system.ot3_gantry_x_emulator),
             gantry_y=get_container(system.ot3_gantry_y_emulator),
             head=get_container(system.ot3_head_emulator),

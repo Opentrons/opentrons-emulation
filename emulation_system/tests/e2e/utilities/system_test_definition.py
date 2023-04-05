@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 
 from tests.e2e.fixtures.expected_bind_mounts import ExpectedBindMounts
 from tests.e2e.fixtures.module_containers import ModuleContainers
-from tests.e2e.fixtures.ot3_containers import OT3Containers
+from tests.e2e.fixtures.ot3_containers import OT3SystemUnderTest
 from tests.e2e.utilities.build_arg_configurations import BuildArgConfigurations
 from tests.e2e.utilities.consts import (
     CommonMounts,
@@ -37,6 +37,10 @@ from tests.e2e.utilities.results.ot3_system_test_messages import (
     OT3_FIRMWARE_SOURCE_MOUNTED,
     OT3_FIRMWARE_SOURCE_NOT_MOUNTED,
 )
+from tests.e2e.utilities.results.results import (
+    OT3EmulatorContainers,
+    Result,
+)
 from tests.e2e.utilities.results.single_test_description import TestDescription
 
 
@@ -61,7 +65,7 @@ class SystemTestDefinition:
         init=False, repr=False, compare=False, default=E2ETestOutput()
     )
 
-    def _confirm_created_builders(self, ot3_system: OT3Containers) -> None:
+    def _confirm_created_builders(self, ot3_system: OT3SystemUnderTest) -> None:
         """Confirm that the correct builder containers were created."""
         monorepo_builder_test_description: TestDescription = (
             MONOREPO_BUILDER_CREATED
@@ -96,7 +100,7 @@ class SystemTestDefinition:
             opentrons_modules_builder_test_description,
         )
 
-    def _confirm_local_mounts(self, ot3_system: OT3Containers) -> None:
+    def _confirm_local_mounts(self, ot3_system: OT3SystemUnderTest) -> None:
         """Confirm local mounts are created as expected."""
         monorepo_source_mounted_test_description: TestDescription = (
             MONOREPO_SOURCE_MOUNTED
@@ -130,7 +134,7 @@ class SystemTestDefinition:
             opentrons_modules_source_mounted_test_description,
         )
 
-    def _confirm_build_args(self, ot3_system: OT3Containers) -> None:
+    def _confirm_build_args(self, ot3_system: OT3SystemUnderTest) -> None:
         monorepo_build_args_test_description = TestDescription(
             desc=f"Confirming monorepo build args are: {self.monorepo_build_args.name}"
         )
@@ -155,7 +159,7 @@ class SystemTestDefinition:
             opentrons_modules_build_args_test_description,
         )
 
-    def _confirm_ot3_emulator_named_volumes(self, ot3_system: OT3Containers) -> None:
+    def _confirm_ot3_emulator_named_volumes(self, ot3_system: OT3SystemUnderTest) -> None:
         data = (
             (ot3_system.gantry_x, OT3FirmwareEmulatorNamedVolumesMap.GANTRY_X),
             (ot3_system.gantry_y, OT3FirmwareEmulatorNamedVolumesMap.GANTRY_Y),
@@ -173,7 +177,7 @@ class SystemTestDefinition:
             )
 
     def _confirm_entrypoint_mounts(
-        self, ot3_system: OT3Containers, modules: ModuleContainers
+        self, ot3_system: OT3SystemUnderTest, modules: ModuleContainers
     ) -> None:
         containers = ot3_system.containers_with_entrypoint_script + modules.all_modules
         for container in containers:
@@ -185,7 +189,7 @@ class SystemTestDefinition:
             )
 
     def _confirm_ot3_firmware_builder_named_volumes(
-        self, ot3_system: OT3Containers
+        self, ot3_system: OT3SystemUnderTest
     ) -> None:
         for volume in OT3FirmwareBuilderNamedVolumes.VOLUMES:
             test_description = TestDescription.from_named_volume(
@@ -198,7 +202,7 @@ class SystemTestDefinition:
 
     def _confirm_ot3_firmware_state_manager_mounts_and_volumes(
         self,
-        ot3_system: OT3Containers,
+        ot3_system: OT3SystemUnderTest,
     ) -> None:
         for expected_volume in OT3StateManagerNamedVolumes.VOLUMES:
             test_description = TestDescription.from_named_volume(
@@ -210,7 +214,7 @@ class SystemTestDefinition:
             )
 
     def _confirm_containers_with_monorepo_wheel_volumes(
-        self, ot3_system: OT3Containers, modules: ModuleContainers
+        self, ot3_system: OT3SystemUnderTest, modules: ModuleContainers
     ) -> None:
         containers = (
             ot3_system.containers_with_monorepo_wheel_volume
@@ -227,7 +231,7 @@ class SystemTestDefinition:
                 )
 
     def _confirm_opentrons_modules_builder_named_volumes(
-        self, ot3_system: OT3Containers
+        self, ot3_system: OT3SystemUnderTest
     ) -> None:
         for volume in OpentronsModulesBuilderNamedVolumes.VOLUMES:
             test_description = TestDescription.from_named_volume(
@@ -268,7 +272,7 @@ class SystemTestDefinition:
                     test_description,
                 )
 
-    def _confirm_ot3_firmware_build_artifacts(self, ot3_system: OT3Containers) -> None:
+    def _confirm_ot3_firmware_build_artifacts(self, ot3_system: OT3SystemUnderTest) -> None:
         test_matrix = (
             (ot3_system.gantry_x, OT3FirmwareExpectedBinaryNames.GANTRY_X),
             (ot3_system.gantry_y, OT3FirmwareExpectedBinaryNames.GANTRY_Y),
@@ -321,7 +325,7 @@ class SystemTestDefinition:
 
     def compare(
         self,
-        ot3_system: OT3Containers,
+        ot3_system: OT3SystemUnderTest,
         modules: ModuleContainers,
         mounts: ExpectedBindMounts,
     ) -> None:
@@ -421,3 +425,7 @@ class SystemTestDefinition:
                 confirm_mount_exists(ot3_system.modules_builder, mounts.MODULES),
                 test_description,
             )
+
+        def generate_expected_results(self) -> Result:
+            if self.ot3_firmware_builder_created:
+                OT3EmulatorContainers()

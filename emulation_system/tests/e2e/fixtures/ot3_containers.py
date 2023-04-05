@@ -13,7 +13,7 @@ from tests.e2e.utilities.helper_functions import get_mounts
 
 
 @dataclass
-class OT3Containers:
+class OT3SystemUnderTest:
     """Dataclass to access all containers in OT-3 System easily."""
 
     gantry_x: Container
