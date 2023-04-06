@@ -22,7 +22,6 @@ class OT3EmulatorContainers:
     def init_all_exists(cls) -> "OT3EmulatorContainers":
         return cls(**{field.name: True for field in fields(cls)})
 
-
     @classmethod
     def init_all_not_exists(cls) -> "OT3EmulatorContainers":
         return cls(**{field.name: False for field in fields(cls)})
@@ -104,7 +103,26 @@ class OT3Results:
     # binaries: OT3Binaries
     # containers_with_monorepo_volumes: OT3ContainersWithMonorepoWheelVolume
 
+
+@dataclass
+class BuilderContainers:
+    ot3_firmware_builder_created: bool
+    opentrons_modules_builder_created: bool
+    monorepo_builder_created: bool
+
+    @classmethod
+    def from_system_under_test(
+        cls, system_under_test: OT3SystemUnderTest
+    ) -> "BuilderContainers":
+        return cls(
+            ot3_firmware_builder_created=system_under_test.ot3_firmware_builder_created,
+            opentrons_modules_builder_created=system_under_test.opentrons_modules_builder_created,
+            monorepo_builder_created=system_under_test.monorepo_builder_created,
+        )
+
+
 @dataclass
 class Result:
     """Class containing all result values for e2e testing."""
     ot3_results: Optional[OT3Results]
+    builder_containers: BuilderContainers
