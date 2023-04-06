@@ -120,9 +120,27 @@ class BuilderContainers:
             monorepo_builder_created=system_under_test.monorepo_builder_created,
         )
 
+@dataclass
+class LocalMounts:
+    monorepo_mounted: bool
+    ot3_firmware_mounted: bool
+    opentrons_modules_mounted: bool
+
+    @classmethod
+    def from_system_under_test(
+        cls,
+        system_under_test: OT3SystemUnderTest
+    ) -> "LocalMounts":
+        return cls(
+            monorepo_mounted=system_under_test.local_monorepo_mounted,
+            ot3_firmware_mounted=system_under_test.local_ot3_firmware_mounted,
+            opentrons_modules_mounted=system_under_test.local_opentrons_modules_mounted,
+        )
+
 
 @dataclass
 class Result:
     """Class containing all result values for e2e testing."""
     ot3_results: Optional[OT3Results]
     builder_containers: BuilderContainers
+    local_mounts: LocalMounts
