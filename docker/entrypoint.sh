@@ -150,6 +150,7 @@ case $FULL_COMMAND in
     (cd /opentrons/notify-server && monorepo_python setup.py bdist_wheel -d /dist/)
     (cd /opentrons/robot-server && monorepo_python setup.py bdist_wheel -d /dist/)
     (cd /opentrons/hardware && monorepo_python setup.py bdist_wheel -d /dist/)
+    (cd /opentrons/server-utils && monorepo_python setup.py bdist_wheel -d /dist/)
     monorepo_python -m pip install /dist/*
     ;;
 
