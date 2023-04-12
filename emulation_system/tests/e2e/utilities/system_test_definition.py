@@ -12,9 +12,7 @@ from tests.e2e.utilities.consts import (
     OpentronsModulesBuilderNamedVolumes,
     OpentronsModulesEmulatorNamedVolumes,
     OT3FirmwareBuilderNamedVolumes,
-    OT3FirmwareEmulatorNamedVolumesMap,
     OT3FirmwareExpectedBinaryNames,
-    OT3StateManagerNamedVolumes,
 )
 from tests.e2e.utilities.helper_functions import (
     confirm_mount_does_not_exist,
@@ -23,20 +21,6 @@ from tests.e2e.utilities.helper_functions import (
     exec_in_container,
 )
 from tests.e2e.utilities.results.e2e_test_output import E2ETestOutput
-from tests.e2e.utilities.results.ot3_system_test_messages import (
-    MONOREPO_BUILDER_CREATED,
-    MONOREPO_BUILDER_NOT_CREATED,
-    MONOREPO_SOURCE_MOUNTED,
-    MONOREPO_SOURCE_NOT_MOUNTED,
-    OPENTRONS_MODULES_BUILDER_CREATED,
-    OPENTRONS_MODULES_BUILDER_NOT_CREATED,
-    OPENTRONS_MODULES_SOURCE_MOUNTED,
-    OPENTRONS_MODULES_SOURCE_NOT_MOUNTED,
-    OT3_FIRMWARE_BUILDER_CREATED,
-    OT3_FIRMWARE_BUILDER_NOT_CREATED,
-    OT3_FIRMWARE_SOURCE_MOUNTED,
-    OT3_FIRMWARE_SOURCE_NOT_MOUNTED,
-)
 from tests.e2e.utilities.results.results import (
     OT3EmulatorContainers,
     Result,
@@ -65,117 +49,6 @@ class SystemTestDefinition:
         init=False, repr=False, compare=False, default=E2ETestOutput()
     )
 
-    def _confirm_created_builders(self, ot3_system: OT3SystemUnderTest) -> None:
-        """Confirm that the correct builder containers were created."""
-        monorepo_builder_test_description: TestDescription = (
-            MONOREPO_BUILDER_CREATED
-            if self.monorepo_builder_created
-            else MONOREPO_BUILDER_NOT_CREATED
-        )
-        ot3_firmware_builder_test_description: TestDescription = (
-            OT3_FIRMWARE_BUILDER_CREATED
-            if self.ot3_firmware_builder_created
-            else OT3_FIRMWARE_BUILDER_NOT_CREATED
-        )
-
-        opentrons_modules_builder_test_description: TestDescription = (
-            OPENTRONS_MODULES_BUILDER_CREATED
-            if self.opentrons_modules_builder_created
-            else OPENTRONS_MODULES_BUILDER_NOT_CREATED
-        )
-
-        self._test_output.append_result(
-            ot3_system.monorepo_builder_created == self.monorepo_builder_created,
-            monorepo_builder_test_description,
-        )
-
-        self._test_output.append_result(
-            ot3_system.opentrons_modules_builder_created
-            == self.opentrons_modules_builder_created,
-            ot3_firmware_builder_test_description,
-        )
-        self._test_output.append_result(
-            ot3_system.opentrons_modules_builder_created
-            == self.opentrons_modules_builder_created,
-            opentrons_modules_builder_test_description,
-        )
-
-    def _confirm_local_mounts(self, ot3_system: OT3SystemUnderTest) -> None:
-        """Confirm local mounts are created as expected."""
-        monorepo_source_mounted_test_description: TestDescription = (
-            MONOREPO_SOURCE_MOUNTED
-            if self.local_monorepo_mounted
-            else MONOREPO_SOURCE_NOT_MOUNTED
-        )
-        ot3_firmware_source_mounted_test_description: TestDescription = (
-            OT3_FIRMWARE_SOURCE_MOUNTED
-            if self.local_ot3_firmware_mounted
-            else OT3_FIRMWARE_SOURCE_NOT_MOUNTED
-        )
-
-        opentrons_modules_source_mounted_test_description: TestDescription = (
-            OPENTRONS_MODULES_SOURCE_MOUNTED
-            if self.local_opentrons_modules_mounted
-            else OPENTRONS_MODULES_SOURCE_NOT_MOUNTED
-        )
-
-        self._test_output.append_result(
-            ot3_system.local_monorepo_mounted == self.local_monorepo_mounted,
-            monorepo_source_mounted_test_description,
-        )
-        self._test_output.append_result(
-            ot3_system.local_ot3_firmware_mounted == self.local_ot3_firmware_mounted,
-            ot3_firmware_source_mounted_test_description,
-        )
-
-        self._test_output.append_result(
-            ot3_system.local_opentrons_modules_mounted
-            == self.local_opentrons_modules_mounted,
-            opentrons_modules_source_mounted_test_description,
-        )
-
-    def _confirm_build_args(self, ot3_system: OT3SystemUnderTest) -> None:
-        monorepo_build_args_test_description = TestDescription(
-            desc=f"Confirming monorepo build args are: {self.monorepo_build_args.name}"
-        )
-        ot3_firmware_build_args_test_description = TestDescription(
-            desc=f"Confirming ot3-firmware build args are: {self.ot3_firmware_build_args.name}"
-        )
-        opentrons_modules_build_args_test_description = TestDescription(
-            desc=f"Confirming opentrons-modules build args are: {self.opentrons_modules_build_args.name}"
-        )
-
-        self._test_output.append_result(
-            ot3_system.monorepo_build_args == self.monorepo_build_args,
-            monorepo_build_args_test_description,
-        )
-        self._test_output.append_result(
-            ot3_system.ot3_firmware_build_args == self.ot3_firmware_build_args,
-            ot3_firmware_build_args_test_description,
-        )
-        self._test_output.append_result(
-            ot3_system.opentrons_modules_build_args
-            == self.opentrons_modules_build_args,
-            opentrons_modules_build_args_test_description,
-        )
-
-    def _confirm_ot3_emulator_named_volumes(self, ot3_system: OT3SystemUnderTest) -> None:
-        data = (
-            (ot3_system.gantry_x, OT3FirmwareEmulatorNamedVolumesMap.GANTRY_X),
-            (ot3_system.gantry_y, OT3FirmwareEmulatorNamedVolumesMap.GANTRY_Y),
-            (ot3_system.head, OT3FirmwareEmulatorNamedVolumesMap.HEAD),
-            (ot3_system.gripper, OT3FirmwareEmulatorNamedVolumesMap.GRIPPER),
-            (ot3_system.pipettes, OT3FirmwareEmulatorNamedVolumesMap.PIPETTES),
-            (ot3_system.bootloader, OT3FirmwareEmulatorNamedVolumesMap.BOOTLOADER),
-        )
-        for container, named_volume in data:
-            test_description = TestDescription.from_named_volume(
-                container, named_volume
-            )
-            self._test_output.append_result(
-                confirm_named_volume_exists(container, named_volume), test_description
-            )
-
     def _confirm_entrypoint_mounts(
         self, ot3_system: OT3SystemUnderTest, modules: ModuleContainers
     ) -> None:
@@ -200,18 +73,6 @@ class SystemTestDefinition:
                 test_description,
             )
 
-    def _confirm_ot3_firmware_state_manager_mounts_and_volumes(
-        self,
-        ot3_system: OT3SystemUnderTest,
-    ) -> None:
-        for expected_volume in OT3StateManagerNamedVolumes.VOLUMES:
-            test_description = TestDescription.from_named_volume(
-                ot3_system.state_manager, expected_volume
-            )
-            self._test_output.append_result(
-                confirm_named_volume_exists(ot3_system.state_manager, expected_volume),
-                test_description,
-            )
 
     def _confirm_containers_with_monorepo_wheel_volumes(
         self, ot3_system: OT3SystemUnderTest, modules: ModuleContainers

@@ -4,9 +4,11 @@ from typing import Optional
 from tests.e2e.fixtures.ot3_containers import OT3SystemUnderTest
 from tests.e2e.utilities.build_arg_configurations import BuildArgConfigurations
 from tests.e2e.utilities.consts import (
+    CommonNamedVolumes,
     ExpectedNamedVolume,
     ExpectedMount,
     OT3FirmwareEmulatorNamedVolumesMap,
+    STATE_MANAGER_VENV_VOLUME,
 )
 from tests.e2e.utilities.helper_functions import confirm_named_volume_exists
 
@@ -119,8 +121,24 @@ class OT3EmulatorNamedVolumes:
 @dataclass
 class OT3StateManagerNamedVolumes:
 
-    state_manager_monorepo: ExpectedNamedVolume
-    state_manager_virtual_env: ExpectedNamedVolume
+    state_manager_monorepo_exists: bool
+    state_manager_virtual_env_exists: bool
+
+    @classmethod
+    def from_system_under_test(
+        cls, system_under_test: OT3SystemUnderTest
+    ) -> "OT3StateManagerNamedVolumes":
+        return cls(
+           state_manager_monorepo_exists=confirm_named_volume_exists(
+               container=system_under_test.state_manager,
+               expected_vol=CommonNamedVolumes.MONOREPO_WHEELS
+           ),
+            state_manager_virtual_env_exists=confirm_named_volume_exists(
+                container=system_under_test.state_manager,
+                expected_vol=STATE_MANAGER_VENV_VOLUME
+            )
+        )
+
 
 @dataclass
 class OT3FirmwareBuilderNamedVolumes:
@@ -145,6 +163,7 @@ class OT3ContainersWithMonorepoWheelVolume:
 class OT3Results:
     containers: OT3EmulatorContainers
     emulator_volumes: OT3EmulatorNamedVolumes
+    state_manager_volumes: OT3StateManagerNamedVolumes
     # binaries: OT3Binaries
     # containers_with_monorepo_volumes: OT3ContainersWithMonorepoWheelVolume
 

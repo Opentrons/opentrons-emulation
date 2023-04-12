@@ -26,6 +26,8 @@ class ExpectedMount:
     DEST_PATH: str
 
 
+STATE_MANAGER_VENV_VOLUME = ExpectedNamedVolume("state_manager_venv", "/.venv")
+
 @dataclass(frozen=True)
 class OT3FirmwareEmulatorNamedVolumesMap:
     """Class representing expected named volume for each OT-3 emulator container."""
@@ -101,17 +103,6 @@ class CommonMounts:
     ENTRYPOINT_MOUNT = ExpectedMount(
         os.path.join(DOCKERFILE_DIR_LOCATION, "entrypoint.sh"), "/entrypoint.sh"
     )
-
-
-@dataclass(frozen=True)
-class OT3StateManagerNamedVolumes:
-    """Named volumes expected on OT-3 State Manager container."""
-
-    VOLUMES: Tuple[ExpectedNamedVolume, ...] = (
-        CommonNamedVolumes.MONOREPO_WHEELS,
-        ExpectedNamedVolume("state_manager_venv", "/.venv"),
-    )
-
 
 @dataclass(frozen=True)
 class OT3FirmwareExpectedBinaryNames:
