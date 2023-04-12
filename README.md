@@ -285,7 +285,7 @@ You need to update pyenv. Follow [these](https://github.com/pyenv/pyenv#upgradin
 1. [Poetry Installed Globally](https://python-poetry.org/docs/master/#installing-with-the-official-installer)
    1. Run `curl -sSL https://install.python-poetry.org | python3 -`
    1. Add poetry dir to `PATH` environment variable
-      1. **Mac** - `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc`
+      1. **Mac** - `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zprofile`
       1. **Linux** - `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile`.
          Note: On Linux this might already be on your path variable.
 
