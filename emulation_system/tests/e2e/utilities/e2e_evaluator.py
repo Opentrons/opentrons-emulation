@@ -3,6 +3,7 @@ from tests.e2e.utilities.results.results import (
     BuilderContainers,
     LocalMounts,
     OT3EmulatorContainers,
+    OT3EmulatorMounts,
     OT3EmulatorNamedVolumes,
     OT3Results,
     OT3StateManagerNamedVolumes,
@@ -59,6 +60,17 @@ class E2EEvaluator:
             bootloader_volume_exists=True
         )
 
+    @staticmethod
+    def _evaluate_expected_ot3_emulators_mounts() -> OT3EmulatorMounts:
+        return OT3EmulatorMounts(
+            head_has_entrypoint_script=True,
+            gantry_x_has_entrypoint_script=True,
+            gantry_y_has_entrypoint_script=True,
+            gripper_has_entrypoint_script=True,
+            pipettes_has_entrypoint_script=True,
+            bootloader_has_entrypoint_script=True,
+        )
+
 
     @staticmethod
     def _evaluate_expected_state_manager_volumes() -> OT3StateManagerNamedVolumes:
@@ -75,10 +87,12 @@ class E2EEvaluator:
         expected_ot3_containers = self._evaluate_expected_ot3_containers()
         expected_ot3_emulator_volumes = self._evaluate_expected_ot3_emulator_named_volumes()
         expected_state_manager_volumes = self._evaluate_expected_state_manager_volumes()
+        expected_emulator_mounts = self._evaluate_expected_ot3_emulators_mounts()
         expected_ot3_results = OT3Results(
             containers=expected_ot3_containers,
             emulator_volumes=expected_ot3_emulator_volumes,
-            state_manager_volumes=expected_state_manager_volumes
+            state_manager_volumes=expected_state_manager_volumes,
+            emulator_mounts=expected_emulator_mounts
         )
         builder_containers = self._evaluate_expected_builder_containers()
         local_mounts = self._evaluate_expected_local_mounts()
@@ -97,15 +111,18 @@ class E2EEvaluator:
             actual_ot3_containers = OT3EmulatorContainers.from_system_under_test(self._system_under_test)
             actual_ot3_emulator_volumes = OT3EmulatorNamedVolumes.from_system_under_test(self._system_under_test)
             actual_state_manager_volumes = OT3StateManagerNamedVolumes.from_system_under_test(self._system_under_test)
+            actual_ot3_emulator_mounts = OT3EmulatorMounts.from_system_under_test(self._system_under_test)
         else:
             actual_ot3_containers = None
             actual_ot3_emulator_volumes = None
             actual_state_manager_volumes = None
+            actual_ot3_emulator_mounts = None
 
         actual_ot3_results = OT3Results(
             containers=actual_ot3_containers,
             emulator_volumes=actual_ot3_emulator_volumes,
-            state_manager_volumes=actual_state_manager_volumes
+            state_manager_volumes=actual_state_manager_volumes,
+            emulator_mounts=actual_ot3_emulator_mounts
         )
         return Result(
             ot3_results=actual_ot3_results,

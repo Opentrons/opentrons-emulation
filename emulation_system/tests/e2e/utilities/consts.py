@@ -27,6 +27,9 @@ class ExpectedMount:
 
 
 STATE_MANAGER_VENV_VOLUME = ExpectedNamedVolume("state_manager_venv", "/.venv")
+ENTRYPOINT_MOUNT = ExpectedMount(
+    os.path.join(DOCKERFILE_DIR_LOCATION, "entrypoint.sh"), "/entrypoint.sh"
+)
 
 @dataclass(frozen=True)
 class OT3FirmwareEmulatorNamedVolumesMap:
@@ -95,14 +98,6 @@ class OpentronsModulesEmulatorNamedVolumes:
     HEATER_SHAKER = ExpectedNamedVolume("heater_shaker_executable", "/executable")
     THERMOCYCLER = ExpectedNamedVolume("thermocycler_executable", "/executable")
 
-
-@dataclass(frozen=True)
-class CommonMounts:
-    """Mounts common to many containers."""
-
-    ENTRYPOINT_MOUNT = ExpectedMount(
-        os.path.join(DOCKERFILE_DIR_LOCATION, "entrypoint.sh"), "/entrypoint.sh"
-    )
 
 @dataclass(frozen=True)
 class OT3FirmwareExpectedBinaryNames:

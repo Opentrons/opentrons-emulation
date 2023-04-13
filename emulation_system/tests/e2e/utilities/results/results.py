@@ -5,12 +5,16 @@ from tests.e2e.fixtures.ot3_containers import OT3SystemUnderTest
 from tests.e2e.utilities.build_arg_configurations import BuildArgConfigurations
 from tests.e2e.utilities.consts import (
     CommonNamedVolumes,
+    ENTRYPOINT_MOUNT,
     ExpectedNamedVolume,
     ExpectedMount,
     OT3FirmwareEmulatorNamedVolumesMap,
     STATE_MANAGER_VENV_VOLUME,
 )
-from tests.e2e.utilities.helper_functions import confirm_named_volume_exists
+from tests.e2e.utilities.helper_functions import (
+    confirm_mount_exists,
+    confirm_named_volume_exists,
+)
 
 
 @dataclass
@@ -141,6 +145,27 @@ class OT3StateManagerNamedVolumes:
 
 
 @dataclass
+class OT3EmulatorMounts:
+    head_has_entrypoint_script: bool
+    gantry_x_has_entrypoint_script: bool
+    gantry_y_has_entrypoint_script: bool
+    gripper_has_entrypoint_script: bool
+    pipettes_has_entrypoint_script: bool
+    bootloader_has_entrypoint_script: bool
+
+    @classmethod
+    def from_system_under_test(cls, system_under_test: OT3SystemUnderTest):
+        return cls(
+            head_has_entrypoint_script=confirm_mount_exists(system_under_test.head, ENTRYPOINT_MOUNT),
+            gantry_x_has_entrypoint_script=confirm_mount_exists(system_under_test.gantry_x, ENTRYPOINT_MOUNT),
+            gantry_y_has_entrypoint_script=confirm_mount_exists(system_under_test.gantry_y, ENTRYPOINT_MOUNT),
+            gripper_has_entrypoint_script=confirm_mount_exists(system_under_test.gripper, ENTRYPOINT_MOUNT),
+            pipettes_has_entrypoint_script=confirm_mount_exists(system_under_test.pipettes, ENTRYPOINT_MOUNT),
+            bootloader_has_entrypoint_script=confirm_mount_exists(system_under_test.bootloader, ENTRYPOINT_MOUNT),
+        )
+
+
+@dataclass
 class OT3FirmwareBuilderNamedVolumes:
 
     ot3_firmware_builder_head: ExpectedNamedVolume
@@ -159,13 +184,6 @@ class OT3ContainersWithMonorepoWheelVolume:
     state_manager: ExpectedNamedVolume
 
 
-@dataclass
-class OT3Results:
-    containers: OT3EmulatorContainers
-    emulator_volumes: OT3EmulatorNamedVolumes
-    state_manager_volumes: OT3StateManagerNamedVolumes
-    # binaries: OT3Binaries
-    # containers_with_monorepo_volumes: OT3ContainersWithMonorepoWheelVolume
 
 
 @dataclass
@@ -217,6 +235,16 @@ class SystemBuildArgs:
             ot3_firmware_build_args=system_under_test.ot3_firmware_build_args,
             opentrons_modules_build_args=system_under_test.opentrons_modules_build_args
         )
+
+@dataclass
+class OT3Results:
+    containers: OT3EmulatorContainers
+    emulator_volumes: OT3EmulatorNamedVolumes
+    state_manager_volumes: OT3StateManagerNamedVolumes
+    emulator_mounts: OT3EmulatorMounts
+    # binaries: OT3Binaries
+    # containers_with_monorepo_volumes: OT3ContainersWithMonorepoWheelVolume
+
 
 @dataclass
 class Result:

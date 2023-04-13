@@ -6,7 +6,7 @@ from tests.e2e.fixtures.module_containers import ModuleContainers
 from tests.e2e.fixtures.ot3_containers import OT3SystemUnderTest
 from tests.e2e.utilities.build_arg_configurations import BuildArgConfigurations
 from tests.e2e.utilities.consts import (
-    CommonMounts,
+    ENTRYPOINT_MOUNT,
     ModulesExpectedBinaryNames,
     MonorepoBuilderNamedVolumes,
     OpentronsModulesBuilderNamedVolumes,
@@ -21,10 +21,7 @@ from tests.e2e.utilities.helper_functions import (
     exec_in_container,
 )
 from tests.e2e.utilities.results.e2e_test_output import E2ETestOutput
-from tests.e2e.utilities.results.results import (
-    OT3EmulatorContainers,
-    Result,
-)
+
 from tests.e2e.utilities.results.single_test_description import TestDescription
 
 
@@ -54,10 +51,10 @@ class SystemTestDefinition:
     ) -> None:
         containers = ot3_system.containers_with_entrypoint_script + modules.all_modules
         for container in containers:
-            expected_mount = CommonMounts.ENTRYPOINT_MOUNT
+            expected_mount = ENTRYPOINT_MOUNT
             test_description = TestDescription.from_mount(container, expected_mount)
             self._test_output.append_result(
-                confirm_mount_exists(container, CommonMounts.ENTRYPOINT_MOUNT),
+                confirm_mount_exists(container, ENTRYPOINT_MOUNT),
                 test_description,
             )
 
@@ -191,20 +188,17 @@ class SystemTestDefinition:
         mounts: ExpectedBindMounts,
     ) -> None:
         """Public facing method to run all above protected assertion methods."""
-        self._confirm_created_builders(ot3_system)
-        self._confirm_local_mounts(ot3_system)
-        self._confirm_build_args(ot3_system)
         self._confirm_entrypoint_mounts(ot3_system, modules)
 
         if self.monorepo_builder_created:
             test_description = TestDescription.from_mount(
                 ot3_system.monorepo_builder,
-                CommonMounts.ENTRYPOINT_MOUNT,
+                ENTRYPOINT_MOUNT,
                 confirm_not_exists=True,
             )
             self._test_output.append_result(
                 confirm_mount_does_not_exist(
-                    ot3_system.monorepo_builder, CommonMounts.ENTRYPOINT_MOUNT
+                    ot3_system.monorepo_builder, ENTRYPOINT_MOUNT
                 ),
                 test_description,
             )
@@ -214,30 +208,28 @@ class SystemTestDefinition:
         if self.ot3_firmware_builder_created:
             test_description = TestDescription.from_mount(
                 ot3_system.firmware_builder,
-                CommonMounts.ENTRYPOINT_MOUNT,
+                ENTRYPOINT_MOUNT,
                 confirm_not_exists=True,
             )
             self._test_output.append_result(
                 confirm_mount_does_not_exist(
-                    ot3_system.firmware_builder, CommonMounts.ENTRYPOINT_MOUNT
+                    ot3_system.firmware_builder, ENTRYPOINT_MOUNT
                 ),
                 test_description,
             )
 
-            self._confirm_ot3_emulator_named_volumes(ot3_system)
             self._confirm_ot3_firmware_builder_named_volumes(ot3_system)
-            self._confirm_ot3_firmware_state_manager_mounts_and_volumes(ot3_system)
             self._confirm_ot3_firmware_build_artifacts(ot3_system)
 
         if self.opentrons_modules_builder_created:
             test_description = TestDescription.from_mount(
                 ot3_system.modules_builder,
-                CommonMounts.ENTRYPOINT_MOUNT,
+                ENTRYPOINT_MOUNT,
                 confirm_not_exists=True,
             )
             self._test_output.append_result(
                 confirm_mount_does_not_exist(
-                    ot3_system.modules_builder, CommonMounts.ENTRYPOINT_MOUNT
+                    ot3_system.modules_builder, ENTRYPOINT_MOUNT
                 ),
                 test_description,
             )
@@ -286,7 +278,3 @@ class SystemTestDefinition:
                 confirm_mount_exists(ot3_system.modules_builder, mounts.MODULES),
                 test_description,
             )
-
-        def generate_expected_results(self) -> Result:
-            if self.ot3_firmware_builder_created:
-                OT3EmulatorContainers()
