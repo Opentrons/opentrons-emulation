@@ -51,18 +51,16 @@ class NamedVolumeList(abc.ABC):
 
 
 @dataclass(frozen=True)
-class OT3FirmwareBuilderNamedVolumes(NamedVolumeList):
+class OT3FirmwareBuilderNamedVolumesMap:
     """Class representing all expected named volumes on OT-3 Firmware Builder container."""
 
-    VOLUMES: Tuple[ExpectedNamedVolume, ...] = (
-        ExpectedNamedVolume("gantry_x_executable", "/volumes/gantry_x_volume"),
-        ExpectedNamedVolume("gantry_y_executable", "/volumes/gantry_y_volume"),
-        ExpectedNamedVolume("head_executable", "/volumes/head_volume"),
-        ExpectedNamedVolume("gripper_executable", "/volumes/gripper_volume"),
-        ExpectedNamedVolume("pipettes_executable", "/volumes/pipettes_volume"),
-        ExpectedNamedVolume("bootloader_executable", "/volumes/bootloader_volume"),
-        ExpectedNamedVolume("state_manager_venv", "/ot3-firmware/build-host/.venv"),
-    )
+    GANTRY_X = ExpectedNamedVolume("gantry_x_executable", "/volumes/gantry_x_volume")
+    GANTRY_Y = ExpectedNamedVolume("gantry_y_executable", "/volumes/gantry_y_volume")
+    HEAD = ExpectedNamedVolume("head_executable", "/volumes/head_volume")
+    GRIPPER = ExpectedNamedVolume("gripper_executable", "/volumes/gripper_volume")
+    PIPETTES = ExpectedNamedVolume("pipettes_executable", "/volumes/pipettes_volume")
+    BOOTLOADER = ExpectedNamedVolume("bootloader_executable", "/volumes/bootloader_volume")
+    STATE_MANAGER = ExpectedNamedVolume("state_manager_venv", "/ot3-firmware/build-host/.venv")
 
 
 @dataclass(frozen=True)

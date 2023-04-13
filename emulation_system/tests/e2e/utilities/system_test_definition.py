@@ -11,7 +11,6 @@ from tests.e2e.utilities.consts import (
     MonorepoBuilderNamedVolumes,
     OpentronsModulesBuilderNamedVolumes,
     OpentronsModulesEmulatorNamedVolumes,
-    OT3FirmwareBuilderNamedVolumes,
     OT3FirmwareExpectedBinaryNames,
 )
 from tests.e2e.utilities.helper_functions import (
@@ -57,19 +56,6 @@ class SystemTestDefinition:
                 confirm_mount_exists(container, ENTRYPOINT_MOUNT),
                 test_description,
             )
-
-    def _confirm_ot3_firmware_builder_named_volumes(
-        self, ot3_system: OT3SystemUnderTest
-    ) -> None:
-        for volume in OT3FirmwareBuilderNamedVolumes.VOLUMES:
-            test_description = TestDescription.from_named_volume(
-                ot3_system.firmware_builder, volume
-            )
-            self._test_output.append_result(
-                confirm_named_volume_exists(ot3_system.firmware_builder, volume),
-                test_description,
-            )
-
 
     def _confirm_containers_with_monorepo_wheel_volumes(
         self, ot3_system: OT3SystemUnderTest, modules: ModuleContainers
@@ -218,7 +204,6 @@ class SystemTestDefinition:
                 test_description,
             )
 
-            self._confirm_ot3_firmware_builder_named_volumes(ot3_system)
             self._confirm_ot3_firmware_build_artifacts(ot3_system)
 
         if self.opentrons_modules_builder_created:

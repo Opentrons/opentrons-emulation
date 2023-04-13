@@ -8,6 +8,7 @@ from tests.e2e.utilities.consts import (
     ENTRYPOINT_MOUNT,
     ExpectedNamedVolume,
     ExpectedMount,
+    OT3FirmwareBuilderNamedVolumesMap,
     OT3FirmwareEmulatorNamedVolumesMap,
     STATE_MANAGER_VENV_VOLUME,
 )
@@ -168,12 +169,25 @@ class OT3EmulatorMounts:
 @dataclass
 class OT3FirmwareBuilderNamedVolumes:
 
-    ot3_firmware_builder_head: ExpectedNamedVolume
-    ot3_firmware_builder_gantry_x: ExpectedNamedVolume
-    ot3_firmware_builder_gantry_y: ExpectedNamedVolume
-    ot3_firmware_builder_gripper: ExpectedNamedVolume
-    ot3_firmware_builder_pipettes: ExpectedNamedVolume
-    ot3_firmware_builder_bootloader: ExpectedNamedVolume
+    head_volume_exists: bool
+    gantry_x_volume_exists: bool
+    gantry_y_volume_exists: bool
+    gripper_volume_exists: bool
+    pipettes_volume_exists: bool
+    bootloader_volume_exists: bool
+
+    @classmethod
+    def from_system_under_test(
+        cls, system_under_test: OT3SystemUnderTest
+    ) -> "OT3FirmwareBuilderNamedVolumes":
+        return cls(
+            head_volume_exists=confirm_named_volume_exists(system_under_test.firmware_builder, OT3FirmwareBuilderNamedVolumesMap.HEAD),
+            gantry_x_volume_exists=confirm_named_volume_exists(system_under_test.firmware_builder, OT3FirmwareBuilderNamedVolumesMap.GANTRY_X),
+            gantry_y_volume_exists=confirm_named_volume_exists(system_under_test.firmware_builder, OT3FirmwareBuilderNamedVolumesMap.GANTRY_Y),
+            gripper_volume_exists=confirm_named_volume_exists(system_under_test.firmware_builder, OT3FirmwareBuilderNamedVolumesMap.GRIPPER),
+            pipettes_volume_exists=confirm_named_volume_exists(system_under_test.firmware_builder, OT3FirmwareBuilderNamedVolumesMap.PIPETTES),
+            bootloader_volume_exists=confirm_named_volume_exists(system_under_test.firmware_builder, OT3FirmwareBuilderNamedVolumesMap.BOOTLOADER),
+        )
 
 @dataclass
 class OT3ContainersWithMonorepoWheelVolume:
@@ -182,8 +196,6 @@ class OT3ContainersWithMonorepoWheelVolume:
     robot_server: ExpectedNamedVolume
     can_server: ExpectedNamedVolume
     state_manager: ExpectedNamedVolume
-
-
 
 
 @dataclass
@@ -242,6 +254,7 @@ class OT3Results:
     emulator_volumes: OT3EmulatorNamedVolumes
     state_manager_volumes: OT3StateManagerNamedVolumes
     emulator_mounts: OT3EmulatorMounts
+    builder_named_volumes: OT3FirmwareBuilderNamedVolumes
     # binaries: OT3Binaries
     # containers_with_monorepo_volumes: OT3ContainersWithMonorepoWheelVolume
 
