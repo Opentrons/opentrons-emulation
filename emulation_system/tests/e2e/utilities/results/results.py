@@ -22,6 +22,7 @@ from tests.e2e.utilities.system_test_definition import SystemTestDefinition
 
 TResults = TypeVar("TResults", bound="Results")
 
+@dataclass
 class ResultsABC(ABC):
 
     @classmethod
@@ -49,19 +50,33 @@ class OT3EmulatorContainers(ResultsABC):
     can_server_exists: bool
 
     @classmethod
-    def init_all_exists(cls) -> "OT3EmulatorContainers":
-        return cls(**{field.name: True for field in fields(cls)})
-
-    @classmethod
-    def init_all_not_exists(cls) -> "OT3EmulatorContainers":
-        return cls(**{field.name: False for field in fields(cls)})
-
-    @classmethod
     def get_expected_results(cls: Type[TResults], system_test_def: SystemTestDefinition) -> TResults:
         return (
-            cls.init_all_exists()
+            OT3EmulatorContainers(
+                state_manager_exists=True,
+                head_exists=True,
+                gantry_x_exists=True,
+                gantry_y_exists=True,
+                gripper_exists=True,
+                pipettes_exists=True,
+                bootloader_exists=True,
+                robot_server_exists=True,
+                emulator_proxy_exists=True,
+                can_server_exists=True,
+            )
             if system_test_def.ot3_firmware_builder_created
-            else cls.init_all_not_exists()
+            else OT3EmulatorContainers(
+                state_manager_exists=False,
+                head_exists=False,
+                gantry_x_exists=False,
+                gantry_y_exists=False,
+                gripper_exists=False,
+                pipettes_exists=False,
+                bootloader_exists=False,
+                robot_server_exists=False,
+                emulator_proxy_exists=False,
+                can_server_exists=False,
+            )
         )
     @classmethod
     def get_actual_results(
@@ -227,13 +242,15 @@ class OT3FirmwareBuilderNamedVolumes(ResultsABC):
         )
 
 @dataclass
-class OT3Binaries:
+class OT3Binaries(ResultsABC):
     head_binary_name_is_correct: bool
     gantry_x_binary_name_is_correct: bool
     gantry_y_binary_name_is_correct: bool
     gripper_binary_name_is_correct: bool
     pipettes_binary_name_is_correct: bool
     bootloader_binary_name_is_correct: bool
+
+    # def get_expected_results(cls: Type[TResults], system_test_def: SystemTestDefinition) -> TResults:
 
 
 @dataclass
