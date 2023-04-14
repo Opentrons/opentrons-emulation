@@ -9,11 +9,11 @@ from tests.e2e.utilities.consts import (
     ExpectedNamedVolume,
     OT3FirmwareBuilderNamedVolumesMap,
     OT3FirmwareEmulatorNamedVolumesMap,
-    STATE_MANAGER_VENV_VOLUME,
+    STATE_MANAGER_VENV_VOLUME, OT3FirmwareExpectedBinaryNames,
 )
 from tests.e2e.utilities.helper_functions import (
     confirm_mount_exists,
-    confirm_named_volume_exists,
+    confirm_named_volume_exists, exec_in_container,
 )
 
 from abc import ABC, abstractmethod
@@ -250,8 +250,27 @@ class OT3Binaries(ResultsABC):
     pipettes_binary_name_is_correct: bool
     bootloader_binary_name_is_correct: bool
 
-    # def get_expected_results(cls: Type[TResults], system_test_def: SystemTestDefinition) -> TResults:
+    @classmethod
+    def get_expected_results(cls: Type[TResults], system_test_def: SystemTestDefinition) -> TResults:
+        return cls(
+            head_binary_name_is_correct=True,
+            gantry_x_binary_name_is_correct=True,
+            gantry_y_binary_name_is_correct=True,
+            gripper_binary_name_is_correct=True,
+            pipettes_binary_name_is_correct=True,
+            bootloader_binary_name_is_correct=True,
+        )
 
+    @classmethod
+    def get_actual_results(cls: Type[TResults], system_under_test: OT3SystemUnderTest) -> TResults:
+        return cls(
+            head_binary_name_is_correct=exec_in_container(system_under_test.head, "ls /executable") == OT3FirmwareExpectedBinaryNames.HEAD,
+            gantry_x_binary_name_is_correct=exec_in_container(system_under_test.gantry_x, "ls /executable") == OT3FirmwareExpectedBinaryNames.GANTRY_X,
+            gantry_y_binary_name_is_correct=exec_in_container(system_under_test.gantry_y, "ls /executable") == OT3FirmwareExpectedBinaryNames.GANTRY_Y,
+            gripper_binary_name_is_correct=exec_in_container(system_under_test.gripper, "ls /executable") == OT3FirmwareExpectedBinaryNames.GRIPPER,
+            pipettes_binary_name_is_correct=exec_in_container(system_under_test.pipettes, "ls /executable") == OT3FirmwareExpectedBinaryNames.PIPETTES,
+            bootloader_binary_name_is_correct=exec_in_container(system_under_test.bootloader, "ls /executable") == OT3FirmwareExpectedBinaryNames.BOOTLOADER,
+        )
 
 @dataclass
 class OT3ContainersWithMonorepoWheelVolume:
@@ -335,7 +354,7 @@ class OT3Results(ResultsABC):
     state_manager_volumes: OT3StateManagerNamedVolumes
     emulator_mounts: OT3EmulatorMounts
     builder_named_volumes: OT3FirmwareBuilderNamedVolumes
-    # binaries: OT3Binaries
+    binaries: OT3Binaries
     # containers_with_monorepo_volumes: OT3ContainersWithMonorepoWheelVolume
 
     @classmethod
@@ -346,6 +365,7 @@ class OT3Results(ResultsABC):
             state_manager_volumes=OT3StateManagerNamedVolumes.get_actual_results(system_under_test),
             emulator_mounts=OT3EmulatorMounts.get_actual_results(system_under_test),
             builder_named_volumes=OT3FirmwareBuilderNamedVolumes.get_actual_results(system_under_test),
+            binaries=OT3Binaries.get_actual_results(system_under_test),
         )
 
     @classmethod
@@ -356,6 +376,7 @@ class OT3Results(ResultsABC):
             state_manager_volumes=OT3StateManagerNamedVolumes.get_expected_results(system_test_def),
             emulator_mounts=OT3EmulatorMounts.get_expected_results(system_test_def),
             builder_named_volumes=OT3FirmwareBuilderNamedVolumes.get_expected_results(system_test_def),
+            binaries=OT3Binaries.get_expected_results(system_test_def),
         )
 
 
