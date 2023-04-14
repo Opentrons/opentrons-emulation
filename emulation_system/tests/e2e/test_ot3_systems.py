@@ -7,7 +7,7 @@ from tests.e2e.fixtures.expected_bind_mounts import ExpectedBindMounts
 from tests.e2e.fixtures.module_containers import ModuleContainers
 from tests.e2e.fixtures.ot3_containers import OT3SystemUnderTest
 from tests.e2e.test_mappings import get_e2e_test_parmeters
-from tests.e2e.utilities.e2e_evaluator import E2EEvaluator
+from tests.e2e.utilities.results.results import Result
 from tests.e2e.utilities.system_test_definition import SystemTestDefinition
 
 
@@ -22,16 +22,5 @@ def test_e2e(
 
     If there is a failure, will log custom test output to console.
     """
-    evaluator = E2EEvaluator(
-        test_def, ot3_model_under_test(test_def.yaml_config_relative_path)
-    )
 
-
-    assert evaluator.generate_actual_result() == evaluator.generate_expected_result()
-
-    # ot3_system = ot3_model_under_test(test_def.yaml_config_relative_path)
-    # modules = modules_under_test(test_def.yaml_config_relative_path)
-    # mounts = local_mounts_under_test(test_def.yaml_config_relative_path)
-    # test_def.compare(ot3_system, modules, mounts)
-    # assert not test_def.is_failure(), test_def.print_output()
-    # print(test_def.print_output())
+    assert Result.get_actual_results(ot3_model_under_test(test_def.yaml_config_relative_path)) == Result.get_expected_results(test_def)
