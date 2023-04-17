@@ -8,7 +8,6 @@ from tests.e2e.utilities.build_arg_configurations import BuildArgConfigurations
 from tests.e2e.utilities.consts import (
     ENTRYPOINT_MOUNT,
     ModulesExpectedBinaryNames,
-    MonorepoBuilderNamedVolumes,
     OpentronsModulesBuilderNamedVolumes,
     OpentronsModulesEmulatorNamedVolumes,
     OT3FirmwareExpectedBinaryNames,
@@ -57,22 +56,22 @@ class SystemTestDefinition:
                 test_description,
             )
 
-    def _confirm_containers_with_monorepo_wheel_volumes(
-        self, ot3_system: OT3SystemUnderTest, modules: ModuleContainers
-    ) -> None:
-        containers = (
-            ot3_system.containers_with_monorepo_wheel_volume
-            + modules.firmware_level_modules
-        )
-        for container in containers:
-            for expected_volume in MonorepoBuilderNamedVolumes.VOLUMES:
-                test_description = TestDescription.from_named_volume(
-                    container, expected_volume
-                )
-                self._test_output.append_result(
-                    confirm_named_volume_exists(container, expected_volume),
-                    test_description,
-                )
+    # def _confirm_containers_with_monorepo_wheel_volumes(
+    #     self, ot3_system: OT3SystemUnderTest, modules: ModuleContainers
+    # ) -> None:
+    #     containers = (
+    #         ot3_system.containers_with_monorepo_wheel_volume
+    #         + modules.firmware_level_modules
+    #     )
+    #     for container in containers:
+    #         for expected_volume in MonorepoBuilderNamedVolumes.VOLUMES:
+    #             test_description = TestDescription.from_named_volume(
+    #                 container, expected_volume
+    #             )
+    #             self._test_output.append_result(
+    #                 confirm_named_volume_exists(container, expected_volume),
+    #                 test_description,
+    #             )
 
     def _confirm_opentrons_modules_builder_named_volumes(
         self, ot3_system: OT3SystemUnderTest

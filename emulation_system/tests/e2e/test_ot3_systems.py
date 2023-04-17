@@ -3,6 +3,7 @@ from typing import Callable
 
 import pytest
 
+from tests.e2e.fixtures.e2e_system import E2EHostSystem
 from tests.e2e.fixtures.expected_bind_mounts import ExpectedBindMounts
 from tests.e2e.fixtures.module_containers import ModuleContainers
 from tests.e2e.fixtures.ot3_containers import OT3SystemUnderTest
@@ -22,5 +23,9 @@ def test_e2e(
 
     If there is a failure, will log custom test output to console.
     """
-
-    assert Result.get_actual_results(ot3_model_under_test(test_def.yaml_config_relative_path)) == Result.get_expected_results(test_def)
+    e2e_system = E2EHostSystem(
+        ot3_containers=ot3_model_under_test(test_def.yaml_config_relative_path),
+        module_containers=modules_under_test(test_def.yaml_config_relative_path),
+        expected_binds_mounts=local_mounts_under_test(test_def.yaml_config_relative_path)
+    )
+    assert Result.get_actual_results(e2e_system) == Result.get_expected_results(test_def)

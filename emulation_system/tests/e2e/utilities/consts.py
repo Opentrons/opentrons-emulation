@@ -30,6 +30,7 @@ STATE_MANAGER_VENV_VOLUME = ExpectedNamedVolume("state_manager_venv", "/.venv")
 ENTRYPOINT_MOUNT = ExpectedMount(
     os.path.join(DOCKERFILE_DIR_LOCATION, "entrypoint.sh"), "/entrypoint.sh"
 )
+MONOREPO_WHEELS = ExpectedNamedVolume("monorepo-wheels", "/dist")
 
 @dataclass(frozen=True)
 class OT3FirmwareEmulatorNamedVolumesMap:
@@ -61,21 +62,6 @@ class OT3FirmwareBuilderNamedVolumesMap:
     PIPETTES = ExpectedNamedVolume("pipettes_executable", "/volumes/pipettes_volume")
     BOOTLOADER = ExpectedNamedVolume("bootloader_executable", "/volumes/bootloader_volume")
     STATE_MANAGER = ExpectedNamedVolume("state_manager_venv", "/ot3-firmware/build-host/.venv")
-
-
-@dataclass(frozen=True)
-class CommonNamedVolumes:
-    """Named volumes common to multiple containers."""
-
-    MONOREPO_WHEELS = ExpectedNamedVolume("monorepo-wheels", "/dist")
-
-
-@dataclass(frozen=True)
-class MonorepoBuilderNamedVolumes(NamedVolumeList):
-    """Expected named volumes for monorepo builder container."""
-
-    VOLUMES: Tuple[ExpectedNamedVolume] = (CommonNamedVolumes.MONOREPO_WHEELS,)
-
 
 @dataclass(frozen=True)
 class OpentronsModulesBuilderNamedVolumes(NamedVolumeList):
