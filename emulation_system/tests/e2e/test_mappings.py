@@ -7,8 +7,28 @@ from typing import Dict, List
 import pytest
 from _pytest.mark.structures import ParameterSet
 
-from tests.e2e.utilities.build_arg_configurations import BuildArgConfigurations
-from tests.e2e.utilities.system_test_definition import SystemTestDefinition
+from tests.e2e.test_definition.build_arg_configurations import BuildArgConfigurations
+from tests.e2e.utilities.results.module_results import (
+    ModuleConfiguration,
+    ModuleInfo,
+)
+from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
+from tests.e2e.utilities.consts import (
+    ENTRYPOINT_MOUNT,
+    ExpectedNamedVolume,
+    MONOREPO_WHEELS,
+    OpentronsModulesEmulatorNamedVolumes,
+)
+
+NO_MODULES = ModuleConfiguration(
+    total_number_of_modules=0,
+    hw_heater_shakers=set(),
+    hw_thermocyclers=set(),
+    fw_heater_shakers=set(),
+    fw_thermocyclers=set(),
+    fw_magnetic_modules=set(),
+    fw_temperature_modules=set(),
+)
 
 _TEST_DEFS: Dict[str, SystemTestDefinition] = {
     "ot3_remote": SystemTestDefinition(
@@ -23,6 +43,7 @@ _TEST_DEFS: Dict[str, SystemTestDefinition] = {
         monorepo_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
         ot3_firmware_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
         opentrons_modules_build_args=BuildArgConfigurations.NO_BUILD_ARGS,
+        module_configuration=NO_MODULES
     ),
     "ot3_firmware_dev": SystemTestDefinition(
         test_id="ot3_firmware_dev",
@@ -38,6 +59,7 @@ _TEST_DEFS: Dict[str, SystemTestDefinition] = {
         monorepo_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
         ot3_firmware_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
         opentrons_modules_build_args=BuildArgConfigurations.NO_BUILD_ARGS,
+        module_configuration=NO_MODULES
     ),
     "ot3_and_modules": SystemTestDefinition(
         test_id="ot3_and_modules",
@@ -51,6 +73,75 @@ _TEST_DEFS: Dict[str, SystemTestDefinition] = {
         monorepo_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
         ot3_firmware_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
         opentrons_modules_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
+        module_configuration=ModuleConfiguration(
+            total_number_of_modules=6,
+            hw_heater_shakers={
+                ModuleInfo(
+                    container_name="ot3-and-modules-heater-shaker",
+                    named_volumes={
+                        OpentronsModulesEmulatorNamedVolumes.HEATER_SHAKER
+                    },
+                    mounts={
+                        ENTRYPOINT_MOUNT
+                    }
+                )
+            },
+            hw_thermocyclers={
+                ModuleInfo(
+                    container_name="ot3-and-modules-thermocycler",
+                    named_volumes={
+                        OpentronsModulesEmulatorNamedVolumes.THERMOCYCLER
+                    },
+                    mounts={
+                        ENTRYPOINT_MOUNT
+                    }
+                )
+            },
+            fw_heater_shakers={
+                        ModuleInfo(
+                    container_name="ot3-and-modules-heater-shaker-fw",
+                    named_volumes={
+                        MONOREPO_WHEELS
+                    },
+                    mounts={
+                        ENTRYPOINT_MOUNT
+                    }
+                ),
+            },
+                fw_thermocyclers={
+            ModuleInfo(
+                    container_name="ot3-and-modules-thermocycler-fw",
+                    named_volumes={
+                        MONOREPO_WHEELS
+                    },
+                    mounts={
+                        ENTRYPOINT_MOUNT
+                    }
+                ),
+            },
+            fw_magnetic_modules={
+            ModuleInfo(
+                    container_name="ot3-and-modules-magdeck",
+                    named_volumes={
+                        MONOREPO_WHEELS
+                    },
+                    mounts={
+                        ENTRYPOINT_MOUNT
+                    }
+                ),
+            },
+            fw_temperature_modules={
+            ModuleInfo(
+                    container_name="ot3-and-modules-tempdeck",
+                    named_volumes={
+                        MONOREPO_WHEELS
+                    },
+                    mounts={
+                        ENTRYPOINT_MOUNT
+                    }
+                )
+            }
+        )
     ),
 }
 

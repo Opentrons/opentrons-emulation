@@ -4,7 +4,8 @@ from dataclasses import dataclass, field
 from tests.e2e.fixtures.expected_bind_mounts import ExpectedBindMounts
 from tests.e2e.fixtures.module_containers import ModuleContainers
 from tests.e2e.fixtures.ot3_containers import OT3SystemUnderTest
-from tests.e2e.utilities.build_arg_configurations import BuildArgConfigurations
+from tests.e2e.test_definition.build_arg_configurations import BuildArgConfigurations
+from tests.e2e.utilities.results.module_results import ModuleConfiguration
 from tests.e2e.utilities.consts import (
     ENTRYPOINT_MOUNT,
     ModulesExpectedBinaryNames,
@@ -29,6 +30,7 @@ class SystemTestDefinition:
 
     test_id: str
     yaml_config_relative_path: str
+
     monorepo_builder_created: bool
     ot3_firmware_builder_created: bool
     opentrons_modules_builder_created: bool
@@ -40,6 +42,9 @@ class SystemTestDefinition:
     monorepo_build_args: BuildArgConfigurations
     ot3_firmware_build_args: BuildArgConfigurations
     opentrons_modules_build_args: BuildArgConfigurations
+
+    module_configuration: ModuleConfiguration
+
     _test_output: E2ETestOutput = field(
         init=False, repr=False, compare=False, default=E2ETestOutput()
     )

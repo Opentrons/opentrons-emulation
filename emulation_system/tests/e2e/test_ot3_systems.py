@@ -9,7 +9,7 @@ from tests.e2e.fixtures.module_containers import ModuleContainers
 from tests.e2e.fixtures.ot3_containers import OT3SystemUnderTest
 from tests.e2e.test_mappings import get_e2e_test_parmeters
 from tests.e2e.utilities.results.results import Result
-from tests.e2e.utilities.system_test_definition import SystemTestDefinition
+from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
 
 
 @pytest.mark.parametrize("test_def", get_e2e_test_parmeters())
