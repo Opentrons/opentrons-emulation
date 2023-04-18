@@ -72,3 +72,7 @@ class ModuleContainers:
             + self.firmware_emulation_magnetic_modules
             + self.firmware_emulation_temperature_modules
         )
+
+    @property
+    def number_of_modules(self) -> int:
+        return len(self.all_modules)

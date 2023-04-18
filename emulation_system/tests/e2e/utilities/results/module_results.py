@@ -7,10 +7,12 @@ from tests.e2e.utilities.consts import (
     ENTRYPOINT_MOUNT,
     ExpectedMount,
     ExpectedNamedVolume,
+    ModulesExpectedBinaryNames,
 )
 from tests.e2e.utilities.helper_functions import (
     cast_mount_dict_to_expected_mount,
     cast_volume_dict_to_expected_volume,
+    exec_in_container,
     get_mounts,
     get_volumes,
 )
@@ -248,17 +250,52 @@ class ModuleMounts(ResultsABC):
 
 @dataclass
 class ModuleBinaries(ResultsABC):
+    hw_thermocycler_module_binary_names: Dict[str, str]
+    hw_heater_shaker_module_binary_names: Dict[str, str]
+
+    @classmethod
+    def _generate_heater_shaker_expected_binary_name_dict(cls, container_names: Set[str]) -> Dict[str, str]:
+        return {
+            container_name: ModulesExpectedBinaryNames.HEATER_SHAKER
+            for container_name in container_names
+        }
+
+    @classmethod
+    def _generate_thermocycler_expected_binary_name_dict(cls, container_names: Set[str]) -> Dict[str, str]:
+        return {
+            container_name: ModulesExpectedBinaryNames.THERMOCYCLER
+            for container_name in container_names
+        }
+
+    @classmethod
+    def _generate_actual_binary_name_dict(cls, containers: List[Container]) -> Dict[str, str]:
+        print(containers)
+        return {
+            container.name: exec_in_container(container, "ls /executable")
+            for container in containers
+        }
+
     @classmethod
     def get_actual_results(
         cls: Type[TResults], system_under_test: E2EHostSystem
     ) -> TResults:
-        ...
+        return cls(
+            hw_thermocycler_module_binary_names=cls._generate_actual_binary_name_dict(system_under_test.module_containers.hardware_emulation_thermocycler_modules),
+            hw_heater_shaker_module_binary_names=cls._generate_actual_binary_name_dict(system_under_test.module_containers.hardware_emulation_heater_shaker_modules)
+        )
 
     @classmethod
     def get_expected_results(
         cls: Type[TResults], system_test_def: SystemTestDefinition
     ) -> TResults:
-        ...
+        return cls(
+            hw_thermocycler_module_binary_names=cls._generate_thermocycler_expected_binary_name_dict(
+                system_test_def.module_configuration.hw_thermocycler_module_names
+                ),
+            hw_heater_shaker_module_binary_names=cls._generate_heater_shaker_expected_binary_name_dict(
+                system_test_def.module_configuration.hw_heater_shaker_module_names
+                ),
+        )
 
 
 @dataclass
@@ -282,9 +319,11 @@ class OpentronsModulesBuilderNamedVolumes(ResultsABC):
 
 @dataclass
 class ModuleResults(ResultsABC):
+    number_of_modules: int
     module_containers: ModuleContainerNames
     module_named_volumes: ModuleNamedVolumes
     module_mounts: ModuleMounts
+    module_binaries: ModuleBinaries
     # builder_named_volumes: OpentronsModulesNamedVolumes
 
     @classmethod
@@ -292,6 +331,7 @@ class ModuleResults(ResultsABC):
         cls: Type[TResults], system_test_def: SystemTestDefinition
     ) -> TResults:
         return cls(
+            number_of_modules=system_test_def.module_configuration.total_number_of_modules,
             module_containers=ModuleContainerNames.get_expected_results(
                 system_test_def
             ),
@@ -299,6 +339,7 @@ class ModuleResults(ResultsABC):
                 system_test_def
             ),
             module_mounts=ModuleMounts.get_expected_results(system_test_def),
+            module_binaries=ModuleBinaries.get_expected_results(system_test_def)
         )
 
     @classmethod
@@ -306,6 +347,7 @@ class ModuleResults(ResultsABC):
         cls: Type[TResults], system_under_test: E2EHostSystem
     ) -> TResults:
         return cls(
+            number_of_modules=system_under_test.module_containers.number_of_modules,
             module_containers=ModuleContainerNames.get_actual_results(
                 system_under_test
             ),
@@ -313,4 +355,5 @@ class ModuleResults(ResultsABC):
                 system_under_test
             ),
             module_mounts=ModuleMounts.get_actual_results(system_under_test),
+            module_binaries=ModuleBinaries.get_actual_results(system_under_test)
         )
