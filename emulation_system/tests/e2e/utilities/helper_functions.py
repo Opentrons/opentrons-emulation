@@ -28,20 +28,16 @@ def get_volumes(container: Container) -> Set[ExpectedNamedVolume]:
         if mount["Type"] == "volume"
     }
 
-def cast_mount_dict_to_expected_mount(mount: Dict[str, Any]) -> ExpectedMount:
-    return ExpectedMount(SOURCE_PATH=mount["Source"], DEST_PATH=mount["Destination"])
-
-
-def get_mounts(container: Container) -> List[ExpectedMount]:
+def get_mounts(container: Container) -> Set[ExpectedMount]:
     """Gets a list of mounts for a docker container.
 
     Returns None if no mounts exist
     """
-    return [
+    return {
         ExpectedMount(SOURCE_PATH=mount["Source"], DEST_PATH=mount["Destination"])
         for mount in container.attrs["Mounts"]
         if mount["Type"] == "bind"
-    ]
+    }
 
 
 def get_container(service: Optional[Service]) -> Optional[Container]:

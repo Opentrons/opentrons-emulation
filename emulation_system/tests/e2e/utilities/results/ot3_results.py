@@ -1,13 +1,19 @@
 from dataclasses import dataclass
-from typing import Type
+from typing import (
+    List,
+    Set,
+    Type,
+)
 
 from tests.e2e.docker_interface.e2e_system import E2EHostSystem
 from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
 from tests.e2e.utilities.consts import (
     ENTRYPOINT_MOUNT,
+    ExpectedMount,
+    ExpectedNamedVolume,
     MONOREPO_WHEELS,
+    OT3_FIRMWARE_NAMED_VOLUMES,
     STATE_MANAGER_VENV_VOLUME,
-    OT3FirmwareBuilderNamedVolumesMap,
     OT3FirmwareEmulatorNamedVolumesMap,
     OT3FirmwareExpectedBinaryNames,
 )
@@ -15,6 +21,8 @@ from tests.e2e.utilities.helper_functions import (
     confirm_mount_exists,
     confirm_named_volume_exists,
     exec_in_container,
+    get_mounts,
+    get_volumes,
 )
 from tests.e2e.utilities.results.results_abc import ResultsABC, TResults
 
@@ -83,24 +91,24 @@ class OT3EmulatorContainers(ResultsABC):
 @dataclass
 class OT3EmulatorNamedVolumes(ResultsABC):
 
-    head_volume_exists: bool
-    gantry_x_volume_exists: bool
-    gantry_y_volume_exists: bool
-    gripper_volume_exists: bool
-    pipettes_volume_exists: bool
-    bootloader_volume_exists: bool
+    head_volumes: Set[ExpectedNamedVolume]
+    gantry_x_volumes: Set[ExpectedNamedVolume]
+    gantry_y_volumes: Set[ExpectedNamedVolume]
+    gripper_volumes: Set[ExpectedNamedVolume]
+    pipettes_volumes: Set[ExpectedNamedVolume]
+    bootloader_volumes: Set[ExpectedNamedVolume]
 
     @classmethod
     def get_expected_results(
         cls: Type[TResults], system_test_def: SystemTestDefinition
     ) -> TResults:
         return cls(
-            head_volume_exists=True,
-            gantry_x_volume_exists=True,
-            gantry_y_volume_exists=True,
-            gripper_volume_exists=True,
-            pipettes_volume_exists=True,
-            bootloader_volume_exists=True,
+            head_volumes={OT3FirmwareEmulatorNamedVolumesMap.HEAD},
+            gantry_x_volumes={OT3FirmwareEmulatorNamedVolumesMap.GANTRY_X},
+            gantry_y_volumes={OT3FirmwareEmulatorNamedVolumesMap.GANTRY_Y},
+            gripper_volumes={OT3FirmwareEmulatorNamedVolumesMap.GRIPPER},
+            pipettes_volumes={OT3FirmwareEmulatorNamedVolumesMap.PIPETTES},
+            bootloader_volumes={OT3FirmwareEmulatorNamedVolumesMap.BOOTLOADER},
         )
 
     @classmethod
@@ -108,52 +116,26 @@ class OT3EmulatorNamedVolumes(ResultsABC):
         cls: Type[TResults], system_under_test: E2EHostSystem
     ) -> TResults:
         return cls(
-            head_volume_exists=confirm_named_volume_exists(
-                system_under_test.ot3_containers.head,
-                OT3FirmwareEmulatorNamedVolumesMap.HEAD,
-            ),
-            gantry_x_volume_exists=confirm_named_volume_exists(
-                system_under_test.ot3_containers.gantry_x,
-                OT3FirmwareEmulatorNamedVolumesMap.GANTRY_X,
-            ),
-            gantry_y_volume_exists=confirm_named_volume_exists(
-                system_under_test.ot3_containers.gantry_y,
-                OT3FirmwareEmulatorNamedVolumesMap.GANTRY_Y,
-            ),
-            gripper_volume_exists=confirm_named_volume_exists(
-                system_under_test.ot3_containers.gripper,
-                OT3FirmwareEmulatorNamedVolumesMap.GRIPPER,
-            ),
-            pipettes_volume_exists=confirm_named_volume_exists(
-                system_under_test.ot3_containers.pipettes,
-                OT3FirmwareEmulatorNamedVolumesMap.PIPETTES,
-            ),
-            bootloader_volume_exists=confirm_named_volume_exists(
-                system_under_test.ot3_containers.bootloader,
-                OT3FirmwareEmulatorNamedVolumesMap.BOOTLOADER,
-            ),
+            head_volumes=get_volumes(system_under_test.ot3_containers.head),
+            gantry_x_volumes=get_volumes(system_under_test.ot3_containers.gantry_x),
+            gantry_y_volumes=get_volumes(system_under_test.ot3_containers.gantry_y),
+            gripper_volumes=get_volumes(system_under_test.ot3_containers.gripper),
+            pipettes_volumes=get_volumes(system_under_test.ot3_containers.pipettes),
+            bootloader_volumes=get_volumes(system_under_test.ot3_containers.bootloader),
         )
 
 
 @dataclass
 class OT3StateManagerNamedVolumes(ResultsABC):
 
-    state_manager_monorepo_exists: bool
-    state_manager_virtual_env_exists: bool
+    volumes: Set[ExpectedNamedVolume]
 
     @classmethod
     def get_actual_results(
         cls: Type[TResults], system_under_test: E2EHostSystem
     ) -> TResults:
         return cls(
-            state_manager_monorepo_exists=confirm_named_volume_exists(
-                container=system_under_test.ot3_containers.state_manager,
-                expected_vol=MONOREPO_WHEELS,
-            ),
-            state_manager_virtual_env_exists=confirm_named_volume_exists(
-                container=system_under_test.ot3_containers.state_manager,
-                expected_vol=STATE_MANAGER_VENV_VOLUME,
-            ),
+            volumes=get_volumes(system_under_test.ot3_containers.state_manager)
         )
 
     @classmethod
@@ -161,42 +143,30 @@ class OT3StateManagerNamedVolumes(ResultsABC):
         cls: Type[TResults], system_test_def: SystemTestDefinition
     ) -> TResults:
         return cls(
-            state_manager_monorepo_exists=True, state_manager_virtual_env_exists=True
+            volumes={MONOREPO_WHEELS, STATE_MANAGER_VENV_VOLUME}
         )
 
 
 @dataclass
 class OT3EmulatorMounts(ResultsABC):
-    head_has_entrypoint_script: bool
-    gantry_x_has_entrypoint_script: bool
-    gantry_y_has_entrypoint_script: bool
-    gripper_has_entrypoint_script: bool
-    pipettes_has_entrypoint_script: bool
-    bootloader_has_entrypoint_script: bool
+    head_mounts: Set[ExpectedMount]
+    gantry_x_mounts: Set[ExpectedMount]
+    gantry_y_mounts: Set[ExpectedMount]
+    gripper_mounts: Set[ExpectedMount]
+    pipettes_mounts: Set[ExpectedMount]
+    bootloader_mounts: Set[ExpectedMount]
 
     @classmethod
     def get_actual_results(
         cls: Type[TResults], system_under_test: E2EHostSystem
     ) -> TResults:
         return cls(
-            head_has_entrypoint_script=confirm_mount_exists(
-                system_under_test.ot3_containers.head, ENTRYPOINT_MOUNT
-            ),
-            gantry_x_has_entrypoint_script=confirm_mount_exists(
-                system_under_test.ot3_containers.gantry_x, ENTRYPOINT_MOUNT
-            ),
-            gantry_y_has_entrypoint_script=confirm_mount_exists(
-                system_under_test.ot3_containers.gantry_y, ENTRYPOINT_MOUNT
-            ),
-            gripper_has_entrypoint_script=confirm_mount_exists(
-                system_under_test.ot3_containers.gripper, ENTRYPOINT_MOUNT
-            ),
-            pipettes_has_entrypoint_script=confirm_mount_exists(
-                system_under_test.ot3_containers.pipettes, ENTRYPOINT_MOUNT
-            ),
-            bootloader_has_entrypoint_script=confirm_mount_exists(
-                system_under_test.ot3_containers.bootloader, ENTRYPOINT_MOUNT
-            ),
+            head_mounts=get_mounts(system_under_test.ot3_containers.head),
+            gantry_x_mounts=get_mounts(system_under_test.ot3_containers.gantry_x),
+            gantry_y_mounts=get_mounts(system_under_test.ot3_containers.gantry_y),
+            gripper_mounts=get_mounts(system_under_test.ot3_containers.gripper),
+            pipettes_mounts=get_mounts(system_under_test.ot3_containers.pipettes),
+            bootloader_mounts=get_mounts(system_under_test.ot3_containers.bootloader),
         )
 
     @classmethod
@@ -204,90 +174,53 @@ class OT3EmulatorMounts(ResultsABC):
         cls: Type[TResults], system_test_def: SystemTestDefinition
     ) -> TResults:
         return cls(
-            head_has_entrypoint_script=True,
-            gantry_x_has_entrypoint_script=True,
-            gantry_y_has_entrypoint_script=True,
-            gripper_has_entrypoint_script=True,
-            pipettes_has_entrypoint_script=True,
-            bootloader_has_entrypoint_script=True,
+            head_mounts={ENTRYPOINT_MOUNT},
+            gantry_x_mounts={ENTRYPOINT_MOUNT},
+            gantry_y_mounts={ENTRYPOINT_MOUNT},
+            gripper_mounts={ENTRYPOINT_MOUNT},
+            pipettes_mounts={ENTRYPOINT_MOUNT},
+            bootloader_mounts={ENTRYPOINT_MOUNT},
         )
 
 
 @dataclass
 class OT3FirmwareBuilderNamedVolumes(ResultsABC):
 
-    head_volume_exists: bool
-    gantry_x_volume_exists: bool
-    gantry_y_volume_exists: bool
-    gripper_volume_exists: bool
-    pipettes_volume_exists: bool
-    bootloader_volume_exists: bool
+    volumes: Set[ExpectedNamedVolume]
 
     @classmethod
     def get_actual_results(
         cls: Type[TResults], system_under_test: E2EHostSystem
     ) -> TResults:
-        return cls(
-            head_volume_exists=confirm_named_volume_exists(
-                system_under_test.ot3_containers.firmware_builder,
-                OT3FirmwareBuilderNamedVolumesMap.HEAD,
-            ),
-            gantry_x_volume_exists=confirm_named_volume_exists(
-                system_under_test.ot3_containers.firmware_builder,
-                OT3FirmwareBuilderNamedVolumesMap.GANTRY_X,
-            ),
-            gantry_y_volume_exists=confirm_named_volume_exists(
-                system_under_test.ot3_containers.firmware_builder,
-                OT3FirmwareBuilderNamedVolumesMap.GANTRY_Y,
-            ),
-            gripper_volume_exists=confirm_named_volume_exists(
-                system_under_test.ot3_containers.firmware_builder,
-                OT3FirmwareBuilderNamedVolumesMap.GRIPPER,
-            ),
-            pipettes_volume_exists=confirm_named_volume_exists(
-                system_under_test.ot3_containers.firmware_builder,
-                OT3FirmwareBuilderNamedVolumesMap.PIPETTES,
-            ),
-            bootloader_volume_exists=confirm_named_volume_exists(
-                system_under_test.ot3_containers.firmware_builder,
-                OT3FirmwareBuilderNamedVolumesMap.BOOTLOADER,
-            ),
-        )
+        return cls(volumes=get_volumes(system_under_test.ot3_containers.firmware_builder))
 
     @classmethod
     def get_expected_results(
         cls: Type[TResults], system_test_def: SystemTestDefinition
     ) -> TResults:
-        return cls(
-            head_volume_exists=True,
-            gantry_x_volume_exists=True,
-            gantry_y_volume_exists=True,
-            gripper_volume_exists=True,
-            pipettes_volume_exists=True,
-            bootloader_volume_exists=True,
-        )
+        return cls(volumes=OT3_FIRMWARE_NAMED_VOLUMES)
 
 
 @dataclass
 class OT3Binaries(ResultsABC):
-    head_binary_name_is_correct: bool
-    gantry_x_binary_name_is_correct: bool
-    gantry_y_binary_name_is_correct: bool
-    gripper_binary_name_is_correct: bool
-    pipettes_binary_name_is_correct: bool
-    bootloader_binary_name_is_correct: bool
+    head_binary_name: str
+    gantry_x_binary_name: str
+    gantry_y_binary_name: str
+    gripper_binary_name: str
+    pipettes_binary_name: str
+    bootloader_binary_name: str
 
     @classmethod
     def get_expected_results(
         cls: Type[TResults], system_test_def: SystemTestDefinition
     ) -> TResults:
         return cls(
-            head_binary_name_is_correct=True,
-            gantry_x_binary_name_is_correct=True,
-            gantry_y_binary_name_is_correct=True,
-            gripper_binary_name_is_correct=True,
-            pipettes_binary_name_is_correct=True,
-            bootloader_binary_name_is_correct=True,
+            head_binary_name=OT3FirmwareExpectedBinaryNames.HEAD,
+            gantry_x_binary_name=OT3FirmwareExpectedBinaryNames.GANTRY_X,
+            gantry_y_binary_name=OT3FirmwareExpectedBinaryNames.GANTRY_Y,
+            gripper_binary_name=OT3FirmwareExpectedBinaryNames.GRIPPER,
+            pipettes_binary_name=OT3FirmwareExpectedBinaryNames.PIPETTES,
+            bootloader_binary_name=OT3FirmwareExpectedBinaryNames.BOOTLOADER,
         )
 
     @classmethod
@@ -295,30 +228,12 @@ class OT3Binaries(ResultsABC):
         cls: Type[TResults], system_under_test: E2EHostSystem
     ) -> TResults:
         return cls(
-            head_binary_name_is_correct=exec_in_container(
-                system_under_test.ot3_containers.head, "ls /executable"
-            )
-            == OT3FirmwareExpectedBinaryNames.HEAD,
-            gantry_x_binary_name_is_correct=exec_in_container(
-                system_under_test.ot3_containers.gantry_x, "ls /executable"
-            )
-            == OT3FirmwareExpectedBinaryNames.GANTRY_X,
-            gantry_y_binary_name_is_correct=exec_in_container(
-                system_under_test.ot3_containers.gantry_y, "ls /executable"
-            )
-            == OT3FirmwareExpectedBinaryNames.GANTRY_Y,
-            gripper_binary_name_is_correct=exec_in_container(
-                system_under_test.ot3_containers.gripper, "ls /executable"
-            )
-            == OT3FirmwareExpectedBinaryNames.GRIPPER,
-            pipettes_binary_name_is_correct=exec_in_container(
-                system_under_test.ot3_containers.pipettes, "ls /executable"
-            )
-            == OT3FirmwareExpectedBinaryNames.PIPETTES,
-            bootloader_binary_name_is_correct=exec_in_container(
-                system_under_test.ot3_containers.bootloader, "ls /executable"
-            )
-            == OT3FirmwareExpectedBinaryNames.BOOTLOADER,
+            head_binary_name=exec_in_container(system_under_test.ot3_containers.head, "ls /executable"),
+            gantry_x_binary_name=exec_in_container(system_under_test.ot3_containers.gantry_x, "ls /executable"),
+            gantry_y_binary_name=exec_in_container(system_under_test.ot3_containers.gantry_y, "ls /executable"),
+            gripper_binary_name=exec_in_container(system_under_test.ot3_containers.gripper, "ls /executable"),
+            pipettes_binary_name=exec_in_container(system_under_test.ot3_containers.pipettes, "ls /executable"),
+            bootloader_binary_name=exec_in_container(system_under_test.ot3_containers.bootloader, "ls /executable"),
         )
 
 

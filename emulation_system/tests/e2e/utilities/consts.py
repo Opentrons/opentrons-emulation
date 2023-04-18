@@ -2,15 +2,8 @@
 
 All dataclasses should be declared as frozen
 """
-import abc
 import os
 from dataclasses import dataclass
-from typing import (
-    List,
-    Set,
-    Tuple,
-)
-
 from emulation_system.consts import DOCKERFILE_DIR_LOCATION
 
 
@@ -35,7 +28,15 @@ ENTRYPOINT_MOUNT = ExpectedMount(
     os.path.join(DOCKERFILE_DIR_LOCATION, "entrypoint.sh"), "/entrypoint.sh"
 )
 MONOREPO_WHEELS = ExpectedNamedVolume("monorepo-wheels", "/dist")
-
+OT3_FIRMWARE_NAMED_VOLUMES = {
+    ExpectedNamedVolume("gantry_x_executable", "/volumes/gantry_x_volume"),
+    ExpectedNamedVolume("gantry_y_executable", "/volumes/gantry_y_volume"),
+    ExpectedNamedVolume("head_executable", "/volumes/head_volume"),
+    ExpectedNamedVolume("gripper_executable", "/volumes/gripper_volume"),
+    ExpectedNamedVolume("pipettes_executable", "/volumes/pipettes_volume"),
+    ExpectedNamedVolume("bootloader_executable", "/volumes/bootloader_volume"),
+    ExpectedNamedVolume("state_manager_venv", "/ot3-firmware/build-host/.venv"),
+}
 
 @dataclass(frozen=True)
 class OT3FirmwareEmulatorNamedVolumesMap:
@@ -47,31 +48,6 @@ class OT3FirmwareEmulatorNamedVolumesMap:
     GRIPPER = ExpectedNamedVolume("gripper_executable", "/executable")
     PIPETTES = ExpectedNamedVolume("pipettes_executable", "/executable")
     BOOTLOADER = ExpectedNamedVolume("bootloader_executable", "/executable")
-
-
-@dataclass(frozen=True)
-class NamedVolumeList(abc.ABC):
-    """Class representing list of expected named volumes for a container."""
-
-    VOLUMES: Tuple[ExpectedNamedVolume, ...]
-
-
-@dataclass(frozen=True)
-class OT3FirmwareBuilderNamedVolumesMap:
-    """Class representing all expected named volumes on OT-3 Firmware Builder container."""
-
-    GANTRY_X = ExpectedNamedVolume("gantry_x_executable", "/volumes/gantry_x_volume")
-    GANTRY_Y = ExpectedNamedVolume("gantry_y_executable", "/volumes/gantry_y_volume")
-    HEAD = ExpectedNamedVolume("head_executable", "/volumes/head_volume")
-    GRIPPER = ExpectedNamedVolume("gripper_executable", "/volumes/gripper_volume")
-    PIPETTES = ExpectedNamedVolume("pipettes_executable", "/volumes/pipettes_volume")
-    BOOTLOADER = ExpectedNamedVolume(
-        "bootloader_executable", "/volumes/bootloader_volume"
-    )
-    STATE_MANAGER = ExpectedNamedVolume(
-        "state_manager_venv", "/ot3-firmware/build-host/.venv"
-    )
-
 
 @dataclass(frozen=True)
 class OpentronsModulesBuilderNamedVolumesMap:

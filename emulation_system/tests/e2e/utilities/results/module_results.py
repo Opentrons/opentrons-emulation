@@ -15,6 +15,7 @@ from tests.e2e.utilities.consts import (
     ExpectedNamedVolume,
     ModulesExpectedBinaryNames,
     OpentronsModulesBuilderNamedVolumesMap,
+    OpentronsModulesEmulatorNamedVolumes,
 )
 from tests.e2e.utilities.helper_functions import (
     exec_in_container,
@@ -81,11 +82,7 @@ class ModuleNamedVolumes(ResultsABC):
         cls, container_names: Set[str]
     ) -> Dict[str, Set[ExpectedNamedVolume]]:
         return {
-            container_name: {
-                ExpectedNamedVolume(
-                    VOLUME_NAME="heater_shaker_executable", DEST_PATH="/executable"
-                )
-            }
+            container_name: {OpentronsModulesEmulatorNamedVolumes.HEATER_SHAKER}
             for container_name in container_names
         }
 
@@ -94,11 +91,7 @@ class ModuleNamedVolumes(ResultsABC):
         cls, container_names: Set[str]
     ) -> Dict[str, Set[ExpectedNamedVolume]]:
         return {
-            container_name: {
-                ExpectedNamedVolume(
-                    VOLUME_NAME="thermocycler_executable", DEST_PATH="/executable"
-                )
-            }
+            container_name: {OpentronsModulesEmulatorNamedVolumes.THERMOCYCLER}
             for container_name in container_names
         }
 
