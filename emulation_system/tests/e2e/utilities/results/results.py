@@ -68,7 +68,7 @@ class BuilderContainers(ResultsABC):
     ) -> TResults:
         return cls(
             ot3_firmware_builder_created=system_under_test.ot3_containers.ot3_firmware_builder_created,
-            opentrons_modules_builder_created=system_under_test.ot3_containers.opentrons_modules_builder_created,
+            opentrons_modules_builder_created=system_under_test.module_containers.opentrons_modules_builder_created,
             monorepo_builder_created=system_under_test.ot3_containers.monorepo_builder_created,
         )
 
@@ -96,7 +96,7 @@ class LocalMounts(ResultsABC):
         return cls(
             monorepo_mounted=system_under_test.ot3_containers.local_monorepo_mounted,
             ot3_firmware_mounted=system_under_test.ot3_containers.local_ot3_firmware_mounted,
-            opentrons_modules_mounted=system_under_test.ot3_containers.local_opentrons_modules_mounted,
+            opentrons_modules_mounted=system_under_test.module_containers.local_opentrons_modules_mounted,
         )
 
     @classmethod
@@ -123,7 +123,7 @@ class SystemBuildArgs(ResultsABC):
         return cls(
             monorepo_build_args=system_under_test.ot3_containers.monorepo_build_args,
             ot3_firmware_build_args=system_under_test.ot3_containers.ot3_firmware_build_args,
-            opentrons_modules_build_args=system_under_test.ot3_containers.opentrons_modules_build_args,
+            opentrons_modules_build_args=system_under_test.module_containers.opentrons_modules_build_args,
         )
 
     @classmethod

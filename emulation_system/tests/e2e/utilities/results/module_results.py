@@ -8,10 +8,12 @@ from tests.e2e.utilities.consts import (
     ExpectedMount,
     ExpectedNamedVolume,
     ModulesExpectedBinaryNames,
+    OpentronsModulesEmulatorNamedVolumes,
 )
 from tests.e2e.utilities.helper_functions import (
     cast_mount_dict_to_expected_mount,
     cast_volume_dict_to_expected_volume,
+    confirm_named_volume_exists,
     exec_in_container,
     get_mounts,
     get_volumes,
@@ -308,13 +310,25 @@ class OpentronsModulesBuilderNamedVolumes(ResultsABC):
     def get_actual_results(
         cls: Type[TResults], system_under_test: E2EHostSystem
     ) -> TResults:
-        ...
+        return cls(
+            heater_shaker_volume_exists=confirm_named_volume_exists(
+                system_under_test.module_containers.modules_builder,
+                OpentronsModulesEmulatorNamedVolumes.HEATER_SHAKER
+            ),
+            thermocycler_volume_exists=confirm_named_volume_exists(
+                system_under_test.module_containers.modules_builder,
+                OpentronsModulesEmulatorNamedVolumes.THERMOCYCLER
+            )
+        )
 
     @classmethod
     def get_expected_results(
         cls: Type[TResults], system_test_def: SystemTestDefinition
     ) -> TResults:
-        ...
+        return cls(
+            heater_shaker_volume_exists=True,
+            thermocycler_volume_exists=True
+        )
 
 
 @dataclass
@@ -324,7 +338,7 @@ class ModuleResults(ResultsABC):
     module_named_volumes: ModuleNamedVolumes
     module_mounts: ModuleMounts
     module_binaries: ModuleBinaries
-    # builder_named_volumes: OpentronsModulesNamedVolumes
+    # builder_named_volumes: OpentronsModulesBuilderNamedVolumes
 
     @classmethod
     def get_expected_results(
