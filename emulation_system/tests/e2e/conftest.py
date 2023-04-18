@@ -14,9 +14,9 @@ from emulation_system.compose_file_creator.output.runtime_compose_file_model imp
     RuntimeComposeFileModel,
 )
 from emulation_system.consts import ROOT_DIR
-from tests.e2e.fixtures.expected_bind_mounts import ExpectedBindMounts
-from tests.e2e.fixtures.module_containers import ModuleContainers
-from tests.e2e.fixtures.ot3_containers import OT3SystemUnderTest
+from tests.e2e.docker_interface.expected_bind_mounts import ExpectedBindMounts
+from tests.e2e.docker_interface.module_containers import ModuleContainers
+from tests.e2e.docker_interface.ot3_containers import OT3SystemUnderTest
 from tests.e2e.utilities.consts import ExpectedMount
 from tests.e2e.utilities.helper_functions import get_container, get_containers
 
@@ -61,9 +61,9 @@ def ot3_model_under_test(
 def modules_under_test(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> Callable[[str], ModuleContainers]:
-    """Pytest fixture to generate ModuleContainers object based of a path to a yaml configuration file.
+    """Pytest fixture to generate ModuleContainerNames object based of a path to a yaml configuration file.
 
-    This method will actually create a Callable object that when called is the ModuleContainers object.
+    This method will actually create a Callable object that when called is the ModuleContainerNames object.
     """
 
     def _model_under_test(relative_path: str) -> ModuleContainers:

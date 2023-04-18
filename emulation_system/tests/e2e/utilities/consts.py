@@ -32,6 +32,7 @@ ENTRYPOINT_MOUNT = ExpectedMount(
 )
 MONOREPO_WHEELS = ExpectedNamedVolume("monorepo-wheels", "/dist")
 
+
 @dataclass(frozen=True)
 class OT3FirmwareEmulatorNamedVolumesMap:
     """Class representing expected named volume for each OT-3 emulator container."""
@@ -60,8 +61,13 @@ class OT3FirmwareBuilderNamedVolumesMap:
     HEAD = ExpectedNamedVolume("head_executable", "/volumes/head_volume")
     GRIPPER = ExpectedNamedVolume("gripper_executable", "/volumes/gripper_volume")
     PIPETTES = ExpectedNamedVolume("pipettes_executable", "/volumes/pipettes_volume")
-    BOOTLOADER = ExpectedNamedVolume("bootloader_executable", "/volumes/bootloader_volume")
-    STATE_MANAGER = ExpectedNamedVolume("state_manager_venv", "/ot3-firmware/build-host/.venv")
+    BOOTLOADER = ExpectedNamedVolume(
+        "bootloader_executable", "/volumes/bootloader_volume"
+    )
+    STATE_MANAGER = ExpectedNamedVolume(
+        "state_manager_venv", "/ot3-firmware/build-host/.venv"
+    )
+
 
 @dataclass(frozen=True)
 class OpentronsModulesBuilderNamedVolumes(NamedVolumeList):

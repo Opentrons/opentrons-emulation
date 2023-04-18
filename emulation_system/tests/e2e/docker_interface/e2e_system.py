@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 
-from .ot3_containers import OT3SystemUnderTest
-from .module_containers import ModuleContainers
 from .expected_bind_mounts import ExpectedBindMounts
+from .module_containers import ModuleContainers
+from .ot3_containers import OT3SystemUnderTest
+
 
 @dataclass
 class E2EHostSystem:

@@ -1,7 +1,7 @@
 """Dataclass to easily access all module containers in system."""
 
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Set
 
 from docker.models.containers import Container  # type: ignore[import]
 
@@ -16,6 +16,40 @@ class ModuleContainers:
     firmware_emulation_heater_shaker_modules: List[Container]
     firmware_emulation_magnetic_modules: List[Container]
     firmware_emulation_temperature_modules: List[Container]
+
+    @property
+    def hardware_emulation_thermocycler_module_names(self) -> Set[str]:
+        return set(
+            [module.name for module in self.hardware_emulation_thermocycler_modules]
+        )
+
+    @property
+    def firmware_emulation_thermocycler_module_names(self) -> Set[str]:
+        return set(
+            [module.name for module in self.firmware_emulation_thermocycler_modules]
+        )
+
+    @property
+    def hardware_emulation_heater_shaker_module_names(self) -> Set[str]:
+        return set(
+            [module.name for module in self.hardware_emulation_heater_shaker_modules]
+        )
+
+    @property
+    def firmware_emulation_heater_shaker_module_names(self) -> Set[str]:
+        return set(
+            [module.name for module in self.firmware_emulation_heater_shaker_modules]
+        )
+
+    @property
+    def firmware_emulation_magnetic_module_names(self) -> Set[str]:
+        return set([module.name for module in self.firmware_emulation_magnetic_modules])
+
+    @property
+    def firmware_emulation_temperature_module_names(self) -> Set[str]:
+        return set(
+            [module.name for module in self.firmware_emulation_temperature_modules]
+        )
 
     @property
     def all_modules(self) -> List[Container]:

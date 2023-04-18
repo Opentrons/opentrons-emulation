@@ -17,6 +17,16 @@ def get_volumes(container: Container) -> Optional[List[Dict[str, Any]]]:
     return [mount for mount in container.attrs["Mounts"] if mount["Type"] == "volume"]
 
 
+def cast_volume_dict_to_expected_volume(volume: Dict[str, Any]) -> ExpectedNamedVolume:
+    return ExpectedNamedVolume(
+        VOLUME_NAME=volume["Name"], DEST_PATH=volume["Destination"]
+    )
+
+
+def cast_mount_dict_to_expected_mount(mount: Dict[str, Any]) -> ExpectedMount:
+    return ExpectedMount(SOURCE_PATH=mount["Source"], DEST_PATH=mount["Destination"])
+
+
 def get_mounts(container: Container) -> Optional[List[Dict[str, Any]]]:
     """Gets a list of mounts for a docker container.
 
