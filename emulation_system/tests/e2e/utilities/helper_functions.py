@@ -3,6 +3,7 @@
 from typing import (
     Any,
     Dict,
+    Iterable,
     List,
     Optional,
     Set,
@@ -38,6 +39,9 @@ def get_mounts(container: Container) -> Set[ExpectedMount]:
         for mount in container.attrs["Mounts"]
         if mount["Type"] == "bind"
     }
+
+def get_container_names(containers: Iterable[Container]) -> Set[str]:
+    return set([container.name for container in containers])
 
 
 def get_container(service: Optional[Service]) -> Optional[Container]:

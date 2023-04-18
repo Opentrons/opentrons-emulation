@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 from typing import Optional, Type
 
-from tests.e2e.docker_interface.e2e_system import E2EHostSystem
-from tests.e2e.docker_interface.expected_bind_mounts import ExpectedBindMounts
+from tests.e2e.docker_interface.e2e_system import (
+    E2EHostSystem,
+    ExpectedBindMounts,
+)
 from tests.e2e.docker_interface.module_containers import ModuleContainers
 from tests.e2e.test_definition.build_arg_configurations import BuildArgConfigurations
 from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
@@ -39,13 +41,13 @@ class ContainersWithMonorepoWheelVolume(ResultsABC):
     ) -> TResults:
         return cls(
             monorepo_builder_has_monorepo_wheel=confirm_named_volume_exists(
-                system_under_test.ot3_containers.monorepo_builder, MONOREPO_WHEELS
+                system_under_test.default_containers.monorepo_builder, MONOREPO_WHEELS
             ),
             emulator_proxy_has_monorepo_wheel=confirm_named_volume_exists(
                 system_under_test.module_containers.emulator_proxy, MONOREPO_WHEELS
             ),
             robot_server_has_monorepo_wheel=confirm_named_volume_exists(
-                system_under_test.ot3_containers.robot_server, MONOREPO_WHEELS
+                system_under_test.default_containers.robot_server, MONOREPO_WHEELS
             ),
             can_server_has_monorepo_wheel=confirm_named_volume_exists(
                 system_under_test.ot3_containers.can_server, MONOREPO_WHEELS
@@ -69,7 +71,7 @@ class BuilderContainers(ResultsABC):
         return cls(
             ot3_firmware_builder_created=system_under_test.ot3_containers.ot3_firmware_builder_created,
             opentrons_modules_builder_created=system_under_test.module_containers.opentrons_modules_builder_created,
-            monorepo_builder_created=system_under_test.ot3_containers.monorepo_builder_created,
+            monorepo_builder_created=system_under_test.default_containers.monorepo_builder_created,
         )
 
     @classmethod
@@ -94,7 +96,7 @@ class LocalMounts(ResultsABC):
         cls: Type[TResults], system_under_test: E2EHostSystem
     ) -> TResults:
         return cls(
-            monorepo_mounted=system_under_test.ot3_containers.local_monorepo_mounted,
+            monorepo_mounted=system_under_test.default_containers.local_monorepo_mounted,
             ot3_firmware_mounted=system_under_test.ot3_containers.local_ot3_firmware_mounted,
             opentrons_modules_mounted=system_under_test.module_containers.local_opentrons_modules_mounted,
         )
@@ -121,7 +123,7 @@ class SystemBuildArgs(ResultsABC):
         cls: Type[TResults], system_under_test: E2EHostSystem
     ) -> TResults:
         return cls(
-            monorepo_build_args=system_under_test.ot3_containers.monorepo_build_args,
+            monorepo_build_args=system_under_test.default_containers.monorepo_build_args,
             ot3_firmware_build_args=system_under_test.ot3_containers.ot3_firmware_build_args,
             opentrons_modules_build_args=system_under_test.module_containers.opentrons_modules_build_args,
         )
@@ -147,6 +149,8 @@ class Result(ResultsABC):
     local_mounts: LocalMounts
     system_build_args: SystemBuildArgs
     containers_with_monorepo_volumes: ContainersWithMonorepoWheelVolume
+    robot_server_exists: bool
+    monorepo_builder_exists: bool
 
     @classmethod
     def get_actual_results(
@@ -161,6 +165,8 @@ class Result(ResultsABC):
                 system_under_test
             ),
             module_results=ModuleResults.get_actual_results(system_under_test),
+            robot_server_exists=system_under_test.default_containers.robot_server is not None,
+            monorepo_builder_exists=system_under_test.default_containers.monorepo_builder is not None
         )
 
     @classmethod
@@ -180,6 +186,8 @@ class Result(ResultsABC):
                 system_test_def
             ),
             module_results=ModuleResults.get_expected_results(system_test_def),
+            robot_server_exists=True,
+            monorepo_builder_exists=True
         )
 
 

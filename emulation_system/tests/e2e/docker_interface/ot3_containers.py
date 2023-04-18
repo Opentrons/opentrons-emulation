@@ -23,44 +23,11 @@ class OT3SystemUnderTest:
     pipettes: Container
     bootloader: Container
     state_manager: Container
-    robot_server: Container
     can_server: Container
 
     # firmware and monorepo will actually always exist
     # but want to check that with an assert and not a type error
     firmware_builder: Optional[Container]
-    monorepo_builder: Optional[Container]
-
-
-    @property
-    def monorepo_builder_created(self) -> bool:
-        """Whether or not the monorepo builder container was created."""
-        return self.monorepo_builder is not None
-
-    @property
-    def local_monorepo_mounted(self) -> bool:
-        """Whether or not the monorepo builder container has local source mounted."""
-        if self.monorepo_builder is None:
-            return False
-
-        monorepo_builder_mounts = get_mounts(self.monorepo_builder)
-        return (
-            self.monorepo_builder_created
-            and monorepo_builder_mounts is not None
-            and any(
-                mount["Destination"] == "/opentrons"
-                for mount in monorepo_builder_mounts
-            )
-        )
-
-    @property
-    def monorepo_build_args(self) -> "BuildArgConfigurations":
-        """Returns BuildArgConfigurations object representing where source was pulled from."""
-        return BuildArgConfigurations.parse_build_args(
-            self.monorepo_builder,
-            "opentrons/archive/refs/heads/edge.zip",
-            RepoToBuildArgMapping.OPENTRONS,
-        )
 
     @property
     def ot3_firmware_builder_created(self) -> bool:
@@ -91,29 +58,3 @@ class OT3SystemUnderTest:
             "ot3-firmware/archive/refs/heads/main.zip",
             RepoToBuildArgMapping.OT3_FIRMWARE,
         )
-
-
-    @property
-    def containers_with_entrypoint_script(self) -> List[Container]:
-        """List of containers that are expected to have an entrypoint script."""
-        return [
-            self.gantry_x,
-            self.gantry_y,
-            self.head,
-            self.gripper,
-            self.pipettes,
-            self.bootloader,
-            self.state_manager,
-            self.robot_server,
-            self.can_server,
-        ]
-
-    @property
-    def containers_with_monorepo_wheel_volume(self) -> List[Container]:
-        """List of containers that are expected to have the monorepo wheel volume (/dist) folder."""
-        return [
-            self.monorepo_builder,
-            self.robot_server,
-            self.state_manager,
-            self.can_server,
-        ]

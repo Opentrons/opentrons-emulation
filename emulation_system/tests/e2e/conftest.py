@@ -14,7 +14,10 @@ from emulation_system.compose_file_creator.output.runtime_compose_file_model imp
     RuntimeComposeFileModel,
 )
 from emulation_system.consts import ROOT_DIR
-from tests.e2e.docker_interface.expected_bind_mounts import ExpectedBindMounts
+from tests.e2e.docker_interface.e2e_system import (
+    DefaultContainers,
+    ExpectedBindMounts,
+)
 from tests.e2e.docker_interface.module_containers import ModuleContainers
 from tests.e2e.docker_interface.ot3_containers import OT3SystemUnderTest
 from tests.e2e.utilities.consts import ExpectedMount
@@ -46,10 +49,8 @@ def ot3_model_under_test(
             pipettes=get_container(system.ot3_pipette_emulator),
             bootloader=get_container(system.ot3_bootloader_emulator),
             state_manager=get_container(system.ot3_state_manager),
-            robot_server=get_container(system.robot_server),
             can_server=get_container(system.can_server),
-            firmware_builder=get_container(system.ot3_firmware_builder),
-            monorepo_builder=get_container(system.monorepo_builder)
+            firmware_builder=get_container(system.ot3_firmware_builder)
         )
 
     return _model_under_test
@@ -93,6 +94,30 @@ def modules_under_test(
             ),
             emulator_proxy=get_container(system.emulator_proxy),
             opentrons_modules_builder=get_container(system.opentrons_modules_builder),
+        )
+
+    return _model_under_test
+
+@pytest.fixture
+def default_containers_under_test(
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> Callable[[str], DefaultContainers]:
+    """Pytest fixture to generate ModuleContainerNames object based of a path to a yaml configuration file.
+
+    This method will actually create a Callable object that when called is the ModuleContainerNames object.
+    """
+
+    def _model_under_test(relative_path: str) -> DefaultContainers:
+        abs_path = os.path.join(ROOT_DIR, relative_path)
+        with open(abs_path, "r") as file:
+            contents = yaml.safe_load(file)
+        system: RuntimeComposeFileModel = convert_from_obj(
+            contents, testing_global_em_config, False
+        )
+
+        return DefaultContainers(
+            robot_server=get_container(system.robot_server),
+            monorepo_builder=get_container(system.monorepo_builder),
         )
 
     return _model_under_test

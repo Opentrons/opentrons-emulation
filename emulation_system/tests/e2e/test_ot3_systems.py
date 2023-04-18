@@ -3,8 +3,11 @@ from typing import Callable
 
 import pytest
 
-from tests.e2e.docker_interface.e2e_system import E2EHostSystem
-from tests.e2e.docker_interface.expected_bind_mounts import ExpectedBindMounts
+from tests.e2e.docker_interface.e2e_system import (
+    DefaultContainers,
+    E2EHostSystem,
+    ExpectedBindMounts,
+)
 from tests.e2e.docker_interface.module_containers import ModuleContainers
 from tests.e2e.docker_interface.ot3_containers import OT3SystemUnderTest
 from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
@@ -18,6 +21,7 @@ def test_e2e(
     ot3_model_under_test: Callable[[str], OT3SystemUnderTest],
     modules_under_test: Callable[[str], ModuleContainers],
     local_mounts_under_test: Callable[[str], ExpectedBindMounts],
+    default_containers_under_test: Callable[[str], DefaultContainers]
 ) -> None:
     """Runs e2e tests for OT-3.
 
@@ -29,7 +33,8 @@ def test_e2e(
         expected_binds_mounts=local_mounts_under_test(
             test_def.yaml_config_relative_path
         ),
+        default_containers=default_containers_under_test(test_def.yaml_config_relative_path)
     )
-    assert Result.get_actual_results(e2e_system) == Result.get_expected_results(
+    assert Result.get_actual_results(e2e_system).__dict__ == Result.get_expected_results(
         test_def
-    )
+    ).__dict__

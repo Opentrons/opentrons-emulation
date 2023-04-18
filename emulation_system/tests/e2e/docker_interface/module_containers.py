@@ -55,41 +55,6 @@ class ModuleContainers:
             RepoToBuildArgMapping.OPENTRONS_MODULES,
         )
 
-
-    @property
-    def hardware_emulation_thermocycler_module_names(self) -> Set[str]:
-        return set(
-            [module.name for module in self.hardware_emulation_thermocycler_modules]
-        )
-
-    @property
-    def firmware_emulation_thermocycler_module_names(self) -> Set[str]:
-        return set(
-            [module.name for module in self.firmware_emulation_thermocycler_modules]
-        )
-
-    @property
-    def hardware_emulation_heater_shaker_module_names(self) -> Set[str]:
-        return set(
-            [module.name for module in self.hardware_emulation_heater_shaker_modules]
-        )
-
-    @property
-    def firmware_emulation_heater_shaker_module_names(self) -> Set[str]:
-        return set(
-            [module.name for module in self.firmware_emulation_heater_shaker_modules]
-        )
-
-    @property
-    def firmware_emulation_magnetic_module_names(self) -> Set[str]:
-        return set([module.name for module in self.firmware_emulation_magnetic_modules])
-
-    @property
-    def firmware_emulation_temperature_module_names(self) -> Set[str]:
-        return set(
-            [module.name for module in self.firmware_emulation_temperature_modules]
-        )
-
     @property
     def all_modules(self) -> List[Container]:
         """Returns list of all modules in emulated system."""

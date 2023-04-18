@@ -19,6 +19,7 @@ from tests.e2e.utilities.consts import (
 )
 from tests.e2e.utilities.helper_functions import (
     exec_in_container,
+    get_container_names,
     get_mounts,
     get_volumes,
 )
@@ -42,12 +43,12 @@ class ModuleContainerNames(ResultsABC):
         cls: Type[TResults], system_under_test: E2EHostSystem
     ) -> TResults:
         return cls(
-            hw_heater_shaker_module_names=system_under_test.module_containers.hardware_emulation_heater_shaker_module_names,
-            fw_heater_shaker_module_names=system_under_test.module_containers.firmware_emulation_heater_shaker_module_names,
-            hw_thermocycler_module_names=system_under_test.module_containers.hardware_emulation_thermocycler_module_names,
-            fw_thermocycler_module_names=system_under_test.module_containers.firmware_emulation_thermocycler_module_names,
-            fw_magnetic_module_names=system_under_test.module_containers.firmware_emulation_magnetic_module_names,
-            fw_temperature_module_names=system_under_test.module_containers.firmware_emulation_temperature_module_names,
+            hw_heater_shaker_module_names=get_container_names(system_under_test.module_containers.hardware_emulation_heater_shaker_modules),
+            fw_heater_shaker_module_names=get_container_names(system_under_test.module_containers.firmware_emulation_heater_shaker_modules),
+            hw_thermocycler_module_names=get_container_names(system_under_test.module_containers.hardware_emulation_thermocycler_modules),
+            fw_thermocycler_module_names=get_container_names(system_under_test.module_containers.firmware_emulation_thermocycler_modules),
+            fw_magnetic_module_names=get_container_names(system_under_test.module_containers.firmware_emulation_magnetic_modules),
+            fw_temperature_module_names=get_container_names(system_under_test.module_containers.firmware_emulation_temperature_modules),
             emulator_proxy_name=system_under_test.module_containers.emulator_proxy.name,
             opentrons_modules_builder_name=system_under_test.module_containers.opentrons_modules_builder.name
         )
