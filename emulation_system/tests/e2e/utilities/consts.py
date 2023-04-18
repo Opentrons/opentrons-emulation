@@ -5,7 +5,11 @@ All dataclasses should be declared as frozen
 import abc
 import os
 from dataclasses import dataclass
-from typing import Tuple
+from typing import (
+    List,
+    Set,
+    Tuple,
+)
 
 from emulation_system.consts import DOCKERFILE_DIR_LOCATION
 
@@ -70,15 +74,12 @@ class OT3FirmwareBuilderNamedVolumesMap:
 
 
 @dataclass(frozen=True)
-class OpentronsModulesBuilderNamedVolumes(NamedVolumeList):
+class OpentronsModulesBuilderNamedVolumesMap:
     """Expected named volumes for opentrons-modules builder container."""
 
-    VOLUMES: Tuple[ExpectedNamedVolume, ...] = (
-        ExpectedNamedVolume(
-            "heater_shaker_executable", "/volumes/heater_shaker_volume"
-        ),
-        ExpectedNamedVolume("thermocycler_executable", "/volumes/thermocycler_volume"),
-    )
+    HEATER_SHAKER = ExpectedNamedVolume("heater_shaker_executable", "/volumes/heater_shaker_volume")
+    THERMOCYCLER = ExpectedNamedVolume("thermocycler_executable", "/volumes/thermocycler_volume")
+
 
 
 @dataclass(frozen=True)

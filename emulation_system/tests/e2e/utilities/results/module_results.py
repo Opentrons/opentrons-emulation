@@ -1,5 +1,12 @@
 from dataclasses import dataclass
-from typing import Container, Dict, List, Set, Type
+from typing import (
+    Container,
+    Dict,
+    List,
+    Set,
+    Tuple,
+    Type,
+)
 
 from tests.e2e.docker_interface.e2e_system import E2EHostSystem
 from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
@@ -8,12 +15,9 @@ from tests.e2e.utilities.consts import (
     ExpectedMount,
     ExpectedNamedVolume,
     ModulesExpectedBinaryNames,
-    OpentronsModulesEmulatorNamedVolumes,
+    OpentronsModulesBuilderNamedVolumesMap,
 )
 from tests.e2e.utilities.helper_functions import (
-    cast_mount_dict_to_expected_mount,
-    cast_volume_dict_to_expected_volume,
-    confirm_named_volume_exists,
     exec_in_container,
     get_mounts,
     get_volumes,
@@ -108,12 +112,7 @@ class ModuleNamedVolumes(ResultsABC):
         cls, containers: List[Container]
     ) -> Dict[str, Set[ExpectedNamedVolume]]:
         return {
-            container.name: set(
-                [
-                    cast_volume_dict_to_expected_volume(volume)
-                    for volume in get_volumes(container)
-                ]
-            )
+            container.name: set(get_volumes(container))
             for container in containers
         }
 
@@ -190,12 +189,7 @@ class ModuleMounts(ResultsABC):
         cls, containers: List[Container]
     ) -> Dict[str, Set[ExpectedNamedVolume]]:
         return {
-            container.name: set(
-                [
-                    cast_mount_dict_to_expected_mount(mount)
-                    for mount in get_mounts(container)
-                ]
-            )
+            container.name: set(get_mounts(container))
             for container in containers
         }
 
@@ -303,22 +297,14 @@ class ModuleBinaries(ResultsABC):
 @dataclass
 class OpentronsModulesBuilderNamedVolumes(ResultsABC):
 
-    heater_shaker_volume_exists: bool
-    thermocycler_volume_exists: bool
+    volumes: Set[ExpectedNamedVolume]
 
     @classmethod
     def get_actual_results(
         cls: Type[TResults], system_under_test: E2EHostSystem
     ) -> TResults:
         return cls(
-            heater_shaker_volume_exists=confirm_named_volume_exists(
-                system_under_test.module_containers.modules_builder,
-                OpentronsModulesEmulatorNamedVolumes.HEATER_SHAKER
-            ),
-            thermocycler_volume_exists=confirm_named_volume_exists(
-                system_under_test.module_containers.modules_builder,
-                OpentronsModulesEmulatorNamedVolumes.THERMOCYCLER
-            )
+            volumes=get_volumes(system_under_test.module_containers.modules_builder)
         )
 
     @classmethod
@@ -326,8 +312,10 @@ class OpentronsModulesBuilderNamedVolumes(ResultsABC):
         cls: Type[TResults], system_test_def: SystemTestDefinition
     ) -> TResults:
         return cls(
-            heater_shaker_volume_exists=True,
-            thermocycler_volume_exists=True
+            volumes={
+                OpentronsModulesBuilderNamedVolumesMap.HEATER_SHAKER,
+                OpentronsModulesBuilderNamedVolumesMap.THERMOCYCLER
+            }
         )
 
 
@@ -338,7 +326,7 @@ class ModuleResults(ResultsABC):
     module_named_volumes: ModuleNamedVolumes
     module_mounts: ModuleMounts
     module_binaries: ModuleBinaries
-    # builder_named_volumes: OpentronsModulesBuilderNamedVolumes
+    builder_named_volumes: OpentronsModulesBuilderNamedVolumes
 
     @classmethod
     def get_expected_results(
@@ -353,7 +341,9 @@ class ModuleResults(ResultsABC):
                 system_test_def
             ),
             module_mounts=ModuleMounts.get_expected_results(system_test_def),
-            module_binaries=ModuleBinaries.get_expected_results(system_test_def)
+            module_binaries=ModuleBinaries.get_expected_results(system_test_def),
+            builder_named_volumes=OpentronsModulesBuilderNamedVolumes.get_expected_results(system_test_def)
+
         )
 
     @classmethod
@@ -369,5 +359,6 @@ class ModuleResults(ResultsABC):
                 system_under_test
             ),
             module_mounts=ModuleMounts.get_actual_results(system_under_test),
-            module_binaries=ModuleBinaries.get_actual_results(system_under_test)
+            module_binaries=ModuleBinaries.get_actual_results(system_under_test),
+            builder_named_volumes=OpentronsModulesBuilderNamedVolumes.get_actual_results(system_under_test)
         )

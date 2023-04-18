@@ -1,6 +1,12 @@
 """Module containing pure functions to retrieve general information from Docker containers."""
 
-from typing import Any, Dict, List, Optional
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+    Set,
+)
 
 import docker  # type: ignore[import]
 from docker.models.containers import Container  # type: ignore[import]
@@ -9,30 +15,33 @@ from emulation_system.compose_file_creator import Service
 from tests.e2e.utilities.consts import ExpectedMount, ExpectedNamedVolume
 
 
-def get_volumes(container: Container) -> Optional[List[Dict[str, Any]]]:
+def get_volumes(container: Container) -> Set[ExpectedNamedVolume]:
     """Gets a list of volumes for a docker container.
 
     Returns None if no volumes exist
     """
-    return [mount for mount in container.attrs["Mounts"] if mount["Type"] == "volume"]
-
-
-def cast_volume_dict_to_expected_volume(volume: Dict[str, Any]) -> ExpectedNamedVolume:
-    return ExpectedNamedVolume(
-        VOLUME_NAME=volume["Name"], DEST_PATH=volume["Destination"]
-    )
-
+    return {
+        ExpectedNamedVolume(
+            VOLUME_NAME=mount["Name"], DEST_PATH=mount["Destination"]
+        )
+        for mount in container.attrs["Mounts"]
+        if mount["Type"] == "volume"
+    }
 
 def cast_mount_dict_to_expected_mount(mount: Dict[str, Any]) -> ExpectedMount:
     return ExpectedMount(SOURCE_PATH=mount["Source"], DEST_PATH=mount["Destination"])
 
 
-def get_mounts(container: Container) -> Optional[List[Dict[str, Any]]]:
+def get_mounts(container: Container) -> List[ExpectedMount]:
     """Gets a list of mounts for a docker container.
 
     Returns None if no mounts exist
     """
-    return [mount for mount in container.attrs["Mounts"] if mount["Type"] == "bind"]
+    return [
+        ExpectedMount(SOURCE_PATH=mount["Source"], DEST_PATH=mount["Destination"])
+        for mount in container.attrs["Mounts"]
+        if mount["Type"] == "bind"
+    ]
 
 
 def get_container(service: Optional[Service]) -> Optional[Container]:
@@ -63,33 +72,25 @@ def exec_in_container(container: Container, command: str) -> str:
 
 def _filter_mounts(
     container: Container, expected_mount: ExpectedMount
-) -> List[Dict[str, Any]]:
+) -> List[ExpectedMount]:
     mounts = get_mounts(container)
     assert mounts is not None, "mounts are None"
     return [
         mount
         for mount in mounts
-        if (
-            mount["Type"] == "bind"
-            and mount["Source"] == expected_mount.SOURCE_PATH
-            and mount["Destination"] == expected_mount.DEST_PATH
-        )
+        if mount == expected_mount
     ]
 
 
 def _filter_volumes(
     container: Container, expected_vol: ExpectedNamedVolume
-) -> List[Dict[str, Any]]:
+) -> List[ExpectedNamedVolume]:
     volumes = get_volumes(container)
     assert volumes is not None, "volumes are None"
     filtered_volume = [
         volume
         for volume in volumes
-        if (
-            volume["Type"] == "volume"
-            and volume["Name"] == expected_vol.VOLUME_NAME
-            and volume["Destination"] == expected_vol.DEST_PATH
-        )
+        if volume == expected_vol
     ]
 
     return filtered_volume
