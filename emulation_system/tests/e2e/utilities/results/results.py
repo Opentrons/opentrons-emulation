@@ -42,7 +42,7 @@ class ContainersWithMonorepoWheelVolume(ResultsABC):
                 system_under_test.ot3_containers.monorepo_builder, MONOREPO_WHEELS
             ),
             emulator_proxy_has_monorepo_wheel=confirm_named_volume_exists(
-                system_under_test.ot3_containers.emulator_proxy, MONOREPO_WHEELS
+                system_under_test.module_containers.emulator_proxy, MONOREPO_WHEELS
             ),
             robot_server_has_monorepo_wheel=confirm_named_volume_exists(
                 system_under_test.ot3_containers.robot_server, MONOREPO_WHEELS

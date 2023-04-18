@@ -21,20 +21,22 @@ class ModuleContainers:
     firmware_emulation_magnetic_modules: List[Container]
     firmware_emulation_temperature_modules: List[Container]
 
-    modules_builder: Optional[Container]
+    emulator_proxy: Container
+    opentrons_modules_builder: Container
+
 
     @property
     def opentrons_modules_builder_created(self) -> bool:
         """Whether or not the opentrons-modules builder container was created."""
-        return self.modules_builder is not None
+        return self.opentrons_modules_builder is not None
 
     @property
     def local_opentrons_modules_mounted(self) -> bool:
         """Whether or not the opentrons-modules builder container has local source mounted."""
-        if self.modules_builder is None:
+        if self.opentrons_modules_builder is None:
             return False
 
-        modules_builder_mounts = get_mounts(self.modules_builder)
+        modules_builder_mounts = get_mounts(self.opentrons_modules_builder)
         return (
             self.opentrons_modules_builder_created
             and modules_builder_mounts is not None
@@ -48,7 +50,7 @@ class ModuleContainers:
     def opentrons_modules_build_args(self) -> "BuildArgConfigurations":
         """Returns BuildArgConfigurations object representing where source was pulled from."""
         return BuildArgConfigurations.parse_build_args(
-            self.modules_builder,
+            self.opentrons_modules_builder,
             "opentrons-modules/archive/refs/heads/edge.zip",
             RepoToBuildArgMapping.OPENTRONS_MODULES,
         )

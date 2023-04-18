@@ -29,7 +29,6 @@ class OT3EmulatorContainers(ResultsABC):
     pipettes_exists: bool
     bootloader_exists: bool
     robot_server_exists: bool
-    emulator_proxy_exists: bool
     can_server_exists: bool
 
     @classmethod
@@ -46,7 +45,6 @@ class OT3EmulatorContainers(ResultsABC):
                 pipettes_exists=True,
                 bootloader_exists=True,
                 robot_server_exists=True,
-                emulator_proxy_exists=True,
                 can_server_exists=True,
             )
             if system_test_def.ot3_firmware_builder_created
@@ -59,7 +57,6 @@ class OT3EmulatorContainers(ResultsABC):
                 pipettes_exists=False,
                 bootloader_exists=False,
                 robot_server_exists=False,
-                emulator_proxy_exists=False,
                 can_server_exists=False,
             )
         )
@@ -78,8 +75,6 @@ class OT3EmulatorContainers(ResultsABC):
             pipettes_exists=system_under_test.ot3_containers.pipettes is not None,
             bootloader_exists=system_under_test.ot3_containers.bootloader is not None,
             robot_server_exists=system_under_test.ot3_containers.robot_server
-            is not None,
-            emulator_proxy_exists=system_under_test.ot3_containers.emulator_proxy
             is not None,
             can_server_exists=system_under_test.ot3_containers.can_server is not None,
         )

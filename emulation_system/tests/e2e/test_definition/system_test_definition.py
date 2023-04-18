@@ -15,6 +15,9 @@ class ModuleConfiguration:
     fw_magnetic_module_names: Set[str]
     fw_temperature_module_names: Set[str]
 
+    emulator_proxy_name: str
+    opentrons_modules_builder_name: str
+
 
 @dataclass
 class SystemTestDefinition:

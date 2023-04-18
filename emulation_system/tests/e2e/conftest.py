@@ -48,7 +48,6 @@ def ot3_model_under_test(
             state_manager=get_container(system.ot3_state_manager),
             robot_server=get_container(system.robot_server),
             can_server=get_container(system.can_server),
-            emulator_proxy=get_container(system.emulator_proxy),
             firmware_builder=get_container(system.ot3_firmware_builder),
             monorepo_builder=get_container(system.monorepo_builder)
         )
@@ -92,7 +91,8 @@ def modules_under_test(
             firmware_emulation_temperature_modules=get_containers(
                 system.temperature_module_emulators
             ),
-            modules_builder=get_container(system.opentrons_modules_builder),
+            emulator_proxy=get_container(system.emulator_proxy),
+            opentrons_modules_builder=get_container(system.opentrons_modules_builder),
         )
 
     return _model_under_test

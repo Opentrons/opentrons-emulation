@@ -4,7 +4,6 @@ from typing import (
     Dict,
     List,
     Set,
-    Tuple,
     Type,
 )
 
@@ -34,6 +33,9 @@ class ModuleContainerNames(ResultsABC):
     fw_magnetic_module_names: Set[str]
     fw_temperature_module_names: Set[str]
 
+    emulator_proxy_name: str
+    opentrons_modules_builder_name: str
+
     @classmethod
     def get_actual_results(
         cls: Type[TResults], system_under_test: E2EHostSystem
@@ -45,6 +47,8 @@ class ModuleContainerNames(ResultsABC):
             fw_thermocycler_module_names=system_under_test.module_containers.firmware_emulation_thermocycler_module_names,
             fw_magnetic_module_names=system_under_test.module_containers.firmware_emulation_magnetic_module_names,
             fw_temperature_module_names=system_under_test.module_containers.firmware_emulation_temperature_module_names,
+            emulator_proxy_name=system_under_test.module_containers.emulator_proxy.name,
+            opentrons_modules_builder_name=system_under_test.module_containers.opentrons_modules_builder.name
         )
 
     @classmethod
@@ -58,6 +62,8 @@ class ModuleContainerNames(ResultsABC):
             fw_thermocycler_module_names=system_test_def.module_configuration.fw_thermocycler_module_names,
             fw_magnetic_module_names=system_test_def.module_configuration.fw_magnetic_module_names,
             fw_temperature_module_names=system_test_def.module_configuration.fw_temperature_module_names,
+            emulator_proxy_name=system_test_def.module_configuration.emulator_proxy_name,
+            opentrons_modules_builder_name=system_test_def.module_configuration.opentrons_modules_builder_name
         )
 
 
@@ -304,7 +310,7 @@ class OpentronsModulesBuilderNamedVolumes(ResultsABC):
         cls: Type[TResults], system_under_test: E2EHostSystem
     ) -> TResults:
         return cls(
-            volumes=get_volumes(system_under_test.module_containers.modules_builder)
+            volumes=get_volumes(system_under_test.module_containers.opentrons_modules_builder)
         )
 
     @classmethod

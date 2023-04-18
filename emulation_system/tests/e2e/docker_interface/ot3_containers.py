@@ -25,7 +25,6 @@ class OT3SystemUnderTest:
     state_manager: Container
     robot_server: Container
     can_server: Container
-    emulator_proxy: Container
 
     # firmware and monorepo will actually always exist
     # but want to check that with an assert and not a type error
@@ -107,7 +106,6 @@ class OT3SystemUnderTest:
             self.state_manager,
             self.robot_server,
             self.can_server,
-            self.emulator_proxy,
         ]
 
     @property
@@ -115,7 +113,6 @@ class OT3SystemUnderTest:
         """List of containers that are expected to have the monorepo wheel volume (/dist) folder."""
         return [
             self.monorepo_builder,
-            self.emulator_proxy,
             self.robot_server,
             self.state_manager,
             self.can_server,

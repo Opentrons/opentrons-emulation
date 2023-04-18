@@ -21,6 +21,8 @@ NO_MODULES = ModuleConfiguration(
     fw_thermocycler_module_names=set(),
     fw_magnetic_module_names=set(),
     fw_temperature_module_names=set(),
+    emulator_proxy_name="",
+    opentrons_modules_builder_name=""
 )
 
 OT3_REMOTE = SystemTestDefinition(
@@ -75,6 +77,8 @@ OT3_AND_MODULES = SystemTestDefinition(
         fw_thermocycler_module_names={"ot3-and-modules-thermocycler-fw"},
         fw_magnetic_module_names={"ot3-and-modules-magdeck"},
         fw_temperature_module_names={"ot3-and-modules-tempdeck"},
+        emulator_proxy_name="ot3-and-modules-emulator-proxy",
+        opentrons_modules_builder_name="ot3-and-modules-opentrons-modules-builder"
     ),
 )
 
