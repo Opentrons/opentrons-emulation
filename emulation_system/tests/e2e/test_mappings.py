@@ -7,8 +7,8 @@ from typing import Dict, List
 import pytest
 from _pytest.mark.structures import ParameterSet
 
-from .test_definition.build_arg_configurations import BuildArgConfigurations
-from .test_definition.system_test_definition import (
+from tests.e2e.test_definition.build_arg_configurations import BuildArgConfigurations
+from tests.e2e.test_definition.system_test_definition import (
     ModuleConfiguration,
     SystemTestDefinition,
 )
