@@ -5,7 +5,9 @@ from typing import List, Optional, Set
 
 from docker.models.containers import Container  # type: ignore[import]
 
-from emulation_system.compose_file_creator.config_file_settings import RepoToBuildArgMapping
+from emulation_system.compose_file_creator.config_file_settings import (
+    RepoToBuildArgMapping,
+)
 from tests.e2e.test_definition.build_arg_configurations import BuildArgConfigurations
 from tests.e2e.utilities.helper_functions import get_mounts
 
@@ -24,7 +26,6 @@ class ModuleContainers:
     emulator_proxy: Container
     opentrons_modules_builder: Container
 
-
     @property
     def opentrons_modules_builder_created(self) -> bool:
         """Whether or not the opentrons-modules builder container was created."""
@@ -41,7 +42,7 @@ class ModuleContainers:
             self.opentrons_modules_builder_created
             and modules_builder_mounts is not None
             and any(
-                mount["Destination"] == "/opentrons-modules"
+                mount.DEST_PATH == "/opentrons-modules"
                 for mount in modules_builder_mounts
             )
         )

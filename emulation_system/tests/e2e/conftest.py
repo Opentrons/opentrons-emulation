@@ -14,13 +14,10 @@ from emulation_system.compose_file_creator.output.runtime_compose_file_model imp
     RuntimeComposeFileModel,
 )
 from emulation_system.consts import ROOT_DIR
-from tests.e2e.docker_interface.e2e_system import (
-    DefaultContainers,
-    ExpectedBindMounts,
-)
+from tests.e2e.docker_interface.e2e_system import DefaultContainers, ExpectedBindMounts
 from tests.e2e.docker_interface.module_containers import ModuleContainers
 from tests.e2e.docker_interface.ot3_containers import OT3SystemUnderTest
-from tests.e2e.utilities.consts import ExpectedMount
+from tests.e2e.utilities.consts import BindMountInfo
 from tests.e2e.utilities.helper_functions import get_container, get_containers
 
 
@@ -50,7 +47,7 @@ def ot3_model_under_test(
             bootloader=get_container(system.ot3_bootloader_emulator),
             state_manager=get_container(system.ot3_state_manager),
             can_server=get_container(system.can_server),
-            firmware_builder=get_container(system.ot3_firmware_builder)
+            firmware_builder=get_container(system.ot3_firmware_builder),
         )
 
     return _model_under_test
@@ -98,6 +95,7 @@ def modules_under_test(
 
     return _model_under_test
 
+
 @pytest.fixture
 def default_containers_under_test(
     testing_global_em_config: OpentronsEmulationConfiguration,
@@ -141,19 +139,19 @@ def local_mounts_under_test(
         monorepo_bind_mount = (
             None
             if model.monorepo_source.is_remote()
-            else ExpectedMount(model.monorepo_source.source_location, "/opentrons")
+            else BindMountInfo(model.monorepo_source.source_location, "/opentrons")
         )
         firmware_bind_mount = (
             None
             if model.ot3_firmware_source.is_remote()
-            else ExpectedMount(
+            else BindMountInfo(
                 model.ot3_firmware_source.source_location, "/ot3-firmware"
             )
         )
         modules_bind_mount = (
             None
             if model.opentrons_modules_source.is_remote()
-            else ExpectedMount(
+            else BindMountInfo(
                 model.opentrons_modules_source.source_location, "/opentrons-modules"
             )
         )

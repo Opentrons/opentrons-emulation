@@ -1,22 +1,19 @@
 from dataclasses import dataclass
 from typing import Optional, Type
 
-from tests.e2e.docker_interface.e2e_system import (
-    E2EHostSystem,
-    ExpectedBindMounts,
-)
+from tests.e2e.docker_interface.e2e_system import E2EHostSystem, ExpectedBindMounts
 from tests.e2e.docker_interface.module_containers import ModuleContainers
 from tests.e2e.test_definition.build_arg_configurations import BuildArgConfigurations
 from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
 from tests.e2e.utilities.consts import MONOREPO_WHEELS
 from tests.e2e.utilities.helper_functions import confirm_named_volume_exists
-from tests.e2e.utilities.results.module_results import ModuleResults
-from tests.e2e.utilities.results.ot3_results import OT3Results
-from tests.e2e.utilities.results.results_abc import ResultsABC, TResults
+from tests.e2e.utilities.results.module_results import ModuleResult
+from tests.e2e.utilities.results.ot3_results import OT3Result
+from tests.e2e.utilities.results.results_abc import Result, TResults
 
 
 @dataclass
-class ContainersWithMonorepoWheelVolume(ResultsABC):
+class ContainersWithMonorepoWheelVolume:
     monorepo_builder_has_monorepo_wheel: bool
     emulator_proxy_has_monorepo_wheel: bool
     robot_server_has_monorepo_wheel: bool
@@ -59,7 +56,7 @@ class ContainersWithMonorepoWheelVolume(ResultsABC):
 
 
 @dataclass
-class BuilderContainers(ResultsABC):
+class BuilderContainers:
     ot3_firmware_builder_created: bool
     opentrons_modules_builder_created: bool
     monorepo_builder_created: bool
@@ -86,7 +83,7 @@ class BuilderContainers(ResultsABC):
 
 
 @dataclass
-class LocalMounts(ResultsABC):
+class LocalMounts:
     monorepo_mounted: bool
     ot3_firmware_mounted: bool
     opentrons_modules_mounted: bool
@@ -113,7 +110,7 @@ class LocalMounts(ResultsABC):
 
 
 @dataclass
-class SystemBuildArgs(ResultsABC):
+class SystemBuildArgs:
     monorepo_build_args: BuildArgConfigurations
     ot3_firmware_build_args: BuildArgConfigurations
     opentrons_modules_build_args: BuildArgConfigurations
@@ -140,11 +137,11 @@ class SystemBuildArgs(ResultsABC):
 
 
 @dataclass
-class Result(ResultsABC):
+class FinalResult:
     """Class containing all result values for e2e testing."""
 
-    ot3_results: Optional[OT3Results]
-    module_results: ModuleResults
+    ot3_results: Optional[OT3Result]
+    module_results: ModuleResult
     builder_containers: BuilderContainers
     local_mounts: LocalMounts
     system_build_args: SystemBuildArgs
@@ -157,16 +154,18 @@ class Result(ResultsABC):
         cls: Type[TResults], system_under_test: E2EHostSystem
     ) -> TResults:
         return cls(
-            ot3_results=OT3Results.get_actual_results(system_under_test),
+            ot3_results=OT3Result.get_actual_results(system_under_test),
             builder_containers=BuilderContainers.get_actual_results(system_under_test),
             local_mounts=LocalMounts.get_actual_results(system_under_test),
             system_build_args=SystemBuildArgs.get_actual_results(system_under_test),
             containers_with_monorepo_volumes=ContainersWithMonorepoWheelVolume.get_actual_results(
                 system_under_test
             ),
-            module_results=ModuleResults.get_actual_results(system_under_test),
-            robot_server_exists=system_under_test.default_containers.robot_server is not None,
-            monorepo_builder_exists=system_under_test.default_containers.monorepo_builder is not None
+            module_results=ModuleResult.get_actual_results(system_under_test),
+            robot_server_exists=system_under_test.default_containers.robot_server
+            is not None,
+            monorepo_builder_exists=system_under_test.default_containers.monorepo_builder
+            is not None,
         )
 
     @classmethod
@@ -175,7 +174,7 @@ class Result(ResultsABC):
     ) -> TResults:
         return cls(
             ot3_results=(
-                OT3Results.get_expected_results(system_test_def)
+                OT3Result.get_expected_results(system_test_def)
                 if system_test_def.ot3_firmware_builder_created
                 else None
             ),
@@ -185,9 +184,9 @@ class Result(ResultsABC):
             containers_with_monorepo_volumes=ContainersWithMonorepoWheelVolume.get_expected_results(
                 system_test_def
             ),
-            module_results=ModuleResults.get_expected_results(system_test_def),
+            module_results=ModuleResult.get_expected_results(system_test_def),
             robot_server_exists=True,
-            monorepo_builder_exists=True
+            monorepo_builder_exists=True,
         )
 
 

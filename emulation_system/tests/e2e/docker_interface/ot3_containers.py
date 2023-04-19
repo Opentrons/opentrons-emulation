@@ -45,7 +45,7 @@ class OT3SystemUnderTest:
             self.ot3_firmware_builder_created
             and firmware_builder_mounts is not None
             and any(
-                mount["Destination"] == "/ot3-firmware"
+                mount.DEST_PATH == "/ot3-firmware"
                 for mount in firmware_builder_mounts
             )
         )

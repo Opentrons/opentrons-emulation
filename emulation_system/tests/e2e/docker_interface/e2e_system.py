@@ -1,26 +1,27 @@
 from dataclasses import dataclass
-from typing import (
-    List,
-    Optional,
+from typing import List, Optional
+
+from docker.models.containers import Container  # type: ignore[import]
+
+from emulation_system.compose_file_creator.config_file_settings import (
+    RepoToBuildArgMapping,
 )
 
-from docker.models.containers import Container
-
-from emulation_system.compose_file_creator.config_file_settings import RepoToBuildArgMapping
+from ..test_definition.build_arg_configurations import BuildArgConfigurations
+from ..utilities.consts import BindMountInfo
+from ..utilities.helper_functions import get_mounts
 from .module_containers import ModuleContainers
 from .ot3_containers import OT3SystemUnderTest
-from ..test_definition.build_arg_configurations import BuildArgConfigurations
-from ..utilities.consts import ExpectedMount
-from ..utilities.helper_functions import get_mounts
 
 
 @dataclass
 class ExpectedBindMounts:
     """Helper class containing expected bind mounts for e2e test."""
 
-    MONOREPO: Optional[ExpectedMount]
-    FIRMWARE: Optional[ExpectedMount]
-    MODULES: Optional[ExpectedMount]
+    MONOREPO: Optional[BindMountInfo]
+    FIRMWARE: Optional[BindMountInfo]
+    MODULES: Optional[BindMountInfo]
+
 
 @dataclass
 class DefaultContainers:
@@ -43,7 +44,7 @@ class DefaultContainers:
             self.monorepo_builder_created
             and monorepo_builder_mounts is not None
             and any(
-                mount["Destination"] == "/opentrons"
+                mount.DEST_PATH == "/opentrons"
                 for mount in monorepo_builder_mounts
             )
         )
@@ -64,7 +65,6 @@ class E2EHostSystem:
     ot3_containers: OT3SystemUnderTest
     module_containers: ModuleContainers
     expected_binds_mounts: ExpectedBindMounts
-
 
     @property
     def containers_with_entrypoint_script(self) -> List[Container]:
