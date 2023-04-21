@@ -44,8 +44,7 @@ class DefaultContainers:
             self.monorepo_builder_created
             and monorepo_builder_mounts is not None
             and any(
-                mount.DEST_PATH == "/opentrons"
-                for mount in monorepo_builder_mounts
+                mount.DEST_PATH == "/opentrons" for mount in monorepo_builder_mounts
             )
         )
 

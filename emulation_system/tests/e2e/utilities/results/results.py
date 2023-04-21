@@ -9,11 +9,11 @@ from tests.e2e.utilities.consts import MONOREPO_WHEELS
 from tests.e2e.utilities.helper_functions import confirm_named_volume_exists
 from tests.e2e.utilities.results.module_results import ModuleResult
 from tests.e2e.utilities.results.ot3_results import OT3Result
-from tests.e2e.utilities.results.results_abc import Result, TResults
+from tests.e2e.utilities.results.results_abc import Result
 
 
 @dataclass
-class ContainersWithMonorepoWheelVolume:
+class ContainersWithMonorepoWheelVolume(Result):
     monorepo_builder_has_monorepo_wheel: bool
     emulator_proxy_has_monorepo_wheel: bool
     robot_server_has_monorepo_wheel: bool
@@ -22,8 +22,9 @@ class ContainersWithMonorepoWheelVolume:
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["ContainersWithMonorepoWheelVolume"],
+        system_test_def: SystemTestDefinition,
+    ) -> "ContainersWithMonorepoWheelVolume":
         return cls(
             monorepo_builder_has_monorepo_wheel=True,
             emulator_proxy_has_monorepo_wheel=True,
@@ -34,8 +35,8 @@ class ContainersWithMonorepoWheelVolume:
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["ContainersWithMonorepoWheelVolume"], system_under_test: E2EHostSystem
+    ) -> "ContainersWithMonorepoWheelVolume":
         return cls(
             monorepo_builder_has_monorepo_wheel=confirm_named_volume_exists(
                 system_under_test.default_containers.monorepo_builder, MONOREPO_WHEELS
@@ -56,15 +57,15 @@ class ContainersWithMonorepoWheelVolume:
 
 
 @dataclass
-class BuilderContainers:
+class BuilderContainers(Result):
     ot3_firmware_builder_created: bool
     opentrons_modules_builder_created: bool
     monorepo_builder_created: bool
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["BuilderContainers"], system_under_test: E2EHostSystem
+    ) -> "BuilderContainers":
         return cls(
             ot3_firmware_builder_created=system_under_test.ot3_containers.ot3_firmware_builder_created,
             opentrons_modules_builder_created=system_under_test.module_containers.opentrons_modules_builder_created,
@@ -73,8 +74,8 @@ class BuilderContainers:
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["BuilderContainers"], system_test_def: SystemTestDefinition
+    ) -> "BuilderContainers":
         return cls(
             ot3_firmware_builder_created=system_test_def.ot3_firmware_builder_created,
             opentrons_modules_builder_created=system_test_def.opentrons_modules_builder_created,
@@ -83,15 +84,15 @@ class BuilderContainers:
 
 
 @dataclass
-class LocalMounts:
+class LocalMounts(Result):
     monorepo_mounted: bool
     ot3_firmware_mounted: bool
     opentrons_modules_mounted: bool
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["LocalMounts"], system_under_test: E2EHostSystem
+    ) -> "LocalMounts":
         return cls(
             monorepo_mounted=system_under_test.default_containers.local_monorepo_mounted,
             ot3_firmware_mounted=system_under_test.ot3_containers.local_ot3_firmware_mounted,
@@ -100,8 +101,8 @@ class LocalMounts:
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["LocalMounts"], system_test_def: SystemTestDefinition
+    ) -> "LocalMounts":
         return cls(
             monorepo_mounted=system_test_def.local_monorepo_mounted,
             ot3_firmware_mounted=system_test_def.local_ot3_firmware_mounted,
@@ -110,15 +111,15 @@ class LocalMounts:
 
 
 @dataclass
-class SystemBuildArgs:
+class SystemBuildArgs(Result):
     monorepo_build_args: BuildArgConfigurations
     ot3_firmware_build_args: BuildArgConfigurations
     opentrons_modules_build_args: BuildArgConfigurations
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["SystemBuildArgs"], system_under_test: E2EHostSystem
+    ) -> "SystemBuildArgs":
         return cls(
             monorepo_build_args=system_under_test.default_containers.monorepo_build_args,
             ot3_firmware_build_args=system_under_test.ot3_containers.ot3_firmware_build_args,
@@ -127,8 +128,8 @@ class SystemBuildArgs:
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["SystemBuildArgs"], system_test_def: SystemTestDefinition
+    ) -> "SystemBuildArgs":
         return cls(
             monorepo_build_args=system_test_def.monorepo_build_args,
             ot3_firmware_build_args=system_test_def.ot3_firmware_build_args,
@@ -137,7 +138,7 @@ class SystemBuildArgs:
 
 
 @dataclass
-class FinalResult:
+class FinalResult(Result):
     """Class containing all result values for e2e testing."""
 
     ot3_results: Optional[OT3Result]
@@ -151,8 +152,8 @@ class FinalResult:
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["FinalResult"], system_under_test: E2EHostSystem
+    ) -> "FinalResult":
         return cls(
             ot3_results=OT3Result.get_actual_results(system_under_test),
             builder_containers=BuilderContainers.get_actual_results(system_under_test),
@@ -170,8 +171,8 @@ class FinalResult:
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["FinalResult"], system_test_def: SystemTestDefinition
+    ) -> "FinalResult":
         return cls(
             ot3_results=(
                 OT3Result.get_expected_results(system_test_def)

@@ -38,6 +38,6 @@ def test_e2e(
         ),
     )
     assert (
-            FinalResult.get_actual_results(e2e_system).__dict__
-            == FinalResult.get_expected_results(test_def).__dict__
+        FinalResult.get_actual_results(e2e_system).__dict__
+        == FinalResult.get_expected_results(test_def).__dict__
     )

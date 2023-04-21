@@ -48,12 +48,17 @@ def get_container(service: Optional[Service]) -> Optional[Container]:
         return docker.from_env().containers.get(service.container_name)
 
 
-def get_containers(services: Optional[List[Service]]) -> Optional[List[Container]]:
+def get_containers(services: Optional[List[Service]]) -> List[Container]:
     """Gets a list of containers based off of passed list."""
     if services is None:
-        return None
+        return []
     else:
-        return [get_container(service) for service in services]
+        container_list = []
+        for service in services:
+            container = get_container(service)
+            if container is not None:
+                container_list.append(container)
+        return container_list
 
 
 def exec_in_container(container: Container, command: str) -> str:

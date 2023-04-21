@@ -1,13 +1,15 @@
 from dataclasses import dataclass
-from typing import Container, Dict, List, Set, Type
+from typing import Dict, List, Set, Type
+
+from docker.models.containers import Container  # type: ignore[import]
 
 from tests.e2e.docker_interface.e2e_system import E2EHostSystem
 from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
 from tests.e2e.utilities.consts import (
     ENTRYPOINT_MOUNT,
     BindMountInfo,
-    NamedVolumeInfo,
     ModulesExpectedBinaryNames,
+    NamedVolumeInfo,
     OpentronsModulesBuilderNamedVolumesMap,
     OpentronsModulesEmulatorNamedVolumes,
 )
@@ -17,11 +19,11 @@ from tests.e2e.utilities.helper_functions import (
     get_mounts,
     get_volumes,
 )
-from tests.e2e.utilities.results.results_abc import Result, TResults
+from tests.e2e.utilities.results.results_abc import Result
 
 
 @dataclass
-class ModuleContainerNames:
+class ModuleContainerNames(Result):
     hw_heater_shaker_module_names: Set[str]
     fw_heater_shaker_module_names: Set[str]
     hw_thermocycler_module_names: Set[str]
@@ -34,8 +36,8 @@ class ModuleContainerNames:
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["ModuleContainerNames"], system_under_test: E2EHostSystem
+    ) -> "ModuleContainerNames":
         return cls(
             hw_heater_shaker_module_names=get_container_names(
                 system_under_test.module_containers.hardware_emulation_heater_shaker_modules
@@ -61,8 +63,8 @@ class ModuleContainerNames:
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["ModuleContainerNames"], system_test_def: SystemTestDefinition
+    ) -> "ModuleContainerNames":
         return cls(
             hw_heater_shaker_module_names=system_test_def.module_configuration.hw_heater_shaker_module_names,
             fw_heater_shaker_module_names=system_test_def.module_configuration.fw_heater_shaker_module_names,
@@ -76,7 +78,7 @@ class ModuleContainerNames:
 
 
 @dataclass
-class ModuleNamedVolumes:
+class ModuleNamedVolumes(Result):
     hw_heater_shaker_module_named_volumes: Dict[str, Set[NamedVolumeInfo]]
     fw_heater_shaker_module_named_volumes: Dict[str, Set[NamedVolumeInfo]]
     hw_thermocycler_module_named_volumes: Dict[str, Set[NamedVolumeInfo]]
@@ -121,8 +123,8 @@ class ModuleNamedVolumes:
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["ModuleNamedVolumes"], system_under_test: E2EHostSystem
+    ) -> "ModuleNamedVolumes":
         return cls(
             hw_heater_shaker_module_named_volumes=cls._get_actual_named_volumes_dict(
                 system_under_test.module_containers.hardware_emulation_heater_shaker_modules
@@ -146,8 +148,8 @@ class ModuleNamedVolumes:
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["ModuleNamedVolumes"], system_test_def: SystemTestDefinition
+    ) -> "ModuleNamedVolumes":
         return cls(
             hw_heater_shaker_module_named_volumes=cls._generate_heater_shaker_hw_expected_named_volume_dict(
                 system_test_def.module_configuration.hw_heater_shaker_module_names
@@ -171,13 +173,13 @@ class ModuleNamedVolumes:
 
 
 @dataclass
-class ModuleMounts:
-    hw_heater_shaker_module_mounts: Dict[str, BindMountInfo]
-    fw_heater_shaker_module_mounts: Dict[str, BindMountInfo]
-    hw_thermocycler_module_mounts: Dict[str, BindMountInfo]
-    fw_thermocycler_module_mounts: Dict[str, BindMountInfo]
-    fw_magnetic_module_mounts: Dict[str, BindMountInfo]
-    fw_temperature_module_mounts: Dict[str, BindMountInfo]
+class ModuleMounts(Result):
+    hw_heater_shaker_module_mounts: Dict[str, Set[BindMountInfo]]
+    fw_heater_shaker_module_mounts: Dict[str, Set[BindMountInfo]]
+    hw_thermocycler_module_mounts: Dict[str, Set[BindMountInfo]]
+    fw_thermocycler_module_mounts: Dict[str, Set[BindMountInfo]]
+    fw_magnetic_module_mounts: Dict[str, Set[BindMountInfo]]
+    fw_temperature_module_mounts: Dict[str, Set[BindMountInfo]]
 
     @classmethod
     def _generate_expected_mount_dict(
@@ -190,13 +192,13 @@ class ModuleMounts:
     @classmethod
     def _get_actual_mount_dict(
         cls, containers: List[Container]
-    ) -> Dict[str, Set[NamedVolumeInfo]]:
+    ) -> Dict[str, Set[BindMountInfo]]:
         return {container.name: set(get_mounts(container)) for container in containers}
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["ModuleMounts"], system_under_test: E2EHostSystem
+    ) -> "ModuleMounts":
         return cls(
             hw_heater_shaker_module_mounts=cls._get_actual_mount_dict(
                 system_under_test.module_containers.hardware_emulation_heater_shaker_modules
@@ -220,8 +222,8 @@ class ModuleMounts:
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["ModuleMounts"], system_test_def: SystemTestDefinition
+    ) -> "ModuleMounts":
         return cls(
             hw_heater_shaker_module_mounts=cls._generate_expected_mount_dict(
                 system_test_def.module_configuration.hw_heater_shaker_module_names
@@ -245,7 +247,7 @@ class ModuleMounts:
 
 
 @dataclass
-class ModuleBinaries:
+class ModuleBinaries(Result):
     hw_thermocycler_module_binary_names: Dict[str, str]
     hw_heater_shaker_module_binary_names: Dict[str, str]
 
@@ -279,8 +281,8 @@ class ModuleBinaries:
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["ModuleBinaries"], system_under_test: E2EHostSystem
+    ) -> "ModuleBinaries":
         return cls(
             hw_thermocycler_module_binary_names=cls._generate_actual_binary_name_dict(
                 system_under_test.module_containers.hardware_emulation_thermocycler_modules
@@ -292,8 +294,8 @@ class ModuleBinaries:
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["ModuleBinaries"], system_test_def: SystemTestDefinition
+    ) -> "ModuleBinaries":
         return cls(
             hw_thermocycler_module_binary_names=cls._generate_thermocycler_expected_binary_name_dict(
                 system_test_def.module_configuration.hw_thermocycler_module_names
@@ -305,14 +307,15 @@ class ModuleBinaries:
 
 
 @dataclass
-class OpentronsModulesBuilderNamedVolumes:
+class OpentronsModulesBuilderNamedVolumes(Result):
 
     volumes: Set[NamedVolumeInfo]
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["OpentronsModulesBuilderNamedVolumes"],
+        system_under_test: E2EHostSystem,
+    ) -> "OpentronsModulesBuilderNamedVolumes":
         return cls(
             volumes=get_volumes(
                 system_under_test.module_containers.opentrons_modules_builder
@@ -321,8 +324,9 @@ class OpentronsModulesBuilderNamedVolumes:
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["OpentronsModulesBuilderNamedVolumes"],
+        system_test_def: SystemTestDefinition,
+    ) -> "OpentronsModulesBuilderNamedVolumes":
         return cls(
             volumes={
                 OpentronsModulesBuilderNamedVolumesMap.HEATER_SHAKER,
@@ -332,7 +336,7 @@ class OpentronsModulesBuilderNamedVolumes:
 
 
 @dataclass
-class ModuleResult:
+class ModuleResult(Result):
     number_of_modules: int
     module_containers: ModuleContainerNames
     module_named_volumes: ModuleNamedVolumes
@@ -342,8 +346,8 @@ class ModuleResult:
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["ModuleResult"], system_test_def: SystemTestDefinition
+    ) -> "ModuleResult":
         return cls(
             number_of_modules=system_test_def.module_configuration.total_number_of_modules,
             module_containers=ModuleContainerNames.get_expected_results(
@@ -361,8 +365,8 @@ class ModuleResult:
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["ModuleResult"], system_under_test: E2EHostSystem
+    ) -> "ModuleResult":
         return cls(
             number_of_modules=system_under_test.module_containers.number_of_modules,
             module_containers=ModuleContainerNames.get_actual_results(

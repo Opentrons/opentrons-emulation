@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Set, Type
+from typing import Set, Type
 
 from tests.e2e.docker_interface.e2e_system import E2EHostSystem
 from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
@@ -14,17 +14,15 @@ from tests.e2e.utilities.consts import (
     OT3FirmwareExpectedBinaryNames,
 )
 from tests.e2e.utilities.helper_functions import (
-    confirm_mount_exists,
-    confirm_named_volume_exists,
     exec_in_container,
     get_mounts,
     get_volumes,
 )
-from tests.e2e.utilities.results.results_abc import Result, TResults
+from tests.e2e.utilities.results.results_abc import Result
 
 
 @dataclass
-class OT3EmulatorContainers:
+class OT3EmulatorContainers(Result):
     state_manager_exists: bool
     head_exists: bool
     gantry_x_exists: bool
@@ -36,8 +34,8 @@ class OT3EmulatorContainers:
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["OT3EmulatorContainers"], system_test_def: SystemTestDefinition
+    ) -> "OT3EmulatorContainers":
         return (
             cls(
                 state_manager_exists=True,
@@ -64,8 +62,8 @@ class OT3EmulatorContainers:
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["OT3EmulatorContainers"], system_under_test: E2EHostSystem
+    ) -> "OT3EmulatorContainers":
         return cls(
             state_manager_exists=system_under_test.ot3_containers.state_manager
             is not None,
@@ -80,7 +78,7 @@ class OT3EmulatorContainers:
 
 
 @dataclass
-class OT3EmulatorNamedVolumes:
+class OT3EmulatorNamedVolumes(Result):
 
     head_volumes: Set[NamedVolumeInfo]
     gantry_x_volumes: Set[NamedVolumeInfo]
@@ -91,8 +89,8 @@ class OT3EmulatorNamedVolumes:
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["OT3EmulatorNamedVolumes"], system_test_def: SystemTestDefinition
+    ) -> "OT3EmulatorNamedVolumes":
         return cls(
             head_volumes={OT3FirmwareEmulatorNamedVolumesMap.HEAD},
             gantry_x_volumes={OT3FirmwareEmulatorNamedVolumesMap.GANTRY_X},
@@ -104,8 +102,8 @@ class OT3EmulatorNamedVolumes:
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["OT3EmulatorNamedVolumes"], system_under_test: E2EHostSystem
+    ) -> "OT3EmulatorNamedVolumes":
         return cls(
             head_volumes=get_volumes(system_under_test.ot3_containers.head),
             gantry_x_volumes=get_volumes(system_under_test.ot3_containers.gantry_x),
@@ -117,25 +115,25 @@ class OT3EmulatorNamedVolumes:
 
 
 @dataclass
-class OT3StateManagerNamedVolumes:
+class OT3StateManagerNamedVolumes(Result):
 
     volumes: Set[NamedVolumeInfo]
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["OT3StateManagerNamedVolumes"], system_under_test: E2EHostSystem
+    ) -> "OT3StateManagerNamedVolumes":
         return cls(volumes=get_volumes(system_under_test.ot3_containers.state_manager))
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["OT3StateManagerNamedVolumes"], system_test_def: SystemTestDefinition
+    ) -> "OT3StateManagerNamedVolumes":
         return cls(volumes={MONOREPO_WHEELS, STATE_MANAGER_VENV_VOLUME})
 
 
 @dataclass
-class OT3EmulatorMounts:
+class OT3EmulatorMounts(Result):
     head_mounts: Set[BindMountInfo]
     gantry_x_mounts: Set[BindMountInfo]
     gantry_y_mounts: Set[BindMountInfo]
@@ -145,8 +143,8 @@ class OT3EmulatorMounts:
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["OT3EmulatorMounts"], system_under_test: E2EHostSystem
+    ) -> "OT3EmulatorMounts":
         return cls(
             head_mounts=get_mounts(system_under_test.ot3_containers.head),
             gantry_x_mounts=get_mounts(system_under_test.ot3_containers.gantry_x),
@@ -158,8 +156,8 @@ class OT3EmulatorMounts:
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["OT3EmulatorMounts"], system_test_def: SystemTestDefinition
+    ) -> "OT3EmulatorMounts":
         return cls(
             head_mounts={ENTRYPOINT_MOUNT},
             gantry_x_mounts={ENTRYPOINT_MOUNT},
@@ -171,27 +169,28 @@ class OT3EmulatorMounts:
 
 
 @dataclass
-class OT3FirmwareBuilderNamedVolumes:
+class OT3FirmwareBuilderNamedVolumes(Result):
 
     volumes: Set[NamedVolumeInfo]
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["OT3FirmwareBuilderNamedVolumes"], system_under_test: E2EHostSystem
+    ) -> "OT3FirmwareBuilderNamedVolumes":
         return cls(
             volumes=get_volumes(system_under_test.ot3_containers.firmware_builder)
         )
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["OT3FirmwareBuilderNamedVolumes"],
+        system_test_def: SystemTestDefinition,
+    ) -> "OT3FirmwareBuilderNamedVolumes":
         return cls(volumes=OT3_FIRMWARE_NAMED_VOLUMES)
 
 
 @dataclass
-class OT3Binaries:
+class OT3Binaries(Result):
     head_binary_name: str
     gantry_x_binary_name: str
     gantry_y_binary_name: str
@@ -201,8 +200,8 @@ class OT3Binaries:
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["OT3Binaries"], system_test_def: SystemTestDefinition
+    ) -> "OT3Binaries":
         return cls(
             head_binary_name=OT3FirmwareExpectedBinaryNames.HEAD,
             gantry_x_binary_name=OT3FirmwareExpectedBinaryNames.GANTRY_X,
@@ -214,8 +213,8 @@ class OT3Binaries:
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["OT3Binaries"], system_under_test: E2EHostSystem
+    ) -> "OT3Binaries":
         return cls(
             head_binary_name=exec_in_container(
                 system_under_test.ot3_containers.head, "ls /executable"
@@ -239,7 +238,7 @@ class OT3Binaries:
 
 
 @dataclass
-class OT3Result:
+class OT3Result(Result):
     containers: OT3EmulatorContainers
     emulator_volumes: OT3EmulatorNamedVolumes
     state_manager_volumes: OT3StateManagerNamedVolumes
@@ -249,8 +248,8 @@ class OT3Result:
 
     @classmethod
     def get_actual_results(
-        cls: Type[TResults], system_under_test: E2EHostSystem
-    ) -> TResults:
+        cls: Type["OT3Result"], system_under_test: E2EHostSystem
+    ) -> "OT3Result":
         return cls(
             containers=OT3EmulatorContainers.get_actual_results(system_under_test),
             emulator_volumes=OT3EmulatorNamedVolumes.get_actual_results(
@@ -268,8 +267,8 @@ class OT3Result:
 
     @classmethod
     def get_expected_results(
-        cls: Type[TResults], system_test_def: SystemTestDefinition
-    ) -> TResults:
+        cls: Type["OT3Result"], system_test_def: SystemTestDefinition
+    ) -> "OT3Result":
         return cls(
             containers=OT3EmulatorContainers.get_expected_results(system_test_def),
             emulator_volumes=OT3EmulatorNamedVolumes.get_expected_results(
