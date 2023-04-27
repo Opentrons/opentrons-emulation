@@ -1,6 +1,6 @@
 """Module containing logic for e2e tests."""
 from dataclasses import dataclass, field
-from typing import Set
+from typing import Optional, Set
 
 from tests.e2e.test_definition.build_arg_configurations import BuildArgConfigurations
 
@@ -38,4 +38,4 @@ class SystemTestDefinition:
     ot3_firmware_build_args: BuildArgConfigurations
     opentrons_modules_build_args: BuildArgConfigurations
 
-    module_configuration: ModuleConfiguration
+    module_configuration: Optional[ModuleConfiguration]

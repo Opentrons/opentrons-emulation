@@ -1,7 +1,7 @@
 """Dataclass to easily access all module containers in system."""
 
 from dataclasses import dataclass
-from typing import List, Optional, Set
+from typing import List, Optional
 
 from docker.models.containers import Container  # type: ignore[import]
 
@@ -24,16 +24,16 @@ class ModuleContainers:
     firmware_emulation_temperature_modules: List[Container]
 
     emulator_proxy: Container
-    opentrons_modules_builder: Container
+    opentrons_modules_builder: Optional[Container]
 
     @property
     def opentrons_modules_builder_created(self) -> bool:
-        """Whether or not the opentrons-modules builder container was created."""
+        """Whether the opentrons-modules builder container was created."""
         return self.opentrons_modules_builder is not None
 
     @property
     def local_opentrons_modules_mounted(self) -> bool:
-        """Whether or not the opentrons-modules builder container has local source mounted."""
+        """Whether the opentrons-modules builder container has local source mounted."""
         if self.opentrons_modules_builder is None:
             return False
 

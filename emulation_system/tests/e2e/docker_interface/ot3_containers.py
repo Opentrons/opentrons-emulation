@@ -1,7 +1,7 @@
 """Module containing helper class to access OT-3 Containers for local system"""
 
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Optional
 
 from docker.models.containers import Container  # type: ignore[import]
 
@@ -25,8 +25,6 @@ class OT3SystemUnderTest:
     state_manager: Container
     can_server: Container
 
-    # firmware and monorepo will actually always exist
-    # but want to check that with an assert and not a type error
     firmware_builder: Optional[Container]
 
     @property

@@ -142,7 +142,7 @@ class FinalResult(Result):
     """Class containing all result values for e2e testing."""
 
     ot3_results: Optional[OT3Result]
-    module_results: ModuleResult
+    module_results: Optional[ModuleResult]
     builder_containers: BuilderContainers
     local_mounts: LocalMounts
     system_build_args: SystemBuildArgs

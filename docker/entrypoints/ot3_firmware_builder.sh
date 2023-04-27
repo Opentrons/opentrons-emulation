@@ -27,6 +27,14 @@ mkdir -p \
 
 echo "Copying simulator files to simulator directories"
 
+rm -f /volumes/pipettes_volume/pipettes-simulator
+rm -f /volumes/head_volume/head-simulator
+rm -f /volumes/gantry_x_volume/gantry-x-simulator
+rm -f /volumes/gantry_y_volume/gantry-y-simulator
+rm -f /volumes/bootloader_volume/bootloader-simulator
+rm -f /volumes/gripper_volume/gripper-simulator
+rm -rf /volumes/state_manager_venv/
+
 cp /ot3-firmware/build-host/pipettes/simulator/pipettes-single-simulator /volumes/pipettes_volume/pipettes-simulator
 cp /ot3-firmware/build-host/head/simulator/head-simulator /volumes/head_volume/head-simulator
 cp /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /volumes/gantry_x_volume/gantry-x-simulator

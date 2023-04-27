@@ -212,7 +212,15 @@ refresh-dev-ci:
 		filter="source-builders" \
 		| xargs -P 4 -rn 1 -I{} docker exec -t {} /build.sh
 
-
+.PHONY: start-executables
+start-executables:
+	$(if $(file_path),,$(error file_path variable required))
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="not-source-builders" \
+		| xargs -P 4 -orn 1 -I{} docker exec -t {} /entrypoint.sh
 
 ###########################################
 ############## Misc Commands ##############

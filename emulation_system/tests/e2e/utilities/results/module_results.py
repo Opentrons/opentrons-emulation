@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List, Set, Type
+from typing import Dict, List, Optional, Set, Type
 
 from docker.models.containers import Container  # type: ignore[import]
 
@@ -58,7 +58,9 @@ class ModuleContainerNames(Result):
                 system_under_test.module_containers.firmware_emulation_temperature_modules
             ),
             emulator_proxy_name=system_under_test.module_containers.emulator_proxy.name,
-            opentrons_modules_builder_name=system_under_test.module_containers.opentrons_modules_builder.name,
+            opentrons_modules_builder_name=cls._get_opentrons_modules_builder_name(
+                system_under_test.module_containers.opentrons_modules_builder
+            ),
         )
 
     @classmethod
@@ -338,11 +340,11 @@ class OpentronsModulesBuilderNamedVolumes(Result):
 @dataclass
 class ModuleResult(Result):
     number_of_modules: int
-    module_containers: ModuleContainerNames
-    module_named_volumes: ModuleNamedVolumes
-    module_mounts: ModuleMounts
-    module_binaries: ModuleBinaries
-    builder_named_volumes: OpentronsModulesBuilderNamedVolumes
+    module_containers: Optional[ModuleContainerNames]
+    module_named_volumes: Optional[ModuleNamedVolumes]
+    module_mounts: Optional[ModuleMounts]
+    module_binaries: Optional[ModuleBinaries]
+    builder_named_volumes: Optional[OpentronsModulesBuilderNamedVolumes]
 
     @classmethod
     def get_expected_results(
