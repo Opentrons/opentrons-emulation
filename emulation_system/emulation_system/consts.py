@@ -36,3 +36,5 @@ DEFAULT_NETWORK_NAME = "local-network"
 COMMIT_SHA_REGEX = r"^[0-9a-f]{40}"
 
 MONOREPO_NAMED_VOLUME_STRING = "monorepo-wheels:/dist"
+OT3_FIRMWARE_BUILDER_STATE_MANAGER_NAMED_VOLUME_STRING = "state-manager-wheel:/ot3-firmware/state_manager/dist"
+EMULATOR_STATE_MANAGER_NAMED_VOLUME_STRING = "state-manager-wheel:/state_manager_dist"
