@@ -3,59 +3,73 @@
 # OPENTRONS_HARDWARE is an env variable that is passed to every container
 OTHER_ARGS=`echo "${@:2}"`
 case $OPENTRONS_HARDWARE in
-  run-heater-shaker-hardware)
+  heater-shaker-hardware)
+    pkill -f "/heater-shaker-simulator"
     bash -c "/heater-shaker-simulator $OTHER_ARGS"
     ;;
-  run-thermocycler-hardware)
+  thermocycler-hardware)
+    pkill -f "/thermocycler-gen2-simulator"
     bash -c "/thermocycler-gen2-simulator $OTHER_ARGS"
     ;;
-  run-ot3-pipettes-hardware)
+  ot3-pipettes-hardware)
+    pkill -f "/executable/pipettes-simulator"
     /executable/pipettes-simulator
     ;;
-  run-ot3-head-hardware)
+  ot3-head-hardware)
+    pkill -f "/executable/head-simulator"
     /executable/head-simulator
     ;;
-  run-ot3-gantry-x-hardware)
+  ot3-gantry-x-hardware)
+    pkill -f "/executable/gantry-x-simulator"
     /executable/gantry-x-simulator
     ;;
-  run-ot3-gantry-y-hardware)
+  ot3-gantry-y-hardware)
+    pkill -f "/executable/gantry-y-simulator"
     /executable/gantry-y-simulator
     ;;
-  run-ot3-bootloader-hardware)
+  ot3-bootloader-hardware)
+    pkill -f "/executable/bootloader-simulator"
     /executable/bootloader-simulator
     ;;
-  run-ot3-gripper-hardware)
+  ot3-gripper-hardware)
+    pkill -f "/executable/gripper-simulator"
     /executable/gripper-simulator
     ;;
-  run-ot3-state-manager)
+  ot3-state-manager)
     # 9999 is the hardcoded state manager port
-    (
-      cd /ot3-firmware/state_manager && \
-      ../stm32-tools/poetry/bin/poetry run python3 -m state_manager.state_manager --right-pipette P1000-multi-96 0.0.0.0 9999
-    )
+    pkill -f "state_manager_python -m state_manager.state_manager"
+    state_manager_python -m state_manager.state_manager --right-pipette P1000-multi-96 0.0.0.0 9999
     ;;
-  run-thermocycler-firmware)
+  thermocycler-firmware)
+    pkill -f "run_module_emulator"
     bash -c "monorepo_python -m opentrons.hardware_control.emulation.scripts.run_module_emulator thermocycler $OTHER_ARGS"
     ;;
-  run-heater-shaker-firmware)
+  heater-shaker-firmware)
+    pkill -f "run_module_emulator"
     bash -c "monorepo_python -m opentrons.hardware_control.emulation.scripts.run_module_emulator heatershaker $OTHER_ARGS"
     ;;
-  run-tempdeck-firmware)
+  tempdeck-firmware)
+    pkill -f "run_module_emulator"
     bash -c "monorepo_python -m opentrons.hardware_control.emulation.scripts.run_module_emulator tempdeck $OTHER_ARGS"
     ;;
-  run-magdeck-firmware)
+  magdeck-firmware)
+    pkill -f "run_module_emulator"
     bash -c "monorepo_python -m opentrons.hardware_control.emulation.scripts.run_module_emulator magdeck $OTHER_ARGS"
     ;;
-  run-robot-server)
+  robot-server)
+    pkill -f "uvicorn"
     bash -c "uvicorn "robot_server:app" --host 0.0.0.0 --port 31950 --ws wsproto"
     ;;
-  run-emulator-proxy)
+  emulator-proxy)
+    pkill -f "emulation.app"
     monorepo_python -m opentrons.hardware_control.emulation.app
     ;;
-  run-smoothie)
+  smoothie)
+    pkill -f "run_smoothie"
     bash -c "monorepo_python -m opentrons.hardware_control.emulation.scripts.run_smoothie"
     ;;
-  run-can-server)
+  can-server)
+    pkill -f "sim_socket_can"
     bash -c "monorepo_python -m opentrons_hardware.scripts.sim_socket_can"
     ;;
   *)
