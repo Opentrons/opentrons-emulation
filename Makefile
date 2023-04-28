@@ -192,6 +192,20 @@ can-mon:
 		filter="can-server" \
 		| xargs -orn 1 -I{} docker exec -it {} monorepo_python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
 
+.PHONY: filtered-container-command
+filtered-container-command:
+	$(if $(file_path),,$(error file_path variable required))
+	$(if $(filter),,$(error filter variable required))
+	$(if $(command),,$(error command variable required))
+
+	@$(MAKE) \
+	--no-print-directory \
+	load-container-names \
+	file_path="${abs_path}" \
+	filter="${filter}" \
+	| xargs -orn 4 -I{} docker exec -t {} bash -c "${command}"
+
+
 .PHONY: refresh-dev
 refresh-dev:
 	$(if $(file_path),,$(error file_path variable required))
@@ -202,6 +216,30 @@ refresh-dev:
 		filter="source-builders" \
 		| xargs -P 4 -orn 1 -I{} docker exec -t {} /build.sh
 
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="monorepo-containers" \
+		| xargs -orn 4 -I{} docker exec -t {} bash -c "monorepo_python -m pip install /dist/*"
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="ot3-state-manager" \
+		| xargs -orn 4 -I{} docker exec -t {} bash -c "state_manager_python -m pip install /state_manager_dist/* /dist/*"
+
+
+.PHONY: start-executables
+start-executables:
+	$(if $(file_path),,$(error file_path variable required))
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="not-source-builders" \
+		| xargs -P 4 -orn 1 -I{} docker exec -dt {} /entrypoint.sh
+
 .PHONY: refresh-dev-ci
 refresh-dev-ci:
 	$(if $(file_path),,$(error file_path variable required))
@@ -211,6 +249,20 @@ refresh-dev-ci:
 		file_path="${abs_path}" \
 		filter="source-builders" \
 		| xargs -P 4 -rn 1 -I{} docker exec -t {} /build.sh
+
+	@$(MAKE) \
+	--no-print-directory \
+	load-container-names \
+	file_path="${abs_path}" \
+	filter="monorepo-containers" \
+	| xargs -rn 4 -I{} docker exec -t {} bash -c "monorepo_python -m pip install /dist/*"
+
+	@$(MAKE) \
+	--no-print-directory \
+	load-container-names \
+	file_path="${abs_path}" \
+	filter="ot3-state-manager" \
+	| xargs -rn 4 -I{} docker exec -t {} bash -c "state_manager_python -m pip install /state_manager_dist/*"
 
 
 
