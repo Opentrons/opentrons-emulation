@@ -10,7 +10,8 @@ echo "Building ot3-firmware"
 (
   cd /ot3-firmware && \
   cmake --preset host-gcc10 && \
-  cmake --build ./build-host -j $(expr $(nproc) - 1)
+  cmake --build ./build-host -j $(expr $(nproc) - 1) && \
+  cmake --build --preset tests --target state-manager-build
 )
 
 echo "Creating simulator directories"
