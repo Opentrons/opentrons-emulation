@@ -27,6 +27,17 @@ class ModuleContainers:
     opentrons_modules_builder: Optional[Container]
 
     @property
+    def no_modules(self) -> bool:
+        return (
+            self.hardware_emulation_thermocycler_modules == set([]) and
+            self.firmware_emulation_thermocycler_modules == set([]) and
+            self.hardware_emulation_heater_shaker_modules == set([]) and
+            self.firmware_emulation_heater_shaker_modules == set([]) and
+            self.firmware_emulation_magnetic_modules == set([]) and
+            self.firmware_emulation_temperature_modules == set([])
+        )
+
+    @property
     def opentrons_modules_builder_created(self) -> bool:
         """Whether the opentrons-modules builder container was created."""
         return self.opentrons_modules_builder is not None

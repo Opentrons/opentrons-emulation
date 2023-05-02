@@ -18,11 +18,11 @@ from tests.e2e.utilities.helper_functions import (
     get_mounts,
     get_volumes,
 )
-from tests.e2e.utilities.results.results_abc import Result
+from tests.e2e.utilities.results.results_abc import ResultABC
 
 
 @dataclass
-class OT3EmulatorContainers(Result):
+class OT3EmulatorContainers(ResultABC):
     state_manager_exists: bool
     head_exists: bool
     gantry_x_exists: bool
@@ -78,7 +78,7 @@ class OT3EmulatorContainers(Result):
 
 
 @dataclass
-class OT3EmulatorNamedVolumes(Result):
+class OT3EmulatorNamedVolumes(ResultABC):
 
     head_volumes: Set[NamedVolumeInfo]
     gantry_x_volumes: Set[NamedVolumeInfo]
@@ -115,7 +115,7 @@ class OT3EmulatorNamedVolumes(Result):
 
 
 @dataclass
-class OT3StateManagerNamedVolumes(Result):
+class OT3StateManagerNamedVolumes(ResultABC):
 
     volumes: Set[NamedVolumeInfo]
 
@@ -133,7 +133,7 @@ class OT3StateManagerNamedVolumes(Result):
 
 
 @dataclass
-class OT3EmulatorMounts(Result):
+class OT3EmulatorMounts(ResultABC):
     head_mounts: Set[BindMountInfo]
     gantry_x_mounts: Set[BindMountInfo]
     gantry_y_mounts: Set[BindMountInfo]
@@ -169,7 +169,7 @@ class OT3EmulatorMounts(Result):
 
 
 @dataclass
-class OT3FirmwareBuilderNamedVolumes(Result):
+class OT3FirmwareBuilderNamedVolumes(ResultABC):
 
     volumes: Set[NamedVolumeInfo]
 
@@ -190,7 +190,7 @@ class OT3FirmwareBuilderNamedVolumes(Result):
 
 
 @dataclass
-class OT3Binaries(Result):
+class OT3Binaries(ResultABC):
     head_binary_name: str
     gantry_x_binary_name: str
     gantry_y_binary_name: str
@@ -238,7 +238,7 @@ class OT3Binaries(Result):
 
 
 @dataclass
-class OT3Result(Result):
+class OT3Result(ResultABC):
     containers: OT3EmulatorContainers
     emulator_volumes: OT3EmulatorNamedVolumes
     state_manager_volumes: OT3StateManagerNamedVolumes

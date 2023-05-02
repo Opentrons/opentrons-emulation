@@ -13,17 +13,7 @@ from tests.e2e.test_definition.system_test_definition import (
     SystemTestDefinition,
 )
 
-NO_MODULES = ModuleConfiguration(
-    total_number_of_modules=0,
-    hw_heater_shaker_module_names=set(),
-    hw_thermocycler_module_names=set(),
-    fw_heater_shaker_module_names=set(),
-    fw_thermocycler_module_names=set(),
-    fw_magnetic_module_names=set(),
-    fw_temperature_module_names=set(),
-    emulator_proxy_name="",
-    opentrons_modules_builder_name="",
-)
+
 
 OT3_REMOTE = SystemTestDefinition(
     test_id="ot3_remote",
@@ -37,7 +27,7 @@ OT3_REMOTE = SystemTestDefinition(
     monorepo_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
     ot3_firmware_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
     opentrons_modules_build_args=BuildArgConfigurations.NO_BUILD_ARGS,
-    module_configuration=NO_MODULES,
+    module_configuration=ModuleConfiguration.NO_MODULES(),
 )
 
 OT3_FIRMWARE_DEV = SystemTestDefinition(
@@ -54,7 +44,7 @@ OT3_FIRMWARE_DEV = SystemTestDefinition(
     monorepo_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
     ot3_firmware_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
     opentrons_modules_build_args=BuildArgConfigurations.NO_BUILD_ARGS,
-    module_configuration=NO_MODULES,
+    module_configuration=ModuleConfiguration.NO_MODULES(),
 )
 
 OT3_AND_MODULES = SystemTestDefinition(
@@ -76,9 +66,7 @@ OT3_AND_MODULES = SystemTestDefinition(
         fw_heater_shaker_module_names={"ot3-and-modules-heater-shaker-fw"},
         fw_thermocycler_module_names={"ot3-and-modules-thermocycler-fw"},
         fw_magnetic_module_names={"ot3-and-modules-magdeck"},
-        fw_temperature_module_names={"ot3-and-modules-tempdeck"},
-        emulator_proxy_name="ot3-and-modules-emulator-proxy",
-        opentrons_modules_builder_name="ot3-and-modules-opentrons-modules-builder",
+        fw_temperature_module_names={"ot3-and-modules-tempdeck"}
     ),
 )
 

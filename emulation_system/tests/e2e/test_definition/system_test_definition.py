@@ -1,6 +1,6 @@
 """Module containing logic for e2e tests."""
-from dataclasses import dataclass, field
-from typing import Optional, Set
+from dataclasses import dataclass
+from typing import Set
 
 from tests.e2e.test_definition.build_arg_configurations import BuildArgConfigurations
 
@@ -15,8 +15,21 @@ class ModuleConfiguration:
     fw_magnetic_module_names: Set[str]
     fw_temperature_module_names: Set[str]
 
-    emulator_proxy_name: str
-    opentrons_modules_builder_name: str
+    @classmethod
+    def NO_MODULES(cls) -> "ModuleConfiguration":
+        return cls(
+            total_number_of_modules=0,
+            hw_heater_shaker_module_names=set([]),
+            hw_thermocycler_module_names=set([]),
+            fw_heater_shaker_module_names=set([]),
+            fw_thermocycler_module_names=set([]),
+            fw_magnetic_module_names=set([]),
+            fw_temperature_module_names=set([])
+        )
+
+
+    def is_no_modules(self) -> bool:
+        return self == self.NO_MODULES()
 
 
 @dataclass
@@ -38,4 +51,4 @@ class SystemTestDefinition:
     ot3_firmware_build_args: BuildArgConfigurations
     opentrons_modules_build_args: BuildArgConfigurations
 
-    module_configuration: Optional[ModuleConfiguration]
+    module_configuration: ModuleConfiguration

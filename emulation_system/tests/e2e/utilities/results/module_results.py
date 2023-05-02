@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Set, Type
+from typing import Dict, List, Set, Type
 
 from docker.models.containers import Container  # type: ignore[import]
 
@@ -19,11 +19,13 @@ from tests.e2e.utilities.helper_functions import (
     get_mounts,
     get_volumes,
 )
-from tests.e2e.utilities.results.results_abc import Result
+from tests.e2e.utilities.results.results_abc import (
+    ModuleResultABC,
+)
 
 
 @dataclass
-class ModuleContainerNames(Result):
+class ModuleContainerNames(ModuleResultABC):
     hw_heater_shaker_module_names: Set[str]
     fw_heater_shaker_module_names: Set[str]
     hw_thermocycler_module_names: Set[str]
@@ -31,8 +33,17 @@ class ModuleContainerNames(Result):
     fw_magnetic_module_names: Set[str]
     fw_temperature_module_names: Set[str]
 
-    emulator_proxy_name: str
-    opentrons_modules_builder_name: str
+
+    @classmethod
+    def NO_MODULES_EXPECTED_RESULT(cls) -> "ModuleContainerNames":
+        return cls(
+            hw_heater_shaker_module_names=set([]),
+            fw_heater_shaker_module_names=set([]),
+            hw_thermocycler_module_names=set([]),
+            fw_thermocycler_module_names=set([]),
+            fw_magnetic_module_names=set([]),
+            fw_temperature_module_names=set([])
+        )
 
     @classmethod
     def get_actual_results(
@@ -56,11 +67,7 @@ class ModuleContainerNames(Result):
             ),
             fw_temperature_module_names=get_container_names(
                 system_under_test.module_containers.firmware_emulation_temperature_modules
-            ),
-            emulator_proxy_name=system_under_test.module_containers.emulator_proxy.name,
-            opentrons_modules_builder_name=cls._get_opentrons_modules_builder_name(
-                system_under_test.module_containers.opentrons_modules_builder
-            ),
+            )
         )
 
     @classmethod
@@ -74,19 +81,21 @@ class ModuleContainerNames(Result):
             fw_thermocycler_module_names=system_test_def.module_configuration.fw_thermocycler_module_names,
             fw_magnetic_module_names=system_test_def.module_configuration.fw_magnetic_module_names,
             fw_temperature_module_names=system_test_def.module_configuration.fw_temperature_module_names,
-            emulator_proxy_name=system_test_def.module_configuration.emulator_proxy_name,
-            opentrons_modules_builder_name=system_test_def.module_configuration.opentrons_modules_builder_name,
         )
 
 
 @dataclass
-class ModuleNamedVolumes(Result):
+class ModuleNamedVolumes(ModuleResultABC):
     hw_heater_shaker_module_named_volumes: Dict[str, Set[NamedVolumeInfo]]
     fw_heater_shaker_module_named_volumes: Dict[str, Set[NamedVolumeInfo]]
     hw_thermocycler_module_named_volumes: Dict[str, Set[NamedVolumeInfo]]
     fw_thermocycler_module_named_volumes: Dict[str, Set[NamedVolumeInfo]]
     fw_magnetic_module_named_volumes: Dict[str, Set[NamedVolumeInfo]]
     fw_temperature_module_named_volumes: Dict[str, Set[NamedVolumeInfo]]
+
+    @classmethod
+    def NO_MODULES_EXPECTED_RESULT(cls) -> "ModuleNamedVolumes":
+        return cls({}, {}, {}, {}, {}, {})
 
     @classmethod
     def _generate_heater_shaker_hw_expected_named_volume_dict(
@@ -175,13 +184,17 @@ class ModuleNamedVolumes(Result):
 
 
 @dataclass
-class ModuleMounts(Result):
+class ModuleMounts(ModuleResultABC):
     hw_heater_shaker_module_mounts: Dict[str, Set[BindMountInfo]]
     fw_heater_shaker_module_mounts: Dict[str, Set[BindMountInfo]]
     hw_thermocycler_module_mounts: Dict[str, Set[BindMountInfo]]
     fw_thermocycler_module_mounts: Dict[str, Set[BindMountInfo]]
     fw_magnetic_module_mounts: Dict[str, Set[BindMountInfo]]
     fw_temperature_module_mounts: Dict[str, Set[BindMountInfo]]
+
+    @classmethod
+    def NO_MODULES_EXPECTED_RESULT(cls) -> "ModuleMounts":
+        return cls({}, {}, {}, {}, {}, {})
 
     @classmethod
     def _generate_expected_mount_dict(
@@ -249,9 +262,14 @@ class ModuleMounts(Result):
 
 
 @dataclass
-class ModuleBinaries(Result):
+class ModuleBinaries(ModuleResultABC):
     hw_thermocycler_module_binary_names: Dict[str, str]
     hw_heater_shaker_module_binary_names: Dict[str, str]
+
+    @classmethod
+    def NO_MODULES_EXPECTED_RESULT(cls) -> "ModuleBinaries":
+        return cls({}, {})
+
 
     @classmethod
     def _generate_heater_shaker_expected_binary_name_dict(
@@ -275,7 +293,6 @@ class ModuleBinaries(Result):
     def _generate_actual_binary_name_dict(
         cls, containers: List[Container]
     ) -> Dict[str, str]:
-        print(containers)
         return {
             container.name: exec_in_container(container, "ls /executable")
             for container in containers
@@ -309,15 +326,20 @@ class ModuleBinaries(Result):
 
 
 @dataclass
-class OpentronsModulesBuilderNamedVolumes(Result):
+class OpentronsModulesBuilderNamedVolumes(ModuleResultABC):
 
     volumes: Set[NamedVolumeInfo]
+
+    @classmethod
+    def NO_MODULES_EXPECTED_RESULT(cls) -> "OpentronsModulesBuilderNamedVolumes":
+        return cls(set([]))
 
     @classmethod
     def get_actual_results(
         cls: Type["OpentronsModulesBuilderNamedVolumes"],
         system_under_test: E2EHostSystem,
     ) -> "OpentronsModulesBuilderNamedVolumes":
+        actual_volumes: Set[NamedVolumeInfo] = set([])
         return cls(
             volumes=get_volumes(
                 system_under_test.module_containers.opentrons_modules_builder
@@ -338,32 +360,48 @@ class OpentronsModulesBuilderNamedVolumes(Result):
 
 
 @dataclass
-class ModuleResult(Result):
+class ModuleResult(ModuleResultABC):
     number_of_modules: int
-    module_containers: Optional[ModuleContainerNames]
-    module_named_volumes: Optional[ModuleNamedVolumes]
-    module_mounts: Optional[ModuleMounts]
-    module_binaries: Optional[ModuleBinaries]
-    builder_named_volumes: Optional[OpentronsModulesBuilderNamedVolumes]
+    module_containers: ModuleContainerNames
+    module_named_volumes: ModuleNamedVolumes
+    module_mounts: ModuleMounts
+    module_binaries: ModuleBinaries
+    builder_named_volumes: OpentronsModulesBuilderNamedVolumes
+
+    @classmethod
+    def NO_MODULES_EXPECTED_RESULT(cls) -> "ModuleResult":
+        return cls(
+            number_of_modules=0,
+            module_containers=ModuleContainerNames.NO_MODULES_EXPECTED_RESULT(),
+            module_named_volumes=ModuleNamedVolumes.NO_MODULES_EXPECTED_RESULT(),
+            module_mounts=ModuleMounts.NO_MODULES_EXPECTED_RESULT(),
+            module_binaries=ModuleBinaries.NO_MODULES_EXPECTED_RESULT(),
+            builder_named_volumes=OpentronsModulesBuilderNamedVolumes.NO_MODULES_EXPECTED_RESULT(),
+        )
+
 
     @classmethod
     def get_expected_results(
         cls: Type["ModuleResult"], system_test_def: SystemTestDefinition
     ) -> "ModuleResult":
-        return cls(
-            number_of_modules=system_test_def.module_configuration.total_number_of_modules,
-            module_containers=ModuleContainerNames.get_expected_results(
-                system_test_def
-            ),
-            module_named_volumes=ModuleNamedVolumes.get_expected_results(
-                system_test_def
-            ),
-            module_mounts=ModuleMounts.get_expected_results(system_test_def),
-            module_binaries=ModuleBinaries.get_expected_results(system_test_def),
-            builder_named_volumes=OpentronsModulesBuilderNamedVolumes.get_expected_results(
-                system_test_def
-            ),
-        )
+
+        if system_test_def.module_configuration.is_no_modules():
+            return cls.NO_MODULES_EXPECTED_RESULT()
+        else:
+            return cls(
+                number_of_modules=system_test_def.module_configuration.total_number_of_modules,
+                module_containers=ModuleContainerNames.get_expected_results(
+                    system_test_def
+                ),
+                module_named_volumes=ModuleNamedVolumes.get_expected_results(
+                    system_test_def
+                ),
+                module_mounts=ModuleMounts.get_expected_results(system_test_def),
+                module_binaries=ModuleBinaries.get_expected_results(system_test_def),
+                builder_named_volumes=OpentronsModulesBuilderNamedVolumes.get_expected_results(
+                    system_test_def
+                ),
+            )
 
     @classmethod
     def get_actual_results(

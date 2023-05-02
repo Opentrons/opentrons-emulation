@@ -9,11 +9,11 @@ from tests.e2e.utilities.consts import MONOREPO_WHEELS
 from tests.e2e.utilities.helper_functions import confirm_named_volume_exists
 from tests.e2e.utilities.results.module_results import ModuleResult
 from tests.e2e.utilities.results.ot3_results import OT3Result
-from tests.e2e.utilities.results.results_abc import Result
+from tests.e2e.utilities.results.results_abc import ResultABC
 
 
 @dataclass
-class ContainersWithMonorepoWheelVolume(Result):
+class ContainersWithMonorepoWheelVolume(ResultABC):
     monorepo_builder_has_monorepo_wheel: bool
     emulator_proxy_has_monorepo_wheel: bool
     robot_server_has_monorepo_wheel: bool
@@ -57,7 +57,7 @@ class ContainersWithMonorepoWheelVolume(Result):
 
 
 @dataclass
-class BuilderContainers(Result):
+class BuilderContainers(ResultABC):
     ot3_firmware_builder_created: bool
     opentrons_modules_builder_created: bool
     monorepo_builder_created: bool
@@ -84,7 +84,7 @@ class BuilderContainers(Result):
 
 
 @dataclass
-class LocalMounts(Result):
+class LocalMounts(ResultABC):
     monorepo_mounted: bool
     ot3_firmware_mounted: bool
     opentrons_modules_mounted: bool
@@ -111,7 +111,7 @@ class LocalMounts(Result):
 
 
 @dataclass
-class SystemBuildArgs(Result):
+class SystemBuildArgs(ResultABC):
     monorepo_build_args: BuildArgConfigurations
     ot3_firmware_build_args: BuildArgConfigurations
     opentrons_modules_build_args: BuildArgConfigurations
@@ -138,7 +138,7 @@ class SystemBuildArgs(Result):
 
 
 @dataclass
-class FinalResult(Result):
+class FinalResult(ResultABC):
     """Class containing all result values for e2e testing."""
 
     ot3_results: Optional[OT3Result]
