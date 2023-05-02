@@ -25,6 +25,7 @@ from emulation_system.consts import (
     COMMIT_SHA_REGEX,
     ENTRYPOINT_FILE_LOCATION,
     MONOREPO_NAMED_VOLUME_STRING,
+    OT3_FIRMWARE_BUILDER_STATE_MANAGER_NAMED_VOLUME_STRING,
 )
 from opentrons_pydantic_base_model import OpentronsBaseModel
 
@@ -212,6 +213,10 @@ class OT3FirmwareSource(OpentronsBaseModel, Source, EmulatorSourceMixin):
             f"{member.named_volume_name}:{member.container_volume_storage_path}"
             for member in OT3Hardware.__members__.values()
         ]
+        default_values.append(
+            OT3_FIRMWARE_BUILDER_STATE_MANAGER_NAMED_VOLUME_STRING
+        )
+
 
         if self.is_local():
             default_values.append(f"{self.source_location}:/{self.repo.value}")
