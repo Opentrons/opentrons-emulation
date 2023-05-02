@@ -3,34 +3,45 @@
 from typing import Any, Dict, Iterable, List, Optional, Set
 
 import docker  # type: ignore[import]
+from docker.errors import NotFound as ContainerNotFoundError # type: ignore[import]
 from docker.models.containers import Container  # type: ignore[import]
 
 from emulation_system.compose_file_creator import Service
 from tests.e2e.utilities.consts import BindMountInfo, NamedVolumeInfo
 
 
-def get_volumes(container: Container) -> Set[NamedVolumeInfo]:
+def get_volumes(container: Optional[Container]) -> Set[NamedVolumeInfo]:
     """Gets a list of volumes for a docker container.
 
     Returns None if no volumes exist
     """
-    return {
-        NamedVolumeInfo(VOLUME_NAME=mount["Name"], DEST_PATH=mount["Destination"])
-        for mount in container.attrs["Mounts"]
-        if mount["Type"] == "volume"
-    }
+    return (
+        set([])
+        if container is None
+        else
+        {
+            NamedVolumeInfo(VOLUME_NAME=mount["Name"], DEST_PATH=mount["Destination"])
+            for mount in container.attrs["Mounts"]
+            if mount["Type"] == "volume"
+        }
+    )
 
 
-def get_mounts(container: Container) -> Set[BindMountInfo]:
+def get_mounts(container: Optional[Container]) -> Set[BindMountInfo]:
     """Gets a list of mounts for a docker container.
 
     Returns None if no mounts exist
     """
-    return {
-        BindMountInfo(SOURCE_PATH=mount["Source"], DEST_PATH=mount["Destination"])
-        for mount in container.attrs["Mounts"]
-        if mount["Type"] == "bind"
-    }
+    return (
+        set([])
+        if container is None
+        else
+            {
+            BindMountInfo(SOURCE_PATH=mount["Source"], DEST_PATH=mount["Destination"])
+            for mount in container.attrs["Mounts"]
+            if mount["Type"] == "bind"
+        }
+    )
 
 
 def get_container_names(containers: Iterable[Container]) -> Set[str]:
@@ -42,10 +53,16 @@ def get_container(service: Optional[Service]) -> Optional[Container]:
 
     Specifically looks for a container with same name as passed Service object.
     """
+    container: Optional[Container]
     if service is None:
-        return None
+        container = None
     else:
-        return docker.from_env().containers.get(service.container_name)
+        try:
+            container = docker.from_env().containers.get(service.container_name)
+        except ContainerNotFoundError:
+            container = None
+
+    return container
 
 
 def get_containers(services: Optional[List[Service]]) -> List[Container]:
