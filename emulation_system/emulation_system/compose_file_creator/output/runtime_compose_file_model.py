@@ -174,7 +174,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
     def heater_shaker_module_emulators(self) -> Optional[List[Service]]:
         """Return any Heater-Shaker Module services if one exists."""
         return self.load_containers_by_filter(
-            ContainerFilters.ALL_HEATER_SHAKER_MODULES.filter_name
+            ContainerFilters.HEATER_SHAKER_MODULES.filter_name
         )
 
     @property
@@ -195,7 +195,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
     def thermocycler_module_emulators(self) -> Optional[List[Service]]:
         """Return any Thermocycler Module services if one exists."""
         return self.load_containers_by_filter(
-            ContainerFilters.ALL_THERMOCYCLER_MODULES.filter_name
+            ContainerFilters.THERMOCYCLER_MODULES.filter_name
         )
 
     @property
@@ -216,21 +216,21 @@ class RuntimeComposeFileModel(ComposeSpecification):
     def magnetic_module_emulators(self) -> Optional[List[Service]]:
         """Return Magnetic Module service if one exists."""
         return self.load_containers_by_filter(
-            ContainerFilters.ALL_MAGNETIC_MODULES.filter_name
+            ContainerFilters.MAGNETIC_MODULES.filter_name
         )
 
     @property
     def temperature_module_emulators(self) -> Optional[List[Service]]:
         """Return any Temperature Module services if one exists."""
         return self.load_containers_by_filter(
-            ContainerFilters.ALL_TEMPERATURE_MODULES.filter_name
+            ContainerFilters.TEMPERATURE_MODULES.filter_name
         )
 
     @property
     def module_emulators(self) -> Optional[List[Service]]:
         """Return any Temperature Module services if one exists."""
         return self.load_containers_by_filter(
-            ContainerFilters.ALL_MODULES.filter_name
+            ContainerFilters.MODULES.filter_name
         )
 
     @property

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from enum import Enum, auto, unique
-from typing import Dict, List
+from typing import List
 
 from . import BuildItem, Service
 from .errors import InvalidFilterError
@@ -128,7 +128,7 @@ class ContainerFilters(Enum):
         EmulationLevelFilter.HARDWARE_ONLY,
     )
     HARDWARE_THERMOCYCLER_MODULES = (
-        "hardware-temperature-modules",
+        "hardware-thermocycler-modules",
         [ThermocyclerModuleImages()],
         EmulationLevelFilter.HARDWARE_ONLY,
     )
@@ -137,7 +137,11 @@ class ContainerFilters(Enum):
         [HeaterShakerModuleImages()],
         EmulationLevelFilter.ALL,
     )
-    MAGNETIC_MODULES = ("magnetic-modules", [MagneticModuleImages()], EmulationLevelFilter.ALL)
+    MAGNETIC_MODULES = (
+        "magnetic-modules",
+        [MagneticModuleImages()],
+        EmulationLevelFilter.ALL,
+    )
     MODULES = (
         "modules",
         [
@@ -190,7 +194,11 @@ class ContainerFilters(Enum):
         ],
         EmulationLevelFilter.ALL,
     )
-    OT3_FIRMWARE_BUILDER = ("ot3-firmware-builder", [OT3FirmwareBuilderImage()], EmulationLevelFilter.ALL)
+    OT3_FIRMWARE_BUILDER = (
+        "ot3-firmware-builder",
+        [OT3FirmwareBuilderImage()],
+        EmulationLevelFilter.ALL,
+    )
     OT3_GANTRY_X = ("ot3-gantry-x", [OT3GantryXImage()], EmulationLevelFilter.ALL)
     OT3_GANTRY_Y = ("ot3-gantry-y", [OT3GantryYImage()], EmulationLevelFilter.ALL)
     OT3_GRIPPER = ("ot3-gripper", [OT3GripperImage()], EmulationLevelFilter.ALL)
