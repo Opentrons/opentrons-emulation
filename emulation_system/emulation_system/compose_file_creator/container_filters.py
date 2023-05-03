@@ -2,13 +2,10 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, fields
-from typing import List
+from enum import Enum, auto, unique
+from typing import Dict, List
 
-from . import (
-    BuildItem,
-    Service,
-)
+from . import BuildItem, Service
 from .errors import InvalidFilterError
 from .images import (
     CANServerImage,
@@ -34,107 +31,225 @@ from .images import (
 )
 
 
-@dataclass
-class ContainerFilter:
-    filter_name: str
-    images: List[FirmwareAndHardwareImages | SingleImage]
-    firmware_only: bool = False
-    hardware_only: bool = False
-
-    def __post_init__(self):
-        if self.firmware_only and self.hardware_only:
-            raise ValueError(
-                'Can not have both "firmware_only" and "hardware_only" set to True'
-            )
-
-@dataclass(frozen=True)
-class ContainerFilterNames:
-        ALL = "all"
-        ALL_FIRMWARE_MODULES = "all-firmware-modules"
-        ALL_HARDWARE_MODULES = "all-hardware-modules"
-        ALL_HEATER_SHAKER_MODULES = "all-heater-shaker-modules"
-        ALL_MAGNETIC_MODULES = "all-magnetic-modules"
-        ALL_MODULES = "all-modules"
-        ALL_TEMPERATURE_MODULES = "all-temperature-modules"
-        ALL_THERMOCYCLER_MODULES = "all-thermocycler-modules"
-        CAN_SERVER = "can-server"
-        EMULATOR_PROXY = "emulator-proxy"
-        FIRMWARE_HEATER_SHAKER_MODULES = "firmware-heater-shaker-modules"
-        FIRMWARE_MAGNETIC_MODULES = "firmware-magnetic-modules"
-        FIRMWARE_TEMPERATURE_MODULES = "firmware-temperature-modules"
-        FIRMWARE_THERMOCYCLER_MODULES = "firmware-thermocycler-modules"
-        HARDWARE_HEATER_SHAKER_MODULES = "hardware-heater-shaker-modules"
-        HARDWARE_MAGNETIC_MODULES = "hardware-magnetic-modules"
-        HARDWARE_TEMPERATURE_MODULES = "hardware-temperature-modules"
-        HARDWARE_THERMOCYCLER_MODULES = "hardware-thermocycler-modules"
-        MONOREPO_BUILDER = "monorepo-builder"
-        MONOREPO_CONTAINERS = "monorepo-containers"
-        OPENTRONS_MODULES_BUILDER = "opentrons-modules-builder"
-        OT3_BOOTLOADER = "ot3-bootloader"
-        OT3_FIRMWARE = "ot3-firmware"
-        OT3_FIRMWARE_BUILDER = "ot3-firmware-builder"
-        OT3_GANTRY_X = "ot3-gantry-x"
-        OT3_GANTRY_Y = "ot3-gantry-y"
-        OT3_GRIPPER = "ot3-gripper"
-        OT3_HEAD = "ot3-head"
-        OT3_PIPETTES = "ot3-pipettes"
-        OT3_STATE_MANAGER = "ot3-state-manager"
-        ROBOT_SERVER = "robot-server"
-        SMOOTHIE = "smoothie"
-        SOURCE_BUILDERS = "source-builders"
+@unique
+class EmulationLevelFilter(Enum):
+    FIRMWARE_ONLY = auto()
+    HARDWARE_ONLY = auto()
+    ALL = auto()
 
 
-@dataclass(frozen=True)
-class ContainerFilters:
+@unique
+class ContainerFilters(Enum):
     """Enumeration of filters and the respective images to look up for them."""
 
-    ALL: ContainerFilter = ContainerFilter(ContainerFilterNames().ALL, [CANServerImage(), EmulatorProxyImage(), HeaterShakerModuleImages(), MagneticModuleImages(), OT3GantryXImage(), OT3GantryYImage(), OT3HeadImage(), OT3PipettesImage(), OT3BootloaderImage(), OT3GripperImage(), RobotServerImage(), SmoothieImage(), TemperatureModuleImages(), ThermocyclerModuleImages(), OT3StateManagerImage(), OT3FirmwareBuilderImage(), MonorepoBuilderImage(), OpentronsModulesBuilderImage(),])
-    ALL_HEATER_SHAKER_MODULES: ContainerFilter = ContainerFilter(ContainerFilterNames().ALL_HEATER_SHAKER_MODULES, [HeaterShakerModuleImages()])
-    ALL_MAGNETIC_MODULES: ContainerFilter = ContainerFilter(ContainerFilterNames().ALL_MAGNETIC_MODULES, [MagneticModuleImages()])
-    ALL_MODULES: ContainerFilter = ContainerFilter(ContainerFilterNames().ALL_MODULES, [MagneticModuleImages(), ThermocyclerModuleImages(), TemperatureModuleImages(), HeaterShakerModuleImages()])
-    ALL_TEMPERATURE_MODULES: ContainerFilter = ContainerFilter(ContainerFilterNames().ALL_TEMPERATURE_MODULES, [TemperatureModuleImages()])
-    ALL_THERMOCYCLER_MODULES: ContainerFilter = ContainerFilter(ContainerFilterNames().ALL_THERMOCYCLER_MODULES, [ThermocyclerModuleImages()])
-    CAN_SERVER: ContainerFilter = ContainerFilter(ContainerFilterNames().CAN_SERVER, [CANServerImage()])
-    MONOREPO_CONTAINERS: ContainerFilter = ContainerFilter(ContainerFilterNames().MONOREPO_CONTAINERS, [CANServerImage(), EmulatorProxyImage(), RobotServerImage(), SmoothieImage(), MagneticModuleImages(), ThermocyclerModuleImages(), TemperatureModuleImages(), HeaterShakerModuleImages()], firmware_only=True)
-    EMULATOR_PROXY: ContainerFilter = ContainerFilter(ContainerFilterNames().EMULATOR_PROXY, [EmulatorProxyImage()])
-    FIRMWARE_HEATER_SHAKER_MODULES: ContainerFilter = ContainerFilter(ContainerFilterNames().FIRMWARE_HEATER_SHAKER_MODULES, [HeaterShakerModuleImages()], firmware_only=True)
-    FIRMWARE_MAGNETIC_MODULES: ContainerFilter = ContainerFilter(ContainerFilterNames().FIRMWARE_MAGNETIC_MODULES, [MagneticModuleImages()], firmware_only=True)
-    ALL_FIRMWARE_MODULES: ContainerFilter = ContainerFilter(ContainerFilterNames().ALL_FIRMWARE_MODULES, [MagneticModuleImages(), ThermocyclerModuleImages(), TemperatureModuleImages(), HeaterShakerModuleImages()], firmware_only=True)
-    FIRMWARE_TEMPERATURE_MODULES: ContainerFilter = ContainerFilter(ContainerFilterNames().FIRMWARE_TEMPERATURE_MODULES, [TemperatureModuleImages()], firmware_only=True)
-    FIRMWARE_THERMOCYCLER_MODULES: ContainerFilter = ContainerFilter(ContainerFilterNames().FIRMWARE_THERMOCYCLER_MODULES, [ThermocyclerModuleImages()], firmware_only=True)
-    HARDWARE_HEATER_SHAKER_MODULES: ContainerFilter = ContainerFilter(ContainerFilterNames().HARDWARE_HEATER_SHAKER_MODULES, [HeaterShakerModuleImages()], hardware_only=True)
-    HARDWARE_MAGNETIC_MODULES: ContainerFilter = ContainerFilter(ContainerFilterNames().HARDWARE_MAGNETIC_MODULES, [MagneticModuleImages()], hardware_only=True)
-    ALL_HARDWARE_MODULES: ContainerFilter = ContainerFilter(ContainerFilterNames().ALL_HARDWARE_MODULES, [MagneticModuleImages(), ThermocyclerModuleImages(), TemperatureModuleImages(), HeaterShakerModuleImages()], hardware_only=True)
-    HARDWARE_TEMPERATURE_MODULES: ContainerFilter = ContainerFilter(ContainerFilterNames().HARDWARE_TEMPERATURE_MODULES, [TemperatureModuleImages()], hardware_only=True)
-    HARDWARE_THERMOCYCLER_MODULES: ContainerFilter = ContainerFilter(ContainerFilterNames().HARDWARE_THERMOCYCLER_MODULES, [ThermocyclerModuleImages()], hardware_only=True)
-    MONOREPO_BUILDER: ContainerFilter = ContainerFilter(ContainerFilterNames().MONOREPO_BUILDER, [MonorepoBuilderImage()])
-    OPENTRONS_MODULES_BUILDER: ContainerFilter = ContainerFilter(ContainerFilterNames().OPENTRONS_MODULES_BUILDER, [OpentronsModulesBuilderImage()])
-    OT3_BOOTLOADER: ContainerFilter = ContainerFilter(ContainerFilterNames().OT3_BOOTLOADER, [OT3BootloaderImage()])
-    OT3_FIRMWARE: ContainerFilter = ContainerFilter(ContainerFilterNames().OT3_FIRMWARE, [OT3GantryXImage(), OT3GantryYImage(), OT3HeadImage(), OT3PipettesImage(), OT3BootloaderImage(), OT3GripperImage(), SmoothieImage()])
-    OT3_FIRMWARE_BUILDER: ContainerFilter = ContainerFilter(ContainerFilterNames().OT3_FIRMWARE_BUILDER, [OT3FirmwareBuilderImage()])
-    OT3_GANTRY_X: ContainerFilter = ContainerFilter(ContainerFilterNames().OT3_GANTRY_X, [OT3GantryXImage()])
-    OT3_GANTRY_Y: ContainerFilter = ContainerFilter(ContainerFilterNames().OT3_GANTRY_Y, [OT3GantryYImage()])
-    OT3_GRIPPER: ContainerFilter = ContainerFilter(ContainerFilterNames().OT3_GRIPPER, [OT3GripperImage()])
-    OT3_HEAD: ContainerFilter = ContainerFilter(ContainerFilterNames().OT3_HEAD, [OT3HeadImage()])
-    OT3_PIPETTES: ContainerFilter = ContainerFilter(ContainerFilterNames().OT3_PIPETTES, [OT3PipettesImage()])
-    OT3_STATE_MANAGER: ContainerFilter = ContainerFilter(ContainerFilterNames().OT3_STATE_MANAGER, [OT3StateManagerImage()])
-    ROBOT_SERVER: ContainerFilter = ContainerFilter(ContainerFilterNames().ROBOT_SERVER, [RobotServerImage()])
-    SMOOTHIE: ContainerFilter = ContainerFilter(ContainerFilterNames().SMOOTHIE, [SmoothieImage()])
-    SOURCE_BUILDERS: ContainerFilter = ContainerFilter(ContainerFilterNames().SOURCE_BUILDERS, [OT3FirmwareBuilderImage(), MonorepoBuilderImage(), OpentronsModulesBuilderImage()])
+    ALL = (
+        "all",
+        [
+            CANServerImage(),
+            EmulatorProxyImage(),
+            HeaterShakerModuleImages(),
+            MagneticModuleImages(),
+            OT3GantryXImage(),
+            OT3GantryYImage(),
+            OT3HeadImage(),
+            OT3PipettesImage(),
+            OT3BootloaderImage(),
+            OT3GripperImage(),
+            RobotServerImage(),
+            SmoothieImage(),
+            TemperatureModuleImages(),
+            ThermocyclerModuleImages(),
+            OT3StateManagerImage(),
+            OT3FirmwareBuilderImage(),
+            MonorepoBuilderImage(),
+            OpentronsModulesBuilderImage(),
+        ],
+        EmulationLevelFilter.ALL,
+    )
+    CAN_SERVER = ("can-server", [CANServerImage()], EmulationLevelFilter.ALL)
+    EMULATOR_PROXY = (
+        "emulator-proxy",
+        [EmulatorProxyImage()],
+        EmulationLevelFilter.ALL,
+    )
+    FIRMWARE_HEATER_SHAKER_MODULES = (
+        "firmware-heater-shaker-modules",
+        [HeaterShakerModuleImages()],
+        EmulationLevelFilter.FIRMWARE_ONLY,
+    )
+    FIRMWARE_MAGNETIC_MODULES = (
+        "firmware-magnetic-modules",
+        [MagneticModuleImages()],
+        EmulationLevelFilter.FIRMWARE_ONLY,
+    )
+    FIRMWARE_MODULES = (
+        "firmware-modules",
+        [
+            MagneticModuleImages(),
+            ThermocyclerModuleImages(),
+            TemperatureModuleImages(),
+            HeaterShakerModuleImages(),
+        ],
+        EmulationLevelFilter.FIRMWARE_ONLY,
+    )
+    FIRMWARE_TEMPERATURE_MODULES = (
+        "firmware-temperature-modules",
+        [TemperatureModuleImages()],
+        EmulationLevelFilter.FIRMWARE_ONLY,
+    )
+    FIRMWARE_THERMOCYCLER_MODULES = (
+        "firmware-thermocycler-modules",
+        [ThermocyclerModuleImages()],
+        EmulationLevelFilter.FIRMWARE_ONLY,
+    )
+    HARDWARE_HEATER_SHAKER_MODULES = (
+        "hardware-heater-shaker-modules",
+        [HeaterShakerModuleImages()],
+        EmulationLevelFilter.HARDWARE_ONLY,
+    )
+    HARDWARE_MAGNETIC_MODULES = (
+        "hardware-magnetic-modules",
+        [MagneticModuleImages()],
+        EmulationLevelFilter.HARDWARE_ONLY,
+    )
+    HARDWARE_MODULES = (
+        "hardware-modules",
+        [
+            MagneticModuleImages(),
+            ThermocyclerModuleImages(),
+            TemperatureModuleImages(),
+            HeaterShakerModuleImages(),
+        ],
+        EmulationLevelFilter.HARDWARE_ONLY,
+    )
+    HARDWARE_TEMPERATURE_MODULES = (
+        "hardware-temperature-modules",
+        [TemperatureModuleImages()],
+        EmulationLevelFilter.HARDWARE_ONLY,
+    )
+    HARDWARE_THERMOCYCLER_MODULES = (
+        "hardware-temperature-modules",
+        [ThermocyclerModuleImages()],
+        EmulationLevelFilter.HARDWARE_ONLY,
+    )
+    HEATER_SHAKER_MODULES = (
+        "heater-shaker-modules",
+        [HeaterShakerModuleImages()],
+        EmulationLevelFilter.ALL,
+    )
+    MAGNETIC_MODULES = ("magnetic-modules", [MagneticModuleImages()], EmulationLevelFilter.ALL)
+    MODULES = (
+        "modules",
+        [
+            MagneticModuleImages(),
+            ThermocyclerModuleImages(),
+            TemperatureModuleImages(),
+            HeaterShakerModuleImages(),
+        ],
+        EmulationLevelFilter.ALL,
+    )
+    MONOREPO_BUILDER = (
+        "monorepo-builder",
+        [MonorepoBuilderImage()],
+        EmulationLevelFilter.ALL,
+    )
+    MONOREPO_CONTAINERS = (
+        "monorepo-containers",
+        [
+            CANServerImage(),
+            EmulatorProxyImage(),
+            RobotServerImage(),
+            SmoothieImage(),
+            MagneticModuleImages(),
+            ThermocyclerModuleImages(),
+            TemperatureModuleImages(),
+            HeaterShakerModuleImages(),
+        ],
+        EmulationLevelFilter.FIRMWARE_ONLY,
+    )
+    OPENTRONS_MODULES_BUILDER = (
+        "opentrons-modules-builder",
+        [OpentronsModulesBuilderImage()],
+        EmulationLevelFilter.ALL,
+    )
+    OT3_BOOTLOADER = (
+        "ot3-bootloader",
+        [OT3BootloaderImage()],
+        EmulationLevelFilter.ALL,
+    )
+    OT3_FIRMWARE = (
+        "ot3-firmware",
+        [
+            OT3GantryXImage(),
+            OT3GantryYImage(),
+            OT3HeadImage(),
+            OT3PipettesImage(),
+            OT3BootloaderImage(),
+            OT3GripperImage(),
+            SmoothieImage(),
+        ],
+        EmulationLevelFilter.ALL,
+    )
+    OT3_FIRMWARE_BUILDER = ("ot3-firmware-builder", [OT3FirmwareBuilderImage()], EmulationLevelFilter.ALL)
+    OT3_GANTRY_X = ("ot3-gantry-x", [OT3GantryXImage()], EmulationLevelFilter.ALL)
+    OT3_GANTRY_Y = ("ot3-gantry-y", [OT3GantryYImage()], EmulationLevelFilter.ALL)
+    OT3_GRIPPER = ("ot3-gripper", [OT3GripperImage()], EmulationLevelFilter.ALL)
+    OT3_HEAD = ("ot3-head", [OT3HeadImage()], EmulationLevelFilter.ALL)
+    OT3_PIPETTES = ("ot3-pipettes", [OT3PipettesImage()], EmulationLevelFilter.ALL)
+    OT3_STATE_MANAGER = (
+        "ot3-state-manager",
+        [OT3StateManagerImage()],
+        EmulationLevelFilter.ALL,
+    )
+    ROBOT_SERVER = ("robot-server", [RobotServerImage()], EmulationLevelFilter.ALL)
+    SMOOTHIE = ("smoothie", [SmoothieImage()], EmulationLevelFilter.ALL)
+    SOURCE_BUILDERS = (
+        "source-builders",
+        [
+            OT3FirmwareBuilderImage(),
+            MonorepoBuilderImage(),
+            OpentronsModulesBuilderImage(),
+        ],
+        EmulationLevelFilter.ALL,
+    )
+    TEMPERATURE_MODULES = (
+        "temperature-modules",
+        [TemperatureModuleImages()],
+        EmulationLevelFilter.ALL,
+    )
+    THERMOCYCLER_MODULES = (
+        "thermocycler-modules",
+        [ThermocyclerModuleImages()],
+        EmulationLevelFilter.ALL,
+    )
 
-    def load_by_filter_name(self, filter_name: str) -> ContainerFilter:
+    def __init__(
+        self,
+        filter_name: str,
+        images: List[FirmwareAndHardwareImages | SingleImage],
+        emulation_level_filter: EmulationLevelFilter,
+    ):
+
+        self.filter_name = filter_name
+        self.images = images
+        self.emulation_level_filter = emulation_level_filter
+
+    @classmethod
+    def _load_by_filter_name(cls, filter_name: str) -> ContainerFilters:
         """Load ContainerFilters object by filter_name"""
 
-        for field in fields(self):
-            member: ContainerFilter = getattr(self, field.name)
-            if filter_name == member.filter_name:
-                return member
-        raise InvalidFilterError(
-            filter_name, [member.filter_name for member in fields(self)]
-        )
+        valid_filters = []
+        for name, value in cls.__members__.items():
+            if filter_name == value.filter_name:
+                return value
+            else:
+                valid_filters.append(value.filter_name)
 
+        raise InvalidFilterError(filter_name, valid_filters)
+
+    @classmethod
     def filter_services(
-        self, filter_name: str, services: List[Service]
+        cls, filter_name: str, services: List[Service]
     ) -> List[Service]:
 
         service_list = []
@@ -145,13 +260,26 @@ class ContainerFilters:
             inverse = True
             filter_name = filter_name.replace("not-", "")
 
-        container_filter: ContainerFilter = self.load_by_filter_name(filter_name)
+        container_filter: ContainerFilters = cls._load_by_filter_name(filter_name)
 
         for image in container_filter.images:
+            firmware_level: bool
+            hardware_level: bool
+            match container_filter.emulation_level_filter:
+                case EmulationLevelFilter.FIRMWARE_ONLY:
+                    firmware_level = True
+                    hardware_level = False
+                case EmulationLevelFilter.HARDWARE_ONLY:
+                    firmware_level = False
+                    hardware_level = True
+                case other:
+                    firmware_level = True
+                    hardware_level = True
+
             image_names.extend(
                 image.get_image_names(
-                    only_firmware_level=container_filter.firmware_only,
-                    only_hardware_level=container_filter.hardware_only
+                    only_firmware_level=firmware_level,
+                    only_hardware_level=hardware_level,
                 )
             )
 
