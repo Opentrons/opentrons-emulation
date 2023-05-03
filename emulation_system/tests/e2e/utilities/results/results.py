@@ -5,7 +5,7 @@ from tests.e2e.docker_interface.e2e_system import E2EHostSystem, ExpectedBindMou
 from tests.e2e.docker_interface.module_containers import ModuleContainers
 from tests.e2e.test_definition.build_arg_configurations import BuildArgConfigurations
 from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
-from tests.e2e.utilities.consts import MONOREPO_WHEELS
+from tests.e2e.utilities.consts import MONOREPO_WHEEL_VOLUME
 from tests.e2e.utilities.helper_functions import confirm_named_volume_exists
 from tests.e2e.utilities.results.module_results import ModuleResult
 from tests.e2e.utilities.results.ot3_results import OT3Result
@@ -39,19 +39,19 @@ class ContainersWithMonorepoWheelVolume(ResultABC):
     ) -> "ContainersWithMonorepoWheelVolume":
         return cls(
             monorepo_builder_has_monorepo_wheel=confirm_named_volume_exists(
-                system_under_test.default_containers.monorepo_builder, MONOREPO_WHEELS
+                system_under_test.default_containers.monorepo_builder, MONOREPO_WHEEL_VOLUME
             ),
             emulator_proxy_has_monorepo_wheel=confirm_named_volume_exists(
-                system_under_test.module_containers.emulator_proxy, MONOREPO_WHEELS
+                system_under_test.module_containers.emulator_proxy, MONOREPO_WHEEL_VOLUME
             ),
             robot_server_has_monorepo_wheel=confirm_named_volume_exists(
-                system_under_test.default_containers.robot_server, MONOREPO_WHEELS
+                system_under_test.default_containers.robot_server, MONOREPO_WHEEL_VOLUME
             ),
             can_server_has_monorepo_wheel=confirm_named_volume_exists(
-                system_under_test.ot3_containers.can_server, MONOREPO_WHEELS
+                system_under_test.ot3_containers.can_server, MONOREPO_WHEEL_VOLUME
             ),
             state_manager_has_monorepo_wheel=confirm_named_volume_exists(
-                system_under_test.ot3_containers.state_manager, MONOREPO_WHEELS
+                system_under_test.ot3_containers.state_manager, MONOREPO_WHEEL_VOLUME
             ),
         )
 

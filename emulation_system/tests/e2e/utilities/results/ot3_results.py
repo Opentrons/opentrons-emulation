@@ -5,13 +5,14 @@ from tests.e2e.docker_interface.e2e_system import E2EHostSystem
 from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
 from tests.e2e.utilities.consts import (
     ENTRYPOINT_MOUNT,
-    MONOREPO_WHEELS,
-    OT3_FIRMWARE_NAMED_VOLUMES,
+    MONOREPO_WHEEL_VOLUME,
+    OT3_FIRMWARE_BUILDER_NAMED_VOLUMES,
     STATE_MANAGER_VENV_VOLUME,
     BindMountInfo,
     NamedVolumeInfo,
     OT3FirmwareEmulatorNamedVolumesMap,
     OT3FirmwareExpectedBinaryNames,
+    STATE_MANAGER_WHEEL_VOLUME,
 )
 from tests.e2e.utilities.helper_functions import (
     exec_in_container,
@@ -129,7 +130,7 @@ class OT3StateManagerNamedVolumes(ResultABC):
     def get_expected_results(
         cls: Type["OT3StateManagerNamedVolumes"], system_test_def: SystemTestDefinition
     ) -> "OT3StateManagerNamedVolumes":
-        return cls(volumes={MONOREPO_WHEELS, STATE_MANAGER_VENV_VOLUME})
+        return cls(volumes={MONOREPO_WHEEL_VOLUME, STATE_MANAGER_VENV_VOLUME, STATE_MANAGER_WHEEL_VOLUME})
 
 
 @dataclass
@@ -186,7 +187,7 @@ class OT3FirmwareBuilderNamedVolumes(ResultABC):
         cls: Type["OT3FirmwareBuilderNamedVolumes"],
         system_test_def: SystemTestDefinition,
     ) -> "OT3FirmwareBuilderNamedVolumes":
-        return cls(volumes=OT3_FIRMWARE_NAMED_VOLUMES)
+        return cls(volumes=OT3_FIRMWARE_BUILDER_NAMED_VOLUMES)
 
 
 @dataclass

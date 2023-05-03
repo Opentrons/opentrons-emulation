@@ -25,7 +25,7 @@ from emulation_system.consts import (
     COMMIT_SHA_REGEX,
     ENTRYPOINT_FILE_LOCATION,
     MONOREPO_NAMED_VOLUME_STRING,
-    OT3_FIRMWARE_BUILDER_STATE_MANAGER_NAMED_VOLUME_STRING,
+    OT3_FIRMWARE_BUILDER_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING,
 )
 from opentrons_pydantic_base_model import OpentronsBaseModel
 
@@ -214,7 +214,7 @@ class OT3FirmwareSource(OpentronsBaseModel, Source, EmulatorSourceMixin):
             for member in OT3Hardware.__members__.values()
         ]
         default_values.append(
-            OT3_FIRMWARE_BUILDER_STATE_MANAGER_NAMED_VOLUME_STRING
+            OT3_FIRMWARE_BUILDER_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING
         )
 
 
