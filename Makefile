@@ -202,6 +202,20 @@ refresh-dev:
 		filter="source-builders" \
 		| xargs -P 4 -orn 1 -I{} docker exec -t {} /build.sh
 
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="monorepo-containers" \
+		| xargs -P 6 -orn 1 -I{} docker exec -t {} bash -c "monorepo_python -m pip install /dist/*"
+
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="ot3-state-manager" \
+		| xargs -orn 1 -I{} docker exec -t {} bash -c "state_manager_python -m pip install /state_manager_dist/* /dist/*"
+
 .PHONY: refresh-dev-ci
 refresh-dev-ci:
 	$(if $(file_path),,$(error file_path variable required))
@@ -211,6 +225,21 @@ refresh-dev-ci:
 		file_path="${abs_path}" \
 		filter="source-builders" \
 		| xargs -P 4 -rn 1 -I{} docker exec -t {} /build.sh
+
+
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="monorepo-containers" \
+		| xargs -P 6 -rn 1 -I{} docker exec -t {} bash -c "monorepo_python -m pip install /dist/*"
+
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="ot3-state-manager" \
+		| xargs -rn 1 -I{} docker exec -t {} bash -c "state_manager_python -m pip install /state_manager_dist/* /dist/*"
 
 .PHONY: start-executables
 start-executables:
