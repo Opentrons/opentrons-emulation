@@ -24,9 +24,8 @@ class ModuleConfiguration:
             fw_heater_shaker_module_names=set([]),
             fw_thermocycler_module_names=set([]),
             fw_magnetic_module_names=set([]),
-            fw_temperature_module_names=set([])
+            fw_temperature_module_names=set([]),
         )
-
 
     def is_no_modules(self) -> bool:
         return self == self.NO_MODULES()

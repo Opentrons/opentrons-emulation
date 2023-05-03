@@ -36,11 +36,13 @@ class BindMountInfo:
     DEST_PATH: str
 
 
-STATE_MANAGER_VENV_VOLUME = NamedVolumeInfo.from_string(EMULATOR_STATE_MANAGER_VENV_NAMED_VOLUME_STRING)
-STATE_MANAGER_WHEEL_VOLUME = NamedVolumeInfo.from_string(EMULATOR_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING)
-ENTRYPOINT_MOUNT = BindMountInfo(
-    ENTRYPOINT_FILE_LOCATION, "/entrypoint.sh"
+STATE_MANAGER_VENV_VOLUME = NamedVolumeInfo.from_string(
+    EMULATOR_STATE_MANAGER_VENV_NAMED_VOLUME_STRING
 )
+STATE_MANAGER_WHEEL_VOLUME = NamedVolumeInfo.from_string(
+    EMULATOR_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING
+)
+ENTRYPOINT_MOUNT = BindMountInfo(ENTRYPOINT_FILE_LOCATION, "/entrypoint.sh")
 MONOREPO_WHEEL_VOLUME = NamedVolumeInfo.from_string(MONOREPO_NAMED_VOLUME_STRING)
 OT3_FIRMWARE_BUILDER_NAMED_VOLUMES = {
     NamedVolumeInfo("gantry_x_executable", "/volumes/gantry_x_volume"),
@@ -49,8 +51,12 @@ OT3_FIRMWARE_BUILDER_NAMED_VOLUMES = {
     NamedVolumeInfo("gripper_executable", "/volumes/gripper_volume"),
     NamedVolumeInfo("pipettes_executable", "/volumes/pipettes_volume"),
     NamedVolumeInfo("bootloader_executable", "/volumes/bootloader_volume"),
-    NamedVolumeInfo.from_string(OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING),
-    NamedVolumeInfo.from_string(OT3_FIRMWARE_BUILDER_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING),
+    NamedVolumeInfo.from_string(
+        OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING
+    ),
+    NamedVolumeInfo.from_string(
+        OT3_FIRMWARE_BUILDER_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING
+    ),
 }
 
 

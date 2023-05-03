@@ -39,10 +39,12 @@ class ContainersWithMonorepoWheelVolume(ResultABC):
     ) -> "ContainersWithMonorepoWheelVolume":
         return cls(
             monorepo_builder_has_monorepo_wheel=confirm_named_volume_exists(
-                system_under_test.default_containers.monorepo_builder, MONOREPO_WHEEL_VOLUME
+                system_under_test.default_containers.monorepo_builder,
+                MONOREPO_WHEEL_VOLUME,
             ),
             emulator_proxy_has_monorepo_wheel=confirm_named_volume_exists(
-                system_under_test.module_containers.emulator_proxy, MONOREPO_WHEEL_VOLUME
+                system_under_test.module_containers.emulator_proxy,
+                MONOREPO_WHEEL_VOLUME,
             ),
             robot_server_has_monorepo_wheel=confirm_named_volume_exists(
                 system_under_test.default_containers.robot_server, MONOREPO_WHEEL_VOLUME

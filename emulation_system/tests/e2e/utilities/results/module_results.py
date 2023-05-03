@@ -19,9 +19,7 @@ from tests.e2e.utilities.helper_functions import (
     get_mounts,
     get_volumes,
 )
-from tests.e2e.utilities.results.results_abc import (
-    ModuleResultABC,
-)
+from tests.e2e.utilities.results.results_abc import ModuleResultABC
 
 
 @dataclass
@@ -33,7 +31,6 @@ class ModuleContainerNames(ModuleResultABC):
     fw_magnetic_module_names: Set[str]
     fw_temperature_module_names: Set[str]
 
-
     @classmethod
     def NO_MODULES_EXPECTED_RESULT(cls) -> "ModuleContainerNames":
         return cls(
@@ -42,7 +39,7 @@ class ModuleContainerNames(ModuleResultABC):
             hw_thermocycler_module_names=set([]),
             fw_thermocycler_module_names=set([]),
             fw_magnetic_module_names=set([]),
-            fw_temperature_module_names=set([])
+            fw_temperature_module_names=set([]),
         )
 
     @classmethod
@@ -67,7 +64,7 @@ class ModuleContainerNames(ModuleResultABC):
             ),
             fw_temperature_module_names=get_container_names(
                 system_under_test.module_containers.firmware_emulation_temperature_modules
-            )
+            ),
         )
 
     @classmethod
@@ -270,7 +267,6 @@ class ModuleBinaries(ModuleResultABC):
     def NO_MODULES_EXPECTED_RESULT(cls) -> "ModuleBinaries":
         return cls({}, {})
 
-
     @classmethod
     def _generate_heater_shaker_expected_binary_name_dict(
         cls, container_names: Set[str]
@@ -378,7 +374,6 @@ class ModuleResult(ModuleResultABC):
             module_binaries=ModuleBinaries.NO_MODULES_EXPECTED_RESULT(),
             builder_named_volumes=OpentronsModulesBuilderNamedVolumes.NO_MODULES_EXPECTED_RESULT(),
         )
-
 
     @classmethod
     def get_expected_results(

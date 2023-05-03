@@ -72,7 +72,7 @@ class OT3StateManagerService(AbstractService):
         """Generates value for volumes parameter."""
         volumes: IntermediateVolumes = [
             EMULATOR_STATE_MANAGER_VENV_NAMED_VOLUME_STRING,
-            EMULATOR_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING
+            EMULATOR_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING,
         ]
         volumes.extend(self._monorepo_source.generate_emulator_mount_strings())
 

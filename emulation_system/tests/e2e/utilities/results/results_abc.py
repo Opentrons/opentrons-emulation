@@ -23,10 +23,8 @@ class ResultABC(ABC):
         ...
 
 
-
 @dataclass
 class ModuleResultABC(ResultABC):
-
     @classmethod
     @abstractmethod
     def NO_MODULES_EXPECTED_RESULT(cls) -> "ModuleResultABC":

@@ -217,7 +217,6 @@ class OT3FirmwareSource(OpentronsBaseModel, Source, EmulatorSourceMixin):
             OT3_FIRMWARE_BUILDER_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING
         )
 
-
         if self.is_local():
             default_values.append(f"{self.source_location}:/{self.repo.value}")
 

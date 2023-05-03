@@ -37,8 +37,14 @@ COMMIT_SHA_REGEX = r"^[0-9a-f]{40}"
 
 MONOREPO_NAMED_VOLUME_STRING = "monorepo-wheels:/dist"
 
-OT3_FIRMWARE_BUILDER_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING = "state-manager-wheel:/ot3-firmware/state_manager/dist"
-EMULATOR_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING = "state-manager-wheel:/state_manager_dist"
+OT3_FIRMWARE_BUILDER_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING = (
+    "state-manager-wheel:/ot3-firmware/state_manager/dist"
+)
+EMULATOR_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING = (
+    "state-manager-wheel:/state_manager_dist"
+)
 
-OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING = "state_manager_venv:/ot3-firmware/build-host/.venv"
+OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING = (
+    "state_manager_venv:/ot3-firmware/build-host/.venv"
+)
 EMULATOR_STATE_MANAGER_VENV_NAMED_VOLUME_STRING = "state_manager_venv:/.venv"

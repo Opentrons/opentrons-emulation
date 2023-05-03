@@ -8,11 +8,11 @@ from tests.e2e.utilities.consts import (
     MONOREPO_WHEEL_VOLUME,
     OT3_FIRMWARE_BUILDER_NAMED_VOLUMES,
     STATE_MANAGER_VENV_VOLUME,
+    STATE_MANAGER_WHEEL_VOLUME,
     BindMountInfo,
     NamedVolumeInfo,
     OT3FirmwareEmulatorNamedVolumesMap,
     OT3FirmwareExpectedBinaryNames,
-    STATE_MANAGER_WHEEL_VOLUME,
 )
 from tests.e2e.utilities.helper_functions import (
     exec_in_container,
@@ -130,7 +130,13 @@ class OT3StateManagerNamedVolumes(ResultABC):
     def get_expected_results(
         cls: Type["OT3StateManagerNamedVolumes"], system_test_def: SystemTestDefinition
     ) -> "OT3StateManagerNamedVolumes":
-        return cls(volumes={MONOREPO_WHEEL_VOLUME, STATE_MANAGER_VENV_VOLUME, STATE_MANAGER_WHEEL_VOLUME})
+        return cls(
+            volumes={
+                MONOREPO_WHEEL_VOLUME,
+                STATE_MANAGER_VENV_VOLUME,
+                STATE_MANAGER_WHEEL_VOLUME,
+            }
+        )
 
 
 @dataclass

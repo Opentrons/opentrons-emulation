@@ -29,12 +29,12 @@ class ModuleContainers:
     @property
     def no_modules(self) -> bool:
         return (
-            self.hardware_emulation_thermocycler_modules == set([]) and
-            self.firmware_emulation_thermocycler_modules == set([]) and
-            self.hardware_emulation_heater_shaker_modules == set([]) and
-            self.firmware_emulation_heater_shaker_modules == set([]) and
-            self.firmware_emulation_magnetic_modules == set([]) and
-            self.firmware_emulation_temperature_modules == set([])
+            self.hardware_emulation_thermocycler_modules == set([])
+            and self.firmware_emulation_thermocycler_modules == set([])
+            and self.hardware_emulation_heater_shaker_modules == set([])
+            and self.firmware_emulation_heater_shaker_modules == set([])
+            and self.firmware_emulation_magnetic_modules == set([])
+            and self.firmware_emulation_temperature_modules == set([])
         )
 
     @property

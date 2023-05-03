@@ -13,8 +13,6 @@ from tests.e2e.test_definition.system_test_definition import (
     SystemTestDefinition,
 )
 
-
-
 OT3_REMOTE = SystemTestDefinition(
     test_id="ot3_remote",
     yaml_config_relative_path="samples/ci/ot3/ot3_remote.yaml",
@@ -66,7 +64,7 @@ OT3_AND_MODULES = SystemTestDefinition(
         fw_heater_shaker_module_names={"ot3-and-modules-heater-shaker-fw"},
         fw_thermocycler_module_names={"ot3-and-modules-thermocycler-fw"},
         fw_magnetic_module_names={"ot3-and-modules-magdeck"},
-        fw_temperature_module_names={"ot3-and-modules-tempdeck"}
+        fw_temperature_module_names={"ot3-and-modules-tempdeck"},
     ),
 )
 
