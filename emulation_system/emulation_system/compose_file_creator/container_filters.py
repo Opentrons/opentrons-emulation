@@ -33,6 +33,8 @@ from .images import (
 
 @unique
 class EmulationLevelFilter(Enum):
+    """Enum to provide context to different emulation level filters."""
+
     FIRMWARE_ONLY = auto()
     HARDWARE_ONLY = auto()
     ALL = auto()
@@ -233,25 +235,28 @@ class ContainerFilters(Enum):
 
     def __init__(
         self,
-        filter_name: str,
+        container_filter_name: str,
         images: List[FirmwareAndHardwareImages | SingleImage],
         emulation_level_filter: EmulationLevelFilter,
-    ):
+    ) -> None:
+        """Constructor to build a container filter.
 
-        self.filter_name = filter_name
+        Takes name of filter, images that should be returned in the filter,
+        and emulation level filter.
+        """
+        self.container_filter_name = container_filter_name
         self.images = images
         self.emulation_level_filter = emulation_level_filter
 
     @classmethod
     def _load_by_filter_name(cls, filter_name: str) -> ContainerFilters:
         """Load ContainerFilters object by filter_name"""
-
         valid_filters = []
         for name, value in cls.__members__.items():
-            if filter_name == value.filter_name:
+            if filter_name == value.container_filter_name:
                 return value
             else:
-                valid_filters.append(value.filter_name)
+                valid_filters.append(value.container_filter_name)
 
         raise InvalidFilterError(filter_name, valid_filters)
 
@@ -259,7 +264,13 @@ class ContainerFilters(Enum):
     def filter_services(
         cls, filter_name: str, services: List[Service]
     ) -> List[Service]:
+        """Using passed filter name, filter passed list of services.
 
+        Can prefix filter with "not-" to return the inverse of the filters.
+
+        For instance, "not-source-builders" would return all containers that
+        are not in the "source-builders" filter.
+        """
         service_list = []
         image_names = []
         inverse = False
@@ -280,7 +291,7 @@ class ContainerFilters(Enum):
                 case EmulationLevelFilter.HARDWARE_ONLY:
                     firmware_level = False
                     hardware_level = True
-                case other:
+                case _:
                     firmware_level = True
                     hardware_level = True
 
