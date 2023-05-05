@@ -48,3 +48,6 @@ OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING = (
     "state_manager_venv:/ot3-firmware/build-host/.venv"
 )
 EMULATOR_STATE_MANAGER_VENV_NAMED_VOLUME_STRING = "state_manager_venv:/.venv"
+
+OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME = "ot3-firmware-build-host-docker-cache:/ot3-firmware/build-host/"
+OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME = "ot3-firmware-stm32-tools-docker-cache:/ot3-firmware/stm32-tools/"

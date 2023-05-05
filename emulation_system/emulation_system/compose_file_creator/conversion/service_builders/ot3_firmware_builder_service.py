@@ -11,7 +11,9 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateVolumes,
 )
 from emulation_system.consts import (
+    OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME,
     OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING,
+    OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME,
 )
 
 from ...images import OT3FirmwareBuilderImage
@@ -85,6 +87,8 @@ class OT3FirmwareBuilderService(AbstractService):
         """Generates value for volumes parameter."""
         volumes: IntermediateVolumes = [
             OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING,
+            OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME,
+            OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME
         ]
         volumes.extend(self._ot3_source.generate_builder_mount_strings())
 
