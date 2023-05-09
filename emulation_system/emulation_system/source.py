@@ -10,6 +10,8 @@ from abc import ABC, abstractmethod
 from enum import Enum, auto
 from typing import List, Union
 
+from pydantic import Field
+
 from emulation_system.compose_file_creator.config_file_settings import (
     FileMount,
     Hardware,
@@ -25,6 +27,13 @@ from emulation_system.consts import (
     COMMIT_SHA_REGEX,
     ENTRYPOINT_FILE_LOCATION,
     MONOREPO_NAMED_VOLUME_STRING,
+    OPENTRONS_MODULES_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME,
+    OPENTRONS_MODULES_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME,
+    OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME,
+    OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING,
+    OT3_FIRMWARE_BUILDER_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING,
+    OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME, EMULATOR_STATE_MANAGER_VENV_NAMED_VOLUME_STRING,
+    EMULATOR_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING,
 )
 from opentrons_pydantic_base_model import OpentronsBaseModel
 
@@ -128,6 +137,9 @@ class Source(ABC):
         )
         return {env_var_to_use: value}
 
+    def generate_source_code_bind_mounts(self) -> List[str]:
+        return [f"{self.source_location}:/{self.repo.value}"] if self.is_local() else []
+
     def is_remote(self) -> bool:
         """Returns True if source is remote."""
         return self.source_state.is_remote()
@@ -147,7 +159,7 @@ class EmulatorSourceMixin:
         """Method to generate mount strings based off of hardware."""
         return [
             ENTRYPOINT_MOUNT_STRING,
-            f"{emulator_hw.hw_name}_executable:/executable",
+            f"{emulator_hw.hw_name}-executable:/executable",
         ]
 
 
@@ -156,6 +168,9 @@ class MonorepoSource(OpentronsBaseModel, Source):
 
     source_location: str
     repo: OpentronsRepository = OpentronsRepository.OPENTRONS
+    DEFAULT_BUILDER_VOLUMES: List[str] = Field(
+        [MONOREPO_NAMED_VOLUME_STRING], const=True
+    )
 
     @classmethod
     def validate(cls, v: str) -> "MonorepoSource":
@@ -178,12 +193,7 @@ class MonorepoSource(OpentronsBaseModel, Source):
 
     def generate_builder_mount_strings(self) -> List[str]:
         """Generates volume and bind mount strings for LocalMonorepoBuilderBuilder container."""
-        default_values = [MONOREPO_NAMED_VOLUME_STRING]
-
-        if self.is_local():
-            default_values.append(f"{self.source_location}:/{self.repo.value}")
-
-        return default_values
+        return self.generate_source_code_bind_mounts() + self.DEFAULT_BUILDER_VOLUMES
 
 
 class OT3FirmwareSource(OpentronsBaseModel, Source, EmulatorSourceMixin):
@@ -191,6 +201,22 @@ class OT3FirmwareSource(OpentronsBaseModel, Source, EmulatorSourceMixin):
 
     source_location: str
     repo: OpentronsRepository = OpentronsRepository.OT3_FIRMWARE
+    DEFAULT_BUILDER_VOLUMES: List[str] = Field(
+        [
+            OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING,
+            OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME,
+            OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME,
+            OT3_FIRMWARE_BUILDER_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING,
+        ],
+        const=True,
+    )
+
+    @staticmethod
+    def _generate_emulator_executable_volumes() -> List[str]:
+        return [
+            f"{member.named_volume_name}:{member.container_volume_storage_path}"
+            for member in OT3Hardware.__members__.values()
+        ]
 
     @classmethod
     def validate(cls, v: str) -> "OT3FirmwareSource":
@@ -207,16 +233,19 @@ class OT3FirmwareSource(OpentronsBaseModel, Source, EmulatorSourceMixin):
         return f"OT3FirmwareSource({super().__repr__()})"
 
     def generate_builder_mount_strings(self) -> List[str]:
-        """Generates volume and bint mount strings for LocalOT3FirmwareBuilderBuilder container."""
-        default_values = [
-            f"{member.named_volume_name}:{member.container_volume_storage_path}"
-            for member in OT3Hardware.__members__.values()
+        """Generates volume and bind mount strings for LocalOT3FirmwareBuilderBuilder container."""
+        return (
+            self.DEFAULT_BUILDER_VOLUMES
+            + self._generate_emulator_executable_volumes()
+            + self.generate_source_code_bind_mounts()
+        )
+
+    @staticmethod
+    def generate_state_manager_mount_strings() -> List[str]:
+        return [
+            EMULATOR_STATE_MANAGER_VENV_NAMED_VOLUME_STRING,
+            EMULATOR_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING
         ]
-
-        if self.is_local():
-            default_values.append(f"{self.source_location}:/{self.repo.value}")
-
-        return default_values
 
 
 class OpentronsModulesSource(OpentronsBaseModel, Source, EmulatorSourceMixin):
@@ -224,6 +253,23 @@ class OpentronsModulesSource(OpentronsBaseModel, Source, EmulatorSourceMixin):
 
     source_location: str
     repo: OpentronsRepository = OpentronsRepository.OPENTRONS_MODULES
+    DEFAULT_BUILDER_VOLUMES: List[str] = Field(
+        [
+            OPENTRONS_MODULES_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME,
+            OPENTRONS_MODULES_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME,
+        ],
+        const=True,
+    )
+
+    @staticmethod
+    def _generate_emulator_executable_volumes() -> List[str]:
+        return [
+            f"{hardware.named_volume_name}:{hardware.container_volume_storage_path}"
+            for hardware in Hardware.opentrons_modules_hardware()
+        ]
+
+    def _generate_necessary_bind_mounts(self) -> List[str]:
+        return [f"{self.source_location}:/{self.repo.value}"] if self.is_local() else []
 
     @classmethod
     def validate(cls, v: str) -> "OpentronsModulesSource":
@@ -241,15 +287,11 @@ class OpentronsModulesSource(OpentronsBaseModel, Source, EmulatorSourceMixin):
 
     def generate_builder_mount_strings(self) -> List[str]:
         """Method to generate volume and bint mount strings for builder classes."""
-        default_values = [
-            f"{hardware.named_volume_name}:{hardware.container_volume_storage_path}"
-            for hardware in Hardware.opentrons_modules_hardware()
-        ]
-
-        if self.is_local():
-            default_values.append(f"{self.source_location}:/{self.repo.value}")
-
-        return default_values
+        return (
+            self.DEFAULT_BUILDER_VOLUMES
+            + self._generate_emulator_executable_volumes()
+            + self._generate_necessary_bind_mounts()
+        )
 
 
 OpentronsSource = Union[MonorepoSource, OpentronsModulesSource, OT3FirmwareSource]
