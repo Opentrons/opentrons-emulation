@@ -1,5 +1,7 @@
 """Location for OT-3 e2e pytest functions."""
-from typing import Callable
+import copy
+from dataclasses import is_dataclass, fields
+from typing import Callable, Dict, Any
 
 import pytest
 
@@ -13,6 +15,33 @@ from tests.e2e.docker_interface.ot3_containers import OT3SystemUnderTest
 from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
 from tests.e2e.test_mappings import get_e2e_test_parameters
 from tests.e2e.utilities.results.results import FinalResult
+
+
+def __inner_convert_to_dict(obj):
+    """Method to handle converting dataclass into raw values.
+
+    Base logic pulled from source code of dataclasses.asdict.
+    Added handling for set objects. Removed handling for named tuples
+    """
+    if is_dataclass(obj):
+        result = []
+        for field in fields(obj):
+            value = __inner_convert_to_dict(getattr(obj, field.name))
+            result.append((field.name, value))
+        return dict(result)
+    elif isinstance(obj, (list, tuple)):
+        return type(obj)(__inner_convert_to_dict(v) for v in obj)
+    elif isinstance(obj, set):
+        return {frozenset((k, v) for k, v in __inner_convert_to_dict(instance).items()) for instance in obj}
+
+    elif isinstance(obj, dict):
+        return dict((__inner_convert_to_dict(k), __inner_convert_to_dict(v)) for k, v in obj.items())
+    else:
+        return copy.deepcopy(obj)
+
+
+def convert_to_dict(obj) -> Dict[str, Any]:
+    return __inner_convert_to_dict(obj)
 
 
 @pytest.mark.parametrize("test_def", get_e2e_test_parameters())
@@ -37,7 +66,6 @@ def test_e2e(
             test_def.yaml_config_relative_path
         ),
     )
-    assert (
-        FinalResult.get_actual_results(e2e_system).__dict__
-        == FinalResult.get_expected_results(test_def).__dict__
-    )
+    actual_results = convert_to_dict(FinalResult.get_actual_results(e2e_system).ot3_results)
+    expected_results = convert_to_dict(FinalResult.get_expected_results(test_def).ot3_results)
+    assert actual_results == expected_results

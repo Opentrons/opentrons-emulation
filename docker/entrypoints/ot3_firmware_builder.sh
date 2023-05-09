@@ -1,4 +1,4 @@
-#!/bin/bashasdict
+#!/bin/bash
 
 # Build all simulators in ot3-firmware
 # Create a directory for each simulator to live
