@@ -2,17 +2,18 @@
 
 All dataclasses should be declared as frozen
 """
-import os
 from dataclasses import dataclass
 
 from emulation_system.consts import (
-    DOCKERFILE_DIR_LOCATION,
     EMULATOR_STATE_MANAGER_VENV_NAMED_VOLUME_STRING,
     EMULATOR_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING,
     ENTRYPOINT_FILE_LOCATION,
     MONOREPO_NAMED_VOLUME_STRING,
     OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING,
     OT3_FIRMWARE_BUILDER_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING,
+    OPENTRONS_MODULES_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME,
+    OPENTRONS_MODULES_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME, OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME,
+    OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME,
 )
 
 
@@ -35,6 +36,9 @@ class BindMountInfo:
     SOURCE_PATH: str
     DEST_PATH: str
 
+    def __hash__(self):
+        return hash((self.SOURCE_PATH, self.DEST_PATH))
+
 
 STATE_MANAGER_VENV_VOLUME = NamedVolumeInfo.from_string(
     EMULATOR_STATE_MANAGER_VENV_NAMED_VOLUME_STRING
@@ -45,18 +49,35 @@ STATE_MANAGER_WHEEL_VOLUME = NamedVolumeInfo.from_string(
 ENTRYPOINT_MOUNT = BindMountInfo(ENTRYPOINT_FILE_LOCATION, "/entrypoint.sh")
 MONOREPO_WHEEL_VOLUME = NamedVolumeInfo.from_string(MONOREPO_NAMED_VOLUME_STRING)
 OT3_FIRMWARE_BUILDER_NAMED_VOLUMES = {
-    NamedVolumeInfo("gantry_x_executable", "/volumes/gantry_x_volume"),
-    NamedVolumeInfo("gantry_y_executable", "/volumes/gantry_y_volume"),
-    NamedVolumeInfo("head_executable", "/volumes/head_volume"),
-    NamedVolumeInfo("gripper_executable", "/volumes/gripper_volume"),
-    NamedVolumeInfo("pipettes_executable", "/volumes/pipettes_volume"),
-    NamedVolumeInfo("bootloader_executable", "/volumes/bootloader_volume"),
+    NamedVolumeInfo("gantry-x-executable", "/volumes/gantry-x-volume"),
+    NamedVolumeInfo("gantry-y-executable", "/volumes/gantry-y-volume"),
+    NamedVolumeInfo("head-executable", "/volumes/head-volume"),
+    NamedVolumeInfo("gripper-executable", "/volumes/gripper-volume"),
+    NamedVolumeInfo("pipettes-executable", "/volumes/pipettes-volume"),
+    NamedVolumeInfo("bootloader-executable", "/volumes/bootloader-volume"),
     NamedVolumeInfo.from_string(
         OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING
     ),
     NamedVolumeInfo.from_string(
         OT3_FIRMWARE_BUILDER_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING
     ),
+    NamedVolumeInfo.from_string(
+        OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME
+    ),
+    NamedVolumeInfo.from_string(
+        OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME
+    ),
+}
+
+OPENTRONS_MODULES_BUILDER_NAMED_VOLUMES = {
+    NamedVolumeInfo(
+        "heater-shaker-executable", "/volumes/heater-shaker-volume"
+    ),
+    NamedVolumeInfo(
+        "thermocycler-executable", "/volumes/thermocycler-volume"
+    ),
+    NamedVolumeInfo.from_string(OPENTRONS_MODULES_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME),
+    NamedVolumeInfo.from_string(OPENTRONS_MODULES_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME)
 }
 
 
@@ -64,32 +85,20 @@ OT3_FIRMWARE_BUILDER_NAMED_VOLUMES = {
 class OT3FirmwareEmulatorNamedVolumesMap:
     """Class representing expected named volume for each OT-3 emulator container."""
 
-    GANTRY_X = NamedVolumeInfo("gantry_x_executable", "/executable")
-    GANTRY_Y = NamedVolumeInfo("gantry_y_executable", "/executable")
-    HEAD = NamedVolumeInfo("head_executable", "/executable")
-    GRIPPER = NamedVolumeInfo("gripper_executable", "/executable")
-    PIPETTES = NamedVolumeInfo("pipettes_executable", "/executable")
-    BOOTLOADER = NamedVolumeInfo("bootloader_executable", "/executable")
-
-
-@dataclass(frozen=True)
-class OpentronsModulesBuilderNamedVolumesMap:
-    """Expected named volumes for opentrons-modules builder container."""
-
-    HEATER_SHAKER = NamedVolumeInfo(
-        "heater_shaker_executable", "/volumes/heater_shaker_volume"
-    )
-    THERMOCYCLER = NamedVolumeInfo(
-        "thermocycler_executable", "/volumes/thermocycler_volume"
-    )
+    GANTRY_X = NamedVolumeInfo("gantry-x-executable", "/executable")
+    GANTRY_Y = NamedVolumeInfo("gantry-y-executable", "/executable")
+    HEAD = NamedVolumeInfo("head-executable", "/executable")
+    GRIPPER = NamedVolumeInfo("gripper-executable", "/executable")
+    PIPETTES = NamedVolumeInfo("pipettes-executable", "/executable")
+    BOOTLOADER = NamedVolumeInfo("bootloader-executable", "/executable")
 
 
 @dataclass(frozen=True)
 class OpentronsModulesEmulatorNamedVolumes:
     """Expected named volumes for opentrons-modules emulator containers."""
 
-    HEATER_SHAKER = NamedVolumeInfo("heater_shaker_executable", "/executable")
-    THERMOCYCLER = NamedVolumeInfo("thermocycler_executable", "/executable")
+    HEATER_SHAKER = NamedVolumeInfo("heater-shaker-executable", "/executable")
+    THERMOCYCLER = NamedVolumeInfo("thermocycler-executable", "/executable")
 
 
 @dataclass(frozen=True)

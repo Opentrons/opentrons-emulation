@@ -38,16 +38,27 @@ COMMIT_SHA_REGEX = r"^[0-9a-f]{40}"
 MONOREPO_NAMED_VOLUME_STRING = "monorepo-wheels:/dist"
 
 OT3_FIRMWARE_BUILDER_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING = (
-    "state-manager-wheel:/ot3-firmware/state_manager/dist"
+    "state-manager-dist:/volumes/state-manager-dist"
 )
 EMULATOR_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING = (
-    "state-manager-wheel:/state_manager_dist"
+    "state-manager-dist:/state-manager-dist"
 )
 
 OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING = (
-    "state_manager_venv:/ot3-firmware/build-host/.venv"
+    "state-manager-venv:/volumes/state-manager-venv"
 )
-EMULATOR_STATE_MANAGER_VENV_NAMED_VOLUME_STRING = "state_manager_venv:/.venv"
+EMULATOR_STATE_MANAGER_VENV_NAMED_VOLUME_STRING = "state-manager-venv:/.venv"
 
-OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME = "ot3-firmware-build-host-docker-cache:/ot3-firmware/build-host/"
-OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME = "ot3-firmware-stm32-tools-docker-cache:/ot3-firmware/stm32-tools/"
+OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME = (
+    "ot3-firmware-build-host-docker-cache:/ot3-firmware/build-host"
+)
+OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME = (
+    "ot3-firmware-stm32-tools-docker-cache:/ot3-firmware/stm32-tools"
+)
+
+OPENTRONS_MODULES_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME = (
+    "opentrons-modules-build-host-docker-cache:/opentrons-modules/build-host"
+)
+OPENTRONS_MODULES_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME = (
+    "opentrons-modules-stm32-tools-docker-cache:/opentrons-modules/stm32-tools"
+)

@@ -10,11 +10,6 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.consts import (
-    OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME,
-    OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING,
-    OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME,
-)
 
 from ...images import OT3FirmwareBuilderImage
 from .abstract_service import AbstractService
@@ -85,14 +80,7 @@ class OT3FirmwareBuilderService(AbstractService):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        volumes: IntermediateVolumes = [
-            OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING,
-            OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME,
-            OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME
-        ]
-        volumes.extend(self._ot3_source.generate_builder_mount_strings())
-
-        return volumes
+        return self._ot3_source.generate_builder_mount_strings()
 
     def generate_ports(self) -> Optional[IntermediatePorts]:
         """Generates value for ports parameter."""

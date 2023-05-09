@@ -10,8 +10,7 @@ from tests.e2e.utilities.consts import (
     BindMountInfo,
     ModulesExpectedBinaryNames,
     NamedVolumeInfo,
-    OpentronsModulesBuilderNamedVolumesMap,
-    OpentronsModulesEmulatorNamedVolumes,
+    OpentronsModulesEmulatorNamedVolumes, OPENTRONS_MODULES_BUILDER_NAMED_VOLUMES,
 )
 from tests.e2e.utilities.helper_functions import (
     exec_in_container,
@@ -335,7 +334,6 @@ class OpentronsModulesBuilderNamedVolumes(ModuleResultABC):
         cls: Type["OpentronsModulesBuilderNamedVolumes"],
         system_under_test: E2EHostSystem,
     ) -> "OpentronsModulesBuilderNamedVolumes":
-        actual_volumes: Set[NamedVolumeInfo] = set([])
         return cls(
             volumes=get_volumes(
                 system_under_test.module_containers.opentrons_modules_builder
@@ -348,10 +346,7 @@ class OpentronsModulesBuilderNamedVolumes(ModuleResultABC):
         system_test_def: SystemTestDefinition,
     ) -> "OpentronsModulesBuilderNamedVolumes":
         return cls(
-            volumes={
-                OpentronsModulesBuilderNamedVolumesMap.HEATER_SHAKER,
-                OpentronsModulesBuilderNamedVolumesMap.THERMOCYCLER,
-            }
+            volumes=OPENTRONS_MODULES_BUILDER_NAMED_VOLUMES
         )
 
 

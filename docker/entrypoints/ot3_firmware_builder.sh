@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bashasdict
 
 # Build all simulators in ot3-firmware
 # Create a directory for each simulator to live
@@ -24,22 +24,25 @@ mkdir -p \
   /volumes/gantry_y_volume \
   /volumes/bootloader_volume \
   /volumes/gripper_volume \
-  /volumes/state_manager_venv
+  /volumes/state-manager-venv \
+  /volumes/state-manager-dist
 
 echo "Copying simulator files to simulator directories"
 
-rm -f /volumes/pipettes_volume/pipettes-simulator
-rm -f /volumes/head_volume/head-simulator
-rm -f /volumes/gantry_x_volume/gantry-x-simulator
-rm -f /volumes/gantry_y_volume/gantry-y-simulator
-rm -f /volumes/bootloader_volume/bootloader-simulator
-rm -f /volumes/gripper_volume/gripper-simulator
-rm -rf /volumes/state_manager_venv/
+rm -f /volumes/pipettes-volume/pipettes-simulator
+rm -f /volumes/head-volume/head-simulator
+rm -f /volumes/gantry_x-volume/gantry-x-simulator
+rm -f /volumes/gantry_y-volume/gantry-y-simulator
+rm -f /volumes/bootloader-volume/bootloader-simulator
+rm -f /volumes/gripper-volume/gripper-simulator
+rm -rf /volumes/state-manager-venv/*
+rm -rf /volumes/state-manager-dist/*
 
-cp /ot3-firmware/build-host/pipettes/simulator/pipettes-single-simulator /volumes/pipettes_volume/pipettes-simulator
-cp /ot3-firmware/build-host/head/simulator/head-simulator /volumes/head_volume/head-simulator
-cp /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /volumes/gantry_x_volume/gantry-x-simulator
-cp /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /volumes/gantry_y_volume/gantry-y-simulator
-cp /ot3-firmware/build-host/bootloader/simulator/bootloader-simulator /volumes/bootloader_volume/bootloader-simulator
-cp /ot3-firmware/build-host/gripper/simulator/gripper-simulator /volumes/gripper_volume/gripper-simulator
-cp -r /ot3-firmware/build-host/.venv /volumes/state_manager_venv/
+cp /ot3-firmware/build-host/pipettes/simulator/pipettes-single-simulator /volumes/pipettes-volume/pipettes-simulator
+cp /ot3-firmware/build-host/head/simulator/head-simulator /volumes/head-volume/head-simulator
+cp /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /volumes/gantry-x-volume/gantry-x-simulator
+cp /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /volumes/gantry-y-volume/gantry-y-simulator
+cp /ot3-firmware/build-host/bootloader/simulator/bootloader-simulator /volumes/bootloader-volume/bootloader-simulator
+cp /ot3-firmware/build-host/gripper/simulator/gripper-simulator /volumes/gripper-volume/gripper-simulator
+cp -r /ot3-firmware/build-host/.venv/* /volumes/state-manager-venv/
+cp -r /ot3-firmware/state_manager/dist/* /volumes/state-manager-dist/

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Type
+from typing import Optional, Type, Dict, Any
 
 from tests.e2e.docker_interface.e2e_system import E2EHostSystem, ExpectedBindMounts
 from tests.e2e.docker_interface.module_containers import ModuleContainers
