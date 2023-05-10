@@ -3,14 +3,14 @@
 from dataclasses import dataclass
 from typing import Optional, Type
 
-from tests.e2e.docker_interface.e2e_system import E2EHostSystem
-from tests.e2e.test_definition.build_arg_configurations import BuildArgConfigurations
-from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
 from tests.e2e.consts import MONOREPO_WHEEL_VOLUME
+from tests.e2e.docker_interface.e2e_system import E2EHostSystem
 from tests.e2e.helper_functions import confirm_named_volume_exists
 from tests.e2e.results.module_results import ModuleResult
 from tests.e2e.results.ot3_results import OT3Result
 from tests.e2e.results.results_abc import ResultABC
+from tests.e2e.test_definition.build_arg_configurations import BuildArgConfigurations
+from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
 
 
 @dataclass

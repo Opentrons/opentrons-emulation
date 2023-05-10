@@ -5,8 +5,6 @@ from typing import Dict, List, Set, Type
 
 from docker.models.containers import Container  # type: ignore[import]
 
-from tests.e2e.docker_interface.e2e_system import E2EHostSystem
-from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
 from tests.e2e.consts import (
     ENTRYPOINT_MOUNT,
     OPENTRONS_MODULES_BUILDER_NAMED_VOLUMES,
@@ -15,6 +13,7 @@ from tests.e2e.consts import (
     NamedVolumeInfo,
     OpentronsModulesEmulatorNamedVolumes,
 )
+from tests.e2e.docker_interface.e2e_system import E2EHostSystem
 from tests.e2e.helper_functions import (
     exec_in_container,
     get_container_names,
@@ -22,6 +21,7 @@ from tests.e2e.helper_functions import (
     get_volumes,
 )
 from tests.e2e.results.results_abc import ModuleResultABC
+from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
 
 
 @dataclass

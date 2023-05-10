@@ -274,10 +274,7 @@ def test_ot3_mounts(
         check_correct_number_of_volumes(emulator, 2)
         assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", emulator)
         assert emulator.image is not None
-        hardware_name = (
-            emulator.image.replace("ot3-", "")
-            .replace("-hardware", "")
-        )
+        hardware_name = emulator.image.replace("ot3-", "").replace("-hardware", "")
 
         assert partial_string_in_mount(
             f"{hardware_name}-executable:/executable", emulator

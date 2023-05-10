@@ -14,6 +14,7 @@ from emulation_system.compose_file_creator.output.runtime_compose_file_model imp
     RuntimeComposeFileModel,
 )
 from emulation_system.consts import ROOT_DIR
+from tests.e2e.consts import BindMountInfo
 from tests.e2e.docker_interface.e2e_system import (
     DefaultContainers,
     E2EHostSystem,
@@ -21,7 +22,6 @@ from tests.e2e.docker_interface.e2e_system import (
 )
 from tests.e2e.docker_interface.module_containers import ModuleContainers
 from tests.e2e.docker_interface.ot3_containers import OT3SystemUnderTest
-from tests.e2e.consts import BindMountInfo
 from tests.e2e.helper_functions import get_container, get_containers
 
 

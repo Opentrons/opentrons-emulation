@@ -8,10 +8,10 @@ from docker.models.containers import Container  # type: ignore[import]
 from emulation_system.compose_file_creator.config_file_settings import (
     RepoToBuildArgMapping,
 )
-
-from ..test_definition.build_arg_configurations import BuildArgConfigurations
 from tests.e2e.consts import BindMountInfo
 from tests.e2e.helper_functions import get_mounts
+
+from ..test_definition.build_arg_configurations import BuildArgConfigurations
 from .module_containers import ModuleContainers
 from .ot3_containers import OT3SystemUnderTest
 
