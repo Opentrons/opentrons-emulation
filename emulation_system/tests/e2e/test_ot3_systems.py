@@ -8,7 +8,7 @@ import pytest
 from tests.e2e.docker_interface.e2e_system import E2EHostSystem
 from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
 from tests.e2e.test_mappings import get_e2e_test_parameters
-from e2e.results import FinalResult
+from tests.e2e.results import FinalResult
 
 
 def __inner_convert_to_dict(obj):  # noqa: ANN001, ANN203

@@ -10,8 +10,8 @@ from emulation_system.compose_file_creator.config_file_settings import (
 )
 
 from ..test_definition.build_arg_configurations import BuildArgConfigurations
-from e2e.consts import BindMountInfo
-from e2e.helper_functions import get_mounts
+from tests.e2e.consts import BindMountInfo
+from tests.e2e.helper_functions import get_mounts
 from .module_containers import ModuleContainers
 from .ot3_containers import OT3SystemUnderTest
 

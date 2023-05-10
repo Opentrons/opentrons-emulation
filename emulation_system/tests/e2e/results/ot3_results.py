@@ -5,7 +5,7 @@ from typing import Set, Type
 
 from tests.e2e.docker_interface.e2e_system import E2EHostSystem
 from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
-from e2e.consts import (
+from tests.e2e.consts import (
     ENTRYPOINT_MOUNT,
     MONOREPO_WHEEL_VOLUME,
     OT3_FIRMWARE_BUILDER_NAMED_VOLUMES,
@@ -16,12 +16,12 @@ from e2e.consts import (
     OT3FirmwareEmulatorNamedVolumesMap,
     OT3FirmwareExpectedBinaryNames,
 )
-from e2e.helper_functions import (
+from tests.e2e.helper_functions import (
     exec_in_container,
     get_mounts,
     get_volumes,
 )
-from e2e.results.results_abc import ResultABC
+from tests.e2e.results.results_abc import ResultABC
 
 
 @dataclass

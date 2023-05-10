@@ -9,7 +9,7 @@ from emulation_system.compose_file_creator.config_file_settings import (
     RepoToBuildArgMapping,
 )
 from tests.e2e.test_definition.build_arg_configurations import BuildArgConfigurations
-from e2e.helper_functions import get_mounts
+from tests.e2e.helper_functions import get_mounts
 
 
 @dataclass

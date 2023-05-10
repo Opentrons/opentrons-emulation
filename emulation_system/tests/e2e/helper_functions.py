@@ -7,7 +7,7 @@ from docker.errors import NotFound as ContainerNotFoundError  # type: ignore[imp
 from docker.models.containers import Container  # type: ignore[import]
 
 from emulation_system.compose_file_creator import Service
-from e2e.consts import BindMountInfo, NamedVolumeInfo
+from tests.e2e.consts import BindMountInfo, NamedVolumeInfo
 
 
 def get_volumes(container: Optional[Container]) -> Set[NamedVolumeInfo]:

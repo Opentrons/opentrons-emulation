@@ -21,8 +21,8 @@ from tests.e2e.docker_interface.e2e_system import (
 )
 from tests.e2e.docker_interface.module_containers import ModuleContainers
 from tests.e2e.docker_interface.ot3_containers import OT3SystemUnderTest
-from e2e.consts import BindMountInfo
-from e2e.helper_functions import get_container, get_containers
+from tests.e2e.consts import BindMountInfo
+from tests.e2e.helper_functions import get_container, get_containers
 
 
 @pytest.fixture
