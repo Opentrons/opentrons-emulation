@@ -23,10 +23,10 @@ from emulation_system.compose_file_creator.input.hardware_models import (
 )
 
 MODULE_IMAGE_NAMES = (
-    HeaterShakerModuleImages().get_image_names()
-    + MagneticModuleImages().get_image_names()
-    + TemperatureModuleImages().get_image_names()
-    + ThermocyclerModuleImages().get_image_names()
+    HeaterShakerModuleImages().get_image_names(True, True)
+    + MagneticModuleImages().get_image_names(True, True)
+    + TemperatureModuleImages().get_image_names(True, True)
+    + ThermocyclerModuleImages().get_image_names(True, True)
 )
 
 
@@ -148,6 +148,7 @@ def test_modules_healthcheck(
         ot2_and_modules, testing_global_em_config, False
     ).services
     assert services is not None
+
     services_to_check = [
         service
         for service in services.values()
