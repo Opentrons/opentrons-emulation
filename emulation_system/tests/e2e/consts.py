@@ -9,11 +9,12 @@ from emulation_system.consts import (
     EMULATOR_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING,
     ENTRYPOINT_FILE_LOCATION,
     MONOREPO_NAMED_VOLUME_STRING,
+    OPENTRONS_MODULES_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME,
+    OPENTRONS_MODULES_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME,
+    OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME,
     OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING,
     OT3_FIRMWARE_BUILDER_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING,
-    OPENTRONS_MODULES_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME,
-    OPENTRONS_MODULES_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME, OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME,
-    OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME,
+    OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME,
 )
 
 
@@ -26,6 +27,7 @@ class NamedVolumeInfo:
 
     @classmethod
     def from_string(cls, string: str) -> "NamedVolumeInfo":
+        """Build NamedVolumeInfo class from docker syntax string."""
         return cls(*string.split(":"))
 
 
@@ -35,7 +37,6 @@ class BindMountInfo:
 
     SOURCE_PATH: str
     DEST_PATH: str
-
 
 
 STATE_MANAGER_VENV_VOLUME = NamedVolumeInfo.from_string(
@@ -59,23 +60,19 @@ OT3_FIRMWARE_BUILDER_NAMED_VOLUMES = {
     NamedVolumeInfo.from_string(
         OT3_FIRMWARE_BUILDER_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING
     ),
-    NamedVolumeInfo.from_string(
-        OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME
-    ),
-    NamedVolumeInfo.from_string(
-        OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME
-    ),
+    NamedVolumeInfo.from_string(OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME),
+    NamedVolumeInfo.from_string(OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME),
 }
 
 OPENTRONS_MODULES_BUILDER_NAMED_VOLUMES = {
-    NamedVolumeInfo(
-        "heater-shaker-executable", "/volumes/heater-shaker-volume"
+    NamedVolumeInfo("heater-shaker-executable", "/volumes/heater-shaker-volume"),
+    NamedVolumeInfo("thermocycler-executable", "/volumes/thermocycler-volume"),
+    NamedVolumeInfo.from_string(
+        OPENTRONS_MODULES_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME
     ),
-    NamedVolumeInfo(
-        "thermocycler-executable", "/volumes/thermocycler-volume"
+    NamedVolumeInfo.from_string(
+        OPENTRONS_MODULES_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME
     ),
-    NamedVolumeInfo.from_string(OPENTRONS_MODULES_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME),
-    NamedVolumeInfo.from_string(OPENTRONS_MODULES_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME)
 }
 
 

@@ -25,6 +25,8 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
 )
 from emulation_system.consts import (
     COMMIT_SHA_REGEX,
+    EMULATOR_STATE_MANAGER_VENV_NAMED_VOLUME_STRING,
+    EMULATOR_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING,
     ENTRYPOINT_FILE_LOCATION,
     MONOREPO_NAMED_VOLUME_STRING,
     OPENTRONS_MODULES_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME,
@@ -32,8 +34,7 @@ from emulation_system.consts import (
     OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME,
     OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING,
     OT3_FIRMWARE_BUILDER_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING,
-    OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME, EMULATOR_STATE_MANAGER_VENV_NAMED_VOLUME_STRING,
-    EMULATOR_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING,
+    OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME,
 )
 from opentrons_pydantic_base_model import OpentronsBaseModel
 
@@ -138,6 +139,7 @@ class Source(ABC):
         return {env_var_to_use: value}
 
     def generate_source_code_bind_mounts(self) -> List[str]:
+        """Creates bind mounts that connect local code from host to container."""
         return [f"{self.source_location}:/{self.repo.value}"] if self.is_local() else []
 
     def is_remote(self) -> bool:
@@ -242,9 +244,10 @@ class OT3FirmwareSource(OpentronsBaseModel, Source, EmulatorSourceMixin):
 
     @staticmethod
     def generate_state_manager_mount_strings() -> List[str]:
+        """Generate mount strings specific to state_manager."""
         return [
             EMULATOR_STATE_MANAGER_VENV_NAMED_VOLUME_STRING,
-            EMULATOR_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING
+            EMULATOR_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING,
         ]
 
 
