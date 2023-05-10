@@ -10,6 +10,10 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
+from emulation_system.consts import (
+    EMULATOR_STATE_MANAGER_VENV_NAMED_VOLUME_STRING,
+    EMULATOR_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING,
+)
 
 from ...images import OT3StateManagerImage
 from .abstract_service import AbstractService
@@ -66,12 +70,10 @@ class OT3StateManagerService(AbstractService):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        volumes: IntermediateVolumes = [
-            "state_manager_venv:/.venv",
-        ]
-        volumes.extend(self._monorepo_source.generate_emulator_mount_strings())
-
-        return volumes
+        return (
+            self._monorepo_source.generate_emulator_mount_strings() +
+            self._ot3_source.generate_state_manager_mount_strings()
+        )
 
     def generate_ports(self) -> Optional[IntermediatePorts]:
         """Generates value for ports parameter."""

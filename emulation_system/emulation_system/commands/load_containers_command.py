@@ -54,8 +54,6 @@ class LoadContainersCommand:
         print(
             "\n".join(
                 cast(str, container.container_name)
-                for container in system.load_containers_by_filter(
-                    self.filter, self.local_only
-                )
+                for container in system.load_containers_by_filter(self.filter)
             )
         )

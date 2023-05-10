@@ -1,15 +1,31 @@
 #!/bin/bash
 
-build_module_simulator() {
-  (cd /opentrons-modules && cmake --preset=stm32-host-gcc10 . && cmake --build ./build-stm32-host -j $(expr $(nproc) - 1) --target $1)
+build_opentrons_modules() {
+  (cd /opentrons-modules && cmake --preset=stm32-host-gcc10 .)
 }
 
+build_module_simulator() {
+  (cd /opentrons-modules && cmake --build ./build-stm32-host -j $(expr $(nproc) - 1) --target $1)
+}
+
+echo "Building opentrons-modules"
+build_opentrons_modules
+
+echo "Building Heater-Shaker Module simulator"
 build_module_simulator "heater-shaker-simulator"
+
+echo "Building Thermocycler Module simulator"
 build_module_simulator "thermocycler-gen2-simulator"
 
+echo "Creating simulator directories (If needed)"
 mkdir -p \
-  /volumes/heater_shaker_volume \
-  /volumes/thermocycler_volume
+  /volumes/heater-shaker-volume \
+  /volumes/thermocycler-volume
 
-cp /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /volumes/heater_shaker_volume/heater-shaker-simulator
-cp /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-gen2/simulator/thermocycler-gen2-simulator /volumes/thermocycler_volume/thermocycler-simulator
+echo "Removing any existing simulators from simulator directories"
+rm -f /volumes/heater-shaker-volume/*
+rm -f /volumes/thermocycler-volume/*
+
+echo "Copying built simulator files to simulator directories"
+cp /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /volumes/heater-shaker-volume/heater-shaker-simulator
+cp /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-gen2/simulator/thermocycler-gen2-simulator /volumes/thermocycler-volume/thermocycler-simulator
