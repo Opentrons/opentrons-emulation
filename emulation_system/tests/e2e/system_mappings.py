@@ -58,7 +58,6 @@ OT3_AND_MODULES = SystemTestDefinition(
     ot3_firmware_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
     opentrons_modules_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
     module_configuration=ModuleConfiguration(
-        total_number_of_modules=6,
         hw_heater_shaker_module_names={"ot3-and-modules-heater-shaker"},
         hw_thermocycler_module_names={"ot3-and-modules-thermocycler"},
         fw_heater_shaker_module_names={"ot3-and-modules-heater-shaker-fw"},

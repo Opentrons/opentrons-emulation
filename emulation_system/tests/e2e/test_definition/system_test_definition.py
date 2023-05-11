@@ -9,7 +9,6 @@ from tests.e2e.test_definition.build_arg_configurations import BuildArgConfigura
 class ModuleConfiguration:
     """Dataclass describing modules expected to exist."""
 
-    total_number_of_modules: int
     hw_heater_shaker_module_names: Set[str]
     hw_thermocycler_module_names: Set[str]
     fw_heater_shaker_module_names: Set[str]
@@ -21,7 +20,6 @@ class ModuleConfiguration:
     def NO_MODULES(cls) -> "ModuleConfiguration":
         """Helper function defining what this class should look like if no modules exist."""
         return cls(
-            total_number_of_modules=0,
             hw_heater_shaker_module_names=set([]),
             hw_thermocycler_module_names=set([]),
             fw_heater_shaker_module_names=set([]),
@@ -33,6 +31,19 @@ class ModuleConfiguration:
     def is_no_modules(self) -> bool:
         """Does the system have no modules?"""
         return self == self.NO_MODULES()
+
+    @property
+    def total_number_of_modules(self) -> int:
+        temp_set = set([])
+        temp_set.update(
+            self.hw_heater_shaker_module_names,
+            self.hw_thermocycler_module_names,
+            self.fw_heater_shaker_module_names,
+            self.fw_thermocycler_module_names,
+            self.fw_magnetic_module_names,
+            self.fw_temperature_module_names,
+        )
+        return len(temp_set)
 
 
 @dataclass
