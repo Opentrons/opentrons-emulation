@@ -24,10 +24,13 @@ def __inner_convert_to_dict(obj):  # noqa: ANN001, ANN203
     elif isinstance(obj, (list, tuple)):
         return type(obj)(__inner_convert_to_dict(v) for v in obj)
     elif isinstance(obj, set):
-        return {
-            frozenset((k, v) for k, v in __inner_convert_to_dict(instance).items())
-            for instance in obj
-        }
+        if len(obj) > 1:
+            return {
+                frozenset((k, v) for k, v in __inner_convert_to_dict(instance).items())
+                for instance in obj
+            }
+        else:
+            return obj
 
     elif isinstance(obj, dict):
         return dict(
