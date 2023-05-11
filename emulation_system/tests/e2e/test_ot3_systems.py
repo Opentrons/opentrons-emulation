@@ -7,7 +7,7 @@ from tests.e2e.dataclass_helpers import convert_to_dict
 from tests.e2e.docker_interface.e2e_system import E2EHostSystem
 from tests.e2e.results.results import FinalResult
 from tests.e2e.test_definition.system_test_definition import SystemTestDefinition
-from tests.e2e.test_mappings import get_e2e_test_parameters
+from tests.e2e.system_mappings import get_e2e_test_parameters
 
 
 
