@@ -186,9 +186,7 @@ class ServiceOrchestrator:
     def build_services(self) -> DockerServices:
         """Build services."""
         emulator_proxy_name = self._add_emulator_proxy_service()
-        smoothie_name = (
-            self._add_ot2_services() if self._config_model.has_ot2 else None
-        )
+        smoothie_name = self._add_ot2_services() if self._config_model.has_ot2 else None
         can_server_service_name = (
             self._add_ot3_services() if self._config_model.has_ot3 else None
         )
