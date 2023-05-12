@@ -34,7 +34,8 @@ class ModuleConfiguration:
 
     @property
     def total_number_of_modules(self) -> int:
-        temp_set = set([])
+        """Get expected number of modules."""
+        temp_set: Set[str] = set([])
         temp_set.update(
             self.hw_heater_shaker_module_names,
             self.hw_thermocycler_module_names,

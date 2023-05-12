@@ -1,3 +1,5 @@
+"""Scripts for getting information about e2e tests"""
+
 import argparse
 
 from tests.e2e.system_mappings import get_test_ids, get_test_path

@@ -1,6 +1,5 @@
 """Module for storing e2e test configurations."""
 
-import argparse
 import json
 from typing import Dict, List
 

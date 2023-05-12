@@ -2,12 +2,14 @@
 
 import copy
 from dataclasses import fields, is_dataclass
-from typing import ClassVar, Dict, Protocol, Any
+from typing import Any, ClassVar, Dict, Protocol
 
 
 class IsDataclass(Protocol):
     """Determine from structural sub typing is an object is a dataclass."""
+
     __dataclass_fields__: ClassVar[Dict]
+
 
 def __inner_convert_to_dict(obj):  # noqa: ANN001, ANN203
     """Method to handle converting dataclass into raw values.
