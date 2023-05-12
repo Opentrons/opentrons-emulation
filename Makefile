@@ -239,7 +239,7 @@ refresh-dev-ci:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="ot3-state-manager" \
-		| xargs -rn 1 -I{} docker exec -t {} bash -c "state_manager_python -m pip install /state_manager_dist/* /dist/*"
+		| xargs -rn 1 -I{} docker exec -t {} bash -c "state_manager_python -m pip install /state-manager-dist/* /dist/*"
 
 .PHONY: start-executables
 start-executables:

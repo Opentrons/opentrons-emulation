@@ -84,9 +84,7 @@ def test_simple_ot3_values(
         assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", service)
 
         assert service.container_name is not None
-        executable_name = (
-            f'{service.container_name.replace("ot3-", "").replace("-", "_")}_executable'
-        )
+        executable_name = f'{service.container_name.replace("ot3-", "")}-executable'
         assert partial_string_in_mount(f"{executable_name}:/executable", service)
 
         # Misc

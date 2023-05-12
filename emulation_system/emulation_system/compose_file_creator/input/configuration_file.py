@@ -131,7 +131,7 @@ class SystemConfigurationModel(OpentronsBaseModel):
         new_dict: Dict[str, Containers] = {}
         if self.robot_exists(self.robot):
             new_dict[self.robot.id] = self.robot  # type: ignore[union-attr, assignment]
-        if self.modules_exist:
+        if self.modules_exist:  # type: ignore [truthy-function]
             for module in self.modules:  # type: ignore[union-attr]
                 new_dict[module.id] = module
         return new_dict

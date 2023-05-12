@@ -21,17 +21,13 @@ class FirmwareAndHardwareImages:
         only_hardware_level: bool = False,
     ) -> List[str]:
         """Get list of image names for image."""
-        images: List[str]
+        images: List[str] = []
         if only_hardware_level and self.hardware_image_name is not None:
-            images = [self.hardware_image_name]
-        elif only_firmware_level and self.firmware_image_name is not None:
-            images = [self.firmware_image_name]
-        else:
-            images = [
-                image_name
-                for image_name in [self.firmware_image_name, self.hardware_image_name]
-                if image_name is not None
-            ]
+            images.append(self.hardware_image_name)
+
+        if only_firmware_level and self.firmware_image_name is not None:
+            images.append(self.firmware_image_name)
+
         return images
 
 

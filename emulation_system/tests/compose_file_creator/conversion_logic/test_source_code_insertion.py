@@ -241,12 +241,19 @@ def test_ot3_mounts(
     # should always have entrypoint.sh and monorepo-wheels
     check_correct_number_of_volumes(robot_server, 2)
     check_correct_number_of_volumes(can_server, 2)
-    check_correct_number_of_volumes(state_manager, 3)
+    check_correct_number_of_volumes(state_manager, 4)
 
     check_correct_number_of_volumes(monorepo_builder, 2 if monorepo_is_local else 1)
 
+    # Firmware builder should have the following volumes:
+    # 1 volume per emulator for copying the binaries over
+    # State Manager Venv
+    # State Manager Wheel
+    # build-host cache override
+    # stm32-tools cache override
+
     check_correct_number_of_volumes(
-        ot3_firmware_builder, len(emulators) + (2 if ot3_firmware_is_local else 1)
+        ot3_firmware_builder, len(emulators) + (5 if ot3_firmware_is_local else 4)
     )
 
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", robot_server)
@@ -267,18 +274,15 @@ def test_ot3_mounts(
         check_correct_number_of_volumes(emulator, 2)
         assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", emulator)
         assert emulator.image is not None
-        hardware_name = (
-            emulator.image.replace("ot3-", "")
-            .replace("-hardware", "")
-            .replace("-", "_")
-        )
+        hardware_name = emulator.image.replace("ot3-", "").replace("-hardware", "")
+
         assert partial_string_in_mount(
-            f"{hardware_name}_executable:/executable", emulator
+            f"{hardware_name}-executable:/executable", emulator
         )
 
         # Note checking volumes on ot3_firmware_builder here
         assert partial_string_in_mount(
-            f"{hardware_name}_executable:/volumes/{hardware_name}_volume",
+            f"{hardware_name}-executable:/volumes/{hardware_name}-volume",
             ot3_firmware_builder,
         )
 
@@ -385,8 +389,8 @@ def test_module_opentrons_modules_mounts(
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", module)
 
     assert module.image is not None
-    module_type = module.image.replace("-hardware", "").replace("-", "_")
-    assert partial_string_in_mount(f"{module_type}_executable:/executable", module)
+    module_type = module.image.replace("-hardware", "")
+    assert partial_string_in_mount(f"{module_type}-executable:/executable", module)
 
 
 @pytest.mark.parametrize(

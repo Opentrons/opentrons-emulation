@@ -23,12 +23,12 @@ test:
 
 .PHONY: get-e2e-test-ids
 get-e2e-test-ids:
-	@poetry run python tests/e2e/test_mappings.py get-test-ids
+	@poetry run python tests/e2e/scripts/e2e_interface.py get-test-ids
 
 .PHONY: get-e2e-test-path
 get-e2e-test-path:
 	$(if $(test_id),,$(error test_id variable required))
-	@poetry run python tests/e2e/test_mappings.py get-test-path ${test_id}
+	@poetry run python tests/e2e/scripts/e2e_interface.py get-test-path ${test_id}
 
 
 .PHONY: execute-e2e-test
