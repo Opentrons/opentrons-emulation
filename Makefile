@@ -9,7 +9,7 @@ COMPOSE_RUN_COMMAND := DOCKER_BUILDKIT=1 docker-compose -f - up --remove-orphans
 COMPOSE_KILL_COMMAND := docker-compose -f - kill
 COMPOSE_START_COMMAND := docker-compose -f - start
 COMPOSE_STOP_COMMAND := docker-compose -f - stop
-COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force
+COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force && docker volume prune -f
 COMPOSE_LOGS_COMMAND := docker-compose -f - logs -f
 COMPOSE_RESTART_COMMAND := docker-compose -f - restart --timeout 1
 BUILD_COMMAND := docker buildx bake --load --file ~/tmp-compose.yaml
@@ -190,7 +190,66 @@ can-mon:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="can-server" \
-		| xargs -o -I{} docker exec -it {} monorepo_python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
+		| xargs -orn 1 -I{} docker exec -it {} monorepo_python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
+
+.PHONY: refresh-dev
+refresh-dev:
+	$(if $(file_path),,$(error file_path variable required))
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="source-builders" \
+		| xargs -P 4 -orn 1 -I{} docker exec -t {} /build.sh
+
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="monorepo-containers" \
+		| xargs -P 6 -orn 1 -I{} docker exec -t {} bash -c "monorepo_python -m pip install /dist/*"
+
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="ot3-state-manager" \
+		| xargs -orn 1 -I{} docker exec -t {} bash -c "state_manager_python -m pip install /state-manager-dist/* /dist/*"
+
+.PHONY: refresh-dev-ci
+refresh-dev-ci:
+	$(if $(file_path),,$(error file_path variable required))
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="source-builders" \
+		| xargs -P 4 -rn 1 -I{} docker exec -t {} /build.sh
+
+
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="monorepo-containers" \
+		| xargs -P 6 -rn 1 -I{} docker exec -t {} bash -c "monorepo_python -m pip install /dist/*"
+
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="ot3-state-manager" \
+		| xargs -rn 1 -I{} docker exec -t {} bash -c "state_manager_python -m pip install /state-manager-dist/* /dist/*"
+
+.PHONY: start-executables
+start-executables:
+	$(if $(file_path),,$(error file_path variable required))
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="not-source-builders" \
+		| xargs -P 4 -orn 1 -I{} docker exec -t {} /entrypoint.sh
 
 ###########################################
 ############## Misc Commands ##############
@@ -206,10 +265,6 @@ check-remote-only:
 	$(if $(file_path),,$(error file_path variable required))
 	@$(subst $(SUB), ${abs_path}, $(REMOTE_ONLY_EMULATION_SYSTEM_CMD)) > /dev/null
 	@echo "All services are remote"
-
-.PHONY: test-samples
-test-samples:
-	@./scripts/makefile/helper_scripts/test_samples.sh
 
 .PHONY: push-docker-image-bases
 push-docker-image-bases:
@@ -264,3 +319,17 @@ format:
 .PHONY: test
 test:
 	$(MAKE) -C $(EMULATION_SYSTEM_DIR) test
+
+.PHONY: get-e2e-test-ids
+get-e2e-test-ids:
+	@$(MAKE) --no-print-directory -C $(EMULATION_SYSTEM_DIR) get-e2e-test-ids
+
+.PHONY: get-e2e-test-path
+get-e2e-test-path:
+	$(if $(test_id),,$(error test_id variable required))
+	@$(MAKE) --no-print-directory -C $(EMULATION_SYSTEM_DIR) get-e2e-test-path test_id=${test_id}
+
+.PHONY: execute-e2e-test
+execute-e2e-test:
+	$(if $(test_id),,$(error test_id variable required))
+	@$(MAKE) --no-print-directory -C $(EMULATION_SYSTEM_DIR) execute-e2e-test test_id=${test_id}

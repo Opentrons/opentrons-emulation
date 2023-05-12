@@ -151,7 +151,7 @@ def test_invalid_container_name(invalid_ot2_name: Dict[str, Any]) -> None:
 )
 def test_modules_exist_is_true(config: Dict[str, Any]) -> None:
     """Test that modules_exist property is true when it is supposed to be."""
-    assert SystemConfigurationModel.from_dict(config).modules_exist
+    assert SystemConfigurationModel.from_dict(config).modules_exist  # type: ignore [truthy-function]
 
 
 @pytest.mark.parametrize(

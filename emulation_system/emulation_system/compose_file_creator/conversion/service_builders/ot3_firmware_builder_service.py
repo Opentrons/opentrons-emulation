@@ -80,12 +80,7 @@ class OT3FirmwareBuilderService(AbstractService):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        volumes: IntermediateVolumes = [
-            "state_manager_venv:/ot3-firmware/build-host/.venv",
-        ]
-        volumes.extend(self._ot3_source.generate_builder_mount_strings())
-
-        return volumes
+        return self._ot3_source.generate_builder_mount_strings()
 
     def generate_ports(self) -> Optional[IntermediatePorts]:
         """Generates value for ports parameter."""

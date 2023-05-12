@@ -1,0 +1,29 @@
+system-unique-id: ot3-and-modules
+robot:
+  id: otie
+  hardware: ot3
+  exposed-port: 31950
+  emulation-level: hardware
+modules:
+  - id: heater-shaker
+    hardware: heater-shaker-module
+    emulation-level: hardware
+  - id: thermocycler
+    hardware: thermocycler-module
+    emulation-level: hardware
+  - id: heater-shaker-fw
+    hardware: heater-shaker-module
+    emulation-level: firmware
+  - id: thermocycler-fw
+    hardware: thermocycler-module
+    emulation-level: firmware
+  - id: magdeck
+    hardware: magnetic-module
+    emulation-level: firmware
+  - id: tempdeck
+    hardware: temperature-module
+    emulation-level: firmware
+
+monorepo-source: latest
+ot3-firmware-source: latest
+opentrons-modules-source: latest

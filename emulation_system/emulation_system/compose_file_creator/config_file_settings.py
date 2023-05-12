@@ -27,17 +27,17 @@ class Hardware(str, Enum):
     @property
     def hw_name(self) -> str:
         """Get name of hardware."""
-        return self.value.replace("-module", "").replace("-", "_")
+        return self.value.replace("-module", "")
 
     @property
     def named_volume_name(self) -> str:
         """Get name of volume that will be shared between services."""
-        return f"{self.hw_name}_executable"
+        return f"{self.hw_name}-executable"
 
     @property
     def container_volume_storage_path(self) -> str:
         """Where the builder container stores it's volumes."""
-        return f"/volumes/{self.hw_name}_volume/"
+        return f"/volumes/{self.hw_name}-volume/"
 
     @property
     def simulator_name(self) -> str:
@@ -58,17 +58,17 @@ class OT3Hardware(str, Enum):
     @property
     def hw_name(self) -> str:
         """Get name of hardware."""
-        return self.value.replace("ot3-", "").replace("-", "_")
+        return self.value.replace("ot3-", "")
 
     @property
     def named_volume_name(self) -> str:
         """Get name of volume that will be shared between services."""
-        return f"{self.hw_name}_executable"
+        return f"{self.hw_name}-executable"
 
     @property
     def container_volume_storage_path(self) -> str:
-        """Where the builder container stores it's volumes."""
-        return f"/volumes/{self.hw_name}_volume/"
+        """Where the builder container stores its volumes."""
+        return f"/volumes/{self.hw_name}-volume/"
 
     @property
     def simulator_name(self) -> str:
@@ -193,7 +193,6 @@ class DirectoryMount(Mount):
 
     type: Literal[MountTypes.DIRECTORY]
     source_path: DirectoryPath
-
 
 
 class FileMount(Mount):
