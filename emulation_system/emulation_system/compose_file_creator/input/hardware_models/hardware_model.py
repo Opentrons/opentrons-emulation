@@ -33,7 +33,7 @@ class HardwareModel(OpentronsBaseModel):
     emulation_level: EmulationLevels = NotImplemented
     hardware_specific_attributes: HardwareSpecificAttributes = NotImplemented
 
-    def __init__(self, **data: Any) -> None:
+    def __init__(self, **data: Any) -> None:  # noqa: ANN401
         super().__init__(**data)
 
     @validator("mounts")

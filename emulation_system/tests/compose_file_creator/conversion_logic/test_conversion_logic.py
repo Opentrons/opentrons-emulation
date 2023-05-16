@@ -28,6 +28,7 @@ from tests.conftest import (
 )
 from tests.validation_helper_functions import CONTAINER_NAME_TO_IMAGE, SERVICE_NAMES
 
+
 # TODO: Add following tests:
 #   - CAN network is created on OT3 breakout
 
@@ -168,7 +169,7 @@ def test_can_server_port_exposed(
     ot3_only: Dict[str, Any],
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
-    """Confirm that when can-server-exposed-port is specified, ports are added to the can-server"""
+    """Confirm that when can-server-exposed-port is specified, ports are added to the can-server."""
     ot3_only["robot"]["can-server-exposed-port"] = 9898
     runtime_compose_file_model = convert_from_obj(
         ot3_only, testing_global_em_config, False
@@ -182,7 +183,7 @@ def test_can_server_port_exposed(
 def test_can_server_port_not_exposed(
     ot3_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
 ) -> None:
-    """Confirm that when can-server-exposed-port is not specified, ports are not added to the can-server"""
+    """Confirm that when can-server-exposed-port is not specified, ports are not added to the can-server."""
     runtime_compose_file_model = convert_from_obj(
         ot3_only, testing_global_em_config, False
     )

@@ -423,7 +423,7 @@ class ModuleResult(ModuleResultABC):
     def get_expected_results(
         cls: Type["ModuleResult"], system_test_def: SystemTestDefinition
     ) -> "ModuleResult":
-        """Get expected module results
+        """Get expected module results.
 
         If no modules, expect to look like NO_MODULES_EXPECTED_RESULTS.
         Otherwise, call other get_expected_result methods.

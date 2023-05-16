@@ -22,7 +22,7 @@ from tests.e2e.test_definition.system_test_definition import SystemTestDefinitio
 
 @dataclass
 class OT3EmulatorContainers(ResultABC):
-    """Validate existence of all OT-3 containers"""
+    """Validate existence of all OT-3 containers."""
 
     state_manager_exists: bool
     head_exists: bool

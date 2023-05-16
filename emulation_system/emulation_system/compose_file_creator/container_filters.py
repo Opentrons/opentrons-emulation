@@ -1,4 +1,4 @@
-"""Enumeration for filter strings and their respective image lookups"""
+"""Enumeration for filter strings and their respective image lookups."""
 
 from __future__ import annotations
 
@@ -250,7 +250,7 @@ class ContainerFilters(Enum):
 
     @classmethod
     def _load_by_filter_name(cls, filter_name: str) -> ContainerFilters:
-        """Load ContainerFilters object by filter_name"""
+        """Load ContainerFilters object by filter_name."""
         valid_filters = []
         for name, value in cls.__members__.items():
             if filter_name == value.container_filter_name:

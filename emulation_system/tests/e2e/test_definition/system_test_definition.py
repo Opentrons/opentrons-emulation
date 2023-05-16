@@ -29,7 +29,7 @@ class ModuleConfiguration:
         )
 
     def is_no_modules(self) -> bool:
-        """Does the system have no modules?"""
+        """Does the system have no modules?."""
         return self == self.NO_MODULES()
 
     @property

@@ -1,4 +1,4 @@
-"""pytest conftest file for e2e testing"""
+"""pytest conftest file for e2e testing."""
 import os
 from typing import Callable
 

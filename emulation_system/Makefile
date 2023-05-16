@@ -40,13 +40,12 @@ execute-e2e-test:
 .PHONY: lint
 lint:
 	poetry run python -m mypy emulation_system tests
-	poetry run python -m isort --check --skip compose_file_model.py emulation_system tests
+	poetry run ruff check .
 	poetry run python -m black --check --line-length 88 --force-exclude compose_file_model.py emulation_system tests
-	poetry run python -m flake8 emulation_system tests
 	poetry run python -m mdformat --check ../README.md ../docs
 
 .PHONY: format
 format:
 	poetry run python -m black --line-length 88 --force-exclude compose_file_model.py emulation_system tests
-	poetry run python -m isort --skip compose_file_model.py emulation_system tests
+	poetry run ruff check --fix .
 	poetry run python -m mdformat ../README.md ../docs

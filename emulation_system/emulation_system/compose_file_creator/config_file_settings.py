@@ -135,7 +135,7 @@ class RepoToBuildArgMapping(str, Enum):
 
     @staticmethod
     def get_mapping(repo: OpentronsRepository) -> "RepoToBuildArgMapping":
-        """Get mapping by Opentrons Repository"""
+        """Get mapping by Opentrons Repository."""
         mapping: RepoToBuildArgMapping
         match repo:
             case OpentronsRepository.OPENTRONS:

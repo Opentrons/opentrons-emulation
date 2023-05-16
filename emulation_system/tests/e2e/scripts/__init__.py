@@ -1,1 +1,1 @@
-"""scripts package"""
+"""scripts package."""

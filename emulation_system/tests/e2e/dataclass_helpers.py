@@ -1,4 +1,4 @@
-"""Functions to assist with dataclass weirdness"""
+"""Functions to assist with dataclass weirdness."""
 
 import copy
 from dataclasses import fields, is_dataclass
@@ -11,7 +11,7 @@ class IsDataclass(Protocol):
     __dataclass_fields__: ClassVar[Dict]
 
 
-def __inner_convert_to_dict(obj):  # noqa: ANN001, ANN203
+def __inner_convert_to_dict(obj):  # noqa: ANN001, ANN202
     """Method to handle converting dataclass into raw values.
 
     Base logic pulled from source code of dataclasses.asdict.

@@ -2,6 +2,7 @@
 
 Used to group all modules together and distinguish them from robots.
 """
+
 import json
 from typing import ClassVar, Dict, Optional
 

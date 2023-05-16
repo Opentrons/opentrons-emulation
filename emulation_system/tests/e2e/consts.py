@@ -33,7 +33,7 @@ class NamedVolumeInfo:
 
 @dataclass(frozen=True)
 class BindMountInfo:
-    """Dataclass representing expected mount for a container"""
+    """Dataclass representing expected mount for a container."""
 
     SOURCE_PATH: str
     DEST_PATH: str
@@ -110,7 +110,7 @@ class OT3FirmwareExpectedBinaryNames:
 
 @dataclass(frozen=True)
 class ModulesExpectedBinaryNames:
-    """Expecte names of opentrons-modules binary executableds"""
+    """Expecte names of opentrons-modules binary executableds."""
 
     THERMOCYCLER = "thermocycler-simulator"
     HEATER_SHAKER = "heater-shaker-simulator"
