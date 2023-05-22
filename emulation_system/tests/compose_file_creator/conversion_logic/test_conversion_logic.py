@@ -1,5 +1,5 @@
 """Tests for converting input file to DockerComposeFile."""
-from typing import Any, Dict, cast
+from typing import Any, Dict, Optional, cast
 
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
@@ -164,28 +164,25 @@ def test_robot_port(
     assert services[OT2_ID].ports == ["5000:31950"]
 
 
+@pytest.mark.parametrize("can_port", [None, 10000])
 def test_can_server_port_exposed(
+    can_port: Optional[str],
     ot3_only: Dict[str, Any],
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that when can-server-exposed-port is specified, ports are added to the can-server"""
-    ot3_only["robot"]["can-server-exposed-port"] = 9898
+    if can_port is not None:
+        ot3_only["robot"]["can-server-exposed-port"] = can_port
+
     runtime_compose_file_model = convert_from_obj(
         ot3_only, testing_global_em_config, False
     )
     can_server = runtime_compose_file_model.can_server
     assert can_server is not None
     assert can_server.ports is not None
-    assert can_server.ports == ["9898:9898"]
 
-
-def test_can_server_port_not_exposed(
-    ot3_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
-) -> None:
-    """Confirm that when can-server-exposed-port is not specified, ports are not added to the can-server"""
-    runtime_compose_file_model = convert_from_obj(
-        ot3_only, testing_global_em_config, False
-    )
-    can_server = runtime_compose_file_model.can_server
-    assert can_server is not None
-    assert can_server.ports is None
+    if can_port is not None:
+        
+        assert can_server.ports == [f"{can_port}:9898"]
+    else:
+        assert can_server.ports == ["9898:9898"]
