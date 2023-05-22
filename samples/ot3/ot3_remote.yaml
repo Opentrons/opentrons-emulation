@@ -15,8 +15,6 @@ robot:
   id: otie
   hardware: ot3
   emulation-level: hardware
-  exposed-port: 31950
-  can-server-exposed-port: 9898
 
 monorepo-source: latest
 ot3-firmware-source: latest

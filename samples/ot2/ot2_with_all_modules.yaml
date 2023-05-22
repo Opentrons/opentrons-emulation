@@ -14,7 +14,6 @@ system-unique-id: ot2-with-all-modules
 robot:
   id: otie
   hardware: ot2
-  exposed-port: 31950
   emulation-level: firmware
 modules:
   - id: shakey-and-warm

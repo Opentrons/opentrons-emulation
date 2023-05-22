@@ -2,7 +2,7 @@
 # System Description #
 ######################
 
-# This system builds a single OT3
+# This system builds a single OT3 with a custom name
 
 ########################
 # Required Source Code #
@@ -15,8 +15,6 @@ robot:
   id: otie
   hardware: ot3
   emulation-level: hardware
-  exposed-port: 31950
-  can-server-exposed-port: 9898
   robot-server-env-vars:
     DEV_ROBOT_NAME: "edgar-allen-poe-bot"
 

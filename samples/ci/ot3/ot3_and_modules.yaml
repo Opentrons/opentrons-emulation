@@ -1,8 +1,29 @@
-system-unique-id: ot3-and-modules
+######################
+# System Description #
+######################
+
+# This is a CI configuration. 
+# Do not edit unless you know what you are doing.
+
+# This system builds: 
+# - a single OT3
+# - a heater-shaker module emulated at the hardware level
+# - a thermocycler module emulated at the hardware level
+# - a heater-shaker module emulated at the firmware level
+# - a thermocycler module emulated at the firmware level
+# - a magnetic module emulated at the firmware level
+# - a temperature module emulated at the firmware level
+
+########################
+# Required Source Code #
+########################
+
+# All source code is pulled from the latest version in Github
+
+system-unique-id: ot3-and-modules-ci
 robot:
   id: otie
   hardware: ot3
-  exposed-port: 31950
   emulation-level: hardware
 modules:
   - id: heater-shaker
