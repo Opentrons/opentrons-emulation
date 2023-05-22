@@ -20,7 +20,7 @@
 
 # All source code is pulled from the latest version in Github
 
-system-unique-id: ot3-and-modules-ci
+system-unique-id: ot3-and-modules
 robot:
   id: otie
   hardware: ot3
