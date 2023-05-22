@@ -182,7 +182,7 @@ def test_can_server_port_exposed(
     assert can_server.ports is not None
 
     if can_port is not None:
-        
+
         assert can_server.ports == [f"{can_port}:9898"]
     else:
         assert can_server.ports == ["9898:9898"]
