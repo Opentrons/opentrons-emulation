@@ -49,8 +49,7 @@ class OT3InputModel(RobotInputModel):
     )
     hardware_specific_attributes: OT3Attributes = Field(default=OT3Attributes())
     emulation_level: Literal[EmulationLevels.HARDWARE]
-    bound_port: int = Field(default=31950)
-    can_server_exposed_port: Optional[int]
+    can_server_exposed_port: int = Field(default=9898)
     can_server_bound_port: int = Field(default=9898)
     ot3_state_manager_exposed_port: int = Field(default=OT3_STATE_MANAGER_BOUND_PORT)
 
