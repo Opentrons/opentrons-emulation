@@ -42,5 +42,4 @@ class OT2InputModel(RobotInputModel):
     )
     hardware_specific_attributes: OT2Attributes = Field(default=OT2Attributes())
     emulation_level: Literal[EmulationLevels.FIRMWARE]
-    bound_port: int = Field(default=31950)
     smoothie_env_vars: IntermediateEnvironmentVariables | None

@@ -8,15 +8,12 @@
 # Required Source Code #
 ########################
 
-# You are required to supply source code paths for `source-location` and `robot-server-source-location`
-# `source-location` supplies source code for the OT3-firmware emulators
-# `robot-server-source-location` supplies source code for the robot-server
+# Change the paths below to point to your local copies of the source code.
 
 robot:
   id: otie
   hardware: ot3
   emulation-level: hardware
-  exposed-port: 31950
+  
 monorepo-source: /absolute/path/to/opentrons
 ot3-firmware-source: /absolute/path/to/ot3-firmware
-opentrons-modules-source: /absolute/path/to/opentrons-modules

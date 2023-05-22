@@ -2,6 +2,9 @@
 # System Description #
 ######################
 
+# This is a CI configuration. 
+# Do not edit unless you know what you are doing.
+
 # This system builds a single OT3
 
 ########################
@@ -15,8 +18,6 @@ robot:
   id: otie
   hardware: ot3
   emulation-level: hardware
-  exposed-port: 31950
-  can-server-exposed-port: 9898
 
 monorepo-source: latest
 ot3-firmware-source: latest

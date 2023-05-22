@@ -8,13 +8,12 @@
 # Required Source Code #
 ########################
 
-# All source code is pulled from the latest version in Github
+# Change the paths below to point to your local copies of the source code.
 
 system-unique-id: ot2-with-all-modules
 robot:
   id: otie
   hardware: ot2
-  exposed-port: 31950
   emulation-level: firmware
 modules:
   - id: shakey-and-warm
@@ -31,4 +30,5 @@ modules:
     emulation-level: firmware
 
 monorepo-source: /absolute/path/to/opentrons
-ot3-firmware-source: /absolute/path/to/ot3-firmware
+opentrons-modules-source: /absolute/path/to/opentrons-modules
+

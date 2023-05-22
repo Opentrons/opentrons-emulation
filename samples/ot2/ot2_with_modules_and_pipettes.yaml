@@ -3,7 +3,7 @@
 ######################
 
 # This system builds an OT2 with a v1 P10 single for the left pipette and a v2 p300 for the right pipette.
-# It has a thermocycler, magdeck, and tempdeck.
+# It also has a thermocycler, a magdeck, and a tempdeck.
 
 ########################
 # Required Source Code #
@@ -16,7 +16,6 @@ robot:
   id: ot2
   hardware: ot2
   emulation-level: firmware
-  exposed-port: 31950
   hardware-specific-attributes:
     left-pipette:
       model: p10_single_v1

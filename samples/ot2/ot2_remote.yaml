@@ -10,12 +10,10 @@
 
 # All source code is pulled from the latest version in Github
 
-
 system-unique-id: ot2-only
 robot:
   id: otie
   hardware: ot2
   emulation-level: firmware
-  exposed-port: 31950
 
 monorepo-source: latest
