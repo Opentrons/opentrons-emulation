@@ -3,6 +3,8 @@
 Used to group all robots together and distinguish them from modules.
 """
 
+from pydantic import Field
+
 from emulation_system.compose_file_creator.images import get_image_name
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateEnvironmentVariables,
@@ -17,8 +19,8 @@ class RobotInputModel(HardwareModel):
     Used to group all robots together and distinguish them from modules.
     """
 
-    exposed_port: int
-    bound_port: int
+    exposed_port: int = Field(default=31950)
+    bound_port: int = Field(default=31950)
 
     robot_server_env_vars: IntermediateEnvironmentVariables | None
     emulator_proxy_env_vars: IntermediateEnvironmentVariables | None
