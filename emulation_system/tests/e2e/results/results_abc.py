@@ -1,4 +1,4 @@
-"""ABC for all e2e testing results"""
+"""ABC for all e2e testing results."""
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass

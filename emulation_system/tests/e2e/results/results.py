@@ -151,7 +151,7 @@ class SystemBuildArgs(ResultABC):
     def get_expected_results(
         cls: Type["SystemBuildArgs"], system_test_def: SystemTestDefinition
     ) -> "SystemBuildArgs":
-        """Load expected build args from system test def"""
+        """Load expected build args from system test def."""
         return cls(
             monorepo_build_args=system_test_def.monorepo_build_args,
             ot3_firmware_build_args=system_test_def.ot3_firmware_build_args,

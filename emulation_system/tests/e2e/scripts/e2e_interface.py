@@ -1,4 +1,4 @@
-"""Scripts for getting information about e2e tests"""
+"""Scripts for getting information about e2e tests."""
 
 import argparse
 

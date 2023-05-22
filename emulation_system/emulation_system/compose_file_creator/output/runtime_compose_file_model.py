@@ -19,7 +19,7 @@ class RuntimeComposeFileModel(ComposeSpecification):
 
     is_remote: bool
 
-    def __init__(self, **data: Any) -> None:
+    def __init__(self, **data: Any) -> None:  # noqa: ANN401
         """Initialize ComposeSpecification."""
         super().__init__(**data)
 

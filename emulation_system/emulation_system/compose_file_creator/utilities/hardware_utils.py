@@ -29,7 +29,7 @@ def is_ot2(obj: object) -> TypeGuard[OT2InputModel]:
 
 
 def is_ot3(obj: object) -> TypeGuard[OT3InputModel]:
-    """Whether hardware is an OT-3"""
+    """Whether hardware is an OT-3."""
     return isinstance(obj, OT3InputModel)
 
 

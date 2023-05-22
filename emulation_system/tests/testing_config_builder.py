@@ -36,7 +36,7 @@ class ConfigDefinition:
 
 
 class TestingConfigBuilder:
-    """Building testing configuration"""
+    """Building testing configuration."""
 
     MONOREPO_NAME = "monorepo-source"
     OT3_FIRMWARE_NAME = "ot3-firmware-source"

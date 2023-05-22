@@ -28,6 +28,7 @@ from tests.conftest import (
 )
 from tests.validation_helper_functions import CONTAINER_NAME_TO_IMAGE, SERVICE_NAMES
 
+
 # TODO: Add following tests:
 #   - CAN network is created on OT3 breakout
 
