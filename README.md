@@ -136,10 +136,17 @@ Click [![Open in VSCode Remote - Containers](https://img.shields.io/static/v1?la
 ![Done building](https://user-images.githubusercontent.com/502770/194160726-8e2063b2-124d-4029-ab48-600cf845d175.png)
 
 1. Open the terminal
-1. Enter the command `make ot2` or `make ot3`
+1. Enter the command `make ot2` or `make flex`
 1. Wait until the emulator is up
 1. Open a new terminal
-1. Enter the command `make check-robot` to validate the robot is reachable
+1. For ot2
+   1. `make refresh-dev file_path=./samples/ot2/ot2_with_all_modules.yaml`
+   1. `make start-executables file_path=./samples/ot2/ot2_with_all_modules.yaml`
+1. For flex
+   1. `make refresh-dev file_path=./samples/ot3/ot3_remote.yaml`
+   1. `make start-executables file_path=./samples/ot3/ot3_remote.yaml`
+1. Open a new terminal
+1. Enter the command `make check-emulation` to validate the robot is reachable
 1. To shut down the emulated robot go back to the terminal where you entered  `make ot2` or `make ot3`
    1. Click where logs are scrolling and press `ctrl` and `c` at the same time.
 

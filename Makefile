@@ -279,13 +279,13 @@ ot2:
 	$(MAKE) check-remote-only file_path="$(OT2CONFIG)"
 	$(MAKE) remove-build-run file_path="$(OT2CONFIG)"
 
-OT3CONFIG ?= ./samples/ot3/ot3_remote.yaml
+FLEXCONFIG ?= ./samples/ot3/ot3_remote.yaml
 
-.PHONY: ot3
-ot3:
+.PHONY: flex
+flex:
 	$(MAKE) setup
-	$(MAKE) check-remote-only file_path="$(OT3CONFIG)"
-	$(MAKE) remove-build-run file_path="$(OT3CONFIG)"
+	$(MAKE) check-remote-only file_path="$(FLEXCONFIG)"
+	$(MAKE) remove-build-run file_path="$(FLEXCONFIG)"
 
 ROBOT_HOST := $(if $(shell python ./scripts/docker_convenience_scripts/in_docker.py),host.docker.internal,localhost)
 
