@@ -88,5 +88,6 @@ class ModuleInputModel(HardwareModel):
         value = {
             "emulator_port": cls.proxy_info.emulator_port,
             "driver_port": cls.proxy_info.driver_port,
+            "use_local_host": False
         }
         return {cls.proxy_info.env_var_name: json.dumps(value)}
