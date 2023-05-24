@@ -116,7 +116,7 @@ class ConcreteEmulatorProxyServiceBuilder(AbstractServiceBuilder):
         repo = OpentronsRepository.OPENTRONS
         build_args = get_build_args(
             repo,
-            "latest",
+            self.get_ot2(self._config_model).source_location,
             self._global_settings.get_repo_branch(repo),
             self._global_settings.get_repo_head(repo),
         )
