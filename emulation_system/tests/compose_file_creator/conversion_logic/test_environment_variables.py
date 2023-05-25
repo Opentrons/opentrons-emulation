@@ -180,6 +180,7 @@ def test_em_proxy_info_env_vars_on_modules(
         {
             "emulator_port": input_class.proxy_info.emulator_port,
             "driver_port": input_class.proxy_info.driver_port,
+            "use_local_host": False,
         }
     )
 
@@ -213,6 +214,7 @@ def test_em_proxy_info_env_vars_on_proxy(
         {
             "emulator_port": input_class.proxy_info.emulator_port,
             "driver_port": input_class.proxy_info.driver_port,
+            "use_local_host": False,
         }
     )
 
