@@ -244,12 +244,54 @@ refresh-dev-ci:
 .PHONY: start-executables
 start-executables:
 	$(if $(file_path),,$(error file_path variable required))
+	# Start can-server and emulator-proxy in the background
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
 		file_path="${abs_path}" \
-		filter="not-source-builders" \
-		| xargs -P 4 -orn 1 -I{} docker exec -t {} /entrypoint.sh
+		filter="can-server" \
+		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="emulator-proxy" \
+		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
+	
+	# Giving CAN Server and emulator-proxy time to start
+
+	sleep 2
+
+	# Starting firmware and modules in background
+		
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="smoothie" \
+		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
+
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="ot3-firmware" \
+		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
+		
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="modules" \
+		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
+
+	# # Starting robot-server in the foreground
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="robot-server" \
+		| xargs --open-tty --no-run-if-empty --replace={} docker exec -it {} /entrypoint.sh
 
 ###########################################
 ############## Misc Commands ##############
