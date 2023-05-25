@@ -72,19 +72,19 @@ def test_simple_emulator_proxy_values(
 
     assert (
         env_root["OT_EMULATOR_heatershaker_proxy"]
-        == '{"emulator_port": 10004, "driver_port": 11004}'
+        == '{"emulator_port": 10004, "driver_port": 11004, "use_local_host": false}'
     )
     assert (
         env_root["OT_EMULATOR_magdeck_proxy"]
-        == '{"emulator_port": 10002, "driver_port": 11002}'
+        == '{"emulator_port": 10002, "driver_port": 11002, "use_local_host": false}'
     )
     assert (
         env_root["OT_EMULATOR_temperature_proxy"]
-        == '{"emulator_port": 10001, "driver_port": 11001}'
+        == '{"emulator_port": 10001, "driver_port": 11001, "use_local_host": false}'
     )
     assert (
         env_root["OT_EMULATOR_thermocycler_proxy"]
-        == '{"emulator_port": 10003, "driver_port": 11003}'
+        == '{"emulator_port": 10003, "driver_port": 11003, "use_local_host": false}'
     )
 
     assert service.tty

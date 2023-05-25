@@ -195,7 +195,7 @@ class InputServices(AbstractService):
         ) and self._container.robot_server_env_vars is not None:
             temp_vars.update(self._container.robot_server_env_vars)
 
-        if is_module(self._container):
+        if is_module(self._container) and self._emulator_proxy_name is not None:
             temp_vars.update(self._container.get_serial_number_env_var())
             temp_vars.update(self._container.get_proxy_info_env_var())
             temp_vars["MODULE_ARGS"] = self._container.get_module_args(
