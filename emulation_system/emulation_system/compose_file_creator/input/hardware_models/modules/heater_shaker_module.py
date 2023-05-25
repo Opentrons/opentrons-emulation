@@ -1,5 +1,5 @@
 """Model and attributes for heater-shaker Module."""
-from typing import ClassVar, List, Optional
+from typing import ClassVar
 
 from pydantic import Field
 from typing_extensions import Literal
@@ -60,17 +60,11 @@ class HeaterShakerModuleInputModel(ModuleInputModel):
     )
     emulation_level: Literal[EmulationLevels.HARDWARE, EmulationLevels.FIRMWARE]
 
-    def get_hardware_level_command(
-        self, emulator_proxy_name: str
-    ) -> Optional[List[str]]:
-        """Get command for heater shaker when it is being emulated at hardware level."""
-        return [
-            "--socket",
-            f"http://{emulator_proxy_name}:{self.proxy_info.emulator_port}",
-        ]
-
-    def get_firmware_level_command(
-        self, emulator_proxy_name: str
-    ) -> Optional[List[str]]:
-        """Get command for module when it is being emulated at hardware level."""
-        return [emulator_proxy_name]
+    def get_module_args(self, emulator_proxy_name: str) -> str:
+        """Get module args for Heater-Shaker."""
+        if self.emulation_level == EmulationLevels.HARDWARE:
+            return (
+                f"--socket http://{emulator_proxy_name}:{self.proxy_info.emulator_port}"
+            )
+        else:
+            return emulator_proxy_name

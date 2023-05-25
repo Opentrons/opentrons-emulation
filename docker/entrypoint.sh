@@ -1,13 +1,12 @@
 #!/bin/bash
 
 # OPENTRONS_HARDWARE is an env variable that is passed to every container
-OTHER_ARGS=`echo "${@:2}"`
 case $OPENTRONS_HARDWARE in
   heater-shaker-hardware)
-    bash -c "/heater-shaker-simulator $OTHER_ARGS"
+    bash -c "/executable/heater-shaker-simulator $MODULE_ARGS"
     ;;
   thermocycler-hardware)
-    bash -c "/thermocycler-gen2-simulator $OTHER_ARGS"
+    bash -c "/executable/thermocycler-simulator $MODULE_ARGS"
     ;;
   ot3-pipettes-hardware)
     /executable/pipettes-simulator
@@ -35,16 +34,16 @@ case $OPENTRONS_HARDWARE in
     )
     ;;
   thermocycler-firmware)
-    bash -c "monorepo_python -m opentrons.hardware_control.emulation.scripts.run_module_emulator thermocycler $OTHER_ARGS"
+    bash -c "monorepo_python -m opentrons.hardware_control.emulation.scripts.run_module_emulator thermocycler $MODULE_ARGS"
     ;;
   heater-shaker-firmware)
-    bash -c "monorepo_python -m opentrons.hardware_control.emulation.scripts.run_module_emulator heatershaker $OTHER_ARGS"
+    bash -c "monorepo_python -m opentrons.hardware_control.emulation.scripts.run_module_emulator heatershaker $MODULE_ARGS"
     ;;
   tempdeck-firmware)
-    bash -c "monorepo_python -m opentrons.hardware_control.emulation.scripts.run_module_emulator tempdeck $OTHER_ARGS"
+    bash -c "monorepo_python -m opentrons.hardware_control.emulation.scripts.run_module_emulator tempdeck $MODULE_ARGS"
     ;;
   magdeck-firmware)
-    bash -c "monorepo_python -m opentrons.hardware_control.emulation.scripts.run_module_emulator magdeck $OTHER_ARGS"
+    bash -c "monorepo_python -m opentrons.hardware_control.emulation.scripts.run_module_emulator magdeck $MODULE_ARGS"
     ;;
   robot-server)
     bash -c "uvicorn "robot_server:app" --host 0.0.0.0 --port 31950 --ws wsproto"
