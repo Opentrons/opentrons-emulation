@@ -16,7 +16,12 @@ from ...config_file_settings import OpentronsRepository
 from ...input.hardware_models.hardware_model import HardwareModel
 from ...logging import InputLoggingClient
 from ...types.input_types import Containers
-from ...utilities.hardware_utils import is_module, is_ot2, is_ot3, is_robot
+from ...utilities.hardware_utils import (
+    is_module,
+    is_ot2,
+    is_ot3,
+    is_robot,
+)
 from .abstract_service import AbstractService
 
 
@@ -178,6 +183,7 @@ class InputServices(AbstractService):
         if is_ot3(self._container):
             assert self._can_server_service_name is not None
             temp_vars["OT_API_FF_enableOT3HardwareController"] = True
+            temp_vars["OT_API_FF_rearPanelIntegration"] = False
             temp_vars["OT3_CAN_DRIVER_interface"] = "opentrons_sock"
             temp_vars["OT3_CAN_DRIVER_host"] = self._can_server_service_name
             temp_vars["OT3_CAN_DRIVER_port"] = self.get_ot3(
@@ -189,9 +195,12 @@ class InputServices(AbstractService):
         ) and self._container.robot_server_env_vars is not None:
             temp_vars.update(self._container.robot_server_env_vars)
 
-        if is_module(self._container):
+        if is_module(self._container) and self._emulator_proxy_name is not None:
             temp_vars.update(self._container.get_serial_number_env_var())
             temp_vars.update(self._container.get_proxy_info_env_var())
+            temp_vars["MODULE_ARGS"] = self._container.get_module_args(
+                self._emulator_proxy_name
+            )
 
         if is_module(self._container) and self._container.module_env_vars is not None:
             temp_vars.update(self._container.module_env_vars)
