@@ -16,6 +16,15 @@ BUILD_COMMAND := docker buildx bake --load --file ~/tmp-compose.yaml
 
 abs_path := $(realpath ${file_path})
 
+.PHONY: emulation-system
+emulation-system:
+	@$(MAKE) --no-print-directory remove file_path=${abs_path}
+	@$(MAKE) --no-print-directory build file_path=${abs_path}
+	@$(MAKE) --no-print-directory run-detached file_path=${abs_path}
+	@$(MAKE) --no-print-directory refresh-dev file_path=${abs_path}
+	@$(MAKE) --no-print-directory start-executables file_path=${abs_path}
+
+
 #####################################################
 ############# Generating Compose Files ##############
 #####################################################
