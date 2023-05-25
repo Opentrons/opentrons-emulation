@@ -88,3 +88,7 @@ class ModuleInputModel(HardwareModel):
             "driver_port": cls.proxy_info.driver_port,
         }
         return {cls.proxy_info.env_var_name: json.dumps(value)}
+
+    def get_module_args(self, emulator_proxy_name: str) -> str:
+        """Generates module args string."""
+        raise NotImplementedError
