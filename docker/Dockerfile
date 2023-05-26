@@ -53,7 +53,7 @@ FROM ghcr.io/opentrons/python-base:latest as thermocycler-firmware
 ENV OPENTRONS_HARDWARE "thermocycler-firmware"
 
 FROM ghcr.io/opentrons/python-base:latest as heater-shaker-firmware
-ENV OPENTRONS_HARDWARE "heatershaker-firmware"
+ENV OPENTRONS_HARDWARE "heater-shaker-firmware"
 
 FROM ghcr.io/opentrons/python-base:latest as magdeck-firmware
 ENV OPENTRONS_HARDWARE "magdeck-firmware"

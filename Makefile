@@ -16,6 +16,15 @@ BUILD_COMMAND := docker buildx bake --load --file ~/tmp-compose.yaml
 
 abs_path := $(realpath ${file_path})
 
+.PHONY: emulation-system
+emulation-system:
+	@$(MAKE) --no-print-directory remove file_path=${abs_path}
+	@$(MAKE) --no-print-directory build file_path=${abs_path}
+	@$(MAKE) --no-print-directory run-detached file_path=${abs_path}
+	@$(MAKE) --no-print-directory refresh-dev file_path=${abs_path}
+	@$(MAKE) --no-print-directory start-executables file_path=${abs_path}
+
+
 #####################################################
 ############# Generating Compose Files ##############
 #####################################################
@@ -180,7 +189,7 @@ can-comm:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="can-server" \
-		| xargs -o -I{} docker exec -it {} monorepo_python -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
+		| xargs --open-tty --no-run-if-empty --replace={} docker exec -it {} monorepo_python -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
 
 .PHONY: can-mon
 can-mon:
@@ -190,7 +199,7 @@ can-mon:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="can-server" \
-		| xargs -orn 1 -I{} docker exec -it {} monorepo_python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
+		| xargs --open-tty --no-run-if-empty --replace={} docker exec -it {} monorepo_python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
 
 .PHONY: refresh-dev
 refresh-dev:
@@ -200,21 +209,21 @@ refresh-dev:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="source-builders" \
-		| xargs -P 4 -orn 1 -I{} docker exec -t {} /build.sh
+		| xargs --max-procs=4 --open-tty --no-run-if-empty --replace={} docker exec -t {} /build.sh
 
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="monorepo-containers" \
-		| xargs -P 6 -orn 1 -I{} docker exec -t {} bash -c "monorepo_python -m pip install /dist/*"
+		| xargs --max-procs=6 --open-tty --no-run-if-empty --replace={} docker exec -t {} bash -c "monorepo_python -m pip install /dist/*"
 
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="ot3-state-manager" \
-		| xargs -orn 1 -I{} docker exec -t {} bash -c "state_manager_python -m pip install /state-manager-dist/* /dist/*"
+		| xargs --open-tty --no-run-if-empty --replace={} docker exec -t {} bash -c "state_manager_python -m pip install /state-manager-dist/* /dist/*"
 
 .PHONY: refresh-dev-ci
 refresh-dev-ci:
@@ -224,7 +233,7 @@ refresh-dev-ci:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="source-builders" \
-		| xargs -P 4 -rn 1 -I{} docker exec -t {} /build.sh
+		| xargs --max-procs=4 --no-run-if-empty --replace={} docker exec -t {} /build.sh
 
 
 	@$(MAKE) \
@@ -232,24 +241,66 @@ refresh-dev-ci:
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="monorepo-containers" \
-		| xargs -P 6 -rn 1 -I{} docker exec -t {} bash -c "monorepo_python -m pip install /dist/*"
+		| xargs --max-procs=6 --no-run-if-empty --replace={} docker exec -t {} bash -c "monorepo_python -m pip install /dist/*"
 
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
 		file_path="${abs_path}" \
 		filter="ot3-state-manager" \
-		| xargs -rn 1 -I{} docker exec -t {} bash -c "state_manager_python -m pip install /state-manager-dist/* /dist/*"
+		| xargs --no-run-if-empty --replace={} docker exec -t {} bash -c "state_manager_python -m pip install /state-manager-dist/* /dist/*"
 
 .PHONY: start-executables
 start-executables:
 	$(if $(file_path),,$(error file_path variable required))
+	# Start can-server and emulator-proxy in the background
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
 		file_path="${abs_path}" \
-		filter="not-source-builders" \
-		| xargs -P 4 -orn 1 -I{} docker exec -t {} /entrypoint.sh
+		filter="can-server" \
+		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="emulator-proxy" \
+		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
+	
+	# Giving CAN Server and emulator-proxy time to start
+
+	sleep 2
+
+	# Starting firmware and modules in background
+		
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="smoothie" \
+		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
+
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="ot3-firmware" \
+		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
+		
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="modules" \
+		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
+
+	# # Starting robot-server in the foreground
+	@$(MAKE) \
+		--no-print-directory \
+		load-container-names \
+		file_path="${abs_path}" \
+		filter="robot-server" \
+		| xargs --open-tty --no-run-if-empty --replace={} docker exec -it {} /entrypoint.sh
 
 ###########################################
 ############## Misc Commands ##############

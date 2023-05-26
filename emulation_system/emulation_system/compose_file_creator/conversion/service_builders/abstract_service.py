@@ -160,14 +160,13 @@ class AbstractService(ABC):
         """Method to generate value for networks parameter for Service."""
         ...
 
+    #############################################################
+    # The following generate_* methods optionally return values #
+    #############################################################
     @abstractmethod
     def generate_healthcheck(self) -> Optional[IntermediateHealthcheck]:
         """Method to generate value for healthcheck parameter on Service."""
         ...
-
-    #############################################################
-    # The following generate_* methods optionally return values #
-    #############################################################
 
     @abstractmethod
     def generate_build_args(self) -> Optional[IntermediateBuildArgs]:
