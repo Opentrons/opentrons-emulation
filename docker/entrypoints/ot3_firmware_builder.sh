@@ -26,7 +26,8 @@ echo "Building ot3-firmware State Manager"
 
 echo "Creating simulator directories (If needed)"
 mkdir -p \
-  /volumes/pipettes-volume \
+  /volumes/left-pipette-volume \
+  /volumes/right-pipette-volume \
   /volumes/head-volume \
   /volumes/gantry-x-volume \
   /volumes/gantry-y-volume \
@@ -37,7 +38,8 @@ mkdir -p \
   /volumes/state-manager-dist
 
 echo "Removing any existing simulators from simulator directories"
-rm -f /volumes/pipettes-volume/*
+rm -f /volumes/left-pipette-volume/*
+rm -f /volumes/right-pipette-volume/*
 rm -f /volumes/head-volume/*
 rm -f /volumes/gantry-x-volume/*
 rm -f /volumes/gantry-y-volume/*
@@ -47,16 +49,8 @@ rm -rf /volumes/state-manager-venv/*
 rm -rf /volumes/state-manager-dist/*
 
 echo "Copying built simulator files to simulator directories"
-cp /ot3-firmware/build-host/pipettes/simulator/pipettes-single-simulator /volumes/pipettes-volume/pipettes-simulator
-cp /ot3-firmware/build-host/head/simulator/head-simulator /volumes/head-volume/head-simulator
-cp /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /volumes/gantry-x-volume/gantry-x-simulator
-cp /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /volumes/gantry-y-volume/gantry-y-simulator
-cp /ot3-firmware/build-host/bootloader/simulator/bootloader-simulator /volumes/bootloader-volume/bootloader-simulator
-cp /ot3-firmware/build-host/gripper/simulator/gripper-simulator /volumes/gripper-volume/gripper-simulator
-cp -r /ot3-firmware/build-host/.venv/* /volumes/state-manager-venv/
-cp -r /ot3-firmware/state_manager/dist/* /volumes/state-manager-dist/
-
-cp /ot3-firmware/build-host/pipettes/simulator/pipettes-single-simulator /volumes/pipettes-volume/pipettes-simulator
+cp -r /ot3-firmware/build-host/pipettes/simulator/*-simulator /volumes/left-pipette-volume/
+cp -r /ot3-firmware/build-host/pipettes/simulator/*-simulator /volumes/right-pipette-volume/
 cp /ot3-firmware/build-host/head/simulator/head-simulator /volumes/head-volume/head-simulator
 cp /ot3-firmware/build-host/gantry/simulator/gantry-x-simulator /volumes/gantry-x-volume/gantry-x-simulator
 cp /ot3-firmware/build-host/gantry/simulator/gantry-y-simulator /volumes/gantry-y-volume/gantry-y-simulator

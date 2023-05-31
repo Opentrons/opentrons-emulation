@@ -33,7 +33,8 @@ class ServiceOrchestrator:
 
     OT3_SERVICES_TO_CREATE = [
         ServiceInfo(OT3HeadImage(), OT3Hardware.HEAD),
-        ServiceInfo(OT3PipettesImage(), OT3Hardware.PIPETTES),
+        ServiceInfo(OT3PipettesImage(), OT3Hardware.LEFT_PIPETTE),
+        ServiceInfo(OT3PipettesImage(), OT3Hardware.RIGHT_PIPETTE),
         ServiceInfo(OT3GantryXImage(), OT3Hardware.GANTRY_X),
         ServiceInfo(OT3GantryYImage(), OT3Hardware.GANTRY_Y),
         ServiceInfo(OT3BootloaderImage(), OT3Hardware.BOOTLOADER),

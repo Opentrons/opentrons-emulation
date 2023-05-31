@@ -54,7 +54,7 @@ def test_simple_ot3_values(
         can_server_service_name="can-server", state_manager_name="state-manager"
     )
     head = get_ot3_service(services, OT3Hardware.HEAD)
-    pipettes = get_ot3_service(services, OT3Hardware.PIPETTES)
+    pipettes = get_ot3_service(services, OT3Hardware.LEFT_PIPETTE)
     gantry_x = get_ot3_service(services, OT3Hardware.GANTRY_X)
     gantry_y = get_ot3_service(services, OT3Hardware.GANTRY_Y)
     bootloader = get_ot3_service(services, OT3Hardware.BOOTLOADER)
@@ -94,7 +94,7 @@ def test_simple_ot3_values(
 
     # Container Names
     assert head.container_name == OT3Hardware.HEAD
-    assert pipettes.container_name == OT3Hardware.PIPETTES
+    assert pipettes.container_name == OT3Hardware.LEFT_PIPETTE
     assert gantry_x.container_name == OT3Hardware.GANTRY_X
     assert gantry_y.container_name == OT3Hardware.GANTRY_Y
     assert bootloader.container_name == OT3Hardware.BOOTLOADER
@@ -129,7 +129,7 @@ def test_ot3_service_environment_variables(
     gantry_y = get_ot3_service(services, OT3Hardware.GANTRY_Y)
     bootloader = get_ot3_service(services, OT3Hardware.BOOTLOADER)
     gripper = get_ot3_service(services, OT3Hardware.GRIPPER)
-    pipettes = get_ot3_service(services, OT3Hardware.PIPETTES)
+    pipettes = get_ot3_service(services, OT3Hardware.LEFT_PIPETTE)
 
     not_pipette_or_gripper_services = [head, gantry_x, gantry_y]
 

@@ -2,6 +2,7 @@
 from typing import Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system.compose_file_creator.config_file_settings import OT3Hardware
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateEnvironmentVariables,
@@ -143,6 +144,12 @@ class OT3Services(AbstractService):
 
         if isinstance(self._service_info.image, (OT3PipettesImage, OT3GripperImage)):
             env_vars["EEPROM_FILENAME"] = "eeprom.bin"
+
+        if isinstance(self._service_info.image, OT3PipettesImage):
+            if self._service_info.ot3_hardware == OT3Hardware.LEFT_PIPETTE:
+                env_vars["MOUNT"] = "left"
+            else:
+                env_vars["MOUNT"] = "right"
 
         custom_env_vars = self.__get_custom_env_vars()
         if custom_env_vars is not None:
