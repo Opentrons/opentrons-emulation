@@ -6,9 +6,9 @@ from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     Hardware,
     OpentronsRepository,
-    PipetteSettings,
     SourceRepositories,
 )
+from emulation_system.compose_file_creator.pipette_utils import OT2Pipettes
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateEnvironmentVariables,
 )
@@ -20,10 +20,15 @@ from .robot_model import RobotInputModel
 
 
 class OT2Attributes(HardwareSpecificAttributes):
-    """Attributes specific to OT2."""
+    """Attributes specific to Robots."""
 
-    left_pipette: PipetteSettings = Field(default=PipetteSettings())
-    right_pipette: PipetteSettings = Field(default=PipetteSettings())
+    ####################################################
+    # NOTE: Calling a method to define types is WERID. #
+    #   Refer to pipette_utils.py for an explanation   #
+    ####################################################
+
+    left_pipette: OT2Pipettes.valid_pipette_name_enum() | None = None  # type: ignore[valid-type]
+    right_pipette: OT2Pipettes.valid_pipette_name_enum() | None = None  # type: ignore[valid-type]
 
 
 class OT2SourceRepositories(SourceRepositories):

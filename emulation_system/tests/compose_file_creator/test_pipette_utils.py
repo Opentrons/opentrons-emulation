@@ -55,7 +55,7 @@ EXPECTED_OT3_PIPETTE_NAME_ENUM = Enum(
         ("P1000_SINGLE_GEN3_NAME", "p1000_single_gen3"),
         ("P1000_MULTI_GEN3_NAME", "p1000_multi_gen3"),
         ("P1000_96_NAME", "p1000_96"),
-    ]
+    ],
 )
 
 
@@ -147,7 +147,11 @@ def test_ot3_pipette_env_var_raises_error_on_serial_code_too_long() -> None:
 
 def test_pipette_name_enum() -> None:
     """Tests getting pipette name enum."""
-    ot2_pipette_enum = OT2Pipettes.valid_pipette_name_enum()
-    ot3_pipette_enum = OT3Pipettes.valid_pipette_name_enum()
-    assert ot2_pipette_enum.__class__.__members__ == EXPECTED_OT2_PIPETTE_NAME_ENUM.__class__.__members__
-    assert ot3_pipette_enum.__class__.__members__ == EXPECTED_OT3_PIPETTE_NAME_ENUM.__class__.__members__
+    ot2_actual_members = OT2Pipettes.valid_pipette_name_enum().__class__.__members__
+    ot3_actual_members = OT3Pipettes.valid_pipette_name_enum().__class__.__members__
+
+    ot2_expected_members = EXPECTED_OT2_PIPETTE_NAME_ENUM.__class__.__members__  # type: ignore[attr-defined]
+    ot3_expected_members = EXPECTED_OT3_PIPETTE_NAME_ENUM.__class__.__members__  # type: ignore[attr-defined]
+
+    assert ot2_actual_members == ot2_expected_members
+    assert ot3_actual_members == ot3_expected_members

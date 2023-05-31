@@ -30,12 +30,12 @@ class OT3EnvironmentVariableDefinition:
     variable_name: ClassVar[str] = "OT3_PIPETTE_DEFINITION"
 
     def _format_model(self) -> str:
-        """Formats model."""
+        """Formats model attribute to a 0 padded string of length 2."""
         return str(self.pipette_model).zfill(2)
 
     @staticmethod
     def _get_date_string() -> str:
-        """Gets date string."""
+        """Gets todays date string in the format of MMDDYYYY."""
         return datetime.datetime.now().strftime("%m%d%Y")
 
     def to_env_var(self) -> str:
@@ -53,7 +53,10 @@ class OT3EnvironmentVariableDefinition:
 
 
 class BasePipetteEnum(Enum):
-    """Base class for pipette enums."""
+    """Base class for pipette enums.
+
+    Provides lookup by name functionality and valid pipette name enum for use with Pydantic.
+    """
 
     def __init__(self, pipette_name: str, pipette_type: PipetteTypes) -> None:
         self.pipette_name = pipette_name
@@ -67,6 +70,21 @@ class BasePipetteEnum(Enum):
                 return pipette_info
         raise ValueError(f"Pipette with name {name} not found.")
 
+    ############################################
+    # NOTE: This is WEIRD. Lets talk about it. #
+    ############################################
+
+    # This is a class method that returns an Enum using the Functional API.
+    # https://docs.python.org/3.10/library/enum.html#functional-api
+
+    # We want to construct an enum whose values are the pipette_name values from classes that subclass
+    # this class
+    # This method is called inside of input/hardware_models/robots/ot2_model.py and
+    # input/hardware_models/robots/ot3_model.py. Mypy is not happy with this because it doesn't
+    # like the fact that we are calling a method to define the types.
+    # So we are address this by telling mypy to be quiet by using # type: ignore[valid-type] and
+    # moving on with our very long day.
+
     @classmethod
     def valid_pipette_name_enum(cls) -> Enum:
         """Returns enum with valid pipette names for use with Pydantic."""
@@ -74,7 +92,7 @@ class BasePipetteEnum(Enum):
             (f"{pipette_info.pipette_name.upper()}_NAME", pipette_info.pipette_name)
             for _, pipette_info in cls.__members__.items()
         ]
-        return Enum(f"{cls.__name__}ValidNames", key_value_pairs)
+        return Enum(f"{cls.__name__}ValidNames", key_value_pairs, type=str)
 
 
 @unique
@@ -92,6 +110,7 @@ class OT2Pipettes(BasePipetteEnum):
         super().__init__(pipette_name, pipette_type)
         if self.pipette_type == PipetteTypes.CHANNEL_96:
             raise ValueError("OT-2 does not support 96 channel pipettes.")
+
 
 @unique
 class OT3Pipettes(BasePipetteEnum):

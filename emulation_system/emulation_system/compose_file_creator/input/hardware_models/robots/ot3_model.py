@@ -8,9 +8,9 @@ from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     Hardware,
     OpentronsRepository,
-    PipetteSettings,
     SourceRepositories,
 )
+from emulation_system.compose_file_creator.pipette_utils import OT3Pipettes
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateEnvironmentVariables,
     IntermediatePorts,
@@ -24,10 +24,10 @@ from .robot_model import RobotInputModel
 
 
 class OT3Attributes(HardwareSpecificAttributes):
-    """Attributes specific to OT3."""
+    """Attributes specific to Robots."""
 
-    left: PipetteSettings = Field(default=PipetteSettings())
-    right: PipetteSettings = Field(default=PipetteSettings())
+    left_pipette: OT3Pipettes.valid_pipette_name_enum() | None = None  # type: ignore[valid-type]
+    right_pipette: OT3Pipettes.valid_pipette_name_enum() | None = None  # type: ignore[valid-type]
 
 
 class OT3SourceRepositories(SourceRepositories):
