@@ -1,8 +1,9 @@
 """Module containing OT3Services class."""
-from typing import Optional
+from typing import Optional, cast
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator.config_file_settings import OT3Hardware
+from emulation_system.compose_file_creator.pipette_utils import OT3Pipettes
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateEnvironmentVariables,
@@ -30,6 +31,8 @@ from .service_info import ServiceInfo
 
 class OT3Services(AbstractService):
     """Concrete implementation of AbstractService for building OT-3 firmware services."""
+
+    DEFAULT_ENV_VARS = {"CAN_SERVER_HOST": "can-server"}
 
     def __init__(
         self,
@@ -78,6 +81,27 @@ class OT3Services(AbstractService):
             case OT3BootloaderImage():
                 env_vars = self._config_model.robot.bootloader_env_vars
         return env_vars
+
+    def _is_pipette_image(self) -> bool:
+        return isinstance(self._service_info.image, OT3PipettesImage)
+
+    def _is_gripper_image(self) -> bool:
+        return isinstance(self._service_info.image, OT3GripperImage)
+
+    def _is_bootloader_image(self) -> bool:
+        return isinstance(self._service_info.image, OT3BootloaderImage)
+
+    def _is_left_pipette(self) -> bool:
+        return (
+            self._service_info.ot3_hardware == OT3Hardware.LEFT_PIPETTE
+            and self._is_pipette_image()
+        )
+
+    def _is_right_pipette(self) -> bool:
+        return (
+            self._service_info.ot3_hardware == OT3Hardware.RIGHT_PIPETTE
+            and self._is_pipette_image()
+        )
 
     def generate_container_name(self) -> str:
         """Generates value for container_name parameter."""
@@ -135,21 +159,44 @@ class OT3Services(AbstractService):
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
-        env_vars: IntermediateEnvironmentVariables = {
-            "CAN_SERVER_HOST": self._can_server_service_name,
-        }
-        if not isinstance(self._service_info.image, OT3BootloaderImage):
-            env_vars["STATE_MANAGER_HOST"] = self._state_manager_name
-            env_vars["STATE_MANAGER_PORT"] = OT3_STATE_MANAGER_BOUND_PORT
+        assert self._config_model.robot is not None
 
-        if isinstance(self._service_info.image, (OT3PipettesImage, OT3GripperImage)):
+        env_vars: IntermediateEnvironmentVariables = {}
+        env_vars.update(self.DEFAULT_ENV_VARS)
+
+        if not self._is_bootloader_image():
+            env_vars.update(
+                {
+                    "STATE_MANAGER_HOST": self._state_manager_name,
+                    "STATE_MANAGER_PORT": OT3_STATE_MANAGER_BOUND_PORT,
+                }
+            )
+
+        if self._is_pipette_image() or self._is_gripper_image():
             env_vars["EEPROM_FILENAME"] = "eeprom.bin"
 
-        if isinstance(self._service_info.image, OT3PipettesImage):
-            if self._service_info.ot3_hardware == OT3Hardware.LEFT_PIPETTE:
-                env_vars["MOUNT"] = "left"
-            else:
-                env_vars["MOUNT"] = "right"
+        if self._is_left_pipette():
+            env_vars["MOUNT"] = "left"
+
+        if self._is_right_pipette():
+            env_vars["MOUNT"] = "right"
+
+        user_specified_left_pipette = (
+            self._config_model.robot.hardware_specific_attributes.left_pipette
+        )
+
+        if (
+            user_specified_left_pipette is not None
+            and self._service_info.ot3_hardware == OT3Hardware.LEFT_PIPETTE
+        ):
+            left_pipette: OT3Pipettes = cast(
+                OT3Pipettes, OT3Pipettes.lookup_by_name(user_specified_left_pipette)
+            )
+            env_vars.update(
+                left_pipette.generate_pipette_env_var_def(
+                    left_pipette.get_pipette_version(), None
+                ).to_env_var()
+            )
 
         custom_env_vars = self.__get_custom_env_vars()
         if custom_env_vars is not None:

@@ -4,7 +4,9 @@ import datetime
 import json
 from dataclasses import dataclass
 from enum import Enum, auto, unique
-from typing import ClassVar
+from typing import Any, ClassVar, Dict
+
+from emulation_system.consts import PIPETTE_VERSIONS_FILE_PATH
 
 OT3_SERIAL_CODE_MIN_CHARS = 1
 OT3_SERIAL_CODE_MAX_CHARS = 12
@@ -38,18 +40,17 @@ class OT3EnvironmentVariableDefinition:
         """Gets todays date string in the format of MMDDYYYY."""
         return datetime.datetime.now().strftime("%m%d%Y")
 
-    def to_env_var(self) -> str:
+    def to_env_var(self) -> Dict[str, str]:
         """Converts to enviroment variable string."""
-        return json.dumps(
+        content = json.dumps(
             {
-                self.variable_name: {
-                    "pipette_name": self.pipette_name,
-                    "pipette_model": self._format_model(),
-                    "pipette_serial_code": self.pipette_serial_code
-                    or self._get_date_string(),
-                }
+                "pipette_name": self.pipette_name,
+                "pipette_model": self._format_model(),
+                "pipette_serial_code": self.pipette_serial_code
+                or self._get_date_string(),
             }
         )
+        return {self.variable_name: content}
 
 
 class BasePipetteEnum(Enum):
@@ -61,6 +62,11 @@ class BasePipetteEnum(Enum):
     def __init__(self, pipette_name: str, pipette_type: PipetteTypes) -> None:
         self.pipette_name = pipette_name
         self.pipette_type = pipette_type
+
+    def _get_pipette_versions_dict(self) -> Dict[str, Any]:
+        """Gets pipette version."""
+        with open(PIPETTE_VERSIONS_FILE_PATH, "r") as file:
+            return json.load(file)
 
     @classmethod
     def lookup_by_name(cls, name: str) -> "BasePipetteEnum":
@@ -111,6 +117,10 @@ class OT2Pipettes(BasePipetteEnum):
         if self.pipette_type == PipetteTypes.CHANNEL_96:
             raise ValueError("OT-2 does not support 96 channel pipettes.")
 
+    def get_pipette_version(self) -> int:
+        """Gets pipette version."""
+        return self._get_pipette_versions_dict()["ot2"][self.pipette_name]
+
 
 @unique
 class OT3Pipettes(BasePipetteEnum):
@@ -121,6 +131,10 @@ class OT3Pipettes(BasePipetteEnum):
     P1000_SINGLE = ("p1000_single_gen3", PipetteTypes.SINGLE)
     P1000_MULTI = ("p1000_multi_gen3", PipetteTypes.MULTI)
     P1000_96 = ("p1000_96", PipetteTypes.CHANNEL_96)
+
+    def get_pipette_version(self) -> int:
+        """Gets pipette version."""
+        return self._get_pipette_versions_dict()["ot3"][self.pipette_name]
 
     def generate_pipette_env_var_def(
         self, model: int, serial_code: str | None
