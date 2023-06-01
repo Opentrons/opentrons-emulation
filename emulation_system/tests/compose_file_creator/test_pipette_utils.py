@@ -14,18 +14,28 @@ from emulation_system.compose_file_creator.pipette_utils import (
 
 VALID_OT2_PIPETTE_NAMES = [
     ("p20_single_gen2", OT2Pipettes.P20_SINGLE),
+    ("P20 Single", OT2Pipettes.P20_SINGLE),
     ("p20_multi_gen2", OT2Pipettes.P20_MULTI),
+    ("P20 Multi", OT2Pipettes.P20_MULTI),
     ("p300_single_gen2", OT2Pipettes.P300_SINGLE),
+    ("P300 Single", OT2Pipettes.P300_SINGLE),
     ("p300_multi_gen2", OT2Pipettes.P300_MULTI),
+    ("P300 Multi", OT2Pipettes.P300_MULTI),
     ("p1000_single_gen2", OT2Pipettes.P1000_SINGLE_GEN2),
+    ("P1000 Single", OT2Pipettes.P1000_SINGLE_GEN2),
 ]
 
 VALID_OT3_PIPETTE_NAMES = [
     ("p50_single_gen3", OT3Pipettes.P50_SINGLE),
+    ("P50 Single", OT3Pipettes.P50_SINGLE),
     ("p50_multi_gen3", OT3Pipettes.P50_MULTI),
+    ("P50 Multi", OT3Pipettes.P50_MULTI),
     ("p1000_single_gen3", OT3Pipettes.P1000_SINGLE),
+    ("P1000 Single", OT3Pipettes.P1000_SINGLE),
     ("p1000_multi_gen3", OT3Pipettes.P1000_MULTI),
+    ("P1000 Multi", OT3Pipettes.P1000_MULTI),
     ("p1000_96", OT3Pipettes.P1000_96),
+    ("P1000 96 Channel", OT3Pipettes.P1000_96),
 ]
 
 INVALID_PIPETTE_NAMES = [
@@ -98,15 +108,16 @@ def test_ot3_pipette_env_var(
 ) -> None:
     """Tests generating OT3 pipette env var."""
     pipette_info = OT3Pipettes.P50_SINGLE
-    expected_env_var = json.dumps(
-        {
-            "OT3_PIPETTE_DEFINITION": {
+    expected_env_var = {
+        "OT3_PIPETTE_DEFINITION": json.dumps(
+            {
                 "pipette_name": "p50_single_gen3",
                 "pipette_model": expected_model,
                 "pipette_serial_code": expected_serial_code,
             }
-        }
-    )
+        )
+    }
+
     assert (
         pipette_info.generate_pipette_env_var_def(model, serial_code).to_env_var()
         == expected_env_var
@@ -147,11 +158,11 @@ def test_ot3_pipette_env_var_raises_error_on_serial_code_too_long() -> None:
 
 def test_pipette_name_enum() -> None:
     """Tests getting pipette name enum."""
-    ot2_actual_members = OT2Pipettes.valid_pipette_name_enum().__class__.__members__
-    ot3_actual_members = OT3Pipettes.valid_pipette_name_enum().__class__.__members__
+    ot2_actual_members = {value.value for value in OT2Pipettes.valid_pipette_name_enum().__members__.values()}  # type: ignore[attr-defined]
+    ot3_actual_members = {value.value for value in OT3Pipettes.valid_pipette_name_enum().__members__.values()}  # type: ignore[attr-defined]
 
-    ot2_expected_members = EXPECTED_OT2_PIPETTE_NAME_ENUM.__class__.__members__  # type: ignore[attr-defined]
-    ot3_expected_members = EXPECTED_OT3_PIPETTE_NAME_ENUM.__class__.__members__  # type: ignore[attr-defined]
+    ot2_expected_members = {item[0] for item in VALID_OT2_PIPETTE_NAMES}
+    ot3_expected_members = {item[0] for item in VALID_OT3_PIPETTE_NAMES}
 
     assert ot2_actual_members == ot2_expected_members
     assert ot3_actual_members == ot3_expected_members

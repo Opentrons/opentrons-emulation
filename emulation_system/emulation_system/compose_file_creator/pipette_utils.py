@@ -4,7 +4,7 @@ import datetime
 import json
 from dataclasses import dataclass
 from enum import Enum, auto, unique
-from typing import Any, ClassVar, Dict
+from typing import Any, ClassVar, Dict, Generator, Tuple
 
 from emulation_system.consts import PIPETTE_VERSIONS_FILE_PATH
 
@@ -59,7 +59,10 @@ class BasePipetteEnum(Enum):
     Provides lookup by name functionality and valid pipette name enum for use with Pydantic.
     """
 
-    def __init__(self, pipette_name: str, pipette_type: PipetteTypes) -> None:
+    def __init__(
+        self, display_name: str, pipette_name: str, pipette_type: PipetteTypes
+    ) -> None:
+        self.display_name = display_name
         self.pipette_name = pipette_name
         self.pipette_type = pipette_type
 
@@ -72,7 +75,7 @@ class BasePipetteEnum(Enum):
     def lookup_by_name(cls, name: str) -> "BasePipetteEnum":
         """Looks up enum by name."""
         for _, pipette_info in cls.__members__.items():
-            if pipette_info.pipette_name == name:
+            if name in [pipette_info.pipette_name, pipette_info.display_name]:
                 return pipette_info
         raise ValueError(f"Pipette with name {name} not found.")
 
@@ -92,12 +95,21 @@ class BasePipetteEnum(Enum):
     # moving on with our very long day.
 
     @classmethod
+    def _get_pipette_names(cls) -> Generator[Tuple[str, str], None, None]:
+        for i, seq in enumerate(cls.__members__.items(), start=1):
+            _, pipette_info = seq
+            first_name = f"NAME_{(i * 2) - 1}"
+            second_name = f"NAME_{(i * 2)}"
+
+            yield from [
+                (first_name, pipette_info.display_name),
+                (second_name, pipette_info.pipette_name),
+            ]
+
+    @classmethod
     def valid_pipette_name_enum(cls) -> Enum:
         """Returns enum with valid pipette names for use with Pydantic."""
-        key_value_pairs = [
-            (f"{pipette_info.pipette_name.upper()}_NAME", pipette_info.pipette_name)
-            for _, pipette_info in cls.__members__.items()
-        ]
+        key_value_pairs = list(cls._get_pipette_names())
         return Enum(f"{cls.__name__}ValidNames", key_value_pairs, type=str)
 
 
@@ -105,17 +117,20 @@ class BasePipetteEnum(Enum):
 class OT2Pipettes(BasePipetteEnum):
     """Enum for OT-2 pipettes."""
 
-    P20_SINGLE = ("p20_single_gen2", PipetteTypes.SINGLE)
-    P20_MULTI = ("p20_multi_gen2", PipetteTypes.MULTI)
-    P300_SINGLE = ("p300_single_gen2", PipetteTypes.SINGLE)
-    P300_MULTI = ("p300_multi_gen2", PipetteTypes.MULTI)
-    P1000_SINGLE_GEN2 = ("p1000_single_gen2", PipetteTypes.SINGLE)
+    P20_SINGLE = ("P20 Single", "p20_single_gen2", PipetteTypes.SINGLE)
+    P20_MULTI = ("P20 Multi", "p20_multi_gen2", PipetteTypes.MULTI)
+    P300_SINGLE = ("P300 Single", "p300_single_gen2", PipetteTypes.SINGLE)
+    P300_MULTI = ("P300 Multi", "p300_multi_gen2", PipetteTypes.MULTI)
+    P1000_SINGLE_GEN2 = ("P1000 Single", "p1000_single_gen2", PipetteTypes.SINGLE)
 
-    def __init__(self, pipette_name: str, pipette_type: PipetteTypes) -> None:
+    def __init__(
+        self, display_name: str, pipette_name: str, pipette_type: PipetteTypes
+    ) -> None:
         """Raises error if pipette type is 96 channel."""
-        super().__init__(pipette_name, pipette_type)
-        if self.pipette_type == PipetteTypes.CHANNEL_96:
+        if pipette_type == PipetteTypes.CHANNEL_96:
             raise ValueError("OT-2 does not support 96 channel pipettes.")
+
+        super().__init__(display_name, pipette_name, pipette_type)
 
     def get_pipette_version(self) -> int:
         """Gets pipette version."""
@@ -126,11 +141,11 @@ class OT2Pipettes(BasePipetteEnum):
 class OT3Pipettes(BasePipetteEnum):
     """Enum for OT-3 pipettes."""
 
-    P50_SINGLE = ("p50_single_gen3", PipetteTypes.SINGLE)
-    P50_MULTI = ("p50_multi_gen3", PipetteTypes.MULTI)
-    P1000_SINGLE = ("p1000_single_gen3", PipetteTypes.SINGLE)
-    P1000_MULTI = ("p1000_multi_gen3", PipetteTypes.MULTI)
-    P1000_96 = ("p1000_96", PipetteTypes.CHANNEL_96)
+    P50_SINGLE = ("P50 Single", "p50_single_gen3", PipetteTypes.SINGLE)
+    P50_MULTI = ("P50 Multi", "p50_multi_gen3", PipetteTypes.MULTI)
+    P1000_SINGLE = ("P1000 Single", "p1000_single_gen3", PipetteTypes.SINGLE)
+    P1000_MULTI = ("P1000 Multi", "p1000_multi_gen3", PipetteTypes.MULTI)
+    P1000_96 = ("P1000 96 Channel", "p1000_96", PipetteTypes.CHANNEL_96)
 
     def get_pipette_version(self) -> int:
         """Gets pipette version."""
