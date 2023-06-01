@@ -82,25 +82,25 @@ class OT3Services(AbstractService):
                 env_vars = self._config_model.robot.bootloader_env_vars
         return env_vars
 
-    def _is_pipette_image(self) -> bool:
+    def _service_is_pipette_image(self) -> bool:
         return isinstance(self._service_info.image, OT3PipettesImage)
 
-    def _is_gripper_image(self) -> bool:
+    def _service_is_gripper_image(self) -> bool:
         return isinstance(self._service_info.image, OT3GripperImage)
 
-    def _is_bootloader_image(self) -> bool:
+    def _service_is_bootloader_image(self) -> bool:
         return isinstance(self._service_info.image, OT3BootloaderImage)
 
-    def _is_left_pipette(self) -> bool:
+    def _service_is_left_pipette(self) -> bool:
         return (
             self._service_info.ot3_hardware == OT3Hardware.LEFT_PIPETTE
-            and self._is_pipette_image()
+            and self._service_is_pipette_image()
         )
 
-    def _is_right_pipette(self) -> bool:
+    def _service_is_right_pipette(self) -> bool:
         return (
             self._service_info.ot3_hardware == OT3Hardware.RIGHT_PIPETTE
-            and self._is_pipette_image()
+            and self._service_is_pipette_image()
         )
 
     def generate_container_name(self) -> str:
@@ -164,7 +164,7 @@ class OT3Services(AbstractService):
         env_vars: IntermediateEnvironmentVariables = {}
         env_vars.update(self.DEFAULT_ENV_VARS)
 
-        if not self._is_bootloader_image():
+        if not self._service_is_bootloader_image():
             env_vars.update(
                 {
                     "STATE_MANAGER_HOST": self._state_manager_name,
@@ -172,13 +172,13 @@ class OT3Services(AbstractService):
                 }
             )
 
-        if self._is_pipette_image() or self._is_gripper_image():
+        if self._service_is_pipette_image() or self._service_is_gripper_image():
             env_vars["EEPROM_FILENAME"] = "eeprom.bin"
 
-        if self._is_left_pipette():
+        if self._service_is_left_pipette():
             env_vars["MOUNT"] = "left"
 
-        if self._is_right_pipette():
+        if self._service_is_right_pipette():
             env_vars["MOUNT"] = "right"
 
         user_specified_left_pipette = (
@@ -187,7 +187,7 @@ class OT3Services(AbstractService):
 
         if (
             user_specified_left_pipette is not None
-            and self._service_info.ot3_hardware == OT3Hardware.LEFT_PIPETTE
+            and self._service_is_left_pipette()
         ):
             left_pipette: OT3Pipettes = cast(
                 OT3Pipettes, OT3Pipettes.lookup_by_name(user_specified_left_pipette)
@@ -195,6 +195,23 @@ class OT3Services(AbstractService):
             env_vars.update(
                 left_pipette.generate_pipette_env_var_def(
                     left_pipette.get_pipette_version(), None
+                ).to_env_var()
+            )
+        
+        user_specified_right_pipette = (
+            self._config_model.robot.hardware_specific_attributes.right_pipette
+        )
+
+        if (
+            user_specified_right_pipette is not None
+            and self._service_is_right_pipette()
+        ):
+            right_pipette: OT3Pipettes = cast(
+                OT3Pipettes, OT3Pipettes.lookup_by_name(user_specified_right_pipette)
+            )
+            env_vars.update(
+                right_pipette.generate_pipette_env_var_def(
+                    right_pipette.get_pipette_version(), None
                 ).to_env_var()
             )
 
