@@ -1,9 +1,6 @@
 """Module for pipette utilities."""
 
 
-from emulation_system.compose_file_creator.input.hardware_models.robots import (
-    robot_model,
-)
 from emulation_system.compose_file_creator.pipette_utils.data_models import (
     PipetteInfo,
     RobotPipettes,
@@ -11,23 +8,23 @@ from emulation_system.compose_file_creator.pipette_utils.data_models import (
 from emulation_system.compose_file_creator.pipette_utils.lookups import lookup_pipette
 
 
-def get_robot_pipettes(robot: robot_model.RobotInputModel) -> RobotPipettes:
+def get_robot_pipettes(
+    robot_type: str, left_pipette: str | None, right_pipette: str | None
+) -> RobotPipettes:
     """Gets pipettes for robot."""
-    hw = robot.hardware
-
-    left_pipette: PipetteInfo | None = (
+    left_pipette_info = (
         None
-        if robot.left_pipette is None
+        if left_pipette is None
         else PipetteInfo.from_pipette_lookup_value(
-            lookup_pipette(robot.left_pipette, hw)
+            lookup_pipette(left_pipette, robot_type)
         )
     )
-    right_pipette: PipetteInfo | None = (
+    right_pipette_info = (
         None
-        if not robot.right_pipette is not None
+        if not right_pipette is not None
         else PipetteInfo.from_pipette_lookup_value(
-            lookup_pipette(robot.right_pipette, hw)
+            lookup_pipette(right_pipette, robot_type)
         )
     )
 
-    return RobotPipettes(left=left_pipette, right=right_pipette)
+    return RobotPipettes(left=left_pipette_info, right=right_pipette_info)

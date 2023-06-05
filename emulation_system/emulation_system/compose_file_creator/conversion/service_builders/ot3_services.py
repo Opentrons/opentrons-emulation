@@ -155,7 +155,7 @@ class OT3Services(AbstractService):
         if service_info.is_right_pipette():
             env_vars["MOUNT"] = "right"
 
-        get_robot_pipettes(robot)
+        get_robot_pipettes(robot.hardware, robot.left_pipette, robot.right_pipette)
 
         custom_env_vars = self.__get_custom_env_vars()
         if custom_env_vars is not None:

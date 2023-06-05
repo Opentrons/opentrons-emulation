@@ -7,13 +7,16 @@ from typing import Tuple
 
 import pytest
 
-from emulation_system.compose_file_creator.pipette_utils.data_models import PipetteInfo
+from emulation_system.compose_file_creator.pipette_utils.data_models import (
+    PipetteInfo,
+)
 from emulation_system.compose_file_creator.pipette_utils.lookups import (
     OT2PipetteLookup,
     OT3PipetteLookup,
+    lookup_pipette,
 )
 from emulation_system.compose_file_creator.pipette_utils.pipette_utils import (
-    _get_pipette_by_name,
+    get_robot_pipettes,
 )
 
 VALID_OT2_PIPETTE_NAMES = [
@@ -78,7 +81,7 @@ def test_valid_ot2_pipette_names(
     pipette_name: str, expected_enum: Tuple[str, OT2PipetteLookup]
 ) -> None:
     """Tests looking up OT2 pipette enum value by name."""
-    actual_enum = _get_pipette_by_name(pipette_name, OT2PipetteLookup)
+    actual_enum = lookup_pipette(pipette_name, "ot2")
     assert actual_enum == expected_enum
 
 
@@ -87,7 +90,7 @@ def test_valid_ot3_pipette_names(
     pipette_name: str, expected_enum: Tuple[str, OT3PipetteLookup]
 ) -> None:
     """Tests looking up OT3 pipette enum value by name."""
-    actual_enum = _get_pipette_by_name(pipette_name, OT3PipetteLookup)
+    actual_enum = lookup_pipette(pipette_name, "ot3")
     assert actual_enum == expected_enum
 
 
@@ -95,21 +98,18 @@ def test_valid_ot3_pipette_names(
 def test_invalid_pipette_names(pipette_name: str) -> None:
     """Tests ensuring invalid pipette name throws error."""
     with pytest.raises(ValueError):
-        _get_pipette_by_name(pipette_name, OT2PipetteLookup)
+        lookup_pipette(pipette_name, "ot2")
     with pytest.raises(ValueError):
-        _get_pipette_by_name(pipette_name, OT3PipetteLookup)
+        lookup_pipette(pipette_name, "ot3")
 
 
 @pytest.mark.parametrize(
-    "model, serial_code, expected_model, expected_serial_code",
+    "expected_model, expected_serial_code",
     [
-        (2, None, "02", datetime.datetime.now().strftime("%m%d%Y")),
-        (3, "abc123", "03", "abc123"),
+        ("34", datetime.datetime.now().strftime("%m%d%Y")),
     ],
 )
-def test_ot3_pipette_env_var(
-    model: int, serial_code: str | None, expected_model: str, expected_serial_code: str
-) -> None:
+def test_ot3_pipette_env_var(expected_model: str, expected_serial_code: str) -> None:
     """Tests generating OT3 pipette env var."""
     pipette_info = PipetteInfo.from_pipette_lookup_value(OT3PipetteLookup.P50_SINGLE)
     expected_env_var = {
@@ -135,3 +135,16 @@ def test_pipette_name_enum() -> None:
 
     assert ot2_actual_members == ot2_expected_members
     assert ot3_actual_members == ot3_expected_members
+
+
+def test_pipette_restrictions() -> None:
+    """Test pipette restrictions."""
+    # Left Mount Only Exception
+    with pytest.raises(ValueError) as err:
+        get_robot_pipettes("ot3", None, "P1000 96 Channel")
+    assert "is restricted to left mount only." in str(err.value)
+
+    # Blocks Other Mount Exception
+    with pytest.raises(ValueError) as err:
+        get_robot_pipettes("ot3", "P1000 96 Channel", "P50 Single")
+    assert '"P1000 96 Channel" blocks both pipette mounts'

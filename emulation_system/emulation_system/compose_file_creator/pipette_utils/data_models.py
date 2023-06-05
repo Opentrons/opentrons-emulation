@@ -34,31 +34,6 @@ class PipetteInfo:
     restrictions: List[PipetteRestrictions]
     serial_code: str = field(default_factory=_get_date_string)
 
-    def __post_init__(self) -> None:
-        """Validates pipette info."""
-        if (
-            self.serial_code is not None
-            and len(self.serial_code) < OT3_SERIAL_CODE_MIN_CHARS
-        ):
-            raise ValueError("Serial code is too short. Min length is 1 character.")
-
-        if (
-            self.serial_code is not None
-            and len(self.serial_code) > OT3_SERIAL_CODE_MAX_CHARS
-        ):
-            raise ValueError("Serial code is too long. Max length is 12 characters.")
-
-        if self.serial_code is not None and not self.serial_code.isalnum():
-            raise ValueError("Serial code must be alphanumeric.")
-
-        if (
-            OT3_MODEL_MIN_VALUE > int(self.model)
-            or int(self.model) > OT3_MODEL_MAX_VALUE
-        ):
-            raise ValueError(
-                f"Model value must be between {OT3_MODEL_MIN_VALUE} and {OT3_MODEL_MAX_VALUE}."
-            )
-
     @staticmethod
     def _format_model(model: int) -> str:
         """Formats model attribute to a 0 padded string of length 2."""
