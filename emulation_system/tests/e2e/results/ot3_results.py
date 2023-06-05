@@ -29,7 +29,8 @@ class OT3EmulatorContainers(ResultABC):
     gantry_x_exists: bool
     gantry_y_exists: bool
     gripper_exists: bool
-    pipettes_exists: bool
+    left_pipette_exists: bool
+    right_pipette_exists: bool
     bootloader_exists: bool
     can_server_exists: bool
 
@@ -48,7 +49,8 @@ class OT3EmulatorContainers(ResultABC):
                 gantry_x_exists=True,
                 gantry_y_exists=True,
                 gripper_exists=True,
-                pipettes_exists=True,
+                left_pipette_exists=True,
+                right_pipette_exists=True,
                 bootloader_exists=True,
                 can_server_exists=True,
             )
@@ -59,7 +61,8 @@ class OT3EmulatorContainers(ResultABC):
                 gantry_x_exists=False,
                 gantry_y_exists=False,
                 gripper_exists=False,
-                pipettes_exists=False,
+                left_pipette_exists=False,
+                right_pipette_exists=False,
                 bootloader_exists=False,
                 can_server_exists=False,
             )
@@ -77,7 +80,10 @@ class OT3EmulatorContainers(ResultABC):
             gantry_x_exists=system_under_test.ot3_containers.gantry_x is not None,
             gantry_y_exists=system_under_test.ot3_containers.gantry_y is not None,
             gripper_exists=system_under_test.ot3_containers.gripper is not None,
-            pipettes_exists=system_under_test.ot3_containers.pipettes is not None,
+            left_pipette_exists=system_under_test.ot3_containers.left_pipette
+            is not None,
+            right_pipette_exists=system_under_test.ot3_containers.right_pipette
+            is not None,
             bootloader_exists=system_under_test.ot3_containers.bootloader is not None,
             can_server_exists=system_under_test.ot3_containers.can_server is not None,
         )
@@ -91,7 +97,8 @@ class OT3EmulatorNamedVolumes(ResultABC):
     gantry_x_volumes: Set[NamedVolumeInfo]
     gantry_y_volumes: Set[NamedVolumeInfo]
     gripper_volumes: Set[NamedVolumeInfo]
-    pipettes_volumes: Set[NamedVolumeInfo]
+    left_pipette_volumes: Set[NamedVolumeInfo]
+    right_pipette_volumes: Set[NamedVolumeInfo]
     bootloader_volumes: Set[NamedVolumeInfo]
 
     @classmethod
@@ -104,7 +111,8 @@ class OT3EmulatorNamedVolumes(ResultABC):
             gantry_x_volumes={OT3FirmwareEmulatorNamedVolumesMap.GANTRY_X},
             gantry_y_volumes={OT3FirmwareEmulatorNamedVolumesMap.GANTRY_Y},
             gripper_volumes={OT3FirmwareEmulatorNamedVolumesMap.GRIPPER},
-            pipettes_volumes={OT3FirmwareEmulatorNamedVolumesMap.PIPETTES},
+            left_pipette_volumes={OT3FirmwareEmulatorNamedVolumesMap.LEFT_PIPETTE},
+            right_pipette_volumes={OT3FirmwareEmulatorNamedVolumesMap.RIGHT_PIPETTE},
             bootloader_volumes={OT3FirmwareEmulatorNamedVolumesMap.BOOTLOADER},
         )
 
@@ -118,7 +126,12 @@ class OT3EmulatorNamedVolumes(ResultABC):
             gantry_x_volumes=get_volumes(system_under_test.ot3_containers.gantry_x),
             gantry_y_volumes=get_volumes(system_under_test.ot3_containers.gantry_y),
             gripper_volumes=get_volumes(system_under_test.ot3_containers.gripper),
-            pipettes_volumes=get_volumes(system_under_test.ot3_containers.pipettes),
+            left_pipette_volumes=get_volumes(
+                system_under_test.ot3_containers.left_pipette
+            ),
+            right_pipette_volumes=get_volumes(
+                system_under_test.ot3_containers.right_pipette
+            ),
             bootloader_volumes=get_volumes(system_under_test.ot3_containers.bootloader),
         )
 
