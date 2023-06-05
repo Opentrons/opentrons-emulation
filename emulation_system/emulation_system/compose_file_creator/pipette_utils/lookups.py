@@ -2,7 +2,7 @@
 
 import json
 from enum import Enum, auto, unique
-from typing import Generator, Literal, Tuple
+from typing import Generator, List, Literal, Tuple, Type, Union
 
 from emulation_system.consts import PIPETTE_VERSIONS_FILE_PATH
 
@@ -15,6 +15,13 @@ class PipetteTypes(Enum):
     CHANNEL_96 = auto()
 
 
+class PipetteRestrictions(Enum):
+    """Enum for pipette restrictions."""
+
+    LEFT_MOUNT_ONLY = auto()
+    BLOCKS_OTHER_MOUNT = auto()
+
+
 class BasePipetteLookup(Enum):
     """Base class for pipette enums.
 
@@ -22,11 +29,16 @@ class BasePipetteLookup(Enum):
     """
 
     def __init__(
-        self, display_name: str, pipette_name: str, pipette_type: PipetteTypes
+        self,
+        display_name: str,
+        pipette_name: str,
+        pipette_type: PipetteTypes,
+        pipette_restrictions: List[PipetteRestrictions],
     ) -> None:
         self.display_name = display_name
         self.pipette_name = pipette_name
         self.pipette_type = pipette_type
+        self.pipette_restrictions = pipette_restrictions
 
     ############################################
     # NOTE: This is WEIRD. Lets talk about it. #
@@ -71,20 +83,24 @@ class BasePipetteLookup(Enum):
 class OT2PipetteLookup(BasePipetteLookup):
     """Enum for OT-2 pipettes."""
 
-    P20_SINGLE = ("P20 Single", "p20_single_gen2", PipetteTypes.SINGLE)
-    P20_MULTI = ("P20 Multi", "p20_multi_gen2", PipetteTypes.MULTI)
-    P300_SINGLE = ("P300 Single", "p300_single_gen2", PipetteTypes.SINGLE)
-    P300_MULTI = ("P300 Multi", "p300_multi_gen2", PipetteTypes.MULTI)
-    P1000_SINGLE_GEN2 = ("P1000 Single", "p1000_single_gen2", PipetteTypes.SINGLE)
+    P20_SINGLE = ("P20 Single", "p20_single_gen2", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
+    P20_MULTI = ("P20 Multi", "p20_multi_gen2", PipetteTypes.MULTI, [])  # type: ignore[var-annotated]
+    P300_SINGLE = ("P300 Single", "p300_single_gen2", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
+    P300_MULTI = ("P300 Multi", "p300_multi_gen2", PipetteTypes.MULTI, [])  # type: ignore[var-annotated]
+    P1000_SINGLE_GEN2 = ("P1000 Single", "p1000_single_gen2", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
 
     def __init__(
-        self, display_name: str, pipette_name: str, pipette_type: PipetteTypes
+        self,
+        display_name: str,
+        pipette_name: str,
+        pipette_type: PipetteTypes,
+        restrictions: List[PipetteRestrictions],
     ) -> None:
         """Raises error if pipette type is 96 channel."""
         if pipette_type == PipetteTypes.CHANNEL_96:
             raise ValueError("OT-2 does not support 96 channel pipettes.")
 
-        super().__init__(display_name, pipette_name, pipette_type)
+        super().__init__(display_name, pipette_name, pipette_type, restrictions)
 
     def get_pipette_model(self) -> int:
         """Gets pipette model."""
@@ -95,12 +111,33 @@ class OT2PipetteLookup(BasePipetteLookup):
 class OT3PipetteLookup(BasePipetteLookup):
     """Enum for OT-3 pipettes."""
 
-    P50_SINGLE = ("P50 Single", "p50_single_gen3", PipetteTypes.SINGLE)
-    P50_MULTI = ("P50 Multi", "p50_multi_gen3", PipetteTypes.MULTI)
-    P1000_SINGLE = ("P1000 Single", "p1000_single_gen3", PipetteTypes.SINGLE)
-    P1000_MULTI = ("P1000 Multi", "p1000_multi_gen3", PipetteTypes.MULTI)
-    P1000_96 = ("P1000 96 Channel", "p1000_96", PipetteTypes.CHANNEL_96)
+    P50_SINGLE = ("P50 Single", "p50_single_gen3", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
+    P50_MULTI = ("P50 Multi", "p50_multi_gen3", PipetteTypes.MULTI, [])  # type: ignore[var-annotated]
+    P1000_SINGLE = ("P1000 Single", "p1000_single_gen3", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
+    P1000_MULTI = ("P1000 Multi", "p1000_multi_gen3", PipetteTypes.MULTI, [])  # type: ignore[var-annotated]
+    P1000_96 = (
+        "P1000 96 Channel",
+        "p1000_96",
+        PipetteTypes.CHANNEL_96,
+        [PipetteRestrictions.LEFT_MOUNT_ONLY, PipetteRestrictions.BLOCKS_OTHER_MOUNT],
+    )
 
     def get_pipette_model(self) -> int:
         """Gets pipette model."""
         return self._get_pipette_model("ot3")
+
+
+def lookup_pipette(
+    name: str, robot_type: str
+) -> Union[OT2PipetteLookup, OT3PipetteLookup]:
+    """Looks up pipette by name."""
+    if robot_type not in ["ot2", "ot3"]:
+        raise ValueError(f"Robot type {robot_type} not found.")
+
+    pipette_lookup: Union[Type[OT2PipetteLookup], Type[OT3PipetteLookup]] = (
+        OT2PipetteLookup if robot_type == "ot2" else OT3PipetteLookup
+    )
+    for _, pipette_def in pipette_lookup.__members__.items():
+        if name in [pipette_def.pipette_name, pipette_def.display_name]:
+            return pipette_def
+    raise ValueError(f"Pipette with name {name} not found.")
