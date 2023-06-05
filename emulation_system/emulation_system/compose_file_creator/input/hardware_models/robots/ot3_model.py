@@ -10,24 +10,24 @@ from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     SourceRepositories,
 )
-from emulation_system.compose_file_creator.pipette_utils import OT3Pipettes
+from emulation_system.compose_file_creator.pipette_utils.pipette_utils import (
+    OT3PipetteLookup,
+)
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateEnvironmentVariables,
     IntermediatePorts,
 )
 from emulation_system.consts import OT3_STATE_MANAGER_BOUND_PORT
 
-from ..hardware_specific_attributes import HardwareSpecificAttributes
-
 # cannot import from . because of circular import issue
-from .robot_model import RobotInputModel
+from .robot_model import RobotAttributes, RobotInputModel
 
 
-class OT3Attributes(HardwareSpecificAttributes):
+class OT3Attributes(RobotAttributes):
     """Attributes specific to Robots."""
 
-    left_pipette: OT3Pipettes.valid_pipette_name_enum() | None = None  # type: ignore[valid-type]
-    right_pipette: OT3Pipettes.valid_pipette_name_enum() | None = None  # type: ignore[valid-type]
+    left_pipette: OT3PipetteLookup.get_valid_pipette_names() | None = None  # type: ignore[valid-type]
+    right_pipette: OT3PipetteLookup.get_valid_pipette_names() | None = None  # type: ignore[valid-type]
 
 
 class OT3SourceRepositories(SourceRepositories):

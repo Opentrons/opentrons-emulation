@@ -8,18 +8,18 @@ from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     SourceRepositories,
 )
-from emulation_system.compose_file_creator.pipette_utils import OT2Pipettes
+from emulation_system.compose_file_creator.pipette_utils.pipette_utils import (
+    OT2PipetteLookup,
+)
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateEnvironmentVariables,
 )
 
-from ..hardware_specific_attributes import HardwareSpecificAttributes
-
 # cannot import from . because of circular import issue
-from .robot_model import RobotInputModel
+from .robot_model import RobotAttributes, RobotInputModel
 
 
-class OT2Attributes(HardwareSpecificAttributes):
+class OT2Attributes(RobotAttributes):
     """Attributes specific to Robots."""
 
     ####################################################
@@ -27,8 +27,8 @@ class OT2Attributes(HardwareSpecificAttributes):
     #   Refer to pipette_utils.py for an explanation   #
     ####################################################
 
-    left_pipette: OT2Pipettes.valid_pipette_name_enum() | None = None  # type: ignore[valid-type]
-    right_pipette: OT2Pipettes.valid_pipette_name_enum() | None = None  # type: ignore[valid-type]
+    left_pipette: OT2PipetteLookup.get_valid_pipette_names() | None = None  # type: ignore[valid-type]
+    right_pipette: OT2PipetteLookup.get_valid_pipette_names() | None = None  # type: ignore[valid-type]
 
 
 class OT2SourceRepositories(SourceRepositories):
