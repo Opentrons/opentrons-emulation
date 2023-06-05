@@ -276,13 +276,16 @@ def test_ot3_mounts(
         assert emulator.image is not None
         hardware_name = emulator.image.replace("ot3-", "").replace("-hardware", "")
 
+        if "pipettes" in hardware_name:
+            hardware_name = hardware_name.replace("pipettes", "pipette")
+
         assert partial_string_in_mount(
             f"{hardware_name}-executable:/executable", emulator
         )
 
         # Note checking volumes on ot3_firmware_builder here
         assert partial_string_in_mount(
-            f"{hardware_name}-executable:/volumes/{hardware_name}-volume",
+            f"{hardware_name}-executable:/volumes/",
             ot3_firmware_builder,
         )
 

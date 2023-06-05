@@ -56,12 +56,12 @@ class RuntimeComposeFileModel(ComposeSpecification):
         return service_list[0] if len(service_list) > 0 else None
 
     @property
-    def ot3_pipette_emulator(self) -> Optional[Service]:
+    def ot3_pipette_emulators(self) -> Optional[List[Service]]:
         """Returns OT3 Pipette service if one exists."""
         service_list = self.load_containers_by_filter(
             ContainerFilters.OT3_PIPETTES.container_filter_name
         )
-        return service_list[0] if len(service_list) > 0 else None
+        return service_list if len(service_list) > 0 else None
 
     @property
     def ot3_gripper_emulator(self) -> Optional[Service]:
@@ -159,7 +159,6 @@ class RuntimeComposeFileModel(ComposeSpecification):
             for prop in
             [
                 self.ot3_head_emulator,
-                self.ot3_pipette_emulator,
                 self.ot3_gantry_x_emulator,
                 self.ot3_gantry_y_emulator,
                 self.ot3_gripper_emulator,
@@ -167,6 +166,10 @@ class RuntimeComposeFileModel(ComposeSpecification):
             ]
             if prop is not None
         ]
+
+        if self.ot3_pipette_emulators is not None: 
+            emulator_list.extend(self.ot3_pipette_emulators)
+
         return emulator_list if len(emulator_list) > 0 else None
 
     @property

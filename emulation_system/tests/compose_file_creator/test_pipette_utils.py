@@ -103,26 +103,32 @@ def test_invalid_pipette_names(pipette_name: str) -> None:
         lookup_pipette(pipette_name, "ot3")
 
 
-@pytest.mark.parametrize(
-    "expected_model, expected_serial_code",
-    [
-        ("34", datetime.datetime.now().strftime("%m%d%Y")),
-    ],
-)
-def test_ot3_pipette_env_var(expected_model: str, expected_serial_code: str) -> None:
+def test_ot3_pipette_env_var() -> None:
     """Tests generating OT3 pipette env var."""
-    pipette_info = PipetteInfo.from_pipette_lookup_value(OT3PipetteLookup.P50_SINGLE)
-    expected_env_var = {
+    pipettes = get_robot_pipettes("ot3", "P50 Single", "P1000 Multi")
+    left_expected_env_var = {
         "OT3_PIPETTE_DEFINITION": json.dumps(
             {
                 "pipette_name": "p50_single_gen3",
-                "pipette_model": expected_model,
-                "pipette_serial_code": expected_serial_code,
+                "pipette_model": "34",
+                "pipette_serial_code": datetime.datetime.now().strftime("%m%d%Y"),
             }
         )
     }
 
-    assert pipette_info.to_ot3_env_var() == expected_env_var
+
+    right_expected_env_var = {
+        "OT3_PIPETTE_DEFINITION": json.dumps(
+            {
+                "pipette_name": "p1000_multi_gen3",
+                "pipette_model": "34",
+                "pipette_serial_code": datetime.datetime.now().strftime("%m%d%Y"),
+            }
+        )
+    }
+
+    assert pipettes.get_left_pipette_env_var() == left_expected_env_var
+    assert pipettes.get_right_pipette_env_var() == right_expected_env_var
 
 
 def test_pipette_name_enum() -> None:

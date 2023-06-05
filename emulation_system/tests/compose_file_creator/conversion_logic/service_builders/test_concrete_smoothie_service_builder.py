@@ -61,10 +61,7 @@ def test_simple_smoothie_values(
     ).build_service()
 
     expected_dockerfile_name = DEV_DOCKERFILE_NAME if dev else DOCKERFILE_NAME
-    default_pipette_definition = {
-        "model": PipetteSettings().model,
-        "id": PipetteSettings().id,
-    }
+    default_pipette_definition = None
 
     assert service.container_name == "smoothie"
     assert service.image == "smoothie"

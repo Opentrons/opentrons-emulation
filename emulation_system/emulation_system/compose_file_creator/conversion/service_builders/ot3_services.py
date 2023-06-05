@@ -133,6 +133,7 @@ class OT3Services(AbstractService):
         """Generates value for environment parameter."""
         assert self._config_model.robot is not None
         robot = self._config_model.robot
+        pipettes = get_robot_pipettes(robot.hardware, robot.left_pipette, robot.right_pipette)
         service_info = self._service_info
 
         env_vars: IntermediateEnvironmentVariables = {}
@@ -149,13 +150,14 @@ class OT3Services(AbstractService):
         if service_info.is_pipette() or service_info.is_gripper():
             env_vars["EEPROM_FILENAME"] = "eeprom.bin"
 
+        
         if service_info.is_left_pipette():
             env_vars["MOUNT"] = "left"
+            env_vars.update(pipettes.get_left_pipette_env_var())
 
         if service_info.is_right_pipette():
             env_vars["MOUNT"] = "right"
-
-        get_robot_pipettes(robot.hardware, robot.left_pipette, robot.right_pipette)
+            env_vars.update(pipettes.get_right_pipette_env_var())
 
         custom_env_vars = self.__get_custom_env_vars()
         if custom_env_vars is not None:
