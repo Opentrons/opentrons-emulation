@@ -19,23 +19,25 @@ from tests.validation_helper_functions import (
 def get_ot3_service(service_list: List[Service], hardware: OT3Hardware) -> Service:
     """Load OT-3 Service from passed service_list."""
     for service in service_list:
-        assert service.image is not None           
+        assert service.image is not None
         if hardware in service.image:
             return service
 
     raise Exception(f"Service with hardware {hardware} not found.")
 
+
 def get_pipettes(service_list: List[Service]) -> Tuple[Service, Service]:
     """Get Pipettes from passed service_list."""
     pipette_list = []
     for service in service_list:
-        assert service.image is not None           
+        assert service.image is not None
         if "pipettes" in service.image:
             pipette_list.append(service)
 
     if len(pipette_list) != 2:
         raise ValueError("Expected two pipettes, got {len(pipette_list)}")
     return (pipette_list[0], pipette_list[1])
+
 
 @pytest.mark.parametrize(
     "model_dict, dev",
@@ -105,7 +107,10 @@ def test_simple_ot3_values(
 
     # Container Names
     assert head.container_name == OT3Hardware.HEAD
-    assert {pipette_1.container_name, pipette_2.container_name} == {OT3Hardware.LEFT_PIPETTE, OT3Hardware.RIGHT_PIPETTE}
+    assert {pipette_1.container_name, pipette_2.container_name} == {
+        OT3Hardware.LEFT_PIPETTE,
+        OT3Hardware.RIGHT_PIPETTE,
+    }
     assert gantry_x.container_name == OT3Hardware.GANTRY_X
     assert gantry_y.container_name == OT3Hardware.GANTRY_Y
     assert bootloader.container_name == OT3Hardware.BOOTLOADER
@@ -166,8 +171,6 @@ def test_ot3_service_environment_variables(
         assert "EEPROM_FILENAME" in env_root
         assert "STATE_MANAGER_HOST" in env_root
         assert "STATE_MANAGER_PORT" in env_root
-
-    
 
     # Env vars 3/4
     for service in [pipette_1, pipette_2]:

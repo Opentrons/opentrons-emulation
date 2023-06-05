@@ -52,7 +52,8 @@ OT3_FIRMWARE_BUILDER_NAMED_VOLUMES = {
     NamedVolumeInfo("gantry-y-executable", "/volumes/gantry-y-volume"),
     NamedVolumeInfo("head-executable", "/volumes/head-volume"),
     NamedVolumeInfo("gripper-executable", "/volumes/gripper-volume"),
-    NamedVolumeInfo("pipettes-executable", "/volumes/pipettes-volume"),
+    NamedVolumeInfo("left-pipette-executable", "/volumes/left-pipette-volume"),
+    NamedVolumeInfo("right-pipette-executable", "/volumes/right-pipette-volume"),
     NamedVolumeInfo("bootloader-executable", "/volumes/bootloader-volume"),
     NamedVolumeInfo.from_string(
         OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING
@@ -84,7 +85,8 @@ class OT3FirmwareEmulatorNamedVolumesMap:
     GANTRY_Y = NamedVolumeInfo("gantry-y-executable", "/executable")
     HEAD = NamedVolumeInfo("head-executable", "/executable")
     GRIPPER = NamedVolumeInfo("gripper-executable", "/executable")
-    PIPETTES = NamedVolumeInfo("pipettes-executable", "/executable")
+    LEFT_PIPETTE = NamedVolumeInfo("left-pipette-executable", "/executable")
+    RIGHT_PIPETTE = NamedVolumeInfo("right-pipette-executable", "/executable")
     BOOTLOADER = NamedVolumeInfo("bootloader-executable", "/executable")
 
 
