@@ -7,9 +7,6 @@ from typing import Tuple
 
 import pytest
 
-from emulation_system.compose_file_creator.pipette_utils.data_models import (
-    PipetteInfo,
-)
 from emulation_system.compose_file_creator.pipette_utils.lookups import (
     OT2PipetteLookup,
     OT3PipetteLookup,
@@ -115,7 +112,6 @@ def test_ot3_pipette_env_var() -> None:
             }
         )
     }
-
 
     right_expected_env_var = {
         "OT3_PIPETTE_DEFINITION": json.dumps(

@@ -147,7 +147,7 @@ class RobotPipettes:
     def get_left_pipette_env_var(self) -> Dict[str, str]:
         """Gets left pipette env var."""
         return self.left._to_ot3_env_var() if self.left else {OT3_ENV_VAR_NAME: ""}
-    
+
     def get_right_pipette_env_var(self) -> Dict[str, str]:
         """Gets right pipette env var."""
         return self.right._to_ot3_env_var() if self.right else {OT3_ENV_VAR_NAME: ""}
