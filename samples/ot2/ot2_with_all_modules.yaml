@@ -15,6 +15,13 @@ robot:
   id: otie
   hardware: ot2
   emulation-level: firmware
+  hardware-specific-attributes:
+    left-pipette:
+      model: p300_multi_v2.1
+    right-pipette:
+      model: p20_single_v2.2
+  robot-server-env-vars:
+    DEV_ROBOT_NAME: "OT2 Emulator"
 modules:
   - id: shakey-and-warm
     hardware: heater-shaker-module

@@ -328,15 +328,14 @@ OT2CONFIG ?= ./samples/ot2/ot2_with_all_modules.yaml
 ot2:
 	$(MAKE) setup
 	$(MAKE) check-remote-only file_path="$(OT2CONFIG)"
-	$(MAKE) remove-build-run file_path="$(OT2CONFIG)"
+	$(MAKE) emulation-system file_path="$(OT2CONFIG)"
 
 FLEXCONFIG ?= ./samples/ot3/ot3_remote.yaml
 
 .PHONY: flex
 flex:
 	$(MAKE) setup
-	$(MAKE) check-remote-only file_path="$(FLEXCONFIG)"
-	$(MAKE) remove-build-run file_path="$(FLEXCONFIG)"
+	$(MAKE) emulation-system file_path="$(FLEXCONFIG)"
 
 ROBOT_HOST := $(if $(shell python ./scripts/docker_convenience_scripts/in_docker.py),host.docker.internal,localhost)
 
