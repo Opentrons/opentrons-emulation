@@ -10,7 +10,7 @@ from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
     SourceRepositories,
 )
-from emulation_system.compose_file_creator.pipette_utils.pipette_utils import (
+from emulation_system.compose_file_creator.pipette_utils.lookups import (
     OT3PipetteLookup,
 )
 from emulation_system.compose_file_creator.types.intermediate_types import (
