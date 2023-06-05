@@ -1,6 +1,6 @@
 """Module containing pure functions to retrieve general information from Docker containers."""
 
-from typing import Iterable, List, Optional, Set
+from typing import Dict, Iterable, List, Optional, Set
 
 import docker  # type: ignore[import]
 from docker.errors import NotFound as ContainerNotFoundError  # type: ignore[import]
@@ -40,6 +40,20 @@ def get_mounts(container: Optional[Container]) -> Set[BindMountInfo]:
             if mount["Type"] == "bind"
         }
     )
+
+
+def get_environment_variables(container: Optional[Container]) -> Dict[str, str]:
+    """Gets a list of environment variables for a docker container.
+
+    Returns None if no environment variables exist
+    """
+    if container is None:
+        return {}
+    else:
+        env_var_list = container.attrs["Config"]["Env"]
+        return {
+            env_var.split("=")[0]: env_var.split("=")[1] for env_var in env_var_list
+        }
 
 
 def get_container_names(containers: Iterable[Container]) -> Set[str]:
