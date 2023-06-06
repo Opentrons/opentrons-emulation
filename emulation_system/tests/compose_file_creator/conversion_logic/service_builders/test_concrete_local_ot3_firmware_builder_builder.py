@@ -55,7 +55,6 @@ def test_simple_values(
     assert len(env_root.values()) == 2
     assert "LEFT_OT3_PIPETTE_DEFINITION" in env_root
     assert "RIGHT_OT3_PIPETTE_DEFINITION" in env_root
-    
 
 
 def test_local_ot3_firmware_remote_monorepo(

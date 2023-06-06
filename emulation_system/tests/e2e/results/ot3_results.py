@@ -110,9 +110,9 @@ class OT3EmulatorNamedVolumes(ResultABC):
             head_volumes={OT3FirmwareEmulatorNamedVolumesMap.HEAD},
             gantry_x_volumes={OT3FirmwareEmulatorNamedVolumesMap.GANTRY_X},
             gantry_y_volumes={OT3FirmwareEmulatorNamedVolumesMap.GANTRY_Y},
-            gripper_volumes={OT3FirmwareEmulatorNamedVolumesMap.GRIPPER},
-            left_pipette_volumes={OT3FirmwareEmulatorNamedVolumesMap.LEFT_PIPETTE},
-            right_pipette_volumes={OT3FirmwareEmulatorNamedVolumesMap.RIGHT_PIPETTE},
+            gripper_volumes=OT3FirmwareEmulatorNamedVolumesMap.GRIPPER,
+            left_pipette_volumes=OT3FirmwareEmulatorNamedVolumesMap.LEFT_PIPETTE,
+            right_pipette_volumes=OT3FirmwareEmulatorNamedVolumesMap.RIGHT_PIPETTE,
             bootloader_volumes={OT3FirmwareEmulatorNamedVolumesMap.BOOTLOADER},
         )
 

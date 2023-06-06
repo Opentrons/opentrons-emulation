@@ -48,32 +48,35 @@ STATE_MANAGER_WHEEL_VOLUME = NamedVolumeInfo.from_string(
 ENTRYPOINT_MOUNT = BindMountInfo(ENTRYPOINT_FILE_LOCATION, "/entrypoint.sh")
 MONOREPO_WHEEL_VOLUME = NamedVolumeInfo.from_string(MONOREPO_NAMED_VOLUME_STRING)
 OT3_FIRMWARE_BUILDER_NAMED_VOLUMES = {
-    NamedVolumeInfo("gantry-x-executable", "/volumes/gantry-x-volume"),
-    NamedVolumeInfo("gantry-y-executable", "/volumes/gantry-y-volume"),
-    NamedVolumeInfo("head-executable", "/volumes/head-volume"),
-    NamedVolumeInfo("gripper-executable", "/volumes/gripper-volume"),
-    NamedVolumeInfo("left-pipette-executable", "/volumes/left-pipette-volume"),
-    NamedVolumeInfo("right-pipette-executable", "/volumes/right-pipette-volume"),
-    NamedVolumeInfo("bootloader-executable", "/volumes/bootloader-volume"),
+    NamedVolumeInfo.from_string(OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME),
     NamedVolumeInfo.from_string(
         OT3_FIRMWARE_BUILDER_STATE_MANAGER_VENV_NAMED_VOLUME_STRING
     ),
     NamedVolumeInfo.from_string(
         OT3_FIRMWARE_BUILDER_STATE_MANAGER_WHEEL_NAMED_VOLUME_STRING
     ),
-    NamedVolumeInfo.from_string(OT3_FIRMWARE_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME),
     NamedVolumeInfo.from_string(OT3_FIRMWARE_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME),
+    NamedVolumeInfo("bootloader-executable", "/volumes/bootloader-executable"),
+    NamedVolumeInfo("gantry-x-executable", "/volumes/gantry-x-executable"),
+    NamedVolumeInfo("gantry-y-executable", "/volumes/gantry-y-executable"),
+    NamedVolumeInfo("gripper-eeprom", "/volumes/gripper-eeprom"),
+    NamedVolumeInfo("gripper-executable", "/volumes/gripper-executable"),
+    NamedVolumeInfo("head-executable", "/volumes/head-executable"),
+    NamedVolumeInfo("left-pipette-eeprom", "/volumes/left-pipette-eeprom"),
+    NamedVolumeInfo("left-pipette-executable", "/volumes/left-pipette-executable"),
+    NamedVolumeInfo("right-pipette-eeprom", "/volumes/right-pipette-eeprom"),
+    NamedVolumeInfo("right-pipette-executable", "/volumes/right-pipette-executable"),
 }
 
 OPENTRONS_MODULES_BUILDER_NAMED_VOLUMES = {
-    NamedVolumeInfo("heater-shaker-executable", "/volumes/heater-shaker-volume"),
-    NamedVolumeInfo("thermocycler-executable", "/volumes/thermocycler-volume"),
     NamedVolumeInfo.from_string(
         OPENTRONS_MODULES_BUILDER_BUILD_HOST_CACHE_OVERRIDE_VOLUME
     ),
     NamedVolumeInfo.from_string(
         OPENTRONS_MODULES_BUILDER_STM32_TOOLS_CACHE_OVERRIDE_VOLUME
     ),
+    NamedVolumeInfo("heater-shaker-executable", "/volumes/heater-shaker-executable"),
+    NamedVolumeInfo("thermocycler-executable", "/volumes/thermocycler-executable"),
 }
 
 
@@ -81,13 +84,22 @@ OPENTRONS_MODULES_BUILDER_NAMED_VOLUMES = {
 class OT3FirmwareEmulatorNamedVolumesMap:
     """Class representing expected named volume for each OT-3 emulator container."""
 
+    BOOTLOADER = NamedVolumeInfo("bootloader-executable", "/executable")
     GANTRY_X = NamedVolumeInfo("gantry-x-executable", "/executable")
     GANTRY_Y = NamedVolumeInfo("gantry-y-executable", "/executable")
+    GRIPPER = {
+        NamedVolumeInfo("gripper-executable", "/executable"),
+        NamedVolumeInfo("gripper-eeprom", "/eeprom"),
+    }
     HEAD = NamedVolumeInfo("head-executable", "/executable")
-    GRIPPER = NamedVolumeInfo("gripper-executable", "/executable")
-    LEFT_PIPETTE = NamedVolumeInfo("left-pipette-executable", "/executable")
-    RIGHT_PIPETTE = NamedVolumeInfo("right-pipette-executable", "/executable")
-    BOOTLOADER = NamedVolumeInfo("bootloader-executable", "/executable")
+    LEFT_PIPETTE = {
+        NamedVolumeInfo("left-pipette-executable", "/executable"),
+        NamedVolumeInfo("left-pipette-eeprom", "/eeprom"),
+    }
+    RIGHT_PIPETTE = {
+        NamedVolumeInfo("right-pipette-executable", "/executable"),
+        NamedVolumeInfo("right-pipette-eeprom", "/eeprom"),
+    }
 
 
 @dataclass(frozen=True)
@@ -102,10 +114,11 @@ class OpentronsModulesEmulatorNamedVolumes:
 class OT3FirmwareExpectedBinaryNames:
     """Exepected names of OT-3 Firmware binary executables."""
 
+    BOOTLOADER = "bootloader-simulator"
     GANTRY_X = "gantry-x-simulator"
     GANTRY_Y = "gantry-y-simulator"
-    HEAD = "head-simulator"
     GRIPPER = "gripper-simulator"
+    HEAD = "head-simulator"
     LEFT_PIPETTE = {
         "pipettes-96-simulator",
         "pipettes-multi-simulator",
@@ -116,12 +129,11 @@ class OT3FirmwareExpectedBinaryNames:
         "pipettes-multi-simulator",
         "pipettes-single-simulator",
     }
-    BOOTLOADER = "bootloader-simulator"
 
 
 @dataclass(frozen=True)
 class ModulesExpectedBinaryNames:
     """Expecte names of opentrons-modules binary executableds."""
 
-    THERMOCYCLER = "thermocycler-simulator"
     HEATER_SHAKER = "heater-shaker-simulator"
+    THERMOCYCLER = "thermocycler-simulator"
