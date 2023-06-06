@@ -73,6 +73,8 @@ def test_simple_ot3_values(
     bootloader = get_ot3_service(services, OT3Hardware.BOOTLOADER)
     gripper = get_ot3_service(services, OT3Hardware.GRIPPER)
 
+    eeprom_services = [pipette_1, pipette_2, gripper]
+
     expected_dockerfile_name = DEV_DOCKERFILE_NAME if dev else DOCKERFILE_NAME
     assert len(services) == 7
 
@@ -93,7 +95,10 @@ def test_simple_ot3_values(
         # Volumes
         volumes = service.volumes
         assert volumes is not None
-        assert len(volumes) == 2
+        if service in eeprom_services:
+            assert len(volumes) == 3
+        else:
+            assert len(volumes) == 2
         assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", service)
 
         assert service.container_name is not None

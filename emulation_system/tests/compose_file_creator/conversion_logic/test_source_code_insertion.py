@@ -251,9 +251,10 @@ def test_ot3_mounts(
     # State Manager Wheel
     # build-host cache override
     # stm32-tools cache override
+    # eeprom volume for left-pipette, right-pipette, and gripper
 
     check_correct_number_of_volumes(
-        ot3_firmware_builder, len(emulators) + (5 if ot3_firmware_is_local else 4)
+        ot3_firmware_builder, len(emulators) + (5 if ot3_firmware_is_local else 4) + 3
     )
 
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", robot_server)
@@ -271,10 +272,16 @@ def test_ot3_mounts(
         )
 
     for emulator in emulators:
-        check_correct_number_of_volumes(emulator, 2)
+
         assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", emulator)
         assert emulator.image is not None
         hardware_name = emulator.image.replace("ot3-", "").replace("-hardware", "")
+        is_eeprom_service = "pipette" in hardware_name or "gripper" in hardware_name
+        if is_eeprom_service:
+            # left-pipette, right-pipette, and gripper all have eeprom volumes
+            check_correct_number_of_volumes(emulator, 3)
+        else:
+            check_correct_number_of_volumes(emulator, 2)
 
         if "pipettes" in hardware_name:
             hardware_name = hardware_name.replace("pipettes", "pipette")
