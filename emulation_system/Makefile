@@ -34,7 +34,7 @@ get-e2e-test-path:
 .PHONY: execute-e2e-test
 execute-e2e-test:
 	$(if $(test_id),,$(error test_id variable required))
-	poetry run pytest tests/e2e -k "${test_id}"
+	poetry run pytest -k "${test_id}" -vv tests/e2e
 
 
 .PHONY: lint
