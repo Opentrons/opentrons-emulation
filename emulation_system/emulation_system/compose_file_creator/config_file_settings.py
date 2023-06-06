@@ -5,7 +5,7 @@ from typing import List, Optional, Union
 from pydantic import DirectoryPath, Field, FilePath
 from typing_extensions import Literal
 
-from emulation_system.consts import EEPROM_FILE_NAME, ROOM_TEMPERATURE
+from emulation_system.consts import ROOM_TEMPERATURE
 from opentrons_pydantic_base_model import OpentronsBaseModel
 
 
@@ -30,14 +30,14 @@ class Hardware(str, Enum):
         return self.value.replace("-module", "")
 
     @property
-    def named_volume_name(self) -> str:
+    def executable_volume_name(self) -> str:
         """Get name of volume that will be shared between services."""
         return f"{self.hw_name}-executable"
 
     @property
-    def container_executable_volume_storage_path(self) -> str:
+    def builder_executable_volume_path(self) -> str:
         """Where the builder container stores it's volumes."""
-        return f"/volumes/{self.hw_name}-executable-volume/"
+        return f"/volumes/{self.hw_name}-executable/"
 
     @property
     def simulator_name(self) -> str:
@@ -60,11 +60,11 @@ class OT3Hardware(str, Enum):
     def hw_name(self) -> str:
         """Get name of hardware."""
         return self.value.replace("ot3-", "")
-    
+
     @property
-    def container_volume_storage_path(self) -> str:
+    def builder_executable_volume_path(self) -> str:
         """Where the builder container stores its volumes."""
-        return f"/volumes/{self.hw_name}-volume"
+        return f"/volumes/{self.hw_name}-executable"
 
     @property
     def executable_volume_name(self) -> str:
