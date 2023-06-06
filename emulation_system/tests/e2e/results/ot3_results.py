@@ -185,8 +185,12 @@ class OT3EmulatorMounts(ResultABC):
             gantry_x_mounts=get_mounts(system_under_test.ot3_containers.gantry_x),
             gantry_y_mounts=get_mounts(system_under_test.ot3_containers.gantry_y),
             gripper_mounts=get_mounts(system_under_test.ot3_containers.gripper),
-            left_pipette_mounts=get_mounts(system_under_test.ot3_containers.left_pipette),
-            right_pipette_mounts=get_mounts(system_under_test.ot3_containers.right_pipette),
+            left_pipette_mounts=get_mounts(
+                system_under_test.ot3_containers.left_pipette
+            ),
+            right_pipette_mounts=get_mounts(
+                system_under_test.ot3_containers.right_pipette
+            ),
             bootloader_mounts=get_mounts(system_under_test.ot3_containers.bootloader),
         )
 
@@ -281,12 +285,16 @@ class OT3Binaries(ResultABC):
             gripper_binary_name=exec_in_container(
                 system_under_test.ot3_containers.gripper, "ls /executable"
             ),
-            left_pipette_binary_names=set(exec_in_container(
-                system_under_test.ot3_containers.left_pipette, "ls /executable"
-            ).split("\n")),
-            right_pipette_binary_names=set(exec_in_container(
-                system_under_test.ot3_containers.right_pipette, "ls /executable"
-            ).split("\n")),
+            left_pipette_binary_names=set(
+                exec_in_container(
+                    system_under_test.ot3_containers.left_pipette, "ls /executable"
+                ).split("\n")
+            ),
+            right_pipette_binary_names=set(
+                exec_in_container(
+                    system_under_test.ot3_containers.right_pipette, "ls /executable"
+                ).split("\n")
+            ),
             bootloader_binary_name=exec_in_container(
                 system_under_test.ot3_containers.bootloader, "ls /executable"
             ),

@@ -39,6 +39,12 @@ def _get_pipette(
     for pipette in pipettes:
         if get_environment_variables(pipette)["MOUNT"] == mount:
             return pipette
+    else:
+        raise ValueError(
+            'Could not find container with "MOUNT" environment variable set to "{}"'.format(
+                mount
+            )
+        )
 
 
 @pytest.fixture
