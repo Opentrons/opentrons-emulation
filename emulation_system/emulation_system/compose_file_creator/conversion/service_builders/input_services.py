@@ -146,7 +146,7 @@ class InputServices(AbstractService):
             volumes.extend(self._monorepo_source.generate_emulator_mount_strings())
         elif source.repo == OpentronsRepository.OPENTRONS_MODULES:
             volumes.extend(
-                self._opentrons_modules_source.generate_emulator_mount_strings_from_hw(
+                self._opentrons_modules_source.generate_emulator_executable_mount_strings_from_hw(
                     self._container.hardware
                 )
             )

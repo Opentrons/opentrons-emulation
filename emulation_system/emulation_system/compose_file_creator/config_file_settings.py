@@ -5,7 +5,7 @@ from typing import List, Optional, Union
 from pydantic import DirectoryPath, Field, FilePath
 from typing_extensions import Literal
 
-from emulation_system.consts import ROOM_TEMPERATURE
+from emulation_system.consts import EEPROM_FILE_NAME, ROOM_TEMPERATURE
 from opentrons_pydantic_base_model import OpentronsBaseModel
 
 
@@ -35,9 +35,9 @@ class Hardware(str, Enum):
         return f"{self.hw_name}-executable"
 
     @property
-    def container_volume_storage_path(self) -> str:
+    def container_executable_volume_storage_path(self) -> str:
         """Where the builder container stores it's volumes."""
-        return f"/volumes/{self.hw_name}-volume/"
+        return f"/volumes/{self.hw_name}-executable-volume/"
 
     @property
     def simulator_name(self) -> str:
@@ -60,21 +60,38 @@ class OT3Hardware(str, Enum):
     def hw_name(self) -> str:
         """Get name of hardware."""
         return self.value.replace("ot3-", "")
-
-    @property
-    def named_volume_name(self) -> str:
-        """Get name of volume that will be shared between services."""
-        return f"{self.hw_name}-executable"
-
+    
     @property
     def container_volume_storage_path(self) -> str:
         """Where the builder container stores its volumes."""
-        return f"/volumes/{self.hw_name}-volume/"
+        return f"/volumes/{self.hw_name}-volume"
+
+    @property
+    def executable_volume_name(self) -> str:
+        """Get name of volume that will share the built executable to the emulator."""
+        return f"{self.hw_name}-executable"
+
+    @property
+    def eeprom_file_volume_name(self) -> str:
+        """Get name of volume that will be share the generate eeprom.bin file into the emulator."""
+        if self not in self.eeprom_required_hardware():
+            raise ValueError(f"{self.value} does not require an eeprom file.")
+        return f"{self.hw_name}-eeprom"
+
+    @property
+    def eeprom_file_volume_storage_path(self) -> str:
+        """Path to eeprom file"""
+        return f"/volumes/{self.hw_name}-eeprom"
 
     @property
     def simulator_name(self) -> str:
         """Generates simulator name."""
         return f'{self.value.replace("ot3-", "")}-simulator'
+
+    @classmethod
+    def eeprom_required_hardware(cls) -> List["OT3Hardware"]:
+        """Get list of hardware that require eeprom file."""
+        return [cls.LEFT_PIPETTE, cls.RIGHT_PIPETTE, cls.GRIPPER]
 
 
 class EmulationLevels(str, Enum):
