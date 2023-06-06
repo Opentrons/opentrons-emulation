@@ -104,21 +104,23 @@ def test_ot3_pipette_env_var() -> None:
     """Tests generating OT3 pipette env var."""
     pipettes = get_robot_pipettes("ot3", "P50 Single", "P1000 Multi")
     left_expected_env_var = {
-        "OT3_PIPETTE_DEFINITION": json.dumps(
+        "LEFT_OT3_PIPETTE_DEFINITION": json.dumps(
             {
                 "pipette_name": "p50_single_gen3",
                 "pipette_model": "34",
                 "pipette_serial_code": datetime.datetime.now().strftime("%m%d%Y"),
+                "eeprom_file_name": "eeprom.bin",
             }
         )
     }
 
     right_expected_env_var = {
-        "OT3_PIPETTE_DEFINITION": json.dumps(
+        "RIGHT_OT3_PIPETTE_DEFINITION": json.dumps(
             {
                 "pipette_name": "p1000_multi_gen3",
                 "pipette_model": "34",
                 "pipette_serial_code": datetime.datetime.now().strftime("%m%d%Y"),
+                "eeprom_file_name": "eeprom.bin",
             }
         )
     }

@@ -11,17 +11,26 @@ from emulation_system.compose_file_creator.pipette_utils.lookups import (
     OT3PipetteLookup,
     PipetteRestrictions,
 )
+from emulation_system.consts import EEPROM_FILE_NAME
 
 OT3_SERIAL_CODE_MIN_CHARS = 1
 OT3_SERIAL_CODE_MAX_CHARS = 12
 OT3_MODEL_MAX_VALUE = 99
 OT3_MODEL_MIN_VALUE = 0
-OT3_ENV_VAR_NAME = "OT3_PIPETTE_DEFINITION"
+LEFT_PIPETTE_ENV_VAR_NAME = "LEFT_OT3_PIPETTE_DEFINITION"
+RIGHT_PIPETTE_ENV_VAR_NAME = "RIGHT_OT3_PIPETTE_DEFINITION"
 
 
 def _get_date_string() -> str:
     """Gets todays date string in the format of MMDDYYYY."""
     return datetime.now().strftime("%m%d%Y")
+
+
+def _get_eeprom_file_name() -> str:
+    """Gets eeprom file name."""
+    # This is super simple for now and could probably just be a class var on PipetteInfo.
+    # But I would rather follow the same pattern and make it easier to add logic to this down the line
+    return EEPROM_FILE_NAME
 
 
 @dataclass
@@ -33,6 +42,7 @@ class PipetteInfo:
     model: str
     restrictions: List[PipetteRestrictions]
     serial_code: str = field(default_factory=_get_date_string)
+    eeeprom_file_name: str = field(default_factory=_get_eeprom_file_name)
 
     @staticmethod
     def _format_model(model: int) -> str:
@@ -51,16 +61,17 @@ class PipetteInfo:
             model=cls._format_model(pipette_lookup.get_pipette_model()),
         )
 
-    def _to_ot3_env_var(self) -> Dict[str, str]:
+    def _to_ot3_env_var(self, env_var_name: str) -> Dict[str, str]:
         """Converts to enviroment variable string."""
         content = json.dumps(
             {
                 "pipette_name": self.internal_name,
                 "pipette_model": self.model,
                 "pipette_serial_code": self.serial_code,
+                "eeprom_file_name": self.eeeprom_file_name,
             }
         )
-        return {OT3_ENV_VAR_NAME: content}
+        return {env_var_name: content}
 
     def _validate_restrictions(self) -> None:
         """Validates restrictions."""
@@ -146,8 +157,16 @@ class RobotPipettes:
 
     def get_left_pipette_env_var(self) -> Dict[str, str]:
         """Gets left pipette env var."""
-        return self.left._to_ot3_env_var() if self.left else {OT3_ENV_VAR_NAME: ""}
+        return (
+            self.left._to_ot3_env_var(LEFT_PIPETTE_ENV_VAR_NAME)
+            if self.left
+            else {LEFT_PIPETTE_ENV_VAR_NAME: ""}
+        )
 
     def get_right_pipette_env_var(self) -> Dict[str, str]:
         """Gets right pipette env var."""
-        return self.right._to_ot3_env_var() if self.right else {OT3_ENV_VAR_NAME: ""}
+        return (
+            self.right._to_ot3_env_var(RIGHT_PIPETTE_ENV_VAR_NAME)
+            if self.right
+            else {RIGHT_PIPETTE_ENV_VAR_NAME: ""}
+        )

@@ -178,9 +178,8 @@ def test_ot3_service_environment_variables(
         assert service_env is not None
         env_root = cast(Dict[str, Any], service_env.__root__)
         assert env_root is not None
-        assert len(env_root.values()) == 6
+        assert len(env_root.values()) == 5
         assert "MOUNT" in env_root
-        assert "OT3_PIPETTE_DEFINITION" in env_root
         assert "CAN_SERVER_HOST" in env_root
         assert "EEPROM_FILENAME" in env_root
         assert "STATE_MANAGER_HOST" in env_root

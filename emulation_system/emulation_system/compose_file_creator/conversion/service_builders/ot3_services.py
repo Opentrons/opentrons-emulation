@@ -14,7 +14,7 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateVolumes,
 )
 from emulation_system.compose_file_creator.utilities.hardware_utils import is_ot3
-from emulation_system.consts import OT3_STATE_MANAGER_BOUND_PORT
+from emulation_system.consts import EEPROM_FILE_NAME, OT3_STATE_MANAGER_BOUND_PORT
 
 from ...images import SingleImage
 from ...logging import OT3LoggingClient
@@ -133,9 +133,7 @@ class OT3Services(AbstractService):
         """Generates value for environment parameter."""
         assert self._config_model.robot is not None
         robot = self._config_model.robot
-        pipettes = get_robot_pipettes(
-            robot.hardware, robot.left_pipette, robot.right_pipette
-        )
+        get_robot_pipettes(robot.hardware, robot.left_pipette, robot.right_pipette)
         service_info = self._service_info
 
         env_vars: IntermediateEnvironmentVariables = {}
@@ -150,15 +148,13 @@ class OT3Services(AbstractService):
             )
 
         if service_info.is_pipette() or service_info.is_gripper():
-            env_vars["EEPROM_FILENAME"] = "eeprom.bin"
+            env_vars["EEPROM_FILENAME"] = EEPROM_FILE_NAME
 
         if service_info.is_left_pipette():
             env_vars["MOUNT"] = "left"
-            env_vars.update(pipettes.get_left_pipette_env_var())
 
         if service_info.is_right_pipette():
             env_vars["MOUNT"] = "right"
-            env_vars.update(pipettes.get_right_pipette_env_var())
 
         custom_env_vars = self.__get_custom_env_vars()
         if custom_env_vars is not None:
