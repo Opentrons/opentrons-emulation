@@ -171,7 +171,8 @@ class OT3EmulatorMounts(ResultABC):
     gantry_x_mounts: Set[BindMountInfo]
     gantry_y_mounts: Set[BindMountInfo]
     gripper_mounts: Set[BindMountInfo]
-    pipettes_mounts: Set[BindMountInfo]
+    left_pipette_mounts: Set[BindMountInfo]
+    right_pipette_mounts: Set[BindMountInfo]
     bootloader_mounts: Set[BindMountInfo]
 
     @classmethod
@@ -184,7 +185,8 @@ class OT3EmulatorMounts(ResultABC):
             gantry_x_mounts=get_mounts(system_under_test.ot3_containers.gantry_x),
             gantry_y_mounts=get_mounts(system_under_test.ot3_containers.gantry_y),
             gripper_mounts=get_mounts(system_under_test.ot3_containers.gripper),
-            pipettes_mounts=get_mounts(system_under_test.ot3_containers.pipettes),
+            left_pipette_mounts=get_mounts(system_under_test.ot3_containers.left_pipette),
+            right_pipette_mounts=get_mounts(system_under_test.ot3_containers.right_pipette),
             bootloader_mounts=get_mounts(system_under_test.ot3_containers.bootloader),
         )
 
@@ -198,7 +200,8 @@ class OT3EmulatorMounts(ResultABC):
             gantry_x_mounts={ENTRYPOINT_MOUNT},
             gantry_y_mounts={ENTRYPOINT_MOUNT},
             gripper_mounts={ENTRYPOINT_MOUNT},
-            pipettes_mounts={ENTRYPOINT_MOUNT},
+            left_pipette_mounts={ENTRYPOINT_MOUNT},
+            right_pipette_mounts={ENTRYPOINT_MOUNT},
             bootloader_mounts={ENTRYPOINT_MOUNT},
         )
 
@@ -241,7 +244,8 @@ class OT3Binaries(ResultABC):
     gantry_x_binary_name: str
     gantry_y_binary_name: str
     gripper_binary_name: str
-    pipettes_binary_name: str
+    left_pipette_binary_names: Set[str]
+    right_pipette_binary_names: Set[str]
     bootloader_binary_name: str
 
     @classmethod
@@ -254,7 +258,8 @@ class OT3Binaries(ResultABC):
             gantry_x_binary_name=OT3FirmwareExpectedBinaryNames.GANTRY_X,
             gantry_y_binary_name=OT3FirmwareExpectedBinaryNames.GANTRY_Y,
             gripper_binary_name=OT3FirmwareExpectedBinaryNames.GRIPPER,
-            pipettes_binary_name=OT3FirmwareExpectedBinaryNames.PIPETTES,
+            left_pipette_binary_names=OT3FirmwareExpectedBinaryNames.LEFT_PIPETTE,
+            right_pipette_binary_names=OT3FirmwareExpectedBinaryNames.RIGHT_PIPETTE,
             bootloader_binary_name=OT3FirmwareExpectedBinaryNames.BOOTLOADER,
         )
 
@@ -276,9 +281,12 @@ class OT3Binaries(ResultABC):
             gripper_binary_name=exec_in_container(
                 system_under_test.ot3_containers.gripper, "ls /executable"
             ),
-            pipettes_binary_name=exec_in_container(
-                system_under_test.ot3_containers.pipettes, "ls /executable"
-            ),
+            left_pipette_binary_names=set(exec_in_container(
+                system_under_test.ot3_containers.left_pipette, "ls /executable"
+            ).split("\n")),
+            right_pipette_binary_names=set(exec_in_container(
+                system_under_test.ot3_containers.right_pipette, "ls /executable"
+            ).split("\n")),
             bootloader_binary_name=exec_in_container(
                 system_under_test.ot3_containers.bootloader, "ls /executable"
             ),

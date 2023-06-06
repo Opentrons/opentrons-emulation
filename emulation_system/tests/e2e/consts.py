@@ -106,7 +106,8 @@ class OT3FirmwareExpectedBinaryNames:
     GANTRY_Y = "gantry-y-simulator"
     HEAD = "head-simulator"
     GRIPPER = "gripper-simulator"
-    PIPETTES = "pipettes-simulator"
+    LEFT_PIPETTE = {"pipettes-96-simulator", "pipettes-multi-simulator", "pipettes-single-simulator"}
+    RIGHT_PIPETTE = {"pipettes-96-simulator", "pipettes-multi-simulator", "pipettes-single-simulator"}
     BOOTLOADER = "bootloader-simulator"
 
 
