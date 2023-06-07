@@ -1,10 +1,10 @@
 """Data models for pipettes."""
 
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from string import Template
-from typing import Dict, List, Union
+from typing import Dict, Union
 
 from emulation_system.compose_file_creator.pipette_utils.lookups import (
     OT2PipetteLookup,
@@ -37,7 +37,9 @@ def _get_eeprom_file_name() -> str:
 class PipetteInfo:
     """Class for pipette info."""
 
-    def __init__(self, pipette_lookup: Union["OT2PipetteLookup", "OT3PipetteLookup"]) -> None:
+    def __init__(
+        self, pipette_lookup: Union["OT2PipetteLookup", "OT3PipetteLookup"]
+    ) -> None:
         """Sets pipette info from pipette lookup."""
         self.display_name = pipette_lookup.display_name
         self.internal_name = pipette_lookup.pipette_name
@@ -50,7 +52,6 @@ class PipetteInfo:
     def _format_model(model: int) -> str:
         """Formats model attribute to a 0 padded string of length 2."""
         return str(model).zfill(2)
-
 
     def _to_ot3_env_var(self, env_var_name: str) -> Dict[str, str]:
         """Converts to enviroment variable string."""
