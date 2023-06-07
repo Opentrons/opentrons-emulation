@@ -16,7 +16,13 @@ class PipetteTypes(Enum):
 
 
 class PipetteRestrictions(Enum):
-    """Enum for pipette restrictions."""
+    """Namespace for pipette restrictions.
+    
+    This enum does not and should not define any validation methods for pipettes. 
+    Validation should be deferred to during the `__post_init__` methods of `PipetteInfo` or `RobotPipettes`
+    This enum is just a namespace to give a nice identifier to the restrictions.
+    All values should use the auto() function.
+    """
 
     LEFT_MOUNT_ONLY = auto()
     BLOCKS_OTHER_MOUNT = auto()

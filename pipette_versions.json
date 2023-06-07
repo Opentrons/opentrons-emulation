@@ -1,5 +1,5 @@
 {
-  "comments": "Pulled from https://github.com/Opentrons/opentrons/tree/edge/shared-data/pipette/definitions/2/general",
+  "comments": "Pulled from https://github.com/Opentrons/opentrons/tree/edge/shared-data/pipette/definitions/2/general. Remove the underscore and pick the largest number",
   "ot2": {
     "p20_single_gen2": 22,
     "p20_multi_gen2": 21,
