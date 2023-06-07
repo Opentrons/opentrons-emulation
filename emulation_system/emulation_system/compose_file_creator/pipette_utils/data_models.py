@@ -37,29 +37,20 @@ def _get_eeprom_file_name() -> str:
 class PipetteInfo:
     """Class for pipette info."""
 
-    display_name: str
-    internal_name: str
-    model: str
-    restrictions: List[PipetteRestrictions]
-    serial_code: str = field(default_factory=_get_date_string)
-    eeeprom_file_name: str = field(default_factory=_get_eeprom_file_name)
+    def __init__(self, pipette_lookup: Union["OT2PipetteLookup", "OT3PipetteLookup"]) -> None:
+        """Sets pipette info from pipette lookup."""
+        self.display_name = pipette_lookup.display_name
+        self.internal_name = pipette_lookup.pipette_name
+        self.restrictions = pipette_lookup.pipette_restrictions
+        self.model = self._format_model(pipette_lookup.get_pipette_model())
+        self.serial_code = _get_date_string()
+        self.eeprom_file_name = _get_eeprom_file_name()
 
     @staticmethod
     def _format_model(model: int) -> str:
         """Formats model attribute to a 0 padded string of length 2."""
         return str(model).zfill(2)
 
-    @classmethod
-    def from_pipette_lookup_value(
-        cls, pipette_lookup: Union["OT2PipetteLookup", "OT3PipetteLookup"]
-    ) -> "PipetteInfo":
-        """Sets pipette info from pipette lookup."""
-        return cls(
-            display_name=pipette_lookup.display_name,
-            internal_name=pipette_lookup.pipette_name,
-            restrictions=pipette_lookup.pipette_restrictions,
-            model=cls._format_model(pipette_lookup.get_pipette_model()),
-        )
 
     def _to_ot3_env_var(self, env_var_name: str) -> Dict[str, str]:
         """Converts to enviroment variable string."""
@@ -68,7 +59,7 @@ class PipetteInfo:
                 "pipette_name": self.internal_name,
                 "pipette_model": self.model,
                 "pipette_serial_code": self.serial_code,
-                "eeprom_file_name": self.eeeprom_file_name,
+                "eeprom_file_name": self.eeprom_file_name,
             }
         )
         return {env_var_name: content}
