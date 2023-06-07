@@ -80,7 +80,10 @@ class OT3FirmwareBuilderService(AbstractService):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        return self._ot3_source.generate_builder_mount_strings()
+        vols = self._ot3_source.generate_builder_mount_strings()
+        if self._monorepo_source.is_local():
+            vols.extend(self._monorepo_source.generate_source_code_bind_mounts())
+        return vols
 
     def generate_ports(self) -> Optional[IntermediatePorts]:
         """Generates value for ports parameter."""
