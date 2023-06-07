@@ -7,13 +7,11 @@ from typing import Tuple
 
 import pytest
 
+from emulation_system.compose_file_creator.pipette_utils import get_robot_pipettes
 from emulation_system.compose_file_creator.pipette_utils.lookups import (
     OT2PipetteLookup,
     OT3PipetteLookup,
     lookup_pipette,
-)
-from emulation_system.compose_file_creator.pipette_utils.pipette_utils import (
-    get_robot_pipettes,
 )
 
 VALID_OT2_PIPETTE_NAMES = [
