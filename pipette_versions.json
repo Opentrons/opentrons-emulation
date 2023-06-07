@@ -1,0 +1,17 @@
+{
+  "comments": "Pulled from https://github.com/Opentrons/opentrons/tree/edge/shared-data/pipette/definitions/2/general",
+  "ot2": {
+    "p20_single_gen2": 22,
+    "p20_multi_gen2": 21,
+    "p300_single_gen2": 21,
+    "p300_multi_gen2": 21,
+    "p1000_single_gen2": 22
+  },
+  "ot3": {
+    "p50_single_gen3": 34,
+    "p50_multi_gen3": 34,
+    "p1000_single_gen3": 34,
+    "p1000_multi_gen3": 34,
+    "p1000_96": 34
+  }
+}
