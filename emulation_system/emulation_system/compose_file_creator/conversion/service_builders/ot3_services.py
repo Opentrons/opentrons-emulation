@@ -10,18 +10,10 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
-from emulation_system.consts import OT3_STATE_MANAGER_BOUND_PORT
+from emulation_system.compose_file_creator.utilities.hardware_utils import is_ot3
+from emulation_system.consts import EEPROM_FILE_NAME, OT3_STATE_MANAGER_BOUND_PORT
 
-from ...images import (
-    OT3BootloaderImage,
-    OT3GantryXImage,
-    OT3GantryYImage,
-    OT3GripperImage,
-    OT3HeadImage,
-    OT3PipettesImage,
-    SingleImage,
-)
-from ...input.hardware_models import OT3InputModel
+from ...images import SingleImage
 from ...logging import OT3LoggingClient
 from .abstract_service import AbstractService
 from .service_info import ServiceInfo
@@ -29,6 +21,8 @@ from .service_info import ServiceInfo
 
 class OT3Services(AbstractService):
     """Concrete implementation of AbstractService for building OT-3 firmware services."""
+
+    DEFAULT_ENV_VARS = {"CAN_SERVER_HOST": "can-server"}
 
     def __init__(
         self,
@@ -60,22 +54,22 @@ class OT3Services(AbstractService):
         return self._service_info.image.image_name
 
     def __get_custom_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
-        image = self._service_info.image
+        service_info = self._service_info
+        robot = self._config_model.robot
         env_vars: IntermediateEnvironmentVariables | None = None
-        assert isinstance(self._config_model.robot, OT3InputModel)
-        match image:
-            case OT3PipettesImage():
-                env_vars = self._config_model.robot.pipettes_env_vars
-            case OT3GripperImage():
-                env_vars = self._config_model.robot.gripper_env_vars
-            case OT3HeadImage():
-                env_vars = self._config_model.robot.head_env_vars
-            case OT3GantryXImage():
-                env_vars = self._config_model.robot.gantry_x_env_vars
-            case OT3GantryYImage():
-                env_vars = self._config_model.robot.gantry_y_env_vars
-            case OT3BootloaderImage():
-                env_vars = self._config_model.robot.bootloader_env_vars
+        assert is_ot3(robot)
+        if service_info.is_pipette():
+            env_vars = robot.pipettes_env_vars
+        elif service_info.is_gripper():
+            env_vars = robot.gripper_env_vars
+        elif service_info.is_head():
+            env_vars = robot.head_env_vars
+        elif service_info.is_gantry_x():
+            env_vars = robot.gantry_x_env_vars
+        elif service_info.is_gantry_y():
+            env_vars = robot.gantry_y_env_vars
+        elif service_info.is_bootloader():
+            env_vars = robot.bootloader_env_vars
         return env_vars
 
     def generate_container_name(self) -> str:
@@ -134,15 +128,26 @@ class OT3Services(AbstractService):
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
-        env_vars: IntermediateEnvironmentVariables = {
-            "CAN_SERVER_HOST": self._can_server_service_name,
-        }
-        if not isinstance(self._service_info.image, OT3BootloaderImage):
-            env_vars["STATE_MANAGER_HOST"] = self._state_manager_name
-            env_vars["STATE_MANAGER_PORT"] = OT3_STATE_MANAGER_BOUND_PORT
+        service_info = self._service_info
+        env_vars: IntermediateEnvironmentVariables = {}
+        env_vars.update(self.DEFAULT_ENV_VARS)
 
-        if isinstance(self._service_info.image, (OT3PipettesImage, OT3GripperImage)):
-            env_vars["EEPROM_FILENAME"] = "eeprom.bin"
+        if not service_info.is_bootloader():
+            env_vars.update(
+                {
+                    "STATE_MANAGER_HOST": self._state_manager_name,
+                    "STATE_MANAGER_PORT": OT3_STATE_MANAGER_BOUND_PORT,
+                }
+            )
+
+        if service_info.is_pipette() or service_info.is_gripper():
+            env_vars["EEPROM_FILENAME"] = EEPROM_FILE_NAME
+
+        if service_info.is_left_pipette():
+            env_vars["MOUNT"] = "left"
+
+        if service_info.is_right_pipette():
+            env_vars["MOUNT"] = "right"
 
         custom_env_vars = self.__get_custom_env_vars()
         if custom_env_vars is not None:
