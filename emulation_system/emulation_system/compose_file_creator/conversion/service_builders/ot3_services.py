@@ -113,9 +113,16 @@ class OT3Services(AbstractService):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        volumes = self._ot3_source.generate_emulator_mount_strings_from_hw(
+        volumes = self._ot3_source.generate_emulator_executable_mount_strings_from_hw(
             self._service_info.ot3_hardware
         )
+
+        if self._service_info.is_pipette() or self._service_info.is_gripper():
+            volumes.append(
+                self._ot3_source.generate_emulator_eeprom_mount_strings_from_hw(
+                    self._service_info.ot3_hardware
+                )
+            )
 
         self._logging_client.log_volumes(volumes)
         return volumes
