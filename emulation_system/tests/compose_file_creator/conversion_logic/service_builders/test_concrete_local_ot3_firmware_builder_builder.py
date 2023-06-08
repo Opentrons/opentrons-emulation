@@ -1,6 +1,6 @@
 """Tests to confirm that local-ot3-firmware-builder container is created correctly."""
 
-from typing import Any, Dict
+from typing import Any, Dict, cast
 
 import pytest
 from pydantic import parse_obj_as
@@ -48,7 +48,13 @@ def test_simple_values(
     assert "can-network" in service.networks
     assert service.command is None
     assert service.ports is None
-    assert service.environment is None
+
+    assert service.environment is not None
+    env_root = cast(Dict[str, Any], service.environment.__root__)
+    assert env_root is not None
+    assert len(env_root.values()) == 2
+    assert "LEFT_OT3_PIPETTE_DEFINITION" in env_root
+    assert "RIGHT_OT3_PIPETTE_DEFINITION" in env_root
 
 
 def test_local_ot3_firmware_remote_monorepo(
