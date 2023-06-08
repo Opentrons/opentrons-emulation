@@ -48,7 +48,8 @@ class Hardware(str, Enum):
 class OT3Hardware(str, Enum):
     """Names of OT3 hardware."""
 
-    PIPETTES = "ot3-pipettes"
+    LEFT_PIPETTE = "ot3-left-pipette"
+    RIGHT_PIPETTE = "ot3-right-pipette"
     HEAD = "ot3-head"
     GANTRY_X = "ot3-gantry-x"
     GANTRY_Y = "ot3-gantry-y"
