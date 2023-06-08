@@ -245,16 +245,28 @@ def test_ot3_mounts(
 
     check_correct_number_of_volumes(monorepo_builder, 2 if monorepo_is_local else 1)
 
-    # Firmware builder should have the following volumes:
-    # 1 volume per emulator for copying the binaries over
-    # State Manager Venv
-    # State Manager Wheel
-    # build-host cache override
-    # stm32-tools cache override
-    # eeprom volume for left-pipette, right-pipette, and gripper
+    binary_volumes = len(emulators)
+    state_manager_volumes = 2
+    build_host_cache_override_volume = 1
+    stm32_tools_cache_override_volume = 1
+    eeprom_volumes = 3
+    ot3_firmware_bind_mount = 1 if ot3_firmware_is_local else 0
+    monorepo_bind_mount = 1 if monorepo_is_local else 0
+
+    ot3_firmware_builder_expected_vols = sum(
+        [
+            binary_volumes,
+            state_manager_volumes,
+            build_host_cache_override_volume,
+            stm32_tools_cache_override_volume,
+            eeprom_volumes,
+            ot3_firmware_bind_mount,
+            monorepo_bind_mount,
+        ]
+    )
 
     check_correct_number_of_volumes(
-        ot3_firmware_builder, len(emulators) + (5 if ot3_firmware_is_local else 4) + 3
+        ot3_firmware_builder, ot3_firmware_builder_expected_vols
     )
 
     assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", robot_server)
