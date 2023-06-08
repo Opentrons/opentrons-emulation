@@ -19,13 +19,13 @@ build_module_simulator "thermocycler-gen2-simulator"
 
 echo "Creating simulator directories (If needed)"
 mkdir -p \
-  /volumes/heater-shaker-volume \
-  /volumes/thermocycler-volume
+  /volumes/heater-shaker-executable \
+  /volumes/thermocycler-executable
 
 echo "Removing any existing simulators from simulator directories"
-rm -f /volumes/heater-shaker-volume/*
-rm -f /volumes/thermocycler-volume/*
+rm -f /volumes/heater-shaker-executable/*
+rm -f /volumes/thermocycler-executable/*
 
 echo "Copying built simulator files to simulator directories"
-cp /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /volumes/heater-shaker-volume/heater-shaker-simulator
-cp /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-gen2/simulator/thermocycler-gen2-simulator /volumes/thermocycler-volume/thermocycler-simulator
+cp /opentrons-modules/build-stm32-host/stm32-modules/heater-shaker/simulator/heater-shaker-simulator /volumes/heater-shaker-executable/heater-shaker-simulator
+cp /opentrons-modules/build-stm32-host/stm32-modules/thermocycler-gen2/simulator/thermocycler-gen2-simulator /volumes/thermocycler-executable/thermocycler-simulator
