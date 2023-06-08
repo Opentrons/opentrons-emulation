@@ -20,7 +20,8 @@ class OT3SystemUnderTest:
     gantry_y: Container
     head: Container
     gripper: Container
-    pipettes: Container
+    left_pipette: Container
+    right_pipette: Container
     bootloader: Container
     state_manager: Container
     can_server: Container

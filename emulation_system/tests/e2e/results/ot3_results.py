@@ -29,7 +29,8 @@ class OT3EmulatorContainers(ResultABC):
     gantry_x_exists: bool
     gantry_y_exists: bool
     gripper_exists: bool
-    pipettes_exists: bool
+    left_pipette_exists: bool
+    right_pipette_exists: bool
     bootloader_exists: bool
     can_server_exists: bool
 
@@ -48,7 +49,8 @@ class OT3EmulatorContainers(ResultABC):
                 gantry_x_exists=True,
                 gantry_y_exists=True,
                 gripper_exists=True,
-                pipettes_exists=True,
+                left_pipette_exists=True,
+                right_pipette_exists=True,
                 bootloader_exists=True,
                 can_server_exists=True,
             )
@@ -59,7 +61,8 @@ class OT3EmulatorContainers(ResultABC):
                 gantry_x_exists=False,
                 gantry_y_exists=False,
                 gripper_exists=False,
-                pipettes_exists=False,
+                left_pipette_exists=False,
+                right_pipette_exists=False,
                 bootloader_exists=False,
                 can_server_exists=False,
             )
@@ -77,7 +80,10 @@ class OT3EmulatorContainers(ResultABC):
             gantry_x_exists=system_under_test.ot3_containers.gantry_x is not None,
             gantry_y_exists=system_under_test.ot3_containers.gantry_y is not None,
             gripper_exists=system_under_test.ot3_containers.gripper is not None,
-            pipettes_exists=system_under_test.ot3_containers.pipettes is not None,
+            left_pipette_exists=system_under_test.ot3_containers.left_pipette
+            is not None,
+            right_pipette_exists=system_under_test.ot3_containers.right_pipette
+            is not None,
             bootloader_exists=system_under_test.ot3_containers.bootloader is not None,
             can_server_exists=system_under_test.ot3_containers.can_server is not None,
         )
@@ -91,7 +97,8 @@ class OT3EmulatorNamedVolumes(ResultABC):
     gantry_x_volumes: Set[NamedVolumeInfo]
     gantry_y_volumes: Set[NamedVolumeInfo]
     gripper_volumes: Set[NamedVolumeInfo]
-    pipettes_volumes: Set[NamedVolumeInfo]
+    left_pipette_volumes: Set[NamedVolumeInfo]
+    right_pipette_volumes: Set[NamedVolumeInfo]
     bootloader_volumes: Set[NamedVolumeInfo]
 
     @classmethod
@@ -103,8 +110,9 @@ class OT3EmulatorNamedVolumes(ResultABC):
             head_volumes={OT3FirmwareEmulatorNamedVolumesMap.HEAD},
             gantry_x_volumes={OT3FirmwareEmulatorNamedVolumesMap.GANTRY_X},
             gantry_y_volumes={OT3FirmwareEmulatorNamedVolumesMap.GANTRY_Y},
-            gripper_volumes={OT3FirmwareEmulatorNamedVolumesMap.GRIPPER},
-            pipettes_volumes={OT3FirmwareEmulatorNamedVolumesMap.PIPETTES},
+            gripper_volumes=OT3FirmwareEmulatorNamedVolumesMap.GRIPPER,
+            left_pipette_volumes=OT3FirmwareEmulatorNamedVolumesMap.LEFT_PIPETTE,
+            right_pipette_volumes=OT3FirmwareEmulatorNamedVolumesMap.RIGHT_PIPETTE,
             bootloader_volumes={OT3FirmwareEmulatorNamedVolumesMap.BOOTLOADER},
         )
 
@@ -118,7 +126,12 @@ class OT3EmulatorNamedVolumes(ResultABC):
             gantry_x_volumes=get_volumes(system_under_test.ot3_containers.gantry_x),
             gantry_y_volumes=get_volumes(system_under_test.ot3_containers.gantry_y),
             gripper_volumes=get_volumes(system_under_test.ot3_containers.gripper),
-            pipettes_volumes=get_volumes(system_under_test.ot3_containers.pipettes),
+            left_pipette_volumes=get_volumes(
+                system_under_test.ot3_containers.left_pipette
+            ),
+            right_pipette_volumes=get_volumes(
+                system_under_test.ot3_containers.right_pipette
+            ),
             bootloader_volumes=get_volumes(system_under_test.ot3_containers.bootloader),
         )
 
@@ -158,7 +171,8 @@ class OT3EmulatorMounts(ResultABC):
     gantry_x_mounts: Set[BindMountInfo]
     gantry_y_mounts: Set[BindMountInfo]
     gripper_mounts: Set[BindMountInfo]
-    pipettes_mounts: Set[BindMountInfo]
+    left_pipette_mounts: Set[BindMountInfo]
+    right_pipette_mounts: Set[BindMountInfo]
     bootloader_mounts: Set[BindMountInfo]
 
     @classmethod
@@ -171,7 +185,12 @@ class OT3EmulatorMounts(ResultABC):
             gantry_x_mounts=get_mounts(system_under_test.ot3_containers.gantry_x),
             gantry_y_mounts=get_mounts(system_under_test.ot3_containers.gantry_y),
             gripper_mounts=get_mounts(system_under_test.ot3_containers.gripper),
-            pipettes_mounts=get_mounts(system_under_test.ot3_containers.pipettes),
+            left_pipette_mounts=get_mounts(
+                system_under_test.ot3_containers.left_pipette
+            ),
+            right_pipette_mounts=get_mounts(
+                system_under_test.ot3_containers.right_pipette
+            ),
             bootloader_mounts=get_mounts(system_under_test.ot3_containers.bootloader),
         )
 
@@ -185,7 +204,8 @@ class OT3EmulatorMounts(ResultABC):
             gantry_x_mounts={ENTRYPOINT_MOUNT},
             gantry_y_mounts={ENTRYPOINT_MOUNT},
             gripper_mounts={ENTRYPOINT_MOUNT},
-            pipettes_mounts={ENTRYPOINT_MOUNT},
+            left_pipette_mounts={ENTRYPOINT_MOUNT},
+            right_pipette_mounts={ENTRYPOINT_MOUNT},
             bootloader_mounts={ENTRYPOINT_MOUNT},
         )
 
@@ -228,7 +248,8 @@ class OT3Binaries(ResultABC):
     gantry_x_binary_name: str
     gantry_y_binary_name: str
     gripper_binary_name: str
-    pipettes_binary_name: str
+    left_pipette_binary_names: Set[str]
+    right_pipette_binary_names: Set[str]
     bootloader_binary_name: str
 
     @classmethod
@@ -241,7 +262,8 @@ class OT3Binaries(ResultABC):
             gantry_x_binary_name=OT3FirmwareExpectedBinaryNames.GANTRY_X,
             gantry_y_binary_name=OT3FirmwareExpectedBinaryNames.GANTRY_Y,
             gripper_binary_name=OT3FirmwareExpectedBinaryNames.GRIPPER,
-            pipettes_binary_name=OT3FirmwareExpectedBinaryNames.PIPETTES,
+            left_pipette_binary_names=OT3FirmwareExpectedBinaryNames.LEFT_PIPETTE,
+            right_pipette_binary_names=OT3FirmwareExpectedBinaryNames.RIGHT_PIPETTE,
             bootloader_binary_name=OT3FirmwareExpectedBinaryNames.BOOTLOADER,
         )
 
@@ -263,8 +285,15 @@ class OT3Binaries(ResultABC):
             gripper_binary_name=exec_in_container(
                 system_under_test.ot3_containers.gripper, "ls /executable"
             ),
-            pipettes_binary_name=exec_in_container(
-                system_under_test.ot3_containers.pipettes, "ls /executable"
+            left_pipette_binary_names=set(
+                exec_in_container(
+                    system_under_test.ot3_containers.left_pipette, "ls /executable"
+                ).split("\n")
+            ),
+            right_pipette_binary_names=set(
+                exec_in_container(
+                    system_under_test.ot3_containers.right_pipette, "ls /executable"
+                ).split("\n")
             ),
             bootloader_binary_name=exec_in_container(
                 system_under_test.ot3_containers.bootloader, "ls /executable"
