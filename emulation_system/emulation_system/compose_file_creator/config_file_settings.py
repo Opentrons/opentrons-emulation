@@ -111,13 +111,6 @@ class RPMModelSettings(OpentronsBaseModel):
     starting: float = 0.0
 
 
-class PipetteSettings(OpentronsBaseModel):
-    """Pipette defintions for OT-2 and OT-3."""
-
-    model: str = "p20_single_v2.0"
-    id: str = "P20SV202020070101"
-
-
 class OpentronsRepository(str, Enum):
     """Possible repos to download from."""
 
