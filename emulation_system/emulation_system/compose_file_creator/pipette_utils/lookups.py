@@ -10,9 +10,17 @@ from emulation_system.consts import PIPETTE_VERSIONS_FILE_PATH
 class PipetteTypes(Enum):
     """Enum for pipette types."""
 
-    SINGLE = auto()
-    MULTI = auto()
-    CHANNEL_96 = auto()
+    SINGLE = auto(), "single"
+    MULTI = auto(), "multi"
+    CHANNEL_96 = auto(), "96"
+
+    def __init__(self, auto_value: int, sim_name: str) -> None:
+        self.auto_value = auto_value
+        self.sim_name = sim_name
+
+    def get_simulator_name(self) -> str:
+        """Get simulator name."""
+        return f"pipettes-{self.sim_name}-simulator"
 
 
 class PipetteRestrictions(Enum):
@@ -82,7 +90,12 @@ class BasePipetteLookup(Enum):
     def _get_pipette_model(self, robot_type: Literal["ot2", "ot3"]) -> int:
         with open(PIPETTE_VERSIONS_FILE_PATH, "r") as file:
             versions = json.load(file)
-        return versions[robot_type][self.pipette_name]
+        try:
+            return versions[robot_type][self.pipette_name]
+        except KeyError:
+            raise ValueError(
+                f'Could not find pipette model for "{self.pipette_name}" inside of "{PIPETTE_VERSIONS_FILE_PATH}".'
+            )
 
 
 @unique
