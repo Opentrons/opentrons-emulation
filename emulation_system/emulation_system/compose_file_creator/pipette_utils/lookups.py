@@ -117,13 +117,19 @@ class OT2PipetteLookup(BasePipetteLookup):
 class OT3PipetteLookup(BasePipetteLookup):
     """Enum for OT-3 pipettes."""
 
-    P50_SINGLE = ("P50 Single", "p50_single_gen3", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
-    P50_MULTI = ("P50 Multi", "p50_multi_gen3", PipetteTypes.MULTI, [])  # type: ignore[var-annotated]
-    P1000_SINGLE = ("P1000 Single", "p1000_single_gen3", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
-    P1000_MULTI = ("P1000 Multi", "p1000_multi_gen3", PipetteTypes.MULTI, [])  # type: ignore[var-annotated]
+    P50_SINGLE = ("P50 Single", "p50_single", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
+    P50_MULTI = ("P50 Multi", "p50_multi", PipetteTypes.MULTI, [])  # type: ignore[var-annotated]
+    P1000_SINGLE = ("P1000 Single", "p1000_single", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
+    P1000_MULTI = ("P1000 Multi", "p1000_multi", PipetteTypes.MULTI, [])  # type: ignore[var-annotated]
     P1000_96 = (
         "P1000 96 Channel",
         "p1000_96",
+        PipetteTypes.CHANNEL_96,
+        [PipetteRestrictions.LEFT_MOUNT_ONLY, PipetteRestrictions.BLOCKS_OTHER_MOUNT],
+    )
+    P50_96 = (
+        "P50 96 Channel",
+        "p50_96",
         PipetteTypes.CHANNEL_96,
         [PipetteRestrictions.LEFT_MOUNT_ONLY, PipetteRestrictions.BLOCKS_OTHER_MOUNT],
     )

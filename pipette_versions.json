@@ -8,10 +8,10 @@
     "p1000_single_gen2": 22
   },
   "ot3": {
-    "p50_single_gen3": 34,
-    "p50_multi_gen3": 34,
-    "p1000_single_gen3": 34,
-    "p1000_multi_gen3": 34,
+    "p50_single": 34,
+    "p50_multi": 34,
+    "p1000_single": 34,
+    "p1000_multi": 34,
     "p1000_96": 34
   }
 }
