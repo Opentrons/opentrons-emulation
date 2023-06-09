@@ -1,11 +1,17 @@
 """Module for pipette utilities."""
 
 
+from enum import Enum
+
 from emulation_system.compose_file_creator.pipette_utils.data_models import (
     PipetteInfo,
     RobotPipettes,
 )
-from emulation_system.compose_file_creator.pipette_utils.lookups import lookup_pipette
+from emulation_system.compose_file_creator.pipette_utils.lookups import (
+    OT2PipetteLookup,
+    OT3PipetteLookup,
+    lookup_pipette,
+)
 
 
 def get_robot_pipettes(
@@ -24,3 +30,13 @@ def get_robot_pipettes(
     )
 
     return RobotPipettes(left=left_pipette_info, right=right_pipette_info)
+
+
+def get_valid_ot2_pipettes() -> Enum:
+    """Gets valid OT-2 pipettes."""
+    return OT2PipetteLookup.get_valid_pipette_names()
+
+
+def get_valid_ot3_pipettes() -> Enum:
+    """Gets valid OT-3 pipettes."""
+    return OT3PipetteLookup.get_valid_pipette_names()

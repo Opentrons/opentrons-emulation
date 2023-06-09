@@ -44,7 +44,7 @@ def test_ot3_services_heathcheck(
         and "ot3-firmware-builder" not in service.image
         and ("ot3" in service.image or "can-server" in service.image)
     ]
-    assert len(services_to_check) == 7
+    assert len(services_to_check) == 8
     for service in services_to_check:
         healthcheck = service.healthcheck
         assert healthcheck is None

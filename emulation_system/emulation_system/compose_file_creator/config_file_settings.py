@@ -30,14 +30,14 @@ class Hardware(str, Enum):
         return self.value.replace("-module", "")
 
     @property
-    def named_volume_name(self) -> str:
+    def executable_volume_name(self) -> str:
         """Get name of volume that will be shared between services."""
         return f"{self.hw_name}-executable"
 
     @property
-    def container_volume_storage_path(self) -> str:
+    def builder_executable_volume_path(self) -> str:
         """Where the builder container stores it's volumes."""
-        return f"/volumes/{self.hw_name}-volume/"
+        return f"/volumes/{self.hw_name}-executable/"
 
     @property
     def simulator_name(self) -> str:
@@ -48,7 +48,8 @@ class Hardware(str, Enum):
 class OT3Hardware(str, Enum):
     """Names of OT3 hardware."""
 
-    PIPETTES = "ot3-pipettes"
+    LEFT_PIPETTE = "ot3-left-pipette"
+    RIGHT_PIPETTE = "ot3-right-pipette"
     HEAD = "ot3-head"
     GANTRY_X = "ot3-gantry-x"
     GANTRY_Y = "ot3-gantry-y"
@@ -61,19 +62,36 @@ class OT3Hardware(str, Enum):
         return self.value.replace("ot3-", "")
 
     @property
-    def named_volume_name(self) -> str:
-        """Get name of volume that will be shared between services."""
+    def builder_executable_volume_path(self) -> str:
+        """Where the builder container stores its volumes."""
+        return f"/volumes/{self.hw_name}-executable"
+
+    @property
+    def executable_volume_name(self) -> str:
+        """Get name of volume that will share the built executable to the emulator."""
         return f"{self.hw_name}-executable"
 
     @property
-    def container_volume_storage_path(self) -> str:
-        """Where the builder container stores its volumes."""
-        return f"/volumes/{self.hw_name}-volume/"
+    def eeprom_file_volume_name(self) -> str:
+        """Get name of volume that will be share the generate eeprom.bin file into the emulator."""
+        if self not in self.eeprom_required_hardware():
+            raise ValueError(f"{self.value} does not require an eeprom file.")
+        return f"{self.hw_name}-eeprom"
+
+    @property
+    def eeprom_file_volume_storage_path(self) -> str:
+        """Path to eeprom file"""
+        return f"/volumes/{self.hw_name}-eeprom"
 
     @property
     def simulator_name(self) -> str:
         """Generates simulator name."""
         return f'{self.value.replace("ot3-", "")}-simulator'
+
+    @classmethod
+    def eeprom_required_hardware(cls) -> List["OT3Hardware"]:
+        """Get list of hardware that require eeprom file."""
+        return [cls.LEFT_PIPETTE, cls.RIGHT_PIPETTE, cls.GRIPPER]
 
 
 class EmulationLevels(str, Enum):
@@ -109,13 +127,6 @@ class RPMModelSettings(OpentronsBaseModel):
 
     rpm_per_tick: float = Field(default=100.0)
     starting: float = 0.0
-
-
-class PipetteSettings(OpentronsBaseModel):
-    """Pipette defintions for OT-2 and OT-3."""
-
-    model: str = "p20_single_v2.0"
-    id: str = "P20SV202020070101"
 
 
 class OpentronsRepository(str, Enum):

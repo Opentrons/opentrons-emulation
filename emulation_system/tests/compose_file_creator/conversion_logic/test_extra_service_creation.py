@@ -124,7 +124,8 @@ def test_smoothie_not_created(
 @pytest.mark.parametrize(
     "container_name, expected_image_name",
     [
-        [OT3Hardware.PIPETTES.value, OT3PipettesImage().image_name],
+        [OT3Hardware.LEFT_PIPETTE.value, OT3PipettesImage().image_name],
+        [OT3Hardware.RIGHT_PIPETTE.value, OT3PipettesImage().image_name],
         [OT3Hardware.HEAD.value, OT3HeadImage().image_name],
         [OT3Hardware.GANTRY_X.value, OT3GantryXImage().image_name],
         [OT3Hardware.GANTRY_Y.value, OT3GantryYImage().image_name],
