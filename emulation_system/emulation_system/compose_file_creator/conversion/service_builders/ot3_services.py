@@ -148,7 +148,7 @@ class OT3Services(AbstractService):
             )
 
         if service_info.is_pipette() or service_info.is_gripper():
-            env_vars["EEPROM_FILENAME"] = EEPROM_FILE_NAME
+            env_vars["EEPROM_FILENAME"] = f"/eeprom/{EEPROM_FILE_NAME}"
 
         if service_info.is_left_pipette():
             env_vars["MOUNT"] = "left"
