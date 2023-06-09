@@ -44,14 +44,10 @@ class PipetteInfo:
         self.display_name = pipette_lookup.display_name
         self.internal_name = pipette_lookup.pipette_name
         self.restrictions = pipette_lookup.pipette_restrictions
-        self.model = self._format_model(pipette_lookup.get_pipette_model())
+        self.pipette_type = pipette_lookup.pipette_type
+        self.model = pipette_lookup.get_pipette_model()
         self.serial_code = _get_date_string()
         self.eeprom_file_name = _get_eeprom_file_name()
-
-    @staticmethod
-    def _format_model(model: int) -> str:
-        """Formats model attribute to a 0 padded string of length 2."""
-        return str(model).zfill(2)
 
     def _to_ot3_env_var(self, env_var_name: str) -> Dict[str, str]:
         """Converts to enviroment variable string."""
@@ -64,6 +60,11 @@ class PipetteInfo:
             }
         )
         return {env_var_name: content}
+
+    @property
+    def simulator_name(self) -> str:
+        """Gets simulator name."""
+        return self.pipette_type.get_simulator_name()
 
     def _validate_restrictions(self) -> None:
         """Validates restrictions."""
