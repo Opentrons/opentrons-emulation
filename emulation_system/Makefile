@@ -19,7 +19,7 @@ teardown:
 
 .PHONY: test
 test:
-	poetry run pytest tests/compose_file_creator --cov=emulation_system --cov-report term-missing:skip-covered --cov-report xml:coverage.xml
+	poetry run pytest -vv tests/compose_file_creator --cov=emulation_system --cov-report term-missing:skip-covered --cov-report xml:coverage.xml
 
 .PHONY: get-e2e-test-ids
 get-e2e-test-ids:

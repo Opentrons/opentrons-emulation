@@ -28,16 +28,18 @@ VALID_OT2_PIPETTE_NAMES = [
 ]
 
 VALID_OT3_PIPETTE_NAMES = [
-    ("p50_single_gen3", OT3PipetteLookup.P50_SINGLE),
+    ("p50_single", OT3PipetteLookup.P50_SINGLE),
     ("P50 Single", OT3PipetteLookup.P50_SINGLE),
-    ("p50_multi_gen3", OT3PipetteLookup.P50_MULTI),
+    ("p50_multi", OT3PipetteLookup.P50_MULTI),
     ("P50 Multi", OT3PipetteLookup.P50_MULTI),
-    ("p1000_single_gen3", OT3PipetteLookup.P1000_SINGLE),
+    ("p1000_single", OT3PipetteLookup.P1000_SINGLE),
     ("P1000 Single", OT3PipetteLookup.P1000_SINGLE),
-    ("p1000_multi_gen3", OT3PipetteLookup.P1000_MULTI),
+    ("p1000_multi", OT3PipetteLookup.P1000_MULTI),
     ("P1000 Multi", OT3PipetteLookup.P1000_MULTI),
     ("p1000_96", OT3PipetteLookup.P1000_96),
     ("P1000 96 Channel", OT3PipetteLookup.P1000_96),
+    ("p50_96", OT3PipetteLookup.P50_96),
+    ("P50 96 Channel", OT3PipetteLookup.P50_96),
 ]
 
 INVALID_PIPETTE_NAMES = [
@@ -62,11 +64,12 @@ EXPECTED_OT2_PIPETTE_NAME_ENUM = Enum(
 EXPECTED_OT3_PIPETTE_NAME_ENUM = Enum(
     "OT3PipettesValidNames",
     [
-        ("P50_SINGLE_GEN3_NAME", "p50_single_gen3"),
-        ("P50_MULTI_GEN3_NAME", "p50_multi_gen3"),
-        ("P1000_SINGLE_GEN3_NAME", "p1000_single_gen3"),
-        ("P1000_MULTI_GEN3_NAME", "p1000_multi_gen3"),
+        ("P50_SINGLE_GEN3_NAME", "p50_single"),
+        ("P50_MULTI_GEN3_NAME", "p50_multi"),
+        ("P1000_SINGLE_GEN3_NAME", "p1000_single"),
+        ("P1000_MULTI_GEN3_NAME", "p1000_multi"),
         ("P1000_96_NAME", "p1000_96"),
+        ("P50_96_NAME", "p50_96"),
     ],
 )
 
@@ -104,8 +107,8 @@ def test_ot3_pipette_env_var() -> None:
     left_expected_env_var = {
         "LEFT_OT3_PIPETTE_DEFINITION": json.dumps(
             {
-                "pipette_name": "p50_single_gen3",
-                "pipette_model": "34",
+                "pipette_name": "p50_single",
+                "pipette_model": 34,
                 "pipette_serial_code": datetime.datetime.now().strftime("%m%d%Y"),
                 "eeprom_file_name": "eeprom.bin",
             }
@@ -115,8 +118,8 @@ def test_ot3_pipette_env_var() -> None:
     right_expected_env_var = {
         "RIGHT_OT3_PIPETTE_DEFINITION": json.dumps(
             {
-                "pipette_name": "p1000_multi_gen3",
-                "pipette_model": "34",
+                "pipette_name": "p1000_multi",
+                "pipette_model": 34,
                 "pipette_serial_code": datetime.datetime.now().strftime("%m%d%Y"),
                 "eeprom_file_name": "eeprom.bin",
             }
