@@ -105,29 +105,32 @@ def test_ot3_pipette_env_var() -> None:
     """Tests generating OT3 pipette env var."""
     pipettes = get_robot_pipettes("ot3", "P50 Single", "P1000 Multi")
     left_expected_env_var = {
-        "LEFT_OT3_PIPETTE_DEFINITION": json.dumps(
-            {
-                "pipette_name": "p50_single",
-                "pipette_model": 34,
-                "pipette_serial_code": datetime.datetime.now().strftime("%m%d%Y"),
-                "eeprom_file_name": "eeprom.bin",
-            }
-        )
+        "LEFT_OT3_PIPETTE_DEFINITION": {
+            "pipette_name": "p50_single",
+            "pipette_model": 34,
+            "pipette_serial_code": datetime.datetime.now().strftime("%m%d%Y"),
+            "eeprom_file_path": "/volumes/left-pipette-eeprom/eeprom.bin",
+        }
     }
 
     right_expected_env_var = {
-        "RIGHT_OT3_PIPETTE_DEFINITION": json.dumps(
-            {
-                "pipette_name": "p1000_multi",
-                "pipette_model": 34,
-                "pipette_serial_code": datetime.datetime.now().strftime("%m%d%Y"),
-                "eeprom_file_name": "eeprom.bin",
-            }
-        )
+        "RIGHT_OT3_PIPETTE_DEFINITION": {
+            "pipette_name": "p1000_multi",
+            "pipette_model": 34,
+            "pipette_serial_code": datetime.datetime.now().strftime("%m%d%Y"),
+            "eeprom_file_path": "/volumes/right-pipette-eeprom/eeprom.bin",
+        }
     }
-
-    assert pipettes.get_left_pipette_env_var() == left_expected_env_var
-    assert pipettes.get_right_pipette_env_var() == right_expected_env_var
+    actual_left_env_var = pipettes.get_left_pipette_env_var()
+    actual_right_env_var = pipettes.get_right_pipette_env_var()
+    actual_left_env_var["LEFT_OT3_PIPETTE_DEFINITION"] = json.loads(
+        actual_left_env_var["LEFT_OT3_PIPETTE_DEFINITION"]
+    )
+    actual_right_env_var["RIGHT_OT3_PIPETTE_DEFINITION"] = json.loads(
+        actual_right_env_var["RIGHT_OT3_PIPETTE_DEFINITION"]
+    )
+    assert actual_left_env_var == left_expected_env_var
+    assert actual_right_env_var == right_expected_env_var
 
 
 def test_pipette_name_enum() -> None:
