@@ -65,6 +65,6 @@ cp /ot3-firmware/build-host/gripper/simulator/gripper-simulator /volumes/gripper
 cp /ot3-firmware/build-host/head/simulator/head-simulator /volumes/head-executable/head-simulator
 
 mkdir -p /opentrons_hardware_dist
-/selective_monorepo_builder.sh "/opentrons_hardware_dist" "shared-data/python" "api" "notify-server" "hardware"
+/selective_monorepo_builder.sh "/opentrons_hardware_dist" "hardware"
 monorepo_python -m pip install --force-reinstall /opentrons_hardware_dist/*
 monorepo_python -m opentrons_hardware.scripts.emulation_pipette_provision
