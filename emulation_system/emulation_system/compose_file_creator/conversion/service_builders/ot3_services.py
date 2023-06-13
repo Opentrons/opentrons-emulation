@@ -2,6 +2,7 @@
 from typing import Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system.compose_file_creator.pipette_utils import get_robot_pipettes
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateEnvironmentVariables,
@@ -41,6 +42,9 @@ class OT3Services(AbstractService):
         self._ot3 = self.get_ot3(config_model)
         self._logging_client = OT3LoggingClient(service_info.ot3_hardware, self._dev)
         self._ot3_image = self._generate_image()
+        self._pipettes = get_robot_pipettes(
+            self._ot3.hardware, self._ot3.left_pipette, self._ot3.right_pipette
+        )
 
     def _generate_image(self) -> str:
         """Inner method for generating image.
@@ -148,13 +152,23 @@ class OT3Services(AbstractService):
             )
 
         if service_info.is_pipette() or service_info.is_gripper():
-            env_vars["EEPROM_FILENAME"] = EEPROM_FILE_NAME
+            env_vars["EEPROM_FILENAME"] = f"/eeprom/{EEPROM_FILE_NAME}"
 
         if service_info.is_left_pipette():
             env_vars["MOUNT"] = "left"
+            env_vars["SIMULATOR_NAME"] = (
+                self._pipettes.left.simulator_name
+                if self._pipettes.left is not None
+                else ""
+            )
 
         if service_info.is_right_pipette():
             env_vars["MOUNT"] = "right"
+            env_vars["SIMULATOR_NAME"] = (
+                self._pipettes.right.simulator_name
+                if self._pipettes.right is not None
+                else ""
+            )
 
         custom_env_vars = self.__get_custom_env_vars()
         if custom_env_vars is not None:

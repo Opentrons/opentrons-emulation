@@ -138,6 +138,7 @@ RUN (cd / &&  \
 
 FROM ot3-firmware-source as ot3-firmware-builder
 COPY entrypoints/ot3_firmware_builder.sh /build.sh
+COPY scripts/selective_monorepo_builder.sh /selective_monorepo_builder.sh
 
 ##################
 # modules-source #
@@ -177,3 +178,4 @@ RUN (cd / &&  \
 
 FROM opentrons-source as monorepo-builder
 COPY entrypoints/monorepo_builder.sh /build.sh
+COPY scripts/selective_monorepo_builder.sh /selective_monorepo_builder.sh

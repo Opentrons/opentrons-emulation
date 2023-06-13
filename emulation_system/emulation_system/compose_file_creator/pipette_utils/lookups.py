@@ -10,9 +10,17 @@ from emulation_system.consts import PIPETTE_VERSIONS_FILE_PATH
 class PipetteTypes(Enum):
     """Enum for pipette types."""
 
-    SINGLE = auto()
-    MULTI = auto()
-    CHANNEL_96 = auto()
+    SINGLE = auto(), "single"
+    MULTI = auto(), "multi"
+    CHANNEL_96 = auto(), "96"
+
+    def __init__(self, auto_value: int, sim_name: str) -> None:
+        self.auto_value = auto_value
+        self.sim_name = sim_name
+
+    def get_simulator_name(self) -> str:
+        """Get simulator name."""
+        return f"pipettes-{self.sim_name}-simulator"
 
 
 class PipetteRestrictions(Enum):
@@ -82,7 +90,12 @@ class BasePipetteLookup(Enum):
     def _get_pipette_model(self, robot_type: Literal["ot2", "ot3"]) -> int:
         with open(PIPETTE_VERSIONS_FILE_PATH, "r") as file:
             versions = json.load(file)
-        return versions[robot_type][self.pipette_name]
+        try:
+            return versions[robot_type][self.pipette_name]
+        except KeyError:
+            raise ValueError(
+                f'Could not find pipette model for "{self.pipette_name}" inside of "{PIPETTE_VERSIONS_FILE_PATH}".'
+            )
 
 
 @unique
@@ -117,13 +130,19 @@ class OT2PipetteLookup(BasePipetteLookup):
 class OT3PipetteLookup(BasePipetteLookup):
     """Enum for OT-3 pipettes."""
 
-    P50_SINGLE = ("P50 Single", "p50_single_gen3", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
-    P50_MULTI = ("P50 Multi", "p50_multi_gen3", PipetteTypes.MULTI, [])  # type: ignore[var-annotated]
-    P1000_SINGLE = ("P1000 Single", "p1000_single_gen3", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
-    P1000_MULTI = ("P1000 Multi", "p1000_multi_gen3", PipetteTypes.MULTI, [])  # type: ignore[var-annotated]
+    P50_SINGLE = ("P50 Single", "p50_single", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
+    P50_MULTI = ("P50 Multi", "p50_multi", PipetteTypes.MULTI, [])  # type: ignore[var-annotated]
+    P1000_SINGLE = ("P1000 Single", "p1000_single", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
+    P1000_MULTI = ("P1000 Multi", "p1000_multi", PipetteTypes.MULTI, [])  # type: ignore[var-annotated]
     P1000_96 = (
         "P1000 96 Channel",
         "p1000_96",
+        PipetteTypes.CHANNEL_96,
+        [PipetteRestrictions.LEFT_MOUNT_ONLY, PipetteRestrictions.BLOCKS_OTHER_MOUNT],
+    )
+    P50_96 = (
+        "P50 96 Channel",
+        "p50_96",
         PipetteTypes.CHANNEL_96,
         [PipetteRestrictions.LEFT_MOUNT_ONLY, PipetteRestrictions.BLOCKS_OTHER_MOUNT],
     )

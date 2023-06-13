@@ -183,12 +183,13 @@ def test_ot3_service_environment_variables(
         assert service_env is not None
         env_root = cast(Dict[str, Any], service_env.__root__)
         assert env_root is not None
-        assert len(env_root.values()) == 5
+        assert len(env_root.values()) == 6
         assert "MOUNT" in env_root
         assert "CAN_SERVER_HOST" in env_root
         assert "EEPROM_FILENAME" in env_root
         assert "STATE_MANAGER_HOST" in env_root
         assert "STATE_MANAGER_PORT" in env_root
+        assert "SIMULATOR_NAME" in env_root
 
     # Env vars 4/4
     bootloader_service_env = bootloader.environment

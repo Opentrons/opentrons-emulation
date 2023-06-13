@@ -25,6 +25,9 @@ robot:
   id: otie
   hardware: ot3
   emulation-level: hardware
+  hardware-specific-attributes:
+    left-pipette: P1000 Multi
+    right-pipette: P50 Multi
 modules:
   - id: heater-shaker
     hardware: heater-shaker-module

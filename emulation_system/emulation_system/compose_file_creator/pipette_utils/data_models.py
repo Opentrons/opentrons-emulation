@@ -4,12 +4,13 @@ import json
 from dataclasses import dataclass
 from datetime import datetime
 from string import Template
-from typing import Dict, Union
+from typing import Dict, List, Literal, Union
 
 from emulation_system.compose_file_creator.pipette_utils.lookups import (
     OT2PipetteLookup,
     OT3PipetteLookup,
     PipetteRestrictions,
+    PipetteTypes,
 )
 from emulation_system.consts import EEPROM_FILE_NAME
 
@@ -33,37 +34,34 @@ def _get_eeprom_file_name() -> str:
     return EEPROM_FILE_NAME
 
 
+def generate_eeprom_file_path(mount: Literal["left", "right"]) -> str:
+    """Generates eeprom file path."""
+    return f"/volumes/{mount}-pipette-eeprom/{_get_eeprom_file_name()}"
+
+
 @dataclass
 class PipetteInfo:
     """Class for pipette info."""
 
     def __init__(
-        self, pipette_lookup: Union["OT2PipetteLookup", "OT3PipetteLookup"]
+        self,
+        pipette_lookup: Union["OT2PipetteLookup", "OT3PipetteLookup"],
     ) -> None:
         """Sets pipette info from pipette lookup."""
-        self.display_name = pipette_lookup.display_name
-        self.internal_name = pipette_lookup.pipette_name
-        self.restrictions = pipette_lookup.pipette_restrictions
-        self.model = self._format_model(pipette_lookup.get_pipette_model())
-        self.serial_code = _get_date_string()
-        self.eeprom_file_name = _get_eeprom_file_name()
+        self.display_name: str = pipette_lookup.display_name
+        self.internal_name: str = pipette_lookup.pipette_name
+        self.restrictions: List[
+            PipetteRestrictions
+        ] = pipette_lookup.pipette_restrictions
+        self.pipette_type: PipetteTypes = pipette_lookup.pipette_type
+        self.model: int = pipette_lookup.get_pipette_model()
+        self.serial_code: str = _get_date_string()
+        self.eeprom_file_name: str = _get_eeprom_file_name()
 
-    @staticmethod
-    def _format_model(model: int) -> str:
-        """Formats model attribute to a 0 padded string of length 2."""
-        return str(model).zfill(2)
-
-    def _to_ot3_env_var(self, env_var_name: str) -> Dict[str, str]:
-        """Converts to enviroment variable string."""
-        content = json.dumps(
-            {
-                "pipette_name": self.internal_name,
-                "pipette_model": self.model,
-                "pipette_serial_code": self.serial_code,
-                "eeprom_file_name": self.eeprom_file_name,
-            }
-        )
-        return {env_var_name: content}
+    @property
+    def simulator_name(self) -> str:
+        """Gets simulator name."""
+        return self.pipette_type.get_simulator_name()
 
     def _validate_restrictions(self) -> None:
         """Validates restrictions."""
@@ -147,18 +145,33 @@ class RobotPipettes:
         """Validates robot pipettes."""
         self._validate_restrictions()
 
+    @staticmethod
+    def _to_ot3_env_var(
+        mount: Literal["left", "right"], pipette_info: PipetteInfo | None
+    ) -> Dict[str, str]:
+        """Converts to enviroment variable string."""
+        env_var_name = (
+            LEFT_PIPETTE_ENV_VAR_NAME if mount == "left" else RIGHT_PIPETTE_ENV_VAR_NAME
+        )
+        content: Dict[str, str | int] = {
+            "eeprom_file_path": generate_eeprom_file_path(mount)
+        }
+        if pipette_info is not None:
+            content.update(
+                {
+                    "pipette_name": pipette_info.internal_name,
+                    "pipette_model": pipette_info.model,
+                    "pipette_serial_code": pipette_info.serial_code,
+                    "eeprom_file_path": generate_eeprom_file_path(mount),
+                }
+            )
+
+        return {env_var_name: json.dumps(content)}
+
     def get_left_pipette_env_var(self) -> Dict[str, str]:
         """Gets left pipette env var."""
-        return (
-            self.left._to_ot3_env_var(LEFT_PIPETTE_ENV_VAR_NAME)
-            if self.left
-            else {LEFT_PIPETTE_ENV_VAR_NAME: ""}
-        )
+        return self._to_ot3_env_var("left", self.left)
 
     def get_right_pipette_env_var(self) -> Dict[str, str]:
         """Gets right pipette env var."""
-        return (
-            self.right._to_ot3_env_var(RIGHT_PIPETTE_ENV_VAR_NAME)
-            if self.right
-            else {RIGHT_PIPETTE_ENV_VAR_NAME: ""}
-        )
+        return self._to_ot3_env_var("right", self.right)
