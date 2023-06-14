@@ -81,22 +81,6 @@ def test_ot2_emulator_proxy_service_values(
     assert len(service.networks) == 1
     assert "local-network" in service.networks
 
-
-@pytest.mark.parametrize("dev", [True, False])
-def test_ot2_emulator_proxy_service_values(
-    ot2_system_config: SystemConfigurationModel,
-    dev: bool,
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Tests for EmulatorProxy Service that are specific to OT-2."""
-    service = ConcreteEmulatorProxyServiceBuilder(
-        ot2_system_config, testing_global_em_config, dev=dev
-    ).build_service()
-
-    assert isinstance(service.networks, list)
-    assert len(service.networks) == 1
-    assert "local-network" in service.networks
-
     proxy_environment = service.environment
     assert proxy_environment is not None
     assert isinstance(proxy_environment, ListOrDict)
