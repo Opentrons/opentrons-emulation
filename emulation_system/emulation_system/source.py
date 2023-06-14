@@ -155,7 +155,7 @@ class EmulatorSourceMixin:
     """Mixin providing functionality to classes that require evaluation of hardware type."""
 
     @staticmethod
-    def generate_emulator_mount_strings_from_hw(
+    def generate_emulator_executable_mount_strings_from_hw(
         emulator_hw: OT3Hardware | Hardware,
     ) -> List[str]:
         """Method to generate mount strings based off of hardware."""
@@ -216,8 +216,22 @@ class OT3FirmwareSource(OpentronsBaseModel, Source, EmulatorSourceMixin):
     @staticmethod
     def _generate_emulator_executable_volumes() -> List[str]:
         return [
-            f"{member.named_volume_name}:{member.container_volume_storage_path}"
+            f"{member.executable_volume_name}:{member.builder_executable_volume_path}"
             for member in OT3Hardware.__members__.values()
+        ]
+
+    @staticmethod
+    def generate_emulator_eeprom_mount_strings_from_hw(
+        emulator_hw: OT3Hardware,
+    ) -> str:
+        """Method to generate mount strings based off of OT3Hardware."""
+        return f"{emulator_hw.eeprom_file_volume_name}:/eeprom"
+
+    @staticmethod
+    def _generate_builder_eeprom_mount_strings() -> List[str]:
+        return [
+            f"{member.eeprom_file_volume_name}:{member.eeprom_file_volume_storage_path}"
+            for member in OT3Hardware.eeprom_required_hardware()
         ]
 
     @classmethod
@@ -240,6 +254,7 @@ class OT3FirmwareSource(OpentronsBaseModel, Source, EmulatorSourceMixin):
             self.DEFAULT_BUILDER_VOLUMES
             + self._generate_emulator_executable_volumes()
             + self.generate_source_code_bind_mounts()
+            + self._generate_builder_eeprom_mount_strings()
         )
 
     @staticmethod
@@ -267,7 +282,7 @@ class OpentronsModulesSource(OpentronsBaseModel, Source, EmulatorSourceMixin):
     @staticmethod
     def _generate_emulator_executable_volumes() -> List[str]:
         return [
-            f"{hardware.named_volume_name}:{hardware.container_volume_storage_path}"
+            f"{hardware.executable_volume_name}:{hardware.builder_executable_volume_path}"
             for hardware in Hardware.opentrons_modules_hardware()
         ]
 

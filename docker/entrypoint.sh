@@ -9,7 +9,9 @@ case $OPENTRONS_HARDWARE in
     bash -c "/executable/thermocycler-simulator $MODULE_ARGS"
     ;;
   ot3-pipettes-hardware)
-    /executable/pipettes-simulator
+    if [ -n "$SIMULATOR_NAME" ]; then
+      bash -c "/executable/${SIMULATOR_NAME}"
+    fi
     ;;
   ot3-head-hardware)
     /executable/head-simulator

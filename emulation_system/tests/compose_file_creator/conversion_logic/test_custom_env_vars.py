@@ -341,7 +341,8 @@ def test_ot3_env_vars(
     emulator_proxy = services[EMULATOR_PROXY_ID]
     can_server = services["can-server"]
     head = services["ot3-head"]
-    pipettes = services["ot3-pipettes"]
+    left_pipette = services["ot3-left-pipette"]
+    right_pipette = services["ot3-right-pipette"]
     gantry_x = services["ot3-gantry-x"]
     gantry_y = services["ot3-gantry-y"]
     bootloader = services["ot3-bootloader"]
@@ -351,7 +352,8 @@ def test_ot3_env_vars(
     assert emulator_proxy is not None
     assert can_server is not None
     assert head is not None
-    assert pipettes is not None
+    assert left_pipette is not None
+    assert right_pipette is not None
     assert gantry_x is not None
     assert gantry_y is not None
     assert bootloader is not None
@@ -361,7 +363,8 @@ def test_ot3_env_vars(
     assert emulator_proxy.environment is not None
     assert can_server.environment is not None
     assert head.environment is not None
-    assert pipettes.environment is not None
+    assert left_pipette.environment is not None
+    assert right_pipette.environment is not None
     assert gantry_x.environment is not None
     assert gantry_y.environment is not None
     assert bootloader.environment is not None
@@ -373,7 +376,8 @@ def test_ot3_env_vars(
     emulator_proxy_env = cast(Dict, emulator_proxy.environment.__root__)
     can_server_env = cast(Dict, can_server.environment.__root__)
     head_env = cast(Dict, head.environment.__root__)
-    pipettes_env = cast(Dict, pipettes.environment.__root__)
+    left_pipette_env = cast(Dict, left_pipette.environment.__root__)
+    right_pipette_env = cast(Dict, right_pipette.environment.__root__)
     gantry_x_env = cast(Dict, gantry_x.environment.__root__)
     gantry_y_env = cast(Dict, gantry_y.environment.__root__)
     bootloader_env = cast(Dict, bootloader.environment.__root__)
@@ -383,7 +387,8 @@ def test_ot3_env_vars(
     assert emulator_proxy_env is not None
     assert can_server_env is not None
     assert head_env is not None
-    assert pipettes_env is not None
+    assert left_pipette_env is not None
+    assert right_pipette_env is not None
     assert gantry_x_env is not None
     assert gantry_y_env is not None
     assert bootloader_env is not None
@@ -410,12 +415,19 @@ def test_ot3_env_vars(
     assert can_server_env["can-server-2"] == str(OT3_CAN_SERVER_VAL_2)
     assert can_server_env["can-server-3"] == str(OT3_CAN_SERVER_VAL_3)
 
-    assert "pipettes-1" in pipettes_env.keys()
-    assert "pipettes-2" in pipettes_env.keys()
-    assert "pipettes-3" in pipettes_env.keys()
-    assert pipettes_env["pipettes-1"] == str(OT3_PIPETTES_VAL_1)
-    assert pipettes_env["pipettes-2"] == str(OT3_PIPETTES_VAL_2)
-    assert pipettes_env["pipettes-3"] == str(OT3_PIPETTES_VAL_3)
+    assert "pipettes-1" in left_pipette_env.keys()
+    assert "pipettes-2" in left_pipette_env.keys()
+    assert "pipettes-3" in left_pipette_env.keys()
+    assert left_pipette_env["pipettes-1"] == str(OT3_PIPETTES_VAL_1)
+    assert left_pipette_env["pipettes-2"] == str(OT3_PIPETTES_VAL_2)
+    assert left_pipette_env["pipettes-3"] == str(OT3_PIPETTES_VAL_3)
+
+    assert "pipettes-1" in right_pipette_env.keys()
+    assert "pipettes-2" in right_pipette_env.keys()
+    assert "pipettes-3" in right_pipette_env.keys()
+    assert right_pipette_env["pipettes-1"] == str(OT3_PIPETTES_VAL_1)
+    assert right_pipette_env["pipettes-2"] == str(OT3_PIPETTES_VAL_2)
+    assert right_pipette_env["pipettes-3"] == str(OT3_PIPETTES_VAL_3)
 
     assert "gripper-1" in gripper_env.keys()
     assert "gripper-2" in gripper_env.keys()

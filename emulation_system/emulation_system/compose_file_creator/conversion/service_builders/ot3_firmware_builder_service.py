@@ -2,6 +2,9 @@
 from typing import Optional
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system.compose_file_creator.pipette_utils import (
+    get_robot_pipettes,
+)
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateEnvironmentVariables,
@@ -80,7 +83,10 @@ class OT3FirmwareBuilderService(AbstractService):
 
     def generate_volumes(self) -> Optional[IntermediateVolumes]:
         """Generates value for volumes parameter."""
-        return self._ot3_source.generate_builder_mount_strings()
+        vols = self._ot3_source.generate_builder_mount_strings()
+        if self._monorepo_source.is_local():
+            vols.extend(self._monorepo_source.generate_source_code_bind_mounts())
+        return vols
 
     def generate_ports(self) -> Optional[IntermediatePorts]:
         """Generates value for ports parameter."""
@@ -88,4 +94,12 @@ class OT3FirmwareBuilderService(AbstractService):
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
-        return None
+        robot = self._ot3
+        env_vars: IntermediateEnvironmentVariables = {}
+        pipettes = get_robot_pipettes(
+            robot.hardware, robot.left_pipette, robot.right_pipette
+        )
+
+        env_vars.update(pipettes.get_left_pipette_env_var())
+        env_vars.update(pipettes.get_right_pipette_env_var())
+        return env_vars

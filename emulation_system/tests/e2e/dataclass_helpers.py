@@ -27,10 +27,14 @@ def __inner_convert_to_dict(obj):  # noqa: ANN001, ANN202
         return type(obj)(__inner_convert_to_dict(v) for v in obj)
     elif isinstance(obj, set):
         if len(obj) > 1:
-            return {
-                frozenset((k, v) for k, v in __inner_convert_to_dict(instance).items())
-                for instance in obj
-            }
+            a_set = set()
+            for instance in obj:
+                converted = __inner_convert_to_dict(instance)
+                if isinstance(converted, dict):
+                    a_set.add(frozenset((k, v) for k, v in converted.items()))
+                else:
+                    a_set.add(converted)
+            return a_set
         else:
             return obj
 

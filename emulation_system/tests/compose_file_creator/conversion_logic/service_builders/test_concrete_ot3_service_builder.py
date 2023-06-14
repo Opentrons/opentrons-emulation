@@ -1,5 +1,5 @@
 """Tests to confirm that OT3Services builds the CAN Server Service correctly."""
-from typing import Any, Dict, List, cast
+from typing import Any, Dict, List, Tuple, cast
 
 import pytest
 from pydantic import parse_obj_as
@@ -24,6 +24,19 @@ def get_ot3_service(service_list: List[Service], hardware: OT3Hardware) -> Servi
             return service
 
     raise Exception(f"Service with hardware {hardware} not found.")
+
+
+def get_pipettes(service_list: List[Service]) -> Tuple[Service, Service]:
+    """Get Pipettes from passed service_list."""
+    pipette_list = []
+    for service in service_list:
+        assert service.image is not None
+        if "pipettes" in service.image:
+            pipette_list.append(service)
+
+    if len(pipette_list) != 2:
+        raise ValueError("Expected two pipettes, got {len(pipette_list)}")
+    return (pipette_list[0], pipette_list[1])
 
 
 @pytest.mark.parametrize(
@@ -54,14 +67,16 @@ def test_simple_ot3_values(
         can_server_service_name="can-server", state_manager_name="state-manager"
     )
     head = get_ot3_service(services, OT3Hardware.HEAD)
-    pipettes = get_ot3_service(services, OT3Hardware.PIPETTES)
+    pipette_1, pipette_2 = get_pipettes(services)
     gantry_x = get_ot3_service(services, OT3Hardware.GANTRY_X)
     gantry_y = get_ot3_service(services, OT3Hardware.GANTRY_Y)
     bootloader = get_ot3_service(services, OT3Hardware.BOOTLOADER)
     gripper = get_ot3_service(services, OT3Hardware.GRIPPER)
 
+    eeprom_services = [pipette_1, pipette_2, gripper]
+
     expected_dockerfile_name = DEV_DOCKERFILE_NAME if dev else DOCKERFILE_NAME
-    assert len(services) == 6
+    assert len(services) == 7
 
     for service in services:
         # Build
@@ -80,7 +95,10 @@ def test_simple_ot3_values(
         # Volumes
         volumes = service.volumes
         assert volumes is not None
-        assert len(volumes) == 2
+        if service in eeprom_services:
+            assert len(volumes) == 3
+        else:
+            assert len(volumes) == 2
         assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", service)
 
         assert service.container_name is not None
@@ -94,7 +112,10 @@ def test_simple_ot3_values(
 
     # Container Names
     assert head.container_name == OT3Hardware.HEAD
-    assert pipettes.container_name == OT3Hardware.PIPETTES
+    assert {pipette_1.container_name, pipette_2.container_name} == {
+        OT3Hardware.LEFT_PIPETTE,
+        OT3Hardware.RIGHT_PIPETTE,
+    }
     assert gantry_x.container_name == OT3Hardware.GANTRY_X
     assert gantry_y.container_name == OT3Hardware.GANTRY_Y
     assert bootloader.container_name == OT3Hardware.BOOTLOADER
@@ -123,13 +144,13 @@ def test_ot3_service_environment_variables(
         can_server_service_name="can-server", state_manager_name="state-manager"
     )
     # The number of items in ServiceOrchestrator.OT3_SERVICES_TO_CREATE
-    assert len(services) == 6
+    assert len(services) == 7
     head = get_ot3_service(services, OT3Hardware.HEAD)
     gantry_x = get_ot3_service(services, OT3Hardware.GANTRY_X)
     gantry_y = get_ot3_service(services, OT3Hardware.GANTRY_Y)
     bootloader = get_ot3_service(services, OT3Hardware.BOOTLOADER)
     gripper = get_ot3_service(services, OT3Hardware.GRIPPER)
-    pipettes = get_ot3_service(services, OT3Hardware.PIPETTES)
+    pipette_1, pipette_2 = get_pipettes(services)
 
     not_pipette_or_gripper_services = [head, gantry_x, gantry_y]
 
@@ -144,8 +165,8 @@ def test_ot3_service_environment_variables(
         assert "STATE_MANAGER_HOST" in env_root
         assert "STATE_MANAGER_PORT" in env_root
 
-    # Env vars 2/3
-    for service in [pipettes, gripper]:
+    # Env vars 2/4
+    for service in [gripper]:
         service_env = service.environment
         assert service_env is not None
         env_root = cast(Dict[str, Any], service_env.__root__)
@@ -156,7 +177,21 @@ def test_ot3_service_environment_variables(
         assert "STATE_MANAGER_HOST" in env_root
         assert "STATE_MANAGER_PORT" in env_root
 
-    # Env vars 3/3
+    # Env vars 3/4
+    for service in [pipette_1, pipette_2]:
+        service_env = service.environment
+        assert service_env is not None
+        env_root = cast(Dict[str, Any], service_env.__root__)
+        assert env_root is not None
+        assert len(env_root.values()) == 6
+        assert "MOUNT" in env_root
+        assert "CAN_SERVER_HOST" in env_root
+        assert "EEPROM_FILENAME" in env_root
+        assert "STATE_MANAGER_HOST" in env_root
+        assert "STATE_MANAGER_PORT" in env_root
+        assert "SIMULATOR_NAME" in env_root
+
+    # Env vars 4/4
     bootloader_service_env = bootloader.environment
     assert bootloader_service_env is not None
     bootloader_env_root = cast(Dict[str, Any], bootloader_service_env.__root__)

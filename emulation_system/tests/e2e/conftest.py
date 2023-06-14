@@ -1,6 +1,6 @@
 """pytest conftest file for e2e testing."""
 import os
-from typing import Callable
+from typing import Callable, Literal
 
 import pytest
 import yaml
@@ -22,7 +22,29 @@ from tests.e2e.docker_interface.e2e_system import (
 )
 from tests.e2e.docker_interface.module_containers import ModuleContainers
 from tests.e2e.docker_interface.ot3_containers import OT3SystemUnderTest
-from tests.e2e.helper_functions import get_container, get_containers
+from tests.e2e.helper_functions import (
+    get_container,
+    get_containers,
+    get_environment_variables,
+)
+
+
+def _get_pipette(
+    system: RuntimeComposeFileModel,
+    mount: Literal["left", "right"],
+) -> BindMountInfo:
+    """Gets the left pipette from the system model."""
+    pipettes = get_containers(system.ot3_pipette_emulators)
+
+    for pipette in pipettes:
+        if get_environment_variables(pipette)["MOUNT"] == mount:
+            return pipette
+    else:
+        raise ValueError(
+            'Could not find container with "MOUNT" environment variable set to "{}"'.format(
+                mount
+            )
+        )
 
 
 @pytest.fixture
@@ -47,7 +69,8 @@ def ot3_model_under_test(
             gantry_y=get_container(system.ot3_gantry_y_emulator),
             head=get_container(system.ot3_head_emulator),
             gripper=get_container(system.ot3_gripper_emulator),
-            pipettes=get_container(system.ot3_pipette_emulator),
+            left_pipette=_get_pipette(system, "left"),
+            right_pipette=_get_pipette(system, "right"),
             bootloader=get_container(system.ot3_bootloader_emulator),
             state_manager=get_container(system.ot3_state_manager),
             can_server=get_container(system.can_server),
