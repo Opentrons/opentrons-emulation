@@ -21,6 +21,7 @@ def _combine_regex(*regexes: str) -> str:
     """Combine a number of regexes in to a single regex.
 
     Returns:
+    -------
         str: New regex with all regexes ORed together.
     """
     return "|".join(regexes)
@@ -47,7 +48,6 @@ class CustomHightlighter(RegexHighlighter):
             r"\b(?P<bool_true>True)\b|\b(?P<bool_false>False)\b|\b(?P<none>None)\b",
             r"(?P<ellipsis>\.\.\.)",
             r"(?P<number_complex>(?<!\w)(?:\-?[0-9]+\.?[0-9]*(?:e[-+]?\d+?)?)(?:[-+](?:[0-9]+\.?[0-9]*(?:e[-+]?\d+)?))?j)",
-            # r"(?P<number>(?<!\w)\-?[0-9]+\.?[0-9]*(e[-+]?\d+?)?\b|0x[0-9a-fA-F]*)",  # Don't want to highlight numbers
             r"(?P<path>\B(/[-\w._+]+)*\/)(?P<filename>[-\w._+]*)?",
             r"(?<![\\\w])(?P<str>b?'''.*?(?<!\\)'''|b?'.*?(?<!\\)'|b?\"\"\".*?(?<!\\)\"\"\"|b?\".*?(?<!\\)\")",
             r"(?P<url>(file|https|http|ws|wss)://[-0-9a-zA-Z$_+!`(),.?/;:&=%#]*)",
@@ -59,7 +59,7 @@ class CustomConsole(Console):
     """Class extending the functionality of rich's Console."""
 
     def __init__(self, *args, **kwargs) -> None:
-        """Uses same args and kwargs as Console class
+        """Uses same args and kwargs as Console class.
 
         See https://rich.readthedocs.io/en/stable/reference/console.html#rich.console.Console
         """

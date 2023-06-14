@@ -1,11 +1,8 @@
 """Parent class for all attributes specific to individual pieces of hardware."""
-from pydantic import BaseModel
+from opentrons_pydantic_base_model import OpentronsBaseModel
 
 
-class HardwareSpecificAttributes(BaseModel):
+class HardwareSpecificAttributes(OpentronsBaseModel):
     """Parent class for all attributes specific to individual pieces of hardware."""
 
-    class Config:
-        """Config class used by pydantic."""
-
-        extra = "forbid"
+    ...

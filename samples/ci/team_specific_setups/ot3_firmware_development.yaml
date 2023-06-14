@@ -1,0 +1,26 @@
+######################
+# System Description #
+######################
+
+# This is a CI configuration. 
+# Do not edit unless you know what you are doing.
+
+# This system builds a single OT3
+
+########################
+# Required Source Code #
+########################
+
+# All source code is built from code locally available in the CI runner
+
+system-unique-id: ot3-only
+robot:
+  id: otie
+  hardware: ot3
+  emulation-level: hardware
+  hardware-specific-attributes:
+    left-pipette: P1000 Multi
+    right-pipette: P50 Multi
+
+monorepo-source: /home/runner/work/opentrons-emulation/opentrons-emulation/opentrons
+ot3-firmware-source: /home/runner/work/opentrons-emulation/opentrons-emulation/ot3-firmware

@@ -6,7 +6,6 @@ from typing import Optional
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateCommand,
-    IntermediateDependsOn,
     IntermediateEnvironmentVariables,
     IntermediateNetworks,
     IntermediatePorts,
@@ -85,15 +84,6 @@ class AbstractLoggingClient(ABC):
         self._logging_console.h2_print("container_name")
         self._logging_console.double_tabbed_print(*message)
 
-    def log_image_name(
-        self, image_name: str, source_type: str, param_name: str
-    ) -> None:
-        """Logs what image is being set to and why."""
-        self._logging_console.h2_print("image")
-        self._logging_console.double_tabbed_print(
-            f'Using image name "{image_name}" since "{param_name}" is "{source_type}".'
-        )
-
     def log_networks(self, networks: IntermediateNetworks) -> None:
         """Logs what networks are being added to Service."""
         tabbed_networks = [f'\t"{network}"' for network in networks]
@@ -137,11 +127,6 @@ class AbstractLoggingClient(ABC):
     @abstractmethod
     def log_ports(self, ports: Optional[IntermediatePorts]) -> None:
         """Logs what ports are being set, if any, and why."""
-        ...
-
-    @abstractmethod
-    def log_depends_on(self, depends_on: Optional[IntermediateDependsOn]) -> None:
-        """Logs what depends_on are being set, if any, and why."""
         ...
 
     @abstractmethod
