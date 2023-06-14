@@ -52,10 +52,8 @@ class LoadContainersCommand:
         parsed_content = yaml.safe_load(stdin_content)
         system = convert_from_obj(parsed_content, self.settings, False)
         print(
-            " ".join(
+            "\n".join(
                 cast(str, container.container_name)
-                for container in system.load_containers_by_filter(
-                    self.filter, self.local_only
-                )
+                for container in system.load_containers_by_filter(self.filter)
             )
         )

@@ -9,13 +9,7 @@ mypy hate everything you have ever done.
 from typing import List, TypeAlias
 
 from .. import BuildItem
-from ..output.compose_file_model import (
-    DependsOn,
-    Healthcheck,
-    ListOrDict,
-    Port,
-    Volume1,
-)
+from ..output.compose_file_model import Healthcheck, ListOrDict, Port, Volume1
 
 # TODO: Need to figure out what to do with DependsOn and Networks
 #       In compose_file_model.py they implement constr which mypy does not like.
@@ -29,4 +23,3 @@ ServiceBuild: TypeAlias = str | BuildItem | None
 ServiceTTY: TypeAlias = bool | None
 ServiceCommand: TypeAlias = str | List[str] | None
 ServiceHealthcheck: TypeAlias = Healthcheck
-ServiceDependsOn: TypeAlias = dict[str, DependsOn] | None

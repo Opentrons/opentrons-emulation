@@ -1,5 +1,5 @@
 """Model and attributes for Thermocycler Module."""
-from typing import ClassVar, List, Optional
+from typing import ClassVar
 
 from pydantic import Field
 from typing_extensions import Literal
@@ -20,10 +20,10 @@ class ThermocyclerModuleAttributes(HardwareSpecificAttributes):
     """Attributes specific to Thermocycler module."""
 
     lid_temperature: TemperatureModelSettings = Field(
-        alias="lid-temperature", default=TemperatureModelSettings()
+        default=TemperatureModelSettings()
     )
     plate_temperature: TemperatureModelSettings = Field(
-        alias="plate-temperature", default=TemperatureModelSettings()
+        default=TemperatureModelSettings()
     )
 
 
@@ -53,23 +53,16 @@ class ThermocyclerModuleInputModel(ModuleInputModel):
         default=ThermocyclerModuleSourceRepositories(), const=True, exclude=True
     )
     hardware_specific_attributes: ThermocyclerModuleAttributes = Field(
-        alias="hardware-specific-attributes", default=ThermocyclerModuleAttributes()
+        default=ThermocyclerModuleAttributes()
     )
-    emulation_level: Literal[
-        EmulationLevels.FIRMWARE, EmulationLevels.HARDWARE
-    ] = Field(alias="emulation-level")
+    emulation_level: Literal[EmulationLevels.FIRMWARE, EmulationLevels.HARDWARE]
 
-    def get_hardware_level_command(
-        self, emulator_proxy_name: str
-    ) -> Optional[List[str]]:
-        """Get command for heater shaker when it is being emulated at hardware level."""
-        return [
-            "--socket",
-            f"http://{emulator_proxy_name}:{self.proxy_info.emulator_port}",
-        ]
+    def get_module_args(self, emulator_proxy_name: str) -> str:
+        """Get module args for Thermocycler."""
+        if self.emulation_level == EmulationLevels.HARDWARE:
+            return (
+                f"--socket http://{emulator_proxy_name}:{self.proxy_info.emulator_port}"
+            )
 
-    def get_firmware_level_command(
-        self, emulator_proxy_name: str
-    ) -> Optional[List[str]]:
-        """Get command for module when it is being emulated at hardware level."""
-        return [emulator_proxy_name]
+        else:
+            return emulator_proxy_name

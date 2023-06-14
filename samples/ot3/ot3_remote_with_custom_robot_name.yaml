@@ -2,7 +2,7 @@
 # System Description #
 ######################
 
-# This system builds a single OT3
+# This system builds a single OT3 with a custom name
 
 ########################
 # Required Source Code #
@@ -14,16 +14,10 @@ system-unique-id: ot3-only
 robot:
   id: otie
   hardware: ot3
-  source-type: remote
-  source-location: latest
-  robot-server-source-type: remote
-  robot-server-source-location: latest
-  can-server-source-type: remote
-  can-server-source-location: latest
-  opentrons-hardware-source-type: remote
-  opentrons-hardware-source-location: latest
   emulation-level: hardware
-  exposed-port: 31950
-  can-server-exposed-port: 9898
   robot-server-env-vars:
     DEV_ROBOT_NAME: "edgar-allen-poe-bot"
+
+monorepo-source: latest
+ot3-firmware-source: latest
+opentrons-modules-source: latest

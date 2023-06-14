@@ -1,5 +1,5 @@
 """Model and attributes for Temperature Module."""
-from typing import ClassVar, List, Optional
+from typing import ClassVar
 
 from pydantic import Field
 from typing_extensions import Literal
@@ -48,13 +48,11 @@ class TemperatureModuleInputModel(ModuleInputModel):
         default=TemperatureModuleSourceRepositories(), const=True, exclude=True
     )
     hardware_specific_attributes: TemperatureModuleAttributes = Field(
-        alias="hardware-specific-attributes", default=TemperatureModuleAttributes()
+        default=TemperatureModuleAttributes()
     )
 
-    emulation_level: Literal[EmulationLevels.FIRMWARE] = Field(alias="emulation-level")
+    emulation_level: Literal[EmulationLevels.FIRMWARE]
 
-    def get_firmware_level_command(
-        self, emulator_proxy_name: str
-    ) -> Optional[List[str]]:
-        """Get command for module when it is being emulated at hardware level."""
-        return [emulator_proxy_name]
+    def get_module_args(self, emulator_proxy_name: str) -> str:
+        """Get module args for Temperature Module."""
+        return emulator_proxy_name

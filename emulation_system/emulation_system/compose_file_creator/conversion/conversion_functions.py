@@ -8,7 +8,7 @@ from emulation_system.compose_file_creator import Service
 
 from ..output.compose_file_model import Network, Volume
 from ..output.runtime_compose_file_model import RuntimeComposeFileModel
-from . import ServiceBuilderOrchestrator
+from . import ServiceOrchestrator
 
 
 def _get_top_level_volumes(service_list: List[Service]) -> Optional[Dict[str, Volume]]:
@@ -23,7 +23,7 @@ def _get_top_level_volumes(service_list: List[Service]) -> Optional[Dict[str, Vo
             mount = cast(str, mount)
             if not mount.startswith("/"):
                 mount_name = mount[: mount.find(":")]
-                volume_dict[mount_name] = Volume()
+                volume_dict[mount_name] = Volume(name=mount_name)
         return volume_dict
     else:
         return None
@@ -35,9 +35,7 @@ def _convert(
     dev: bool,
 ) -> RuntimeComposeFileModel:
     """Parses SystemConfigurationModel to compose file."""
-    services = ServiceBuilderOrchestrator(
-        config_model, global_settings, dev
-    ).build_services()
+    services = ServiceOrchestrator(config_model, global_settings, dev).build_services()
     return RuntimeComposeFileModel(
         is_remote=config_model.is_remote,
         services=services,

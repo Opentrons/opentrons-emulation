@@ -16,12 +16,12 @@ from emulation_system.compose_file_creator.conversion.conversion_functions impor
 from emulation_system.compose_file_creator.images import (
     HeaterShakerModuleImages,
     MagneticModuleImages,
-    RobotServerImages,
+    RobotServerImage,
     TemperatureModuleImages,
     ThermocyclerModuleImages,
 )
 from emulation_system.compose_file_creator.output.compose_file_model import Volume1
-from tests.compose_file_creator.conftest import (
+from tests.conftest import (
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,
     OT2_ID,
@@ -30,11 +30,11 @@ from tests.compose_file_creator.conftest import (
 )
 
 CONTAINER_NAME_TO_IMAGE = {
-    OT2_ID: RobotServerImages().local_firmware_image_name,
-    THERMOCYCLER_MODULE_ID: ThermocyclerModuleImages().local_hardware_image_name,
-    HEATER_SHAKER_MODULE_ID: HeaterShakerModuleImages().remote_hardware_image_name,
-    TEMPERATURE_MODULE_ID: TemperatureModuleImages().local_firmware_image_name,
-    MAGNETIC_MODULE_ID: MagneticModuleImages().local_firmware_image_name,
+    OT2_ID: RobotServerImage().image_name,
+    THERMOCYCLER_MODULE_ID: ThermocyclerModuleImages().hardware_image_name,
+    HEATER_SHAKER_MODULE_ID: HeaterShakerModuleImages().hardware_image_name,
+    TEMPERATURE_MODULE_ID: TemperatureModuleImages().firmware_image_name,
+    MAGNETIC_MODULE_ID: MagneticModuleImages().firmware_image_name,
 }
 
 SERVICE_NAMES = [

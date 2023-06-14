@@ -8,17 +8,12 @@
 # Required Source Code #
 ########################
 
-# You are required to supply source code paths for `source-location` and `robot-server-source-location`
-# `source-location` supplies source code for the smoothie emulator
-# `robot-server-source-location` supplies source code for the robot-server
+# Change the paths below to point to your local copies of the source code.
 
 system-unique-id: ot2-local
 robot:
   id: robot-server
   hardware: ot2
-  source-type: local
-  source-location: /home/runner/work/opentrons-emulation/opentrons-emulation/opentrons  # Replace with path to your source code
-  robot-server-source-type: local
-  robot-server-source-location: /home/runner/work/opentrons-emulation/opentrons-emulation/opentrons  # Replace with path to your source code
   emulation-level: firmware
-  exposed-port: 31950
+
+monorepo-source: /absolute/path/to/opentrons

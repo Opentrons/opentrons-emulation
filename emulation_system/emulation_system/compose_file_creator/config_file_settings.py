@@ -1,11 +1,12 @@
 """Defines all settings and constants for config file."""
 from enum import Enum
-from typing import Optional, Union
+from typing import List, Optional, Union
 
-from pydantic import BaseModel, DirectoryPath, Field, FilePath
+from pydantic import DirectoryPath, Field, FilePath
 from typing_extensions import Literal
 
 from emulation_system.consts import ROOM_TEMPERATURE
+from opentrons_pydantic_base_model import OpentronsBaseModel
 
 
 class Hardware(str, Enum):
@@ -18,16 +19,79 @@ class Hardware(str, Enum):
     OT2 = "ot2"
     OT3 = "ot3"
 
+    @classmethod
+    def opentrons_modules_hardware(cls) -> List["Hardware"]:
+        """Get names of of hardware that uses opentrons-modules repo."""
+        return [cls.HEATER_SHAKER_MODULE, cls.THERMOCYCLER_MODULE]
+
+    @property
+    def hw_name(self) -> str:
+        """Get name of hardware."""
+        return self.value.replace("-module", "")
+
+    @property
+    def executable_volume_name(self) -> str:
+        """Get name of volume that will be shared between services."""
+        return f"{self.hw_name}-executable"
+
+    @property
+    def builder_executable_volume_path(self) -> str:
+        """Where the builder container stores it's volumes."""
+        return f"/volumes/{self.hw_name}-executable/"
+
+    @property
+    def simulator_name(self) -> str:
+        """Generates simulator name."""
+        return f'{self.value.replace("-module", "")}-simulator'
+
 
 class OT3Hardware(str, Enum):
     """Names of OT3 hardware."""
 
-    PIPETTES = "ot3-pipettes"
+    LEFT_PIPETTE = "ot3-left-pipette"
+    RIGHT_PIPETTE = "ot3-right-pipette"
     HEAD = "ot3-head"
     GANTRY_X = "ot3-gantry-x"
     GANTRY_Y = "ot3-gantry-y"
     BOOTLOADER = "ot3-bootloader"
     GRIPPER = "ot3-gripper"
+
+    @property
+    def hw_name(self) -> str:
+        """Get name of hardware."""
+        return self.value.replace("ot3-", "")
+
+    @property
+    def builder_executable_volume_path(self) -> str:
+        """Where the builder container stores its volumes."""
+        return f"/volumes/{self.hw_name}-executable"
+
+    @property
+    def executable_volume_name(self) -> str:
+        """Get name of volume that will share the built executable to the emulator."""
+        return f"{self.hw_name}-executable"
+
+    @property
+    def eeprom_file_volume_name(self) -> str:
+        """Get name of volume that will be share the generate eeprom.bin file into the emulator."""
+        if self not in self.eeprom_required_hardware():
+            raise ValueError(f"{self.value} does not require an eeprom file.")
+        return f"{self.hw_name}-eeprom"
+
+    @property
+    def eeprom_file_volume_storage_path(self) -> str:
+        """Path to eeprom file"""
+        return f"/volumes/{self.hw_name}-eeprom"
+
+    @property
+    def simulator_name(self) -> str:
+        """Generates simulator name."""
+        return f'{self.value.replace("ot3-", "")}-simulator'
+
+    @classmethod
+    def eeprom_required_hardware(cls) -> List["OT3Hardware"]:
+        """Get list of hardware that require eeprom file."""
+        return [cls.LEFT_PIPETTE, cls.RIGHT_PIPETTE, cls.GRIPPER]
 
 
 class EmulationLevels(str, Enum):
@@ -51,25 +115,18 @@ class HeaterShakerModes(str, Enum):
     SOCKET = "socket"
 
 
-class TemperatureModelSettings(BaseModel):
+class TemperatureModelSettings(OpentronsBaseModel):
     """Temperature behavior model."""
 
-    degrees_per_tick: float = Field(alias="degrees-per-tick", default=2.0)
+    degrees_per_tick: float = Field(default=2.0)
     starting: float = float(ROOM_TEMPERATURE)
 
 
-class RPMModelSettings(BaseModel):
+class RPMModelSettings(OpentronsBaseModel):
     """RPM behavior model."""
 
-    rpm_per_tick: float = Field(alias="rpm-per-tick", default=100.0)
+    rpm_per_tick: float = Field(default=100.0)
     starting: float = 0.0
-
-
-class PipetteSettings(BaseModel):
-    """Pipette defintions for OT-2 and OT-3."""
-
-    model: str = "p20_single_v2.0"
-    id: str = "P20SV202020070101"
 
 
 class OpentronsRepository(str, Enum):
@@ -87,8 +144,23 @@ class RepoToBuildArgMapping(str, Enum):
     OT3_FIRMWARE = "FIRMWARE_SOURCE_DOWNLOAD_LOCATION"
     OPENTRONS_MODULES = "MODULE_SOURCE_DOWNLOAD_LOCATION"
 
+    @staticmethod
+    def get_mapping(repo: OpentronsRepository) -> "RepoToBuildArgMapping":
+        """Get mapping by Opentrons Repository."""
+        mapping: RepoToBuildArgMapping
+        match repo:
+            case OpentronsRepository.OPENTRONS:
+                mapping = RepoToBuildArgMapping.OPENTRONS
+            case OpentronsRepository.OT3_FIRMWARE:
+                mapping = RepoToBuildArgMapping.OT3_FIRMWARE
+            case OpentronsRepository.OPENTRONS_MODULES:
+                mapping = RepoToBuildArgMapping.OPENTRONS_MODULES
+            case _:
+                raise ValueError(f"Opentrons repository {repo.value} is not valid.")
+        return mapping
 
-class SourceRepositories(BaseModel):
+
+class SourceRepositories(OpentronsBaseModel):
     """Stores names of source code repos for each piece of hardware."""
 
     firmware_repo_name: Optional[OpentronsRepository]
@@ -102,16 +174,18 @@ class MountTypes(str, Enum):
     DIRECTORY = "directory"
 
 
-class Mount(BaseModel):
+class Mount(OpentronsBaseModel):
     """Contains infomation about a single extra bind mount."""
 
-    name: str = Field(..., regex=r"^[A-Z0-9_]+$")
     type: str
-    mount_path: str = Field(..., alias="mount-path")
-    source_path: Union[DirectoryPath, FilePath] = Field(..., alias="source-path")
+    mount_path: str
+    source_path: Union[DirectoryPath, FilePath]
 
-    def is_duplicate(self, other: "Mount") -> bool:
+    def __eq__(self, other: object) -> bool:
         """Compare everything except name."""
+        if not isinstance(other, Mount):
+            return False
+
         return all(
             [
                 self.type == other.type,
@@ -119,11 +193,6 @@ class Mount(BaseModel):
                 self.source_path == other.source_path,
             ]
         )
-
-    class Config:
-        """Config class used by pydantic."""
-
-        allow_population_by_field_name = True
 
     def get_bind_mount_string(self) -> str:
         """Return bind mount string to add compose file."""
@@ -134,11 +203,11 @@ class DirectoryMount(Mount):
     """Directory type Mount."""
 
     type: Literal[MountTypes.DIRECTORY]
-    source_path: DirectoryPath = Field(..., alias="source-path")
+    source_path: DirectoryPath
 
 
 class FileMount(Mount):
     """File type Mount."""
 
     type: Literal[MountTypes.FILE]
-    source_path: FilePath = Field(..., alias="source-path")
+    source_path: FilePath
