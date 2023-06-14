@@ -32,7 +32,5 @@ def test_yaml_export(make_config: Callable) -> None:
         remote_only_ot3, SUB_LIST
     ).perform_substitution()
     converted_yaml = yaml.safe_load(resultant_config_model.to_yaml())
-    assert (
-        converted_yaml["monorepo-source"] == "edge"
-    )
+    assert converted_yaml["monorepo-source"] == "edge"
     assert converted_yaml["robot"]["exposed-port"] == 5000
