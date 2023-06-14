@@ -6,7 +6,6 @@ from emulation_system import OpentronsEmulationConfiguration, SystemConfiguratio
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
     MagneticModuleInputModel,
-    RobotInputModel,
     TemperatureModuleInputModel,
     ThermocyclerModuleInputModel,
 )
@@ -17,6 +16,10 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateNetworks,
     IntermediatePorts,
     IntermediateVolumes,
+)
+from emulation_system.compose_file_creator.utilities.hardware_utils import (
+    is_ot3,
+    is_robot,
 )
 
 from ...images import EmulatorProxyImage
@@ -116,8 +119,11 @@ class EmulatorProxyService(AbstractService):
             for env_var_name, env_var_value in proxy_info_items:
                 env_vars[env_var_name] = env_var_value
 
-        if self._config_model.robot is not None:
-            assert issubclass(self._config_model.robot.__class__, RobotInputModel)
+        if self._config_model.robot is not None and is_robot(self._config_model.robot):
+
+            if is_ot3(self._config_model.robot):
+                env_vars["OPENTRONS_PROJECT"] = "ot3"
+
             if self._config_model.robot.emulator_proxy_env_vars is not None:
                 env_vars.update(self._config_model.robot.emulator_proxy_env_vars)
 

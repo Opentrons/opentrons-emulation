@@ -49,7 +49,6 @@ def make_config(
     opentrons_dir: str,
     opentrons_modules_dir: str,
     ot3_firmware_dir: str,
-    patch_github_api_is_up: None,
 ) -> Callable:
     """Builds configuration object."""
 

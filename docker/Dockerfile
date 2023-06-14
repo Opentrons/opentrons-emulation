@@ -125,8 +125,18 @@ ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons/a
 ENV FIRMWARE_SOURCE_DOWNLOAD_LOCATION=$FIRMWARE_SOURCE_DOWNLOAD_LOCATION
 ENV OPENTRONS_SOURCE_DOWNLOAD_LOCATION=$OPENTRONS_SOURCE_DOWNLOAD_LOCATION
 
-ADD --keep-git-dir=true $FIRMWARE_SOURCE_DOWNLOAD_LOCATION /ot3-firmware
-ADD --keep-git-dir=true $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons
+ADD --keep-git-dir=true $FIRMWARE_SOURCE_DOWNLOAD_LOCATION /ot3-firmware.zip
+ADD --keep-git-dir=true $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons.zip
+
+RUN (cd / &&  \
+    unzip -q ot3-firmware.zip && \
+    rm -f ot3-firmware.zip && \
+    mv ot3-firmware* ot3-firmware)
+
+RUN (cd / &&  \
+    unzip -q opentrons.zip && \
+    rm -f opentrons.zip && \
+    mv opentrons* opentrons)
 
 FROM ot3-firmware-source as ot3-firmware-builder
 COPY entrypoints/ot3_firmware_builder.sh /build.sh
@@ -141,13 +151,7 @@ ARG MODULE_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons-modu
 
 ENV MODULE_SOURCE_DOWNLOAD_LOCATION=$MODULE_SOURCE_DOWNLOAD_LOCATION
 
-ADD  --keep-git-dir=true $MODULE_SOURCE_DOWNLOAD_LOCATION /opentrons-modules.zip
-
-RUN (cd / &&  \
-    unzip -q opentrons-modules.zip && \
-    rm -f opentrons-modules.zip && \
-    mv opentrons-modules* opentrons-modules)
-
+ADD  --keep-git-dir=true $MODULE_SOURCE_DOWNLOAD_LOCATION /opentrons-modules
 
 FROM opentrons-modules-source as opentrons-modules-builder
 COPY entrypoints/opentrons_modules_builder.sh /build.sh
@@ -169,7 +173,6 @@ RUN (cd / &&  \
     unzip -q opentrons.zip && \
     rm -f opentrons.zip && \
     mv opentrons* opentrons)
-
 
 FROM opentrons-source as monorepo-builder
 COPY entrypoints/monorepo_builder.sh /build.sh

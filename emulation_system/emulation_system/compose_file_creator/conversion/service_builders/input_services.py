@@ -182,6 +182,7 @@ class InputServices(AbstractService):
 
         if is_ot3(self._container):
             assert self._can_server_service_name is not None
+            temp_vars["OPENTRONS_PROJECT"] = "ot3"
             temp_vars["OT_API_FF_enableOT3HardwareController"] = True
             temp_vars["OT_API_FF_rearPanelIntegration"] = False
             temp_vars["OT3_CAN_DRIVER_interface"] = "opentrons_sock"
