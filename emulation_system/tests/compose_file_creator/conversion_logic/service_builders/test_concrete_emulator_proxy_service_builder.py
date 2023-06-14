@@ -59,6 +59,28 @@ def test_simple_emulator_proxy_values(
     assert service.build.dockerfile == expected_dockerfile_name
     assert build_args_are_none(service)
 
+    assert service.tty
+    assert service.command is None
+    assert service.depends_on is None
+    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", service)
+    assert partial_string_in_mount("monorepo-wheels:/dist", service)
+
+
+@pytest.mark.parametrize("dev", [True, False])
+def test_ot2_emulator_proxy_service_values(
+    ot2_system_config: SystemConfigurationModel,
+    dev: bool,
+    testing_global_em_config: OpentronsEmulationConfiguration,
+) -> None:
+    """Tests for EmulatorProxy Service that are specific to OT-2."""
+    service = EmulatorProxyService(
+        ot2_system_config, testing_global_em_config, dev=dev
+    ).build_service()
+
+    assert isinstance(service.networks, list)
+    assert len(service.networks) == 1
+    assert "local-network" in service.networks
+
     proxy_environment = service.environment
     assert proxy_environment is not None
     assert isinstance(proxy_environment, ListOrDict)
@@ -87,28 +109,6 @@ def test_simple_emulator_proxy_values(
         == '{"emulator_port": 10003, "driver_port": 11003, "use_local_host": false}'
     )
 
-    assert service.tty
-    assert service.command is None
-    assert service.depends_on is None
-    assert partial_string_in_mount("entrypoint.sh:/entrypoint.sh", service)
-    assert partial_string_in_mount("monorepo-wheels:/dist", service)
-
-
-@pytest.mark.parametrize("dev", [True, False])
-def test_ot2_emulator_proxy_service_values(
-    ot2_system_config: SystemConfigurationModel,
-    dev: bool,
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> None:
-    """Tests for EmulatorProxy Service that are specific to OT-2."""
-    service = EmulatorProxyService(
-        ot2_system_config, testing_global_em_config, dev=dev
-    ).build_service()
-
-    assert isinstance(service.networks, list)
-    assert len(service.networks) == 1
-    assert "local-network" in service.networks
-
 
 @pytest.mark.parametrize("dev", [True, False])
 def test_ot3_emulator_proxy_service_values(
@@ -125,3 +125,33 @@ def test_ot3_emulator_proxy_service_values(
     assert len(service.networks) == 2
     assert "local-network" in service.networks
     assert "can-network" in service.networks
+
+    proxy_environment = service.environment
+    assert proxy_environment is not None
+    assert isinstance(proxy_environment, ListOrDict)
+    env_root = cast(Dict[str, Any], proxy_environment.__root__)
+    assert env_root is not None
+    assert len(env_root.values()) == 5
+    assert "OT_EMULATOR_heatershaker_proxy" in env_root
+    assert "OT_EMULATOR_magdeck_proxy" in env_root
+    assert "OT_EMULATOR_temperature_proxy" in env_root
+    assert "OT_EMULATOR_thermocycler_proxy" in env_root
+    assert "OPENTRONS_PROJECT" in env_root
+
+    assert (
+        env_root["OT_EMULATOR_heatershaker_proxy"]
+        == '{"emulator_port": 10004, "driver_port": 11004, "use_local_host": false}'
+    )
+    assert (
+        env_root["OT_EMULATOR_magdeck_proxy"]
+        == '{"emulator_port": 10002, "driver_port": 11002, "use_local_host": false}'
+    )
+    assert (
+        env_root["OT_EMULATOR_temperature_proxy"]
+        == '{"emulator_port": 10001, "driver_port": 11001, "use_local_host": false}'
+    )
+    assert (
+        env_root["OT_EMULATOR_thermocycler_proxy"]
+        == '{"emulator_port": 10003, "driver_port": 11003, "use_local_host": false}'
+    )
+    assert env_root["OPENTRONS_PROJECT"] == "ot3"

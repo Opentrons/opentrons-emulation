@@ -34,7 +34,7 @@ def remote_source_commit_id(make_config: Callable) -> Dict[str, Any]:
     source-type is set to local.
     source-location is set to a monorepo dir.
     """
-    return make_config(robot="ot2", monorepo_source="commit_id")
+    return make_config(robot="ot2", monorepo_source="branch")
 
 
 @pytest.mark.parametrize(

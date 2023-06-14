@@ -31,7 +31,7 @@ from tests.validation_helper_functions import partial_string_in_mount
 @pytest.mark.parametrize(
     "config",
     [
-        lazy_fixture("ot3_remote_everything_commit_id"),
+        lazy_fixture("ot3_remote_everything_branch"),
         lazy_fixture("ot3_local_ot3_firmware_remote_monorepo"),
         lazy_fixture("ot3_remote_ot3_firmware_local_monorepo"),
         lazy_fixture("ot3_and_modules"),
@@ -50,7 +50,7 @@ from tests.validation_helper_functions import partial_string_in_mount
         lazy_fixture("magnetic_module_firmware_local"),
         lazy_fixture("ot2_only"),
         lazy_fixture("ot2_and_modules"),
-        lazy_fixture("ot2_remote_everything_commit_id"),
+        lazy_fixture("ot2_remote_everything_branch"),
         lazy_fixture("ot2_local_source"),
     ],
 )
@@ -68,7 +68,7 @@ def test_emulation_proxy_created(
     [
         lazy_fixture("ot2_only"),
         lazy_fixture("ot2_and_modules"),
-        lazy_fixture("ot2_remote_everything_commit_id"),
+        lazy_fixture("ot2_remote_everything_branch"),
         lazy_fixture("ot2_local_source"),
     ],
 )
@@ -89,7 +89,7 @@ def test_smoothie_created(
 @pytest.mark.parametrize(
     "config",
     [
-        lazy_fixture("ot3_remote_everything_commit_id"),
+        lazy_fixture("ot3_remote_everything_branch"),
         lazy_fixture("ot3_local_ot3_firmware_remote_monorepo"),
         lazy_fixture("ot3_remote_ot3_firmware_local_monorepo"),
         lazy_fixture("ot3_and_modules"),

@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, Literal
 import py
 import pytest
 
-from emulation_system import OpentronsEmulationConfiguration
+from emulation_system import OpentronsEmulationConfiguration, github_api_interaction
 from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     OpentronsRepository,
@@ -46,14 +46,17 @@ def ot3_firmware_dir(tmpdir: py.path.local) -> str:
 
 @pytest.fixture
 def make_config(
-    opentrons_dir: str, opentrons_modules_dir: str, ot3_firmware_dir: str
+    opentrons_dir: str,
+    opentrons_modules_dir: str,
+    ot3_firmware_dir: str,
+    patch_github_api_is_up: None,
 ) -> Callable:
     """Builds configuration object."""
 
     def _make_config(
-        monorepo_source: Literal["latest", "commit_id", "path"] = "latest",
-        ot3_firmware_source: Literal["latest", "commit_id", "path"] = "latest",
-        opentrons_modules_source: Literal["latest", "commit_id", "path"] = "latest",
+        monorepo_source: Literal["latest", "branch", "path"] = "latest",
+        ot3_firmware_source: Literal["latest", "branch", "path"] = "latest",
+        opentrons_modules_source: Literal["latest", "branch", "path"] = "latest",
         robot: Literal["ot2", "ot3"] | None = None,
         modules: ModuleDeclaration | None = None,
         system_unique_id: str | None = None,
@@ -185,26 +188,26 @@ def ot3_firmware_head(testing_global_em_config: OpentronsEmulationConfiguration)
 @pytest.fixture
 def opentrons_commit(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
     """Return commit url of opentrons repo from test config file."""
-    return testing_global_em_config.get_repo_commit(
+    return testing_global_em_config.get_repo_branch(
         OpentronsRepository.OPENTRONS
-    ).replace("{{commit-sha}}", FAKE_COMMIT_ID)
+    ).replace("{{branch-name}}", FAKE_COMMIT_ID)
 
 
 @pytest.fixture
-def ot3_firmware_commit(
+def ot3_firmware_branch(
     testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> str:
-    """Return commit url of ot3-firmware repo from test config file."""
-    return testing_global_em_config.get_repo_commit(
+    """Return branch url of ot3-firmware repo from test config file."""
+    return testing_global_em_config.get_repo_branch(
         OpentronsRepository.OT3_FIRMWARE
-    ).replace("{{commit-sha}}", FAKE_COMMIT_ID)
+    ).replace("{{branch-name}}", FAKE_COMMIT_ID)
 
 
 @pytest.fixture
-def ot3_remote_everything_commit_id(make_config: Callable) -> Dict[str, Any]:
+def ot3_remote_everything_branch(make_config: Callable) -> Dict[str, Any]:
     """Get OT3 configured for local source and local robot source."""
     return make_config(
-        robot="ot3", monorepo_source="commit_id", ot3_firmware_source="commit_id"
+        robot="ot3", monorepo_source="branch", ot3_firmware_source="branch"
     )
 
 
@@ -235,9 +238,9 @@ def ot3_local_everything(
 
 
 @pytest.fixture
-def ot2_remote_everything_commit_id(make_config: Callable) -> Dict[str, Any]:
+def ot2_remote_everything_branch(make_config: Callable) -> Dict[str, Any]:
     """Get OT3 configured for local source and local robot source."""
-    return make_config(robot="ot2", monorepo_source="commit_id")
+    return make_config(robot="ot2", monorepo_source="branch")
 
 
 @pytest.fixture
@@ -331,3 +334,25 @@ def magnetic_module_firmware_remote(make_config: Callable) -> Dict[str, Any]:
 def magnetic_module_firmware_local(make_config: Callable) -> Dict[str, Any]:
     """Get Heater Shaker configuration for local source."""
     return make_config(modules={"magnetic-module": 1}, monorepo_source="path")
+
+
+@pytest.fixture(autouse=True)
+def patch_github_api_is_up(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Patch the github api is up method to always return true."""
+    monkeypatch.setattr(github_api_interaction, "github_api_is_up", lambda: True)
+
+
+@pytest.fixture(autouse=True)
+def patch_check_if_branch_exists(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Patch the github api is up method to always return true."""
+
+    def inner_func(repo: OpentronsRepository, branch: str) -> bool:
+        match repo:
+            case OpentronsRepository.OPENTRONS | OpentronsRepository.OPENTRONS_MODULES:
+                return branch == "edge"
+            case OpentronsRepository.OT3_FIRMWARE:
+                return branch == "main"
+            case _:
+                raise ValueError(f"Unknown repo {repo}")
+
+    monkeypatch.setattr(github_api_interaction, "check_if_branch_exists", inner_func)

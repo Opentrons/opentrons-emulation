@@ -9,7 +9,6 @@ from emulation_system.compose_file_creator.config_file_settings import (
     Hardware,
 )
 from tests.conftest import (
-    FAKE_COMMIT_ID,
     HEATER_SHAKER_MODULE_ID,
     MAGNETIC_MODULE_ID,
     OT2_ID,
@@ -27,9 +26,9 @@ class ConfigDefinition:
     opentrons_dir: str
     opentrons_modules_dir: str
     ot3_firmware_dir: str
-    monorepo_source: Literal["latest", "commit_id", "path"] = "latest"
-    ot3_firmware_source: Literal["latest", "commit_id", "path"] = "latest"
-    opentrons_modules_source: Literal["latest", "commit_id", "path"] = "latest"
+    monorepo_source: Literal["latest", "branch", "path"] = "latest"
+    ot3_firmware_source: Literal["latest", "branch", "path"] = "latest"
+    opentrons_modules_source: Literal["latest", "branch", "path"] = "latest"
     robot: Literal["ot2", "ot3"] | None = None
     modules: ModuleDeclaration | None = None
     system_unique_id: str | None = None
@@ -54,40 +53,38 @@ class TestingConfigBuilder:
         self._generated_config = deepcopy(self.DEFAULT_CONFIG)
 
     def __check_for_source_errors(self) -> None:
-        if self._con_def.monorepo_source not in ["latest", "commit_id", "path"]:
-            raise ValueError('monorepo_source is not "latest", "commit_id", or "path"')
+        if self._con_def.monorepo_source not in ["latest", "branch", "path"]:
+            raise ValueError('monorepo_source is not "latest", "branch", or "path"')
 
-        if self._con_def.ot3_firmware_source not in ["latest", "commit_id", "path"]:
-            raise ValueError(
-                'ot3_firmware_source is not "latest", "commit_id", or "path"'
-            )
+        if self._con_def.ot3_firmware_source not in ["latest", "branch", "path"]:
+            raise ValueError('ot3_firmware_source is not "latest", "branch", or "path"')
 
         if self._con_def.opentrons_modules_source not in [
             "latest",
-            "commit_id",
+            "branch",
             "path",
         ]:
             raise ValueError(
-                'opentrons_modules_source is not "latest", "commit_id", or "path"'
+                'opentrons_modules_source is not "latest", "branch", or "path"'
             )
 
     def __build_source(self) -> None:
         self.__check_for_source_errors()
 
-        if self._con_def.monorepo_source == "commit_id":
-            self._generated_config[self.MONOREPO_NAME] = FAKE_COMMIT_ID
+        if self._con_def.monorepo_source == "branch":
+            self._generated_config[self.MONOREPO_NAME] = "edge"
         elif self._con_def.monorepo_source == "path":
             self._generated_config[self.MONOREPO_NAME] = self._con_def.opentrons_dir
 
-        if self._con_def.ot3_firmware_source == "commit_id":
-            self._generated_config[self.OT3_FIRMWARE_NAME] = FAKE_COMMIT_ID
+        if self._con_def.ot3_firmware_source == "branch":
+            self._generated_config[self.OT3_FIRMWARE_NAME] = "main"
         elif self._con_def.ot3_firmware_source == "path":
             self._generated_config[
                 self.OT3_FIRMWARE_NAME
             ] = self._con_def.ot3_firmware_dir
 
-        if self._con_def.opentrons_modules_source == "commit_id":
-            self._generated_config[self.OPENTRONS_MODULES_NAME] = FAKE_COMMIT_ID
+        if self._con_def.opentrons_modules_source == "branch":
+            self._generated_config[self.OPENTRONS_MODULES_NAME] = "edge"
         elif self._con_def.opentrons_modules_source == "path":
             self._generated_config[
                 self.OPENTRONS_MODULES_NAME

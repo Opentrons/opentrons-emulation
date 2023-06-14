@@ -24,7 +24,7 @@ from tests.validation_helper_functions import (
     [
         [lazy_fixture("ot3_only"), False, False],
         [lazy_fixture("ot3_and_modules"), False, False],
-        [lazy_fixture("ot3_remote_everything_commit_id"), False, False],
+        [lazy_fixture("ot3_remote_everything_branch"), False, False],
         [lazy_fixture("ot3_local_ot3_firmware_remote_monorepo"), False, True],
         [lazy_fixture("ot3_remote_ot3_firmware_local_monorepo"), True, False],
         [lazy_fixture("ot3_local_everything"), True, True],
@@ -36,6 +36,7 @@ def test_ot3_build_args(
     ot3_firmware_is_local: bool,
     opentrons_head: str,
     testing_global_em_config: OpentronsEmulationConfiguration,
+    patch_github_api_is_up: None,
 ) -> None:
     """Confirm build args are created correctly for OT-3."""
     config_file = convert_from_obj(config, testing_global_em_config, False)
@@ -96,7 +97,7 @@ def test_ot3_build_args(
     [
         [lazy_fixture("ot2_only"), False],
         [lazy_fixture("ot2_and_modules"), False],
-        [lazy_fixture("ot2_remote_everything_commit_id"), False],
+        [lazy_fixture("ot2_remote_everything_branch"), False],
         [lazy_fixture("ot2_local_source"), True],
     ],
 )
@@ -208,7 +209,7 @@ def test_module_opentrons_modules_build_args(
     [
         [lazy_fixture("ot3_only"), False, False],
         [lazy_fixture("ot3_and_modules"), False, False],
-        [lazy_fixture("ot3_remote_everything_commit_id"), False, False],
+        [lazy_fixture("ot3_remote_everything_branch"), False, False],
         [lazy_fixture("ot3_local_ot3_firmware_remote_monorepo"), False, True],
         [lazy_fixture("ot3_remote_ot3_firmware_local_monorepo"), True, False],
         [lazy_fixture("ot3_local_everything"), True, True],
@@ -314,7 +315,7 @@ def test_ot3_mounts(
     [
         [lazy_fixture("ot2_only"), False],
         [lazy_fixture("ot2_and_modules"), False],
-        [lazy_fixture("ot2_remote_everything_commit_id"), False],
+        [lazy_fixture("ot2_remote_everything_branch"), False],
         [lazy_fixture("ot2_local_source"), True],
     ],
 )
@@ -420,8 +421,8 @@ def test_module_opentrons_modules_mounts(
     [
         lazy_fixture("ot2_only"),
         lazy_fixture("ot3_only"),
-        lazy_fixture("ot2_remote_everything_commit_id"),
-        lazy_fixture("ot3_remote_everything_commit_id"),
+        lazy_fixture("ot2_remote_everything_branch"),
+        lazy_fixture("ot3_remote_everything_branch"),
         lazy_fixture("heater_shaker_module_hardware_remote"),
         lazy_fixture("heater_shaker_module_firmware_remote"),
         lazy_fixture("thermocycler_module_hardware_remote"),

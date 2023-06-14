@@ -12,6 +12,7 @@ from typing import List, Union
 
 from pydantic import Field
 
+from emulation_system import github_api_interaction
 from emulation_system.compose_file_creator.config_file_settings import (
     FileMount,
     Hardware,
@@ -52,33 +53,41 @@ class SourceState(Enum):
     """
 
     REMOTE_LATEST = auto()
-    REMOTE_COMMIT = auto()
+    REMOTE_BRANCH = auto()
     LOCAL = auto()
 
     @staticmethod
-    def to_source_state(passed_value: str) -> "SourceState":
+    def to_source_state(passed_value: str, repo: OpentronsRepository) -> "SourceState":
         """Helper method to parse passed string value to SourceState."""
         source_state: SourceState
 
         if passed_value.lower() == "latest":
             source_state = SourceState.REMOTE_LATEST
-        elif re.match(COMMIT_SHA_REGEX, passed_value.lower()):
-            source_state = SourceState.REMOTE_COMMIT
         elif os.path.isdir(passed_value):
             source_state = SourceState.LOCAL
+        elif (
+            github_api_interaction.github_api_is_up()
+            and github_api_interaction.check_if_branch_exists(repo, passed_value)
+        ):
+            source_state = SourceState.REMOTE_BRANCH
+        elif re.match(COMMIT_SHA_REGEX, passed_value.lower()):
+            raise ValueError(
+                "Usage of a commit SHA as a reference for a source location "
+                "is deprecated. Use a branch name instead."
+            )
         else:
             raise ValueError(
                 f'\nYou passed: "{passed_value}"'
                 "\nField can be the following values:"
                 '\n\t- "latest" to pull latest code from Github'
-                "\n\t- A valid commit sha to pull a specific commit from Github"
+                "\n\t- A valid branch name to pull a specific commit from Github"
                 "\n\t- A valid absolute directory path to use your local code\n\n"
             )
         return source_state
 
     def is_remote(self) -> bool:
         """If SourceState is remote."""
-        return self in [self.REMOTE_COMMIT, self.REMOTE_LATEST]
+        return self in [self.REMOTE_BRANCH, self.REMOTE_LATEST]
 
     def is_local(self) -> bool:
         """If SourceState is local."""
@@ -114,7 +123,7 @@ class Source(ABC):
     @property
     def source_state(self) -> SourceState:
         """Source State of the Source object."""
-        return SourceState.to_source_state(self.source_location)
+        return SourceState.to_source_state(self.source_location, self.repo)
 
     @property
     def repo_to_build_arg_mapping(self) -> RepoToBuildArgMapping:
@@ -129,12 +138,12 @@ class Source(ABC):
             return None
         env_var_to_use = str(self.repo_to_build_arg_mapping.value)
         head = global_settings.get_repo_head(self.repo)
-        format_string = global_settings.get_repo_commit(self.repo)
+        format_string = global_settings.get_repo_branch(self.repo)
         source_location = self.source_location
         value = (
             head
             if source_location == "latest"
-            else format_string.replace("{{commit-sha}}", source_location)
+            else format_string.replace("{{branch-name}}", source_location)
         )
         return {env_var_to_use: value}
 
@@ -178,7 +187,7 @@ class MonorepoSource(OpentronsBaseModel, Source):
     def validate(cls, v: str) -> "MonorepoSource":
         """Confirm that parsing source-location string to SourceState does not throw an error."""
         try:
-            SourceState.to_source_state(v)
+            SourceState.to_source_state(v, OpentronsRepository.OPENTRONS)
         except ValueError:
             raise
         else:
@@ -238,7 +247,7 @@ class OT3FirmwareSource(OpentronsBaseModel, Source, EmulatorSourceMixin):
     def validate(cls, v: str) -> "OT3FirmwareSource":
         """Confirm that parsing source-location string to SourceState does not throw an error."""
         try:
-            SourceState.to_source_state(v)
+            SourceState.to_source_state(v, OpentronsRepository.OT3_FIRMWARE)
         except ValueError:
             raise
         else:
@@ -293,7 +302,7 @@ class OpentronsModulesSource(OpentronsBaseModel, Source, EmulatorSourceMixin):
     def validate(cls, v: str) -> "OpentronsModulesSource":
         """Confirm that parsing source-location string to SourceState does not throw an error."""
         try:
-            SourceState.to_source_state(v)
+            SourceState.to_source_state(v, OpentronsRepository.OPENTRONS_MODULES)
         except ValueError:
             raise
         else:

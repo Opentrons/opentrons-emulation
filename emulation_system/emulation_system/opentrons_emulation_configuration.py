@@ -31,8 +31,8 @@ class Heads(OpentronsBaseModel):
     modules: str
 
 
-class Commits(OpentronsBaseModel):
-    """Format string for where to download a specific commit sha from."""
+class Branches(OpentronsBaseModel):
+    """Format string for where to download a specific branch from."""
 
     opentrons: str
     ot3_firmware: str
@@ -43,7 +43,7 @@ class SourceDownloadLocations(OpentronsBaseModel):
     """Model representing where to download source code from."""
 
     heads: Heads
-    commits: Commits
+    branches: Branches
 
 
 class EmulationSettings(OpentronsBaseModel):
@@ -71,20 +71,20 @@ class OpentronsEmulationConfiguration(OpentronsBaseModel):
 
         return parse_obj_as(cls, json.load(file))
 
-    def get_repo_commit(self, repo: OpentronsRepository) -> str:
-        """Helper method to get repo commit string."""
+    def get_repo_branch(self, repo: OpentronsRepository) -> str:
+        """Helper method to get repo branch string."""
         lookup = {
-            OpentronsRepository.OPENTRONS: self.emulation_settings.source_download_locations.commits.opentrons,
-            OpentronsRepository.OT3_FIRMWARE: self.emulation_settings.source_download_locations.commits.ot3_firmware,
-            OpentronsRepository.OPENTRONS_MODULES: self.emulation_settings.source_download_locations.commits.modules,
+            OpentronsRepository.OPENTRONS: self.emulation_settings.source_download_locations.branches.opentrons,
+            OpentronsRepository.OT3_FIRMWARE: self.emulation_settings.source_download_locations.branches.ot3_firmware,
+            OpentronsRepository.OPENTRONS_MODULES: self.emulation_settings.source_download_locations.branches.modules,
         }
 
         try:
-            commit = lookup[repo]
+            branch = lookup[repo]
         except KeyError:
             raise RepoDoesNotExistError(repo.value)
 
-        return commit
+        return branch
 
     def get_repo_head(self, repo: OpentronsRepository) -> str:
         """Helper method to get repo head string."""

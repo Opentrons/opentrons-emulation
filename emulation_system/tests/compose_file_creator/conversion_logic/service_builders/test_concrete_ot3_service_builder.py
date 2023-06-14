@@ -44,8 +44,8 @@ def get_pipettes(service_list: List[Service]) -> Tuple[Service, Service]:
     [
         (lazy_fixture("ot3_only"), True),
         (lazy_fixture("ot3_only"), False),
-        (lazy_fixture("ot3_remote_everything_commit_id"), True),
-        (lazy_fixture("ot3_remote_everything_commit_id"), False),
+        (lazy_fixture("ot3_remote_everything_branch"), True),
+        (lazy_fixture("ot3_remote_everything_branch"), False),
         (lazy_fixture("ot3_local_ot3_firmware_remote_monorepo"), True),
         (lazy_fixture("ot3_local_ot3_firmware_remote_monorepo"), False),
         (lazy_fixture("ot3_remote_ot3_firmware_local_monorepo"), True),
@@ -125,7 +125,7 @@ def test_simple_ot3_values(
 @pytest.mark.parametrize(
     "model_dict",
     [
-        lazy_fixture("ot3_remote_everything_commit_id"),
+        lazy_fixture("ot3_remote_everything_branch"),
         lazy_fixture("ot3_only"),
         lazy_fixture("ot3_local_ot3_firmware_remote_monorepo"),
         lazy_fixture("ot3_remote_ot3_firmware_local_monorepo"),

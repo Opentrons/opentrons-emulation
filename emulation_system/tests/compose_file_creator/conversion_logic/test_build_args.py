@@ -10,7 +10,6 @@ from emulation_system.source import (
     OpentronsModulesSource,
     OT3FirmwareSource,
 )
-from tests.conftest import FAKE_COMMIT_ID
 
 
 @pytest.mark.parametrize(
@@ -20,14 +19,14 @@ from tests.conftest import FAKE_COMMIT_ID
             MonorepoSource,
             "latest",
             {
-                "OPENTRONS_SOURCE_DOWNLOAD_LOCATION": "https://github.com/AnotherOrg/opentrons/archive/refs/heads/edge.zip"
+                "OPENTRONS_SOURCE_DOWNLOAD_LOCATION": "https://github.com/AnotherOrg/opentrons.git#edge"
             },
         ],
         [
             MonorepoSource,
-            FAKE_COMMIT_ID,
+            "edge",
             {
-                "OPENTRONS_SOURCE_DOWNLOAD_LOCATION": f"https://github.com/AnotherOrg/opentrons/archive/{FAKE_COMMIT_ID}.zip"
+                "OPENTRONS_SOURCE_DOWNLOAD_LOCATION": "https://github.com/AnotherOrg/opentrons.git#edge"
             },
         ],
         [MonorepoSource, lazy_fixture("opentrons_dir"), None],
@@ -35,14 +34,14 @@ from tests.conftest import FAKE_COMMIT_ID
             OpentronsModulesSource,
             "latest",
             {
-                "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/AnotherOrg/opentrons-modules/archive/refs/heads/edge.zip"
+                "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/AnotherOrg/opentrons-modules.git#edge"
             },
         ],
         [
             OpentronsModulesSource,
-            FAKE_COMMIT_ID,
+            "edge",
             {
-                "MODULE_SOURCE_DOWNLOAD_LOCATION": f"https://github.com/AnotherOrg/opentrons-modules/archive/{FAKE_COMMIT_ID}.zip"
+                "MODULE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/AnotherOrg/opentrons-modules.git#edge"
             },
         ],
         [OpentronsModulesSource, lazy_fixture("opentrons_modules_dir"), None],
@@ -50,14 +49,14 @@ from tests.conftest import FAKE_COMMIT_ID
             OT3FirmwareSource,
             "latest",
             {
-                "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/AnotherOrg/ot3-firmware/archive/refs/heads/main.zip"
+                "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/AnotherOrg/ot3-firmware.git#main"
             },
         ],
         [
             OT3FirmwareSource,
-            FAKE_COMMIT_ID,
+            "main",
             {
-                "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": f"https://github.com/AnotherOrg/ot3-firmware/archive/{FAKE_COMMIT_ID}.zip"
+                "FIRMWARE_SOURCE_DOWNLOAD_LOCATION": "https://github.com/AnotherOrg/ot3-firmware.git#main"
             },
         ],
         [OT3FirmwareSource, lazy_fixture("ot3_firmware_dir"), None],

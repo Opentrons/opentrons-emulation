@@ -245,7 +245,7 @@ def test_exception_thrown_when_local_source_code_does_not_exist() -> None:
 
 
 @pytest.mark.parametrize(
-    "invalid_location", ["/a/file/path.txt", "notavalidsha", "", "{something}"]
+    "invalid_location", ["f50cd8bfe2b661ecf928cdb044b33e7d10c294a8"]
 )
 def test_exception_thrown_when_invalid_remote_source_location(
     invalid_location: str, make_config: Callable
@@ -255,14 +255,16 @@ def test_exception_thrown_when_invalid_remote_source_location(
     config["monorepo-source"] = invalid_location
     with pytest.raises(ValidationError) as err:
         SystemConfigurationModel.from_dict(config)
-    assert "Field can be the following values" in str(err.value)
+    assert (
+        "Usage of a commit SHA as a reference for a source location is deprecated. Use a branch name instead."
+        in str(err.value)
+    )
 
 
 @pytest.mark.parametrize(
     "valid_location",
     [
-        "ca82a6dff817ec66f44342007202690a93763949",
-        "CA82A6DFF817EC66F44342007202690A93763949",
+        "edge",
         "latest",
         "Latest",
         "LATEST",
