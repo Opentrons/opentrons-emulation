@@ -10,6 +10,7 @@ on:
       - 'release-*'
   pull_request:
     paths:
+      - 'docker/**'
       - 'emulation_system/**'
       - '.github/workflows/emulation-system-lint-test.yaml'
       - '.github/actions/**'

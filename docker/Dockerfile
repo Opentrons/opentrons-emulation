@@ -119,24 +119,14 @@ ENV OPENTRONS_HARDWARE "can-server"
 #######################
 
 FROM ghcr.io/opentrons/cpp-base-${TARGETARCH}:latest as ot3-firmware-source
-ARG FIRMWARE_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/ot3-firmware/archive/refs/heads/main.zip"
-ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip"
+ARG FIRMWARE_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/ot3-firmware.git#main"
+ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons.git#edge"
 
 ENV FIRMWARE_SOURCE_DOWNLOAD_LOCATION=$FIRMWARE_SOURCE_DOWNLOAD_LOCATION
 ENV OPENTRONS_SOURCE_DOWNLOAD_LOCATION=$OPENTRONS_SOURCE_DOWNLOAD_LOCATION
 
-ADD --keep-git-dir=true $FIRMWARE_SOURCE_DOWNLOAD_LOCATION /ot3-firmware.zip
-ADD --keep-git-dir=true $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons.zip
-
-RUN (cd / &&  \
-    unzip -q ot3-firmware.zip && \
-    rm -f ot3-firmware.zip && \
-    mv ot3-firmware* ot3-firmware)
-
-RUN (cd / &&  \
-    unzip -q opentrons.zip && \
-    rm -f opentrons.zip && \
-    mv opentrons* opentrons)
+ADD --keep-git-dir=true $FIRMWARE_SOURCE_DOWNLOAD_LOCATION /ot3-firmware
+ADD --keep-git-dir=true $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons
 
 FROM ot3-firmware-source as ot3-firmware-builder
 COPY entrypoints/ot3_firmware_builder.sh /build.sh
@@ -147,7 +137,7 @@ COPY scripts/selective_monorepo_builder.sh /selective_monorepo_builder.sh
 ##################
 
 FROM ghcr.io/opentrons/cpp-base-${TARGETARCH}:latest as opentrons-modules-source
-ARG MODULE_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons-modules/archive/refs/heads/edge.zip"
+ARG MODULE_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons-modules.git#edge"
 
 ENV MODULE_SOURCE_DOWNLOAD_LOCATION=$MODULE_SOURCE_DOWNLOAD_LOCATION
 
@@ -163,16 +153,11 @@ COPY entrypoints/opentrons_modules_builder.sh /build.sh
 
 FROM ghcr.io/opentrons/python-base:latest as opentrons-source
 
-ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons/archive/refs/heads/edge.zip"
+ARG OPENTRONS_SOURCE_DOWNLOAD_LOCATION="https://github.com/Opentrons/opentrons.git#edge"
 
 ENV OPENTRONS_SOURCE_DOWNLOAD_LOCATION=$OPENTRONS_SOURCE_DOWNLOAD_LOCATION
 
-ADD  --keep-git-dir=true $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons.zip
-
-RUN (cd / &&  \
-    unzip -q opentrons.zip && \
-    rm -f opentrons.zip && \
-    mv opentrons* opentrons)
+ADD  --keep-git-dir=true $OPENTRONS_SOURCE_DOWNLOAD_LOCATION /opentrons
 
 FROM opentrons-source as monorepo-builder
 COPY entrypoints/monorepo_builder.sh /build.sh
