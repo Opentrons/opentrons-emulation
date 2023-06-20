@@ -9,15 +9,18 @@ def github_api_is_up() -> bool:
     Returns:
         bool: True if the GitHub API is up and running, False otherwise.
     """
+    api_not_available = False
     try:
         response = requests.get("https://api.github.com")
-        if response.status_code == 200:
-            return True
-        else:
-            return False
+        if response.status_code != 200:
+            api_not_available = True
     except requests.exceptions.ConnectionError:
-        return False
+        api_not_available = True
 
+    if api_not_available:
+        raise ConnectionError("GitHub API is not available.")
+    else:
+        return True
 
 
 def check_if_branch_exists(owner: str, repo: str, branch: str) -> bool:
