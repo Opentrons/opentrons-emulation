@@ -6,7 +6,7 @@ from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.config_file_settings import (
-    RepoToBuildArgMapping,
+    OpentronsRepository,
 )
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
@@ -67,19 +67,19 @@ def test_ot3_build_args(
 
         build_args = get_source_code_build_args(ot3_firmware_builder)
         assert build_args is not None
-        assert RepoToBuildArgMapping.OPENTRONS_MODULES not in build_args
+        assert OpentronsRepository.OPENTRONS_MODULES.build_arg_name not in build_args
 
         if not monorepo_is_local:
             num_local_ot3_firmware_build_args += 1
-            assert RepoToBuildArgMapping.OPENTRONS in build_args
+            assert OpentronsRepository.OPENTRONS.build_arg_name in build_args
         else:
-            assert RepoToBuildArgMapping.OPENTRONS not in build_args
+            assert OpentronsRepository.OPENTRONS.build_arg_name not in build_args
 
         if not ot3_firmware_is_local:
             num_local_ot3_firmware_build_args += 1
-            assert RepoToBuildArgMapping.OT3_FIRMWARE in build_args
+            assert OpentronsRepository.OT3_FIRMWARE.build_arg_name in build_args
         else:
-            assert RepoToBuildArgMapping.OT3_FIRMWARE not in build_args
+            assert OpentronsRepository.OT3_FIRMWARE.build_arg_name not in build_args
 
         assert len(build_args) == num_local_ot3_firmware_build_args
 
@@ -89,7 +89,7 @@ def test_ot3_build_args(
         build_args = get_source_code_build_args(monorepo_builder)
         assert build_args is not None
         assert len(build_args) == 1
-        assert RepoToBuildArgMapping.OPENTRONS in build_args
+        assert OpentronsRepository.OPENTRONS.build_arg_name in build_args
 
 
 @pytest.mark.parametrize(
@@ -129,7 +129,7 @@ def test_ot2_build_args(
         build_args = get_source_code_build_args(monorepo_builder)
         assert build_args is not None
         assert len(build_args) == 1
-        assert RepoToBuildArgMapping.OPENTRONS in build_args
+        assert OpentronsRepository.OPENTRONS.build_arg_name in build_args
 
 
 @pytest.mark.parametrize(
@@ -167,7 +167,7 @@ def test_module_monorepo_build_args(
         build_args = get_source_code_build_args(monorepo_builder)
         assert build_args is not None
         assert len(build_args) == 1
-        assert RepoToBuildArgMapping.OPENTRONS in build_args
+        assert OpentronsRepository.OPENTRONS.build_arg_name in build_args
 
 
 @pytest.mark.parametrize(
@@ -201,7 +201,7 @@ def test_module_opentrons_modules_build_args(
         build_args = get_source_code_build_args(opentrons_modules_builder)
         assert build_args is not None
         assert len(build_args) == 1
-        assert RepoToBuildArgMapping.OPENTRONS_MODULES in build_args
+        assert OpentronsRepository.OPENTRONS_MODULES.build_arg_name in build_args
 
 
 @pytest.mark.parametrize(

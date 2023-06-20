@@ -19,7 +19,6 @@ from emulation_system.compose_file_creator.config_file_settings import (
     MountTypes,
     OpentronsRepository,
     OT3Hardware,
-    RepoToBuildArgMapping,
 )
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
@@ -67,7 +66,11 @@ class SourceState(Enum):
             source_state = SourceState.LOCAL
         elif (
             github_api_interaction.github_api_is_up()
-            and github_api_interaction.check_if_branch_exists(repo, passed_value)
+            and github_api_interaction.check_if_branch_exists(
+                repo.OWNER,
+                repo.value,
+                passed_value,
+            )
         ):
             source_state = SourceState.REMOTE_BRANCH
         elif re.match(COMMIT_SHA_REGEX, passed_value.lower()):
@@ -125,18 +128,13 @@ class Source(ABC):
         """Source State of the Source object."""
         return SourceState.to_source_state(self.source_location, self.repo)
 
-    @property
-    def repo_to_build_arg_mapping(self) -> RepoToBuildArgMapping:
-        """Build arg name for repo."""
-        return RepoToBuildArgMapping.get_mapping(self.repo)
-
     def generate_build_args(
         self, global_settings: "OpentronsEmulationConfiguration"  # type: ignore [name-defined] # noqa: F821
     ) -> IntermediateBuildArgs | None:
         """Generate build args based off of global settings."""
         if self.is_local():
             return None
-        env_var_to_use = str(self.repo_to_build_arg_mapping.value)
+        env_var_to_use = str(self.repo.build_arg_name)
         head = global_settings.get_repo_head(self.repo)
         format_string = global_settings.get_repo_branch(self.repo)
         source_location = self.source_location
