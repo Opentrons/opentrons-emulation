@@ -1,12 +1,14 @@
 """Class representing where source code was pulled from for given container."""
 
-import re
 from enum import Enum, auto
 from typing import Dict
 
 from docker.models.containers import Container  # type: ignore[import]
 
-from emulation_system.consts import COMMIT_SHA_REGEX
+from emulation_system import github_api_interaction
+from emulation_system.compose_file_creator.config_file_settings import (
+    OpentronsRepository,
+)
 
 
 class BuildArgConfigurations(Enum):
@@ -14,7 +16,7 @@ class BuildArgConfigurations(Enum):
 
     NO_BUILD_ARGS = auto()
     LATEST_BUILD_ARGS = auto()
-    COMMIT_ID_BUILD_ARGS = auto()
+    BRANCH_BUILD_ARGS = auto()
 
     @staticmethod
     def _convert_env_list_to_dict(container: Container) -> Dict[str, str]:
@@ -25,7 +27,7 @@ class BuildArgConfigurations(Enum):
 
     @classmethod
     def parse_build_args(
-        cls, container: Container, head_ref: str, build_arg_name: str
+        cls, container: Container, repo: OpentronsRepository
     ) -> "BuildArgConfigurations":
         """Parses out source code build args from env vars.
 
@@ -35,17 +37,21 @@ class BuildArgConfigurations(Enum):
         if container is None:
             return cls.NO_BUILD_ARGS
 
-        monorepo_env_dict = cls._convert_env_list_to_dict(container)
-        if build_arg_name not in monorepo_env_dict.keys():
+        env_dict = cls._convert_env_list_to_dict(container)
+        build_arg_name = repo.build_arg_name
+
+        if build_arg_name not in env_dict.keys():
             return cls.NO_BUILD_ARGS
 
         build_arg_state: BuildArgConfigurations
-        build_arg_val = monorepo_env_dict[build_arg_name]
+        build_arg_val = env_dict[build_arg_name]
 
-        if build_arg_val.endswith(head_ref):
+        if build_arg_val == repo.get_default_download_url():
             build_arg_state = cls.LATEST_BUILD_ARGS
-        elif re.search(COMMIT_SHA_REGEX, build_arg_val) is not None:
-            build_arg_state = cls.COMMIT_ID_BUILD_ARGS
+        elif github_api_interaction.check_if_branch_exists(
+            repo.OWNER, repo.value, build_arg_val
+        ):
+            build_arg_state = cls.BRANCH_BUILD_ARGS
         else:
             raise ValueError("Build arg did not match anything.")
 
