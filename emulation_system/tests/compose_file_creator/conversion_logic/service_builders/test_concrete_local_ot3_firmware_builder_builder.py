@@ -8,7 +8,7 @@ from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
 from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
 from emulation_system.compose_file_creator.config_file_settings import (
-    RepoToBuildArgMapping,
+    OpentronsRepository,
 )
 from emulation_system.compose_file_creator.conversion.service_builders import (
     OT3FirmwareBuilderService,
@@ -70,7 +70,7 @@ def test_local_ot3_firmware_remote_monorepo(
         model, testing_global_em_config, False
     ).build_service()
 
-    monorepo_build_arg = RepoToBuildArgMapping.OPENTRONS
+    monorepo_build_arg = OpentronsRepository.OPENTRONS.build_arg_name
     build_args = get_source_code_build_args(service)
     assert build_args is not None
     assert len(build_args) == 1
@@ -96,7 +96,7 @@ def test_remote_ot3_firmware_local_monorepo(
         model, testing_global_em_config, False
     ).build_service()
 
-    ot3_firmware_build_arg = RepoToBuildArgMapping.OT3_FIRMWARE
+    ot3_firmware_build_arg = OpentronsRepository.OT3_FIRMWARE.build_arg_name
     build_args = get_source_code_build_args(service)
     assert build_args is not None
     assert len(build_args) == 1
