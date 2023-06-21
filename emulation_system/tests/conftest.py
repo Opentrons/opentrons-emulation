@@ -41,27 +41,3 @@ OPENTRONS_MODULES_BUILDER_ID = "opentrons-modules-builder"
 OT3_FIRMWARE_BUILDER_ID = "ot3-firmware-builder"
 SYSTEM_UNIQUE_ID = "testing-1-2-3"
 FAKE_COMMIT_ID = "ca82a6dff817ec66f44342007202690a93763949"
-
-
-@pytest.fixture(autouse=True)
-def patch_github_api_is_up(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Patch the github api is up method to always return true."""
-    print("Not hitting Github")
-    monkeypatch.setattr(github_api_interaction, "github_api_is_up", lambda: True)
-
-
-@pytest.fixture(autouse=True)
-def patch_check_if_branch_exists(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Patch the github api is up method to always return true."""
-
-    def inner_func(owner: str, repo: str, branch: str) -> bool:
-        print("Not hitting Github")
-        match repo:
-            case OpentronsRepository.OPENTRONS.value | OpentronsRepository.OPENTRONS_MODULES.value:
-                return branch == "edge"
-            case OpentronsRepository.OT3_FIRMWARE.value:
-                return branch == "main"
-            case _:
-                raise ValueError(f"Unknown repo {repo}")
-
-    monkeypatch.setattr(github_api_interaction, "check_if_branch_exists", inner_func)
