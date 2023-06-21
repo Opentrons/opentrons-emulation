@@ -52,7 +52,7 @@ class SourceState(Enum):
     """
 
     REMOTE_LATEST = auto()
-    REMOTE_BRANCH = auto()
+    REMOTE_REF = auto()
     LOCAL = auto()
 
     @staticmethod
@@ -66,13 +66,13 @@ class SourceState(Enum):
             source_state = SourceState.LOCAL
         elif (
             github_api_interaction.github_api_is_up()
-            and github_api_interaction.check_if_branch_exists(
+            and github_api_interaction.check_if_ref_exists(
                 repo.OWNER,
                 repo.value,
                 passed_value,
             )
         ):
-            source_state = SourceState.REMOTE_BRANCH
+            source_state = SourceState.REMOTE_REF
         elif re.match(COMMIT_SHA_REGEX, passed_value.lower()):
             raise ValueError(
                 "Usage of a commit SHA as a reference for a source location "
@@ -83,14 +83,14 @@ class SourceState(Enum):
                 f'\nYou passed: "{passed_value}"'
                 "\nField can be the following values:"
                 '\n\t- "latest" to pull latest code from Github'
-                "\n\t- A valid branch name to pull a specific commit from Github"
+                "\n\t- A valid ref name to pull a specific ref from Github"
                 "\n\t- A valid absolute directory path to use your local code\n\n"
             )
         return source_state
 
     def is_remote(self) -> bool:
         """If SourceState is remote."""
-        return self in [self.REMOTE_BRANCH, self.REMOTE_LATEST]
+        return self in [self.REMOTE_REF, self.REMOTE_LATEST]
 
     def is_local(self) -> bool:
         """If SourceState is local."""

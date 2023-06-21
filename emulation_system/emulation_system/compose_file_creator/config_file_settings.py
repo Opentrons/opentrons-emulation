@@ -6,7 +6,7 @@ from pydantic import DirectoryPath, Field, FilePath
 from typing_extensions import Literal
 
 from emulation_system.consts import ROOM_TEMPERATURE
-from emulation_system.github_api_interaction import check_if_branch_exists
+from emulation_system.github_api_interaction import check_if_ref_exists
 from opentrons_pydantic_base_model import OpentronsBaseModel
 
 
@@ -177,7 +177,7 @@ class OpentronsRepository(str, Enum):
 
     def check_if_branch_exists(self, branch: str) -> bool:
         """Check if branch exists."""
-        return check_if_branch_exists(self.OWNER, self.value, branch)
+        return check_if_ref_exists(self.OWNER, self.value, branch)
 
 
 class SourceRepositories(OpentronsBaseModel):

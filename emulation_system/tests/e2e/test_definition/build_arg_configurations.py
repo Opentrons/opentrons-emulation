@@ -44,8 +44,10 @@ class BuildArgConfigurations(Enum):
 
         if build_arg_val.endswith(head_ref):
             build_arg_state = cls.LATEST_BUILD_ARGS
-        elif re.search(COMMIT_SHA_REGEX, build_arg_val) is not None:
-            build_arg_state = cls.COMMIT_ID_BUILD_ARGS
+        elif github_api_interaction.check_if_ref_exists(
+            repo.OWNER, repo.value, build_arg_val
+        ):
+            build_arg_state = cls.BRANCH_BUILD_ARGS
         else:
             raise ValueError("Build arg did not match anything.")
 

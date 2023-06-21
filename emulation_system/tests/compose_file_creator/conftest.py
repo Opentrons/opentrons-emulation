@@ -342,17 +342,25 @@ def patch_github_api_is_up(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture(autouse=True)
-def patch_check_if_branch_exists(monkeypatch: pytest.MonkeyPatch) -> None:
+def patch_check_if_ref_exists(monkeypatch: pytest.MonkeyPatch) -> None:
     """Patch the github api is up method to always return true."""
 
-    def inner_patch(owner: str, repo: str, branch: str) -> bool:
+    def inner_patch(owner: str, repo: str, ref: str) -> bool:
+        # Copied all the tags and branches from respective repos
+        # Don't want to actually hit the API and get rate limited
         match repo:
-            case OpentronsRepository.OPENTRONS.value | OpentronsRepository.OPENTRONS_MODULES.value:
-                return branch == "edge"
+            case OpentronsRepository.OPENTRONS.value:
+                branch_name = "edge"
+                tag_name = "ot3@0.8.0-alpha.2"
+            case OpentronsRepository.OPENTRONS_MODULES.value:
+                branch_name = "edge"
+                tag_name = "heater-shaker@v1.0.3"
             case OpentronsRepository.OT3_FIRMWARE.value:
-                return branch == "main"
+                branch_name = "main"
+                tag_name = "v14"
             case _:
                 raise ValueError(f"Unknown repo {repo}")
 
-    monkeypatch.setattr(github_api_interaction, "check_if_branch_exists", inner_patch)
+        return ref in [branch_name, tag_name]
 
+    monkeypatch.setattr(github_api_interaction, "check_if_ref_exists", inner_patch)
