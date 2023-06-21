@@ -46,7 +46,6 @@ class TopLevelParser:
 
     def parse(self, passed_args=[]) -> Executable:  # noqa: ANN001
         """Parse args into CommandCreator."""
-        print(sys.argv)
         if len(passed_args) == 0:
             parsed_args = self._parser.parse_args(sys.argv[1:])
         else:
