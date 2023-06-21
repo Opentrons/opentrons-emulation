@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, Literal
 import py
 import pytest
 
-from emulation_system import OpentronsEmulationConfiguration
+from emulation_system import OpentronsEmulationConfiguration, github_api_interaction
 from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     OpentronsRepository,
@@ -333,3 +333,26 @@ def magnetic_module_firmware_remote(make_config: Callable) -> Dict[str, Any]:
 def magnetic_module_firmware_local(make_config: Callable) -> Dict[str, Any]:
     """Get Heater Shaker configuration for local source."""
     return make_config(modules={"magnetic-module": 1}, monorepo_source="path")
+
+
+@pytest.fixture(autouse=True)
+def patch_github_api_is_up(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Patch the github api is up method to always return true."""
+    monkeypatch.setattr(github_api_interaction, "github_api_is_up", lambda: True)
+
+
+@pytest.fixture(autouse=True)
+def patch_check_if_branch_exists(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Patch the github api is up method to always return true."""
+
+    def inner_patch(owner: str, repo: str, branch: str) -> bool:
+        match repo:
+            case OpentronsRepository.OPENTRONS.value | OpentronsRepository.OPENTRONS_MODULES.value:
+                return branch == "edge"
+            case OpentronsRepository.OT3_FIRMWARE.value:
+                return branch == "main"
+            case _:
+                raise ValueError(f"Unknown repo {repo}")
+
+    monkeypatch.setattr(github_api_interaction, "check_if_branch_exists", inner_patch)
+
