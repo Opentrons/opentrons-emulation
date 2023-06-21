@@ -6,7 +6,7 @@ import pytest
 from pydantic import parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.conversion import SmoothieService
 from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
@@ -51,13 +51,10 @@ def remote_source_commit_id(make_config: Callable) -> Dict[str, Any]:
 def test_simple_smoothie_values(
     model_dict: Dict[str, Any],
     dev: bool,
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Tests for values that are the same for all configurations of a Smoothie Service."""
     config_model = parse_obj_as(SystemConfigurationModel, model_dict)
-    service = SmoothieService(
-        config_model, testing_global_em_config, dev=dev
-    ).build_service()
+    service = SmoothieService(config_model, dev=dev).build_service()
 
     expected_dockerfile_name = DEV_DOCKERFILE_NAME if dev else DOCKERFILE_NAME
     default_pipette_definition = None

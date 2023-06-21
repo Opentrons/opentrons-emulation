@@ -6,7 +6,7 @@ import pathlib
 from abc import ABC, abstractmethod
 from typing import Optional, Type, cast
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem, Service
 from emulation_system.compose_file_creator.config_file_settings import (
     FileMount,
@@ -71,12 +71,10 @@ class AbstractService(ABC):
     def __init__(
         self,
         config_model: SystemConfigurationModel,
-        global_settings: OpentronsEmulationConfiguration,
         dev: bool,
     ) -> None:
         """Defines parameters required for ALL concrete builders."""
         self._config_model = config_model
-        self._global_settings = global_settings
         self._dev = dev
 
     @staticmethod

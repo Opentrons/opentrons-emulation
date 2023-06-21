@@ -4,7 +4,6 @@ from typing import Any, Dict, cast
 
 import pytest
 
-from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator import Service
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
@@ -31,14 +30,11 @@ from tests.validation_helper_functions import SERVICE_NAMES
 @pytest.fixture
 def with_system_unique_id_services(
     with_system_unique_id: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> Dict[str, Service]:
     """Get services from with_system_unique_id."""
     return cast(
         Dict[str, Service],
-        convert_from_obj(
-            with_system_unique_id, testing_global_em_config, False
-        ).services,
+        convert_from_obj(with_system_unique_id, False).services,
     )
 
 
@@ -92,9 +88,8 @@ def test_service_local_network_with_system_unique_id(
 
 def test_top_level_network_with_system_unique_id(
     with_system_unique_id: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Verify top level network is correct."""
-    assert convert_from_obj(
-        with_system_unique_id, testing_global_em_config, False
-    ).networks == {f"{SYSTEM_UNIQUE_ID}-{DEFAULT_NETWORK_NAME}": Network()}
+    assert convert_from_obj(with_system_unique_id, False).networks == {
+        f"{SYSTEM_UNIQUE_ID}-{DEFAULT_NETWORK_NAME}": Network()
+    }

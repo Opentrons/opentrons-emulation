@@ -128,20 +128,16 @@ class Source(ABC):
         """Source State of the Source object."""
         return SourceState.to_source_state(self.source_location, self.repo)
 
-    def generate_build_args(
-        self, global_settings: "OpentronsEmulationConfiguration"  # type: ignore [name-defined] # noqa: F821
-    ) -> IntermediateBuildArgs | None:
+    def generate_build_args(self) -> IntermediateBuildArgs | None:
         """Generate build args based off of global settings."""
         if self.is_local():
             return None
         env_var_to_use = str(self.repo.build_arg_name)
-        head = global_settings.get_repo_head(self.repo)
-        format_string = global_settings.get_repo_branch(self.repo)
         source_location = self.source_location
         value = (
-            head
+            self.repo.get_default_download_url()
             if source_location == "latest"
-            else format_string.replace("{{branch-name}}", source_location)
+            else self.repo.get_user_specified_download_url(source_location)
         )
         return {env_var_to_use: value}
 

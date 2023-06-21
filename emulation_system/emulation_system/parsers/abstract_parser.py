@@ -2,16 +2,12 @@
 import abc
 import argparse
 
-from emulation_system import OpentronsEmulationConfiguration
-
 
 class AbstractParser(abc.ABC):
     """Parser interface."""
 
     @classmethod
     @abc.abstractmethod
-    def get_parser(
-        cls, parser: argparse.ArgumentParser, settings: OpentronsEmulationConfiguration
-    ) -> None:
+    def get_parser(cls, parser: argparse.ArgumentParser) -> None:
         """Method to return parser to add to argparse object."""
         ...

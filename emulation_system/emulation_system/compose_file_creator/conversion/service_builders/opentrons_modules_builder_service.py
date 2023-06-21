@@ -1,7 +1,7 @@
 """Module containing OT3Services class."""
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateEnvironmentVariables,
@@ -21,11 +21,10 @@ class OpentronsModulesBuilderService(AbstractService):
     def __init__(
         self,
         config_model: SystemConfigurationModel,
-        global_settings: OpentronsEmulationConfiguration,
         dev: bool,
     ) -> None:
         """Instantiates a OpentronsModulesBuilderService object."""
-        super().__init__(config_model, global_settings, dev)
+        super().__init__(config_model, dev)
 
     @property
     def _image(self) -> str:
@@ -64,9 +63,7 @@ class OpentronsModulesBuilderService(AbstractService):
         build_args: Optional[IntermediateBuildArgs] = None
 
         if self._opentrons_modules_source.is_remote():
-            build_args = self._opentrons_modules_source.generate_build_args(
-                self._global_settings
-            )
+            build_args = self._opentrons_modules_source.generate_build_args()
 
         return build_args
 

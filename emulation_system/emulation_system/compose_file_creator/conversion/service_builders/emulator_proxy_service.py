@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator.input.hardware_models import (
     HeaterShakerModuleInputModel,
     MagneticModuleInputModel,
@@ -42,11 +42,10 @@ class EmulatorProxyService(AbstractService):
     def __init__(
         self,
         config_model: SystemConfigurationModel,
-        global_settings: OpentronsEmulationConfiguration,
         dev: bool,
     ) -> None:
         """Instantiates a EmulatorProxyService object."""
-        super().__init__(config_model, global_settings, dev)
+        super().__init__(config_model, dev)
         self._logging_client = EmulatorProxyLoggingClient(self._dev)
         self._emulator_image = self._generate_image()
 

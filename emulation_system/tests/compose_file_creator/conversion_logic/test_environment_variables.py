@@ -6,7 +6,6 @@ from typing import Any, Dict, Type, cast
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
@@ -37,10 +36,9 @@ from tests.validation_helper_functions import get_env
 )
 def test_robot_server_emulator_proxy_env_vars_added(
     config: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm env vars are set correctly."""
-    robot = convert_from_obj(config, testing_global_em_config, False).robot_server
+    robot = convert_from_obj(config, False).robot_server
     assert robot is not None
     env = get_env(robot)
     assert env is not None
@@ -52,10 +50,10 @@ def test_robot_server_emulator_proxy_env_vars_added(
 
 
 def test_ot3_feature_flag_added(
-    ot3_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
+    ot3_only: Dict[str, Any],
 ) -> None:
     """Confirm feature flag is added when robot is an OT3."""
-    robot = convert_from_obj(ot3_only, testing_global_em_config, dev=False).robot_server
+    robot = convert_from_obj(ot3_only, dev=False).robot_server
     assert robot is not None
     env = get_env(robot)
     assert env is not None
@@ -103,12 +101,9 @@ def test_firmware_serial_number_env_vars(
     model: Dict[str, Any],
     input_class: Type[ModuleInputModel],
     expected_value: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that serial number env vars are created correctly on firmware modules."""
-    modules = convert_from_obj(
-        model, testing_global_em_config, dev=False
-    ).module_emulators
+    modules = convert_from_obj(model, dev=False).module_emulators
     assert modules is not None and len(modules) == 1
     module = modules[0]
 
@@ -132,12 +127,9 @@ def test_firmware_serial_number_env_vars(
 def test_hardware_serial_number_env_vars(
     service_name: str,
     ot2_and_modules: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that serial number env vars are created correctly on hardware modules."""
-    service = convert_from_obj(
-        ot2_and_modules, testing_global_em_config, dev=False
-    ).services
+    service = convert_from_obj(ot2_and_modules, dev=False).services
     assert service is not None
     module = service[service_name]
     assert module is not None
@@ -162,12 +154,9 @@ def test_em_proxy_info_env_vars_on_modules(
     service_name: str,
     input_class: Type[ModuleInputModel],
     ot2_and_modules: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that serial number env vars are created correctly on hardware modules."""
-    service = convert_from_obj(
-        ot2_and_modules, testing_global_em_config, dev=False
-    ).services
+    service = convert_from_obj(ot2_and_modules, dev=False).services
     assert service is not None
     module = service[service_name]
 
@@ -197,12 +186,9 @@ def test_em_proxy_info_env_vars_on_modules(
 def test_em_proxy_info_env_vars_on_proxy(
     input_class: Type[ModuleInputModel],
     ot2_and_modules: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that serial number env vars are created correctly on emulator proxy."""
-    emulator_proxy = convert_from_obj(
-        ot2_and_modules, testing_global_em_config, dev=False
-    ).emulator_proxy
+    emulator_proxy = convert_from_obj(ot2_and_modules, dev=False).emulator_proxy
 
     assert emulator_proxy is not None
 
@@ -220,10 +206,10 @@ def test_em_proxy_info_env_vars_on_proxy(
 
 
 def test_smoothie_pipettes(
-    ot2_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
+    ot2_only: Dict[str, Any],
 ) -> None:
     """Confirm that pipettes JSON is added to smoothie Service."""
-    services = convert_from_obj(ot2_only, testing_global_em_config, dev=False).services
+    services = convert_from_obj(ot2_only, dev=False).services
     assert services is not None
     smoothie_env = services[SMOOTHIE_ID].environment
     assert smoothie_env is not None
@@ -231,10 +217,10 @@ def test_smoothie_pipettes(
 
 
 def test_pipettes_not_added_to_robot_server(
-    ot2_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
+    ot2_only: Dict[str, Any],
 ) -> None:
     """Confirm that pipettes JSON is not added to OT2(robot-server) service."""
-    services = convert_from_obj(ot2_only, testing_global_em_config, dev=False).services
+    services = convert_from_obj(ot2_only, dev=False).services
     assert services is not None
     ot2_env = services[OT2_ID].environment
     assert ot2_env is not None

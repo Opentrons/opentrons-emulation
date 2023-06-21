@@ -1,7 +1,7 @@
 """Module containing OT3Services class."""
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator.pipette_utils import (
     get_robot_pipettes,
 )
@@ -24,11 +24,10 @@ class OT3FirmwareBuilderService(AbstractService):
     def __init__(
         self,
         config_model: SystemConfigurationModel,
-        global_settings: OpentronsEmulationConfiguration,
         dev: bool,
     ) -> None:
         """Instantiates a OT3FirmwareBuilderService object."""
-        super().__init__(config_model, global_settings, dev)
+        super().__init__(config_model, dev)
         self._ot3 = self.get_ot3(self._config_model)
 
     @property
@@ -66,16 +65,12 @@ class OT3FirmwareBuilderService(AbstractService):
         """Generates value for build parameter."""
         build_args: IntermediateBuildArgs = {}
         if self._ot3_source.is_remote():
-            ot3_firmware_build_args = self._ot3_source.generate_build_args(
-                self._global_settings
-            )
+            ot3_firmware_build_args = self._ot3_source.generate_build_args()
             assert ot3_firmware_build_args is not None
             build_args.update(ot3_firmware_build_args)
 
         if self._monorepo_source.is_remote():
-            monorepo_build_args = self._monorepo_source.generate_build_args(
-                self._global_settings
-            )
+            monorepo_build_args = self._monorepo_source.generate_build_args()
             assert monorepo_build_args is not None
             build_args.update(monorepo_build_args)
 

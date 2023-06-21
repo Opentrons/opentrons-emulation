@@ -4,12 +4,12 @@ from typing import Any, Callable, Dict, Literal
 import py
 import pytest
 
-from emulation_system import OpentronsEmulationConfiguration, github_api_interaction
+from emulation_system import github_api_interaction
 from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     OpentronsRepository,
 )
-from tests.conftest import FAKE_COMMIT_ID, SYSTEM_UNIQUE_ID
+from tests.conftest import SYSTEM_UNIQUE_ID
 from tests.testing_config_builder import ConfigDefinition, TestingConfigBuilder
 from tests.testing_types import ModuleDeclaration
 
@@ -173,33 +173,15 @@ def with_system_unique_id(ot2_and_modules: Dict[str, Any]) -> Dict[str, Any]:
 
 
 @pytest.fixture
-def opentrons_head(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
+def opentrons_head() -> str:
     """Return head url of opentrons repo from test config file."""
-    return testing_global_em_config.get_repo_head(OpentronsRepository.OPENTRONS)
+    return OpentronsRepository.OPENTRONS.default_branch
 
 
 @pytest.fixture
-def ot3_firmware_head(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
+def ot3_firmware_head() -> str:
     """Return head url of ot3-firmware repo from test config file."""
-    return testing_global_em_config.get_repo_head(OpentronsRepository.OT3_FIRMWARE)
-
-
-@pytest.fixture
-def opentrons_commit(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
-    """Return commit url of opentrons repo from test config file."""
-    return testing_global_em_config.get_repo_branch(
-        OpentronsRepository.OPENTRONS
-    ).replace("{{branch-name}}", FAKE_COMMIT_ID)
-
-
-@pytest.fixture
-def ot3_firmware_branch(
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> str:
-    """Return branch url of ot3-firmware repo from test config file."""
-    return testing_global_em_config.get_repo_branch(
-        OpentronsRepository.OT3_FIRMWARE
-    ).replace("{{branch-name}}", FAKE_COMMIT_ID)
+    return OpentronsRepository.OT3_FIRMWARE.default_branch
 
 
 @pytest.fixture

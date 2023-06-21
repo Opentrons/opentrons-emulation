@@ -6,7 +6,7 @@ import pytest
 import yaml
 from pydantic import parse_obj_as
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
@@ -48,9 +48,7 @@ def _get_pipette(
 
 
 @pytest.fixture
-def ot3_model_under_test(
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> Callable[[str], OT3SystemUnderTest]:
+def ot3_model_under_test() -> Callable[[str], OT3SystemUnderTest]:
     """Pytest fixture to generate OT3SystemUnderTest object based of a path to a yaml configuration file.
 
     This method will actually create a Callable object that when called is the OT3SystemUnderTest object.
@@ -60,9 +58,7 @@ def ot3_model_under_test(
         abs_path = os.path.join(ROOT_DIR, relative_path)
         with open(abs_path, "r") as file:
             contents = yaml.safe_load(file)
-        system: RuntimeComposeFileModel = convert_from_obj(
-            contents, testing_global_em_config, False
-        )
+        system: RuntimeComposeFileModel = convert_from_obj(contents, False)
 
         return OT3SystemUnderTest(
             gantry_x=get_container(system.ot3_gantry_x_emulator),
@@ -81,9 +77,7 @@ def ot3_model_under_test(
 
 
 @pytest.fixture
-def modules_under_test(
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> Callable[[str], ModuleContainers]:
+def modules_under_test() -> Callable[[str], ModuleContainers]:
     """Pytest fixture to generate ModuleContainerNames object based of a path to a yaml configuration file.
 
     This method will actually create a Callable object that when called is the ModuleContainerNames object.
@@ -93,9 +87,7 @@ def modules_under_test(
         abs_path = os.path.join(ROOT_DIR, relative_path)
         with open(abs_path, "r") as file:
             contents = yaml.safe_load(file)
-        system: RuntimeComposeFileModel = convert_from_obj(
-            contents, testing_global_em_config, False
-        )
+        system: RuntimeComposeFileModel = convert_from_obj(contents, False)
 
         return ModuleContainers(
             hardware_emulation_thermocycler_modules=get_containers(
@@ -124,9 +116,7 @@ def modules_under_test(
 
 
 @pytest.fixture
-def default_containers_under_test(
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> Callable[[str], DefaultContainers]:
+def default_containers_under_test() -> Callable[[str], DefaultContainers]:
     """Pytest fixture to generate ModuleContainerNames object based of a path to a yaml configuration file.
 
     This method will actually create a Callable object that when called is the ModuleContainerNames object.
@@ -136,9 +126,7 @@ def default_containers_under_test(
         abs_path = os.path.join(ROOT_DIR, relative_path)
         with open(abs_path, "r") as file:
             contents = yaml.safe_load(file)
-        system: RuntimeComposeFileModel = convert_from_obj(
-            contents, testing_global_em_config, False
-        )
+        system: RuntimeComposeFileModel = convert_from_obj(contents, False)
 
         return DefaultContainers(
             robot_server=get_container(system.robot_server),
@@ -149,9 +137,7 @@ def default_containers_under_test(
 
 
 @pytest.fixture
-def local_mounts_under_test(
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> Callable[[str], ExpectedBindMounts]:
+def local_mounts_under_test() -> Callable[[str], ExpectedBindMounts]:
     """Pytest fixture to generate ExpectedBindMount object based of a path to a yaml configuration file.
 
     This method will actually create a Callable object that when called is the ExpectedBindMount object.
@@ -193,7 +179,6 @@ def local_mounts_under_test(
 
 @pytest.fixture
 def e2e_host(
-    testing_global_em_config: OpentronsEmulationConfiguration,
     ot3_model_under_test: Callable[[str], OT3SystemUnderTest],
     modules_under_test: Callable[[str], ModuleContainers],
     local_mounts_under_test: Callable[[str], ExpectedBindMounts],

@@ -5,7 +5,6 @@ from typing import Any, Dict
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
@@ -31,10 +30,10 @@ MODULE_IMAGE_NAMES = (
 
 
 def test_ot3_services_heathcheck(
-    ot3_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
+    ot3_only: Dict[str, Any],
 ) -> None:
     """Confirm all ot3 firmware service and can-server healthchecks are correct."""
-    services = convert_from_obj(ot3_only, testing_global_em_config, False).services
+    services = convert_from_obj(ot3_only, False).services
     assert services is not None
     services_to_check = [
         service
@@ -51,10 +50,10 @@ def test_ot3_services_heathcheck(
 
 
 def test_emulator_proxy_heathcheck(
-    ot3_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
+    ot3_only: Dict[str, Any],
 ) -> None:
     """Confirm emulator proxy healthcheck is configured correctly."""
-    services = convert_from_obj(ot3_only, testing_global_em_config, False).services
+    services = convert_from_obj(ot3_only, False).services
     assert services is not None
     services_to_check = [
         service
@@ -68,10 +67,10 @@ def test_emulator_proxy_heathcheck(
 
 
 def test_local_ot3_firmware_builder_heathcheck(
-    ot3_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
+    ot3_only: Dict[str, Any],
 ) -> None:
     """Confirm emulator proxy healthcheck is configured correctly."""
-    services = convert_from_obj(ot3_only, testing_global_em_config, False).services
+    services = convert_from_obj(ot3_only, False).services
     assert services is not None
     services_to_check = [
         service
@@ -90,10 +89,10 @@ def test_local_ot3_firmware_builder_heathcheck(
 
 
 def test_smoothie_heathcheck(
-    ot2_only: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
+    ot2_only: Dict[str, Any],
 ) -> None:
     """Confirm smoothie healthcheck is configured correctly."""
-    services = convert_from_obj(ot2_only, testing_global_em_config, False).services
+    services = convert_from_obj(ot2_only, False).services
     assert services is not None
     services_to_check = [
         service
@@ -108,10 +107,10 @@ def test_smoothie_heathcheck(
 
 @pytest.mark.parametrize("config", [lazy_fixture("ot2_only"), lazy_fixture("ot3_only")])
 def test_robot_server_healthcheck(
-    config: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
+    config: Dict[str, Any],
 ) -> None:
     """Confirm healthcheck for robot-server on both OT-2 and OT-3 is correct."""
-    services = convert_from_obj(config, testing_global_em_config, False).services
+    services = convert_from_obj(config, False).services
     assert services is not None
     services_to_check = [
         service
@@ -141,12 +140,9 @@ def __lookup_module_port(module_image: str) -> int:
 
 def test_modules_healthcheck(
     ot2_and_modules: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm all 4 module's healthcheck is correct."""
-    services = convert_from_obj(
-        ot2_and_modules, testing_global_em_config, False
-    ).services
+    services = convert_from_obj(ot2_and_modules, False).services
     assert services is not None
 
     services_to_check = [

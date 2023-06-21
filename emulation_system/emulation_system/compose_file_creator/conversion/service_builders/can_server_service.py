@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator.images import CANServerImage
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
@@ -26,12 +26,10 @@ class CANServerService(AbstractService):
     def __init__(
         self,
         config_model: SystemConfigurationModel,
-        global_settings: OpentronsEmulationConfiguration,
         dev: bool,
     ) -> None:
         """Instantiates a CANServerService object."""
-        super().__init__(config_model, global_settings, dev)
-        self._global_settings = global_settings
+        super().__init__(config_model, dev)
         self._logging_client = CANServerLoggingClient(self._dev)
         self._ot3 = self.get_ot3(config_model)
         self._can_image = self._generate_image()

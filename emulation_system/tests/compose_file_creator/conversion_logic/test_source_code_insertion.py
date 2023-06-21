@@ -4,7 +4,6 @@ from typing import Any, Dict
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
 )
@@ -35,11 +34,10 @@ def test_ot3_build_args(
     monorepo_is_local: bool,
     ot3_firmware_is_local: bool,
     opentrons_head: str,
-    testing_global_em_config: OpentronsEmulationConfiguration,
     patch_github_api_is_up: None,
 ) -> None:
     """Confirm build args are created correctly for OT-3."""
-    config_file = convert_from_obj(config, testing_global_em_config, False)
+    config_file = convert_from_obj(config, False)
     robot_server = config_file.robot_server
     can_server = config_file.can_server
     emulators = config_file.ot3_emulators
@@ -105,10 +103,9 @@ def test_ot2_build_args(
     config: Dict[str, Any],
     monorepo_is_local: bool,
     opentrons_head: str,
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm build args are created correctly for OT-2."""
-    config_file = convert_from_obj(config, testing_global_em_config, False)
+    config_file = convert_from_obj(config, False)
     robot = config_file.robot_server
     emulator_proxy = config_file.emulator_proxy
     smoothie = config_file.smoothie_emulator
@@ -148,10 +145,9 @@ def test_ot2_build_args(
 def test_module_monorepo_build_args(
     config: Dict[str, Any],
     monorepo_is_local: bool,
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm build args are created correctly for modules using monorepo."""
-    config_file = convert_from_obj(config, testing_global_em_config, False)
+    config_file = convert_from_obj(config, False)
     modules = config_file.module_emulators
     monorepo_builder = config_file.monorepo_builder
 
@@ -182,10 +178,9 @@ def test_module_monorepo_build_args(
 def test_module_opentrons_modules_build_args(
     config: Dict[str, Any],
     opentrons_modules_is_local: bool,
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm build args are created correctly for modules using opentrons-modules."""
-    config_file = convert_from_obj(config, testing_global_em_config, False)
+    config_file = convert_from_obj(config, False)
     modules = config_file.module_emulators
     opentrons_modules_builder = config_file.opentrons_modules_builder
 
@@ -220,10 +215,9 @@ def test_ot3_mounts(
     monorepo_is_local: bool,
     ot3_firmware_is_local: bool,
     opentrons_head: str,
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Test mounts are created correctly when creating an OT-3."""
-    config_file = convert_from_obj(config, testing_global_em_config, False)
+    config_file = convert_from_obj(config, False)
     robot_server = config_file.robot_server
     can_server = config_file.can_server
     emulators = config_file.ot3_emulators
@@ -323,10 +317,9 @@ def test_ot2_mounts(
     config: Dict[str, Any],
     monorepo_is_local: bool,
     opentrons_head: str,
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Test mounts are created correctly when creating an OT-2."""
-    config_file = convert_from_obj(config, testing_global_em_config, False)
+    config_file = convert_from_obj(config, False)
     robot = config_file.robot_server
     emulator_proxy = config_file.emulator_proxy
     smoothie = config_file.smoothie_emulator
@@ -370,10 +363,9 @@ def test_ot2_mounts(
 )
 def test_module_monorepo_mounts(
     config: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Test mounts are created correctly when creating modules that use monorepo."""
-    config_file = convert_from_obj(config, testing_global_em_config, False)
+    config_file = convert_from_obj(config, False)
     modules = config_file.module_emulators
     monorepo_builder = config_file.monorepo_builder
 
@@ -397,10 +389,9 @@ def test_module_monorepo_mounts(
 )
 def test_module_opentrons_modules_mounts(
     config: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Test mounts are created correctly when creating modules that use opentrons-modules."""
-    config_file = convert_from_obj(config, testing_global_em_config, False)
+    config_file = convert_from_obj(config, False)
     modules = config_file.module_emulators
     opentrons_modules_builder = config_file.opentrons_modules_builder
 
@@ -433,10 +424,9 @@ def test_module_opentrons_modules_mounts(
 )
 def test_is_remote(
     config_dict: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that when all source-types are remote, is_remote is True."""
-    config_file = convert_from_obj(config_dict, testing_global_em_config, False)
+    config_file = convert_from_obj(config_dict, False)
     assert config_file.is_remote
 
 
@@ -457,8 +447,7 @@ def test_is_remote(
 )
 def test_is_not_remote(
     config_dict: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that when all source-types are not remote, is_remote is False."""
-    config_file = convert_from_obj(config_dict, testing_global_em_config, False)
+    config_file = convert_from_obj(config_dict, False)
     assert not config_file.is_remote

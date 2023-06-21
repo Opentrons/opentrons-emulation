@@ -2,7 +2,6 @@
 import argparse
 import sys
 
-from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.executable import Executable
 
 from .emulation_system_parser import EmulationSystemParser
@@ -20,13 +19,12 @@ class TopLevelParser:
     # Parsers must inherit from emulation_system/src/parsers/abstract_parser.py
     SUBPARSERS = [EmulationSystemParser, LoadContainersParser]
 
-    def __init__(self, settings: OpentronsEmulationConfiguration) -> None:
+    def __init__(self) -> None:
         """Construct TopLevelParser object.
 
         Pull settings from settings file
         Build parser
         """
-        self._settings = settings
         self._parser = argparse.ArgumentParser(
             description="Utility for managing Opentrons Emulation systems",
             formatter_class=get_formatter(),
@@ -44,13 +42,14 @@ class TopLevelParser:
         )
 
         for subparser in self.SUBPARSERS:
-            subparser.get_parser(subparsers, self._settings)  # type: ignore
+            subparser.get_parser(subparsers)  # type: ignore
 
     def parse(self, passed_args=[]) -> Executable:  # noqa: ANN001
         """Parse args into CommandCreator."""
+        print(sys.argv)
         if len(passed_args) == 0:
             parsed_args = self._parser.parse_args(sys.argv[1:])
         else:
             parsed_args = self._parser.parse_args(passed_args)
 
-        return parsed_args.func(parsed_args, self._settings)
+        return parsed_args.func(parsed_args)
