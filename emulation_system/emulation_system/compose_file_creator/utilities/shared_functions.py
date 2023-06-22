@@ -3,7 +3,6 @@ from typing import List
 
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
-    RepoToBuildArgMapping,
 )
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
@@ -17,7 +16,7 @@ def get_build_args(
     head: str,
 ) -> IntermediateBuildArgs:
     """Get build arguments for service."""
-    env_var_to_use = str(RepoToBuildArgMapping[source_repo.name].value)
+    env_var_to_use = str(source_repo.build_arg_name)
     value = (
         head
         if source_location == "latest"

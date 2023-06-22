@@ -2,7 +2,7 @@
 import json
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator.images import SmoothieImage
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
@@ -27,11 +27,10 @@ class SmoothieService(AbstractService):
     def __init__(
         self,
         config_model: SystemConfigurationModel,
-        global_settings: OpentronsEmulationConfiguration,
         dev: bool,
     ) -> None:
         """Instantiates a SmoothieService object."""
-        super().__init__(config_model, global_settings, dev)
+        super().__init__(config_model, dev)
         self._ot2 = self.get_ot2(config_model)
         self._logging_client = SmoothieLoggingClient(self._dev)
         self._smoothie_image = self._generate_image()

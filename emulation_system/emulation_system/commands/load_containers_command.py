@@ -10,7 +10,6 @@ from typing import cast
 
 import yaml
 
-from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.commands.emulation_system_command import (
     STDIN_NAME,
     InvalidFileExtensionException,
@@ -26,18 +25,14 @@ class LoadContainersCommand:
     input_path: io.TextIOWrapper
     filter: str
     local_only: bool
-    settings: OpentronsEmulationConfiguration
 
     @classmethod
-    def from_cli_input(
-        cls, args: argparse.Namespace, settings: OpentronsEmulationConfiguration
-    ) -> LoadContainersCommand:
+    def from_cli_input(cls, args: argparse.Namespace) -> LoadContainersCommand:
         """Construct EmulationSystemCommand from CLI input."""
         return cls(
             input_path=args.input_path,
             filter=args.filter,
             local_only=args.local_only,
-            settings=settings,
         )
 
     def execute(self) -> None:
@@ -50,7 +45,7 @@ class LoadContainersCommand:
             )
         stdin_content = self.input_path.read().strip()
         parsed_content = yaml.safe_load(stdin_content)
-        system = convert_from_obj(parsed_content, self.settings, False)
+        system = convert_from_obj(parsed_content, False)
         print(
             "\n".join(
                 cast(str, container.container_name)

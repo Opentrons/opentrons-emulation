@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, cast
 
 from pydantic import parse_obj_as
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator import Service
 
 from ..output.compose_file_model import Network, Volume
@@ -31,11 +31,10 @@ def _get_top_level_volumes(service_list: List[Service]) -> Optional[Dict[str, Vo
 
 def _convert(
     config_model: SystemConfigurationModel,
-    global_settings: OpentronsEmulationConfiguration,
     dev: bool,
 ) -> RuntimeComposeFileModel:
     """Parses SystemConfigurationModel to compose file."""
-    services = ServiceOrchestrator(config_model, global_settings, dev).build_services()
+    services = ServiceOrchestrator(config_model, dev).build_services()
     return RuntimeComposeFileModel(
         is_remote=config_model.is_remote,
         services=services,
@@ -48,10 +47,7 @@ def _convert(
 
 def convert_from_obj(
     input_obj: Dict[str, Any],
-    global_settings: OpentronsEmulationConfiguration,
     dev: bool,
 ) -> RuntimeComposeFileModel:
     """Parse from obj."""
-    return _convert(
-        parse_obj_as(SystemConfigurationModel, input_obj), global_settings, dev
-    )
+    return _convert(parse_obj_as(SystemConfigurationModel, input_obj), dev)

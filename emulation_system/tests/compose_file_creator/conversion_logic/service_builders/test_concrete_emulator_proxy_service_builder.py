@@ -5,7 +5,7 @@ import pytest
 from pydantic import parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.conversion import EmulatorProxyService
 from emulation_system.compose_file_creator.output.compose_file_model import ListOrDict
@@ -40,13 +40,10 @@ def ot3_system_config(ot3_only: Dict[str, Any]) -> SystemConfigurationModel:
 def test_simple_emulator_proxy_values(
     config_model: SystemConfigurationModel,
     dev: bool,
-    testing_global_em_config: OpentronsEmulationConfiguration,
     opentrons_head: str,
 ) -> None:
     """Tests for values that are the same for all configurations of an Emulator Proxy."""
-    service = EmulatorProxyService(
-        config_model, testing_global_em_config, dev=dev
-    ).build_service()
+    service = EmulatorProxyService(config_model, dev=dev).build_service()
 
     expected_dockerfile_name = DEV_DOCKERFILE_NAME if dev else DOCKERFILE_NAME
 
@@ -70,12 +67,9 @@ def test_simple_emulator_proxy_values(
 def test_ot2_emulator_proxy_service_values(
     ot2_system_config: SystemConfigurationModel,
     dev: bool,
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Tests for EmulatorProxy Service that are specific to OT-2."""
-    service = EmulatorProxyService(
-        ot2_system_config, testing_global_em_config, dev=dev
-    ).build_service()
+    service = EmulatorProxyService(ot2_system_config, dev=dev).build_service()
 
     assert isinstance(service.networks, list)
     assert len(service.networks) == 1
@@ -114,12 +108,9 @@ def test_ot2_emulator_proxy_service_values(
 def test_ot3_emulator_proxy_service_values(
     ot3_system_config: SystemConfigurationModel,
     dev: bool,
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Tests for EmulatorProxy Service that are specific to OT-3."""
-    service = EmulatorProxyService(
-        ot3_system_config, testing_global_em_config, dev=dev
-    ).build_service()
+    service = EmulatorProxyService(ot3_system_config, dev=dev).build_service()
 
     assert isinstance(service.networks, list)
     assert len(service.networks) == 2

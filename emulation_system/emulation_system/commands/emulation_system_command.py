@@ -9,8 +9,6 @@ from dataclasses import dataclass
 
 import yaml
 
-from emulation_system import OpentronsEmulationConfiguration
-
 from ..compose_file_creator.conversion.conversion_functions import convert_from_obj
 from ..compose_file_creator.errors import NotRemoteOnlyError
 from ..compose_file_creator.logging.console import logging_console
@@ -31,19 +29,15 @@ class EmulationSystemCommand:
     output_path: io.TextIOWrapper
     remote_only: bool
     dev: bool
-    settings: OpentronsEmulationConfiguration
 
     @classmethod
-    def from_cli_input(
-        cls, args: argparse.Namespace, settings: OpentronsEmulationConfiguration
-    ) -> EmulationSystemCommand:
+    def from_cli_input(cls, args: argparse.Namespace) -> EmulationSystemCommand:
         """Construct EmulationSystemCommand from CLI input."""
         return cls(
             input_path=args.input_path,
             output_path=args.output_path,
             remote_only=args.remote_only,
             dev=args.dev,
-            settings=settings,
         )
 
     def execute(self) -> None:
@@ -56,7 +50,7 @@ class EmulationSystemCommand:
             )
         stdin_content = self.input_path.read().strip()
         parsed_content = yaml.safe_load(stdin_content)
-        converted_object = convert_from_obj(parsed_content, self.settings, self.dev)
+        converted_object = convert_from_obj(parsed_content, self.dev)
 
         if self.remote_only and not converted_object.is_remote:
             raise NotRemoteOnlyError

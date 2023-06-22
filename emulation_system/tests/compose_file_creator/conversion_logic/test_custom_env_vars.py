@@ -4,7 +4,6 @@ from typing import Any, Dict, cast
 
 import pytest
 
-from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
 )
@@ -219,16 +218,13 @@ def ot3_with_custom_env_vars(ot3_only: Dict[str, Any]) -> Dict[str, Any]:
 
 def test_ot2_env_vars(
     ot2_with_custom_env_vars: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm custom env vars are created.
 
     Custom env vars for robot server, smoothie, emulator proxy, temperature module
     magnetic module, thermocycler module, and heater shaker module.
     """
-    services = convert_from_obj(
-        ot2_with_custom_env_vars, testing_global_em_config, dev=False
-    ).services
+    services = convert_from_obj(ot2_with_custom_env_vars, dev=False).services
 
     assert services is not None
     robot_server = services[OT2_ID]
@@ -325,16 +321,13 @@ def test_ot2_env_vars(
 
 def test_ot3_env_vars(
     ot3_with_custom_env_vars: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm custom env vars are created.
 
     Custom env vars for robot server, can-server, emulator proxy, gripper, head
     pipettes, gantry x, gantry y, and bootloader.
     """
-    services = convert_from_obj(
-        ot3_with_custom_env_vars, testing_global_em_config, dev=False
-    ).services
+    services = convert_from_obj(ot3_with_custom_env_vars, dev=False).services
     assert services is not None
 
     robot_server = services[OT3_ID]

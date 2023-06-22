@@ -1,7 +1,7 @@
 """Module containing OT3Services class."""
 from typing import Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator.pipette_utils import get_robot_pipettes
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
@@ -28,14 +28,13 @@ class OT3Services(AbstractService):
     def __init__(
         self,
         config_model: SystemConfigurationModel,
-        global_settings: OpentronsEmulationConfiguration,
         dev: bool,
         can_server_service_name: str,
         state_manager_name: str,
         service_info: ServiceInfo,
     ) -> None:
         """Instantiates a OT3Services object."""
-        super().__init__(config_model, global_settings, dev)
+        super().__init__(config_model, dev)
         self._can_server_service_name = can_server_service_name
         self._state_manager_name = state_manager_name
         self._service_info = service_info

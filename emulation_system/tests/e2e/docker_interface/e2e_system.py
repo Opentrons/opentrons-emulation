@@ -6,7 +6,7 @@ from typing import Optional
 from docker.models.containers import Container  # type: ignore[import]
 
 from emulation_system.compose_file_creator.config_file_settings import (
-    RepoToBuildArgMapping,
+    OpentronsRepository,
 )
 from tests.e2e.consts import BindMountInfo
 from tests.e2e.helper_functions import get_mounts
@@ -57,8 +57,7 @@ class DefaultContainers:
         """Returns BuildArgConfigurations object representing where source was pulled from."""
         return BuildArgConfigurations.parse_build_args(
             self.monorepo_builder,
-            "opentrons/archive/refs/heads/edge.zip",
-            RepoToBuildArgMapping.OPENTRONS,
+            OpentronsRepository.OPENTRONS,
         )
 
 

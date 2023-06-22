@@ -1,7 +1,7 @@
 """Module containing InputServices."""
 from typing import Optional, Union
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateEnvironmentVariables,
@@ -65,7 +65,6 @@ class InputServices(AbstractService):
     def __init__(
         self,
         config_model: SystemConfigurationModel,
-        global_settings: OpentronsEmulationConfiguration,
         dev: bool,
         container: Containers,
         emulator_proxy_name: Optional[str],
@@ -73,7 +72,7 @@ class InputServices(AbstractService):
         can_server_service_name: Optional[str],
     ) -> None:
         """Instantiates a InputServices object."""
-        super().__init__(config_model, global_settings, dev)
+        super().__init__(config_model, dev)
         self._container = container
         self._emulator_proxy_name = emulator_proxy_name
         self._smoothie_name = smoothie_name

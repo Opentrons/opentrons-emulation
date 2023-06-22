@@ -19,7 +19,6 @@ from emulation_system.compose_file_creator.config_file_settings import (
     MountTypes,
     OpentronsRepository,
     OT3Hardware,
-    RepoToBuildArgMapping,
 )
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
@@ -53,7 +52,7 @@ class SourceState(Enum):
     """
 
     REMOTE_LATEST = auto()
-    REMOTE_BRANCH = auto()
+    REMOTE_REF = auto()
     LOCAL = auto()
 
     @staticmethod
@@ -67,9 +66,13 @@ class SourceState(Enum):
             source_state = SourceState.LOCAL
         elif (
             github_api_interaction.github_api_is_up()
-            and github_api_interaction.check_if_branch_exists(repo, passed_value)
+            and github_api_interaction.check_if_ref_exists(
+                repo.OWNER,
+                repo.value,
+                passed_value,
+            )
         ):
-            source_state = SourceState.REMOTE_BRANCH
+            source_state = SourceState.REMOTE_REF
         elif re.match(COMMIT_SHA_REGEX, passed_value.lower()):
             raise ValueError(
                 "Usage of a commit SHA as a reference for a source location "
@@ -80,14 +83,14 @@ class SourceState(Enum):
                 f'\nYou passed: "{passed_value}"'
                 "\nField can be the following values:"
                 '\n\t- "latest" to pull latest code from Github'
-                "\n\t- A valid branch name to pull a specific commit from Github"
+                "\n\t- A valid ref name to pull a specific ref from Github"
                 "\n\t- A valid absolute directory path to use your local code\n\n"
             )
         return source_state
 
     def is_remote(self) -> bool:
         """If SourceState is remote."""
-        return self in [self.REMOTE_BRANCH, self.REMOTE_LATEST]
+        return self in [self.REMOTE_REF, self.REMOTE_LATEST]
 
     def is_local(self) -> bool:
         """If SourceState is local."""
@@ -125,25 +128,16 @@ class Source(ABC):
         """Source State of the Source object."""
         return SourceState.to_source_state(self.source_location, self.repo)
 
-    @property
-    def repo_to_build_arg_mapping(self) -> RepoToBuildArgMapping:
-        """Build arg name for repo."""
-        return RepoToBuildArgMapping.get_mapping(self.repo)
-
-    def generate_build_args(
-        self, global_settings: "OpentronsEmulationConfiguration"  # type: ignore [name-defined] # noqa: F821
-    ) -> IntermediateBuildArgs | None:
+    def generate_build_args(self) -> IntermediateBuildArgs | None:
         """Generate build args based off of global settings."""
         if self.is_local():
             return None
-        env_var_to_use = str(self.repo_to_build_arg_mapping.value)
-        head = global_settings.get_repo_head(self.repo)
-        format_string = global_settings.get_repo_branch(self.repo)
+        env_var_to_use = str(self.repo.build_arg_name)
         source_location = self.source_location
         value = (
-            head
+            self.repo.get_default_download_url()
             if source_location == "latest"
-            else format_string.replace("{{branch-name}}", source_location)
+            else self.repo.get_user_specified_download_url(source_location)
         )
         return {env_var_to_use: value}
 

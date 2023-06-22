@@ -4,7 +4,6 @@ from typing import Any, Dict, Optional, cast
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator import BuildItem
 from emulation_system.compose_file_creator.config_file_settings import OT3Hardware
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
@@ -40,10 +39,9 @@ from tests.validation_helper_functions import CONTAINER_NAME_TO_IMAGE, SERVICE_N
 def test_service_keys(
     config: Dict[str, Any],
     is_ot3: bool,
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirms service names are created correctly."""
-    config_file = convert_from_obj(config, testing_global_em_config, dev=False)
+    config_file = convert_from_obj(config, dev=False)
 
     default_values = {
         f"{THERMOCYCLER_MODULE_ID}-1",
@@ -73,12 +71,9 @@ def test_service_keys(
 def test_tty(
     service_name: str,
     ot2_and_modules: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm tty is set to True."""
-    services = convert_from_obj(
-        ot2_and_modules, testing_global_em_config, dev=False
-    ).services
+    services = convert_from_obj(ot2_and_modules, dev=False).services
     assert services is not None
     assert services[service_name].tty
 
@@ -87,12 +82,9 @@ def test_tty(
 def test_service_container_name(
     service_name: str,
     ot2_and_modules: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Verify container name matches service name."""
-    services = convert_from_obj(
-        ot2_and_modules, testing_global_em_config, dev=False
-    ).services
+    services = convert_from_obj(ot2_and_modules, dev=False).services
     assert services is not None
     assert services[service_name].container_name == service_name
 
@@ -101,12 +93,9 @@ def test_service_container_name(
 def test_service_image(
     service_name: str,
     ot2_and_modules: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Verify image name is correct."""
-    services = convert_from_obj(
-        ot2_and_modules, testing_global_em_config, dev=False
-    ).services
+    services = convert_from_obj(ot2_and_modules, dev=False).services
     assert services is not None
     assert services[service_name].image == CONTAINER_NAME_TO_IMAGE[service_name]
 
@@ -115,12 +104,9 @@ def test_service_image(
 def test_service_build(
     service_name: str,
     ot2_and_modules: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Verify build context and target are correct."""
-    services = convert_from_obj(
-        ot2_and_modules, testing_global_em_config, dev=False
-    ).services
+    services = convert_from_obj(ot2_and_modules, dev=False).services
     assert services is not None
     build = cast(BuildItem, services[service_name].build)
     assert build.context == DOCKERFILE_DIR_LOCATION
@@ -131,36 +117,27 @@ def test_service_build(
 def test_service_local_network(
     service_name: str,
     ot2_and_modules: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Verify local network on individual services are correct."""
-    services = convert_from_obj(
-        ot2_and_modules, testing_global_em_config, dev=False
-    ).services
+    services = convert_from_obj(ot2_and_modules, dev=False).services
     assert services is not None
     assert services[service_name].networks == [DEFAULT_NETWORK_NAME]
 
 
 def test_top_level_network(
     ot2_and_modules: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Verify top level network is correct."""
-    networks = convert_from_obj(
-        ot2_and_modules, testing_global_em_config, dev=False
-    ).networks
+    networks = convert_from_obj(ot2_and_modules, dev=False).networks
     assert networks is not None
     assert networks == {DEFAULT_NETWORK_NAME: Network()}
 
 
 def test_robot_port(
     ot2_and_modules: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm robot port string is created correctly."""
-    services = convert_from_obj(
-        ot2_and_modules, testing_global_em_config, dev=False
-    ).services
+    services = convert_from_obj(ot2_and_modules, dev=False).services
     assert services is not None
     assert services[OT2_ID].ports == ["5000:31950"]
 
@@ -169,15 +146,12 @@ def test_robot_port(
 def test_can_server_port_exposed(
     can_port: Optional[str],
     ot3_only: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm that when can-server-exposed-port is specified, ports are added to the can-server"""
     if can_port is not None:
         ot3_only["robot"]["can-server-exposed-port"] = can_port
 
-    runtime_compose_file_model = convert_from_obj(
-        ot3_only, testing_global_em_config, False
-    )
+    runtime_compose_file_model = convert_from_obj(ot3_only, False)
     can_server = runtime_compose_file_model.can_server
     assert can_server is not None
     assert can_server.ports is not None

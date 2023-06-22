@@ -10,7 +10,6 @@ from typing import Any, Dict
 import pytest
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system import OpentronsEmulationConfiguration
 from emulation_system.compose_file_creator.config_file_settings import OT3Hardware
 from emulation_system.compose_file_creator.conversion.conversion_functions import (
     convert_from_obj,
@@ -55,10 +54,10 @@ from tests.validation_helper_functions import partial_string_in_mount
     ],
 )
 def test_emulation_proxy_created(
-    config: Dict[str, Any], testing_global_em_config: OpentronsEmulationConfiguration
+    config: Dict[str, Any],
 ) -> None:
     """Verify emulator proxy is created when there are modules."""
-    services = convert_from_obj(config, testing_global_em_config, False).services
+    services = convert_from_obj(config, False).services
     assert services is not None
     assert EMULATOR_PROXY_ID in set(services.keys())
 
@@ -75,12 +74,9 @@ def test_emulation_proxy_created(
 def test_smoothie_created(
     config: Dict[str, Any],
     opentrons_dir: str,
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm smoothie uses local source when OT2 is set to local and has mounts."""
-    runtime_compose_file_model = convert_from_obj(
-        config, testing_global_em_config, False
-    )
+    runtime_compose_file_model = convert_from_obj(config, False)
     smoothie = runtime_compose_file_model.smoothie_emulator
     assert smoothie is not None
     assert smoothie.image == SmoothieImage().image_name
@@ -111,12 +107,9 @@ def test_smoothie_created(
 def test_smoothie_not_created(
     config: Dict[str, Any],
     opentrons_dir: str,
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm smoothie uses local source when OT2 is set to local and has mounts."""
-    runtime_compose_file_model = convert_from_obj(
-        config, testing_global_em_config, False
-    )
+    runtime_compose_file_model = convert_from_obj(config, False)
     smoothie = runtime_compose_file_model.smoothie_emulator
     assert smoothie is None
 
@@ -137,10 +130,9 @@ def test_local_ot3_services_created(
     container_name: str,
     expected_image_name: str,
     ot3_only: Dict[str, Any],
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Confirm OT3 hardware emulators are added with OT3 is specified."""
-    services = convert_from_obj(ot3_only, testing_global_em_config, False).services
+    services = convert_from_obj(ot3_only, False).services
     assert services is not None
     assert container_name in list(services.keys())
 

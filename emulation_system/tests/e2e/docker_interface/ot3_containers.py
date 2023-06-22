@@ -6,7 +6,7 @@ from typing import Optional
 from docker.models.containers import Container  # type: ignore[import]
 
 from emulation_system.compose_file_creator.config_file_settings import (
-    RepoToBuildArgMapping,
+    OpentronsRepository,
 )
 from tests.e2e.helper_functions import get_mounts
 from tests.e2e.test_definition.build_arg_configurations import BuildArgConfigurations
@@ -52,7 +52,5 @@ class OT3SystemUnderTest:
     def ot3_firmware_build_args(self) -> "BuildArgConfigurations":
         """Returns BuildArgConfigurations object representing where source was pulled from."""
         return BuildArgConfigurations.parse_build_args(
-            self.firmware_builder,
-            "ot3-firmware/archive/refs/heads/main.zip",
-            RepoToBuildArgMapping.OT3_FIRMWARE,
+            self.firmware_builder, OpentronsRepository.OT3_FIRMWARE
         )

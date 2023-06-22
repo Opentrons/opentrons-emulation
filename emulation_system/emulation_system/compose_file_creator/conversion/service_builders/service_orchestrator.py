@@ -1,7 +1,7 @@
 """Module containing ServiceOrchestrator class."""
 from typing import List, Optional
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator import Service
 
 from ...config_file_settings import OT3Hardware
@@ -44,32 +44,24 @@ class ServiceOrchestrator:
     def __init__(
         self,
         config_model: SystemConfigurationModel,
-        global_settings: OpentronsEmulationConfiguration,
         dev: bool,
     ) -> None:
         """Instantiates a ServiceOrchestrator object."""
         self._config_model = config_model
-        self._global_settings = global_settings
         self._dev = dev
         self._services: DockerServices = {}
 
     def _build_can_server_service(self) -> Service:
         """Method to generate and return a CAN Server Service."""
-        return CANServerService(
-            self._config_model, self._global_settings, self._dev
-        ).build_service()
+        return CANServerService(self._config_model, self._dev).build_service()
 
     def _build_emulator_proxy_service(self) -> Service:
         """Method to generate and return an Emulator Proxy Service."""
-        return EmulatorProxyService(
-            self._config_model, self._global_settings, self._dev
-        ).build_service()
+        return EmulatorProxyService(self._config_model, self._dev).build_service()
 
     def _build_smoothie_service(self) -> Service:
         """Method to generate and return a Smoothie Service."""
-        return SmoothieService(
-            self._config_model, self._global_settings, self._dev
-        ).build_service()
+        return SmoothieService(self._config_model, self._dev).build_service()
 
     def _build_ot3_services(
         self, can_server_service_name: str, state_manager_name: str
@@ -78,7 +70,6 @@ class ServiceOrchestrator:
         return [
             OT3Services(
                 self._config_model,
-                self._global_settings,
                 self._dev,
                 can_server_service_name,
                 state_manager_name,
@@ -88,9 +79,7 @@ class ServiceOrchestrator:
         ]
 
     def _build_ot3_state_manager_service(self) -> Service:
-        return OT3StateManagerService(
-            self._config_model, self._global_settings, self._dev
-        ).build_service()
+        return OT3StateManagerService(self._config_model, self._dev).build_service()
 
     def _build_input_services(
         self,
@@ -102,7 +91,6 @@ class ServiceOrchestrator:
         return [
             InputServices(
                 self._config_model,
-                self._global_settings,
                 self._dev,
                 container,
                 emulator_proxy_name,
@@ -163,14 +151,14 @@ class ServiceOrchestrator:
 
     def _add_ot3_firmware_builder(self) -> None:
         ot3_firmware_builder = OT3FirmwareBuilderService(
-            self._config_model, self._global_settings, self._dev
+            self._config_model, self._dev
         ).build_service()
         assert ot3_firmware_builder.container_name is not None
         self._services[ot3_firmware_builder.container_name] = ot3_firmware_builder
 
     def _add_opentrons_modules_builder(self) -> None:
         opentrons_modules_builder = OpentronsModulesBuilderService(
-            self._config_model, self._global_settings, self._dev
+            self._config_model, self._dev
         ).build_service()
         assert opentrons_modules_builder.container_name is not None
         self._services[
@@ -179,7 +167,7 @@ class ServiceOrchestrator:
 
     def _add_monorepo_builder(self) -> None:
         monorepo_builder = MonorepoBuilderService(
-            self._config_model, self._global_settings, self._dev
+            self._config_model, self._dev
         ).build_service()
         assert monorepo_builder.container_name is not None
         self._services[monorepo_builder.container_name] = monorepo_builder

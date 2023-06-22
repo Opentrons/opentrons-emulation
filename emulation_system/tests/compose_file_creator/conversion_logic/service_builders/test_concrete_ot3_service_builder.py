@@ -5,7 +5,7 @@ import pytest
 from pydantic import parse_obj_as
 from pytest_lazyfixture import lazy_fixture  # type: ignore[import]
 
-from emulation_system import OpentronsEmulationConfiguration, SystemConfigurationModel
+from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem, Service
 from emulation_system.compose_file_creator.config_file_settings import OT3Hardware
 from emulation_system.compose_file_creator.conversion import ServiceOrchestrator
@@ -57,13 +57,10 @@ def get_pipettes(service_list: List[Service]) -> Tuple[Service, Service]:
 def test_simple_ot3_values(
     model_dict: Dict[str, Any],
     dev: bool,
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Tests for values that are the same for all configurations of a Smoothie Service."""
     config_model = parse_obj_as(SystemConfigurationModel, model_dict)
-    services = ServiceOrchestrator(
-        config_model, testing_global_em_config, dev
-    )._build_ot3_services(
+    services = ServiceOrchestrator(config_model, dev)._build_ot3_services(
         can_server_service_name="can-server", state_manager_name="state-manager"
     )
     head = get_ot3_service(services, OT3Hardware.HEAD)
@@ -134,13 +131,10 @@ def test_simple_ot3_values(
 )
 def test_ot3_service_environment_variables(
     model_dict: SystemConfigurationModel,
-    testing_global_em_config: OpentronsEmulationConfiguration,
 ) -> None:
     """Tests for values that are the same for all configurations of a Smoothie Service."""
     config_model = parse_obj_as(SystemConfigurationModel, model_dict)
-    services = ServiceOrchestrator(
-        config_model, testing_global_em_config, dev=True
-    )._build_ot3_services(
+    services = ServiceOrchestrator(config_model, dev=True)._build_ot3_services(
         can_server_service_name="can-server", state_manager_name="state-manager"
     )
     # The number of items in ServiceOrchestrator.OT3_SERVICES_TO_CREATE

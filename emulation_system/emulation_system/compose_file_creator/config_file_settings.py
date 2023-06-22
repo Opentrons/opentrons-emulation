@@ -1,11 +1,12 @@
 """Defines all settings and constants for config file."""
 from enum import Enum
-from typing import List, Optional, Union
+from typing import TYPE_CHECKING, List, Optional, Union
 
 from pydantic import DirectoryPath, Field, FilePath
 from typing_extensions import Literal
 
 from emulation_system.consts import ROOM_TEMPERATURE
+from emulation_system.github_api_interaction import check_if_ref_exists
 from opentrons_pydantic_base_model import OpentronsBaseModel
 
 
@@ -132,32 +133,51 @@ class RPMModelSettings(OpentronsBaseModel):
 class OpentronsRepository(str, Enum):
     """Possible repos to download from."""
 
-    OPENTRONS = "opentrons"
-    OT3_FIRMWARE = "ot3-firmware"
-    OPENTRONS_MODULES = "opentrons-modules"
+    # Work-around for mypy to allow for custom __new__ method inside an enum
+    if TYPE_CHECKING:
+        value: str
+        repo_name: str
+        build_arg_name: str
+        default_branch: str
 
+    def __new__(
+        cls, repo_name: str, build_args_name: str, default_branch: str
+    ) -> "OpentronsRepository":
+        """Initialize."""
+        obj = str.__new__(cls, [repo_name])
+        obj._value_ = repo_name
+        obj.build_arg_name = build_args_name
+        obj.default_branch = default_branch
+        return obj
 
-class RepoToBuildArgMapping(str, Enum):
-    """Build arg to use for specifying source download location."""
+    OPENTRONS = ("opentrons", "OPENTRONS_SOURCE_DOWNLOAD_LOCATION", "edge")
+    OT3_FIRMWARE = ("ot3-firmware", "FIRMWARE_SOURCE_DOWNLOAD_LOCATION", "main")
+    OPENTRONS_MODULES = (
+        "opentrons-modules",
+        "MODULE_SOURCE_DOWNLOAD_LOCATION",
+        "edge",
+    )
 
-    OPENTRONS = "OPENTRONS_SOURCE_DOWNLOAD_LOCATION"
-    OT3_FIRMWARE = "FIRMWARE_SOURCE_DOWNLOAD_LOCATION"
-    OPENTRONS_MODULES = "MODULE_SOURCE_DOWNLOAD_LOCATION"
+    @property
+    def OWNER(self) -> str:
+        """Get owner of repo."""
+        return "Opentrons"
 
-    @staticmethod
-    def get_mapping(repo: OpentronsRepository) -> "RepoToBuildArgMapping":
-        """Get mapping by Opentrons Repository."""
-        mapping: RepoToBuildArgMapping
-        match repo:
-            case OpentronsRepository.OPENTRONS:
-                mapping = RepoToBuildArgMapping.OPENTRONS
-            case OpentronsRepository.OT3_FIRMWARE:
-                mapping = RepoToBuildArgMapping.OT3_FIRMWARE
-            case OpentronsRepository.OPENTRONS_MODULES:
-                mapping = RepoToBuildArgMapping.OPENTRONS_MODULES
-            case _:
-                raise ValueError(f"Opentrons repository {repo.value} is not valid.")
-        return mapping
+    def _generate_download_url(self, owner: str, repo: str, branch: str) -> str:
+        """Generate download url for source code."""
+        return f"https://github.com/{owner}/{repo}.git#{branch}"
+
+    def get_user_specified_download_url(self, branch: str) -> str:
+        """Get download url for source code."""
+        return self._generate_download_url(self.OWNER, self.value, branch)
+
+    def get_default_download_url(self) -> str:
+        """Get default download url for source code."""
+        return self._generate_download_url(self.OWNER, self.value, self.default_branch)
+
+    def check_if_branch_exists(self, branch: str) -> bool:
+        """Check if branch exists."""
+        return check_if_ref_exists(self.OWNER, self.value, branch)
 
 
 class SourceRepositories(OpentronsBaseModel):

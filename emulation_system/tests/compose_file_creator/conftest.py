@@ -4,12 +4,12 @@ from typing import Any, Callable, Dict, Literal
 import py
 import pytest
 
-from emulation_system import OpentronsEmulationConfiguration, github_api_interaction
+from emulation_system import github_api_interaction
 from emulation_system.compose_file_creator.config_file_settings import (
     EmulationLevels,
     OpentronsRepository,
 )
-from tests.conftest import FAKE_COMMIT_ID, SYSTEM_UNIQUE_ID
+from tests.conftest import SYSTEM_UNIQUE_ID
 from tests.testing_config_builder import ConfigDefinition, TestingConfigBuilder
 from tests.testing_types import ModuleDeclaration
 
@@ -173,33 +173,15 @@ def with_system_unique_id(ot2_and_modules: Dict[str, Any]) -> Dict[str, Any]:
 
 
 @pytest.fixture
-def opentrons_head(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
+def opentrons_head() -> str:
     """Return head url of opentrons repo from test config file."""
-    return testing_global_em_config.get_repo_head(OpentronsRepository.OPENTRONS)
+    return OpentronsRepository.OPENTRONS.default_branch
 
 
 @pytest.fixture
-def ot3_firmware_head(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
+def ot3_firmware_head() -> str:
     """Return head url of ot3-firmware repo from test config file."""
-    return testing_global_em_config.get_repo_head(OpentronsRepository.OT3_FIRMWARE)
-
-
-@pytest.fixture
-def opentrons_commit(testing_global_em_config: OpentronsEmulationConfiguration) -> str:
-    """Return commit url of opentrons repo from test config file."""
-    return testing_global_em_config.get_repo_branch(
-        OpentronsRepository.OPENTRONS
-    ).replace("{{branch-name}}", FAKE_COMMIT_ID)
-
-
-@pytest.fixture
-def ot3_firmware_branch(
-    testing_global_em_config: OpentronsEmulationConfiguration,
-) -> str:
-    """Return branch url of ot3-firmware repo from test config file."""
-    return testing_global_em_config.get_repo_branch(
-        OpentronsRepository.OT3_FIRMWARE
-    ).replace("{{branch-name}}", FAKE_COMMIT_ID)
+    return OpentronsRepository.OT3_FIRMWARE.default_branch
 
 
 @pytest.fixture
@@ -342,16 +324,25 @@ def patch_github_api_is_up(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture(autouse=True)
-def patch_check_if_branch_exists(monkeypatch: pytest.MonkeyPatch) -> None:
+def patch_check_if_ref_exists(monkeypatch: pytest.MonkeyPatch) -> None:
     """Patch the github api is up method to always return true."""
 
-    def inner_func(repo: OpentronsRepository, branch: str) -> bool:
+    def inner_patch(owner: str, repo: str, ref: str) -> bool:
+        # Copied all the tags and branches from respective repos
+        # Don't want to actually hit the API and get rate limited
         match repo:
-            case OpentronsRepository.OPENTRONS | OpentronsRepository.OPENTRONS_MODULES:
-                return branch == "edge"
-            case OpentronsRepository.OT3_FIRMWARE:
-                return branch == "main"
+            case OpentronsRepository.OPENTRONS.value:
+                branch_name = "edge"
+                tag_name = "ot3@0.8.0-alpha.2"
+            case OpentronsRepository.OPENTRONS_MODULES.value:
+                branch_name = "edge"
+                tag_name = "heater-shaker@v1.0.3"
+            case OpentronsRepository.OT3_FIRMWARE.value:
+                branch_name = "main"
+                tag_name = "v14"
             case _:
                 raise ValueError(f"Unknown repo {repo}")
 
-    monkeypatch.setattr(github_api_interaction, "check_if_branch_exists", inner_func)
+        return ref in [branch_name, tag_name]
+
+    monkeypatch.setattr(github_api_interaction, "check_if_ref_exists", inner_patch)
