@@ -21,12 +21,12 @@ def get_robot_pipettes(
     left_pipette_info = (
         None
         if left_pipette is None
-        else PipetteInfo(lookup_pipette(left_pipette, robot_type))
+        else PipetteInfo.from_pipette_lookup(lookup_pipette(left_pipette, robot_type))
     )
     right_pipette_info = (
         None
         if not right_pipette is not None
-        else PipetteInfo(lookup_pipette(right_pipette, robot_type))
+        else PipetteInfo.from_pipette_lookup(lookup_pipette(right_pipette, robot_type))
     )
 
     return RobotPipettes(left=left_pipette_info, right=right_pipette_info)
