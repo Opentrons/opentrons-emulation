@@ -15,7 +15,7 @@ clean:
 
 .PHONY: teardown
 teardown:
-	poetry env info -p | xargs basename | xargs poetry env remove
+	poetry env remove --all
 
 .PHONY: test
 test:
