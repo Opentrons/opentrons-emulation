@@ -38,6 +38,7 @@ def generate_eeprom_file_path(mount: Literal["left", "right"]) -> str:
     """Generates eeprom file path."""
     return f"/volumes/{mount}-pipette-eeprom/{_get_eeprom_file_name()}"
 
+
 @dataclass
 class PipetteInfo:
     """Class for pipette info."""
@@ -50,9 +51,10 @@ class PipetteInfo:
     serial_code: str
     eeprom_file_name: str
 
-
     @classmethod
-    def from_pipette_lookup(cls, pipette_lookup: Union["OT2PipetteLookup", "OT3PipetteLookup"]) -> "PipetteInfo":
+    def from_pipette_lookup(
+        cls, pipette_lookup: Union["OT2PipetteLookup", "OT3PipetteLookup"]
+    ) -> "PipetteInfo":
         """Creates pipette info from pipette lookup."""
         return cls(
             display_name=pipette_lookup.display_name,
@@ -63,7 +65,7 @@ class PipetteInfo:
             serial_code=_get_date_string(),
             eeprom_file_name=_get_eeprom_file_name(),
         )
-    
+
     @classmethod
     def EMPTY(cls) -> "PipetteInfo":
         """Creates empty pipette info."""
@@ -74,7 +76,7 @@ class PipetteInfo:
             pipette_type=PipetteTypes.SINGLE,
             model=-1,
             serial_code="",
-            eeprom_file_name=_get_eeprom_file_name()
+            eeprom_file_name=_get_eeprom_file_name(),
         )
 
     @property
