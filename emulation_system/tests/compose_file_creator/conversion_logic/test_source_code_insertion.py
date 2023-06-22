@@ -34,7 +34,6 @@ def test_ot3_build_args(
     monorepo_is_local: bool,
     ot3_firmware_is_local: bool,
     opentrons_head: str,
-    patch_github_api_is_up: None,
 ) -> None:
     """Confirm build args are created correctly for OT-3."""
     config_file = convert_from_obj(config, False)

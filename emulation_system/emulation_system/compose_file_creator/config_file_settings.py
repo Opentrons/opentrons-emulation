@@ -6,7 +6,7 @@ from pydantic import DirectoryPath, Field, FilePath
 from typing_extensions import Literal
 
 from emulation_system.consts import ROOM_TEMPERATURE
-from emulation_system.github_api_interaction import check_if_ref_exists
+from emulation_system.git_interaction import check_if_ref_exists
 from opentrons_pydantic_base_model import OpentronsBaseModel
 
 

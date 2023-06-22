@@ -12,7 +12,7 @@ from typing import List, Union
 
 from pydantic import Field
 
-from emulation_system import github_api_interaction
+from emulation_system import git_interaction
 from emulation_system.compose_file_creator.config_file_settings import (
     FileMount,
     Hardware,
@@ -64,13 +64,10 @@ class SourceState(Enum):
             source_state = SourceState.REMOTE_LATEST
         elif os.path.isdir(passed_value):
             source_state = SourceState.LOCAL
-        elif (
-            github_api_interaction.github_api_is_up()
-            and github_api_interaction.check_if_ref_exists(
-                repo.OWNER,
-                repo.value,
-                passed_value,
-            )
+        elif git_interaction.check_if_ref_exists(
+            repo.OWNER,
+            repo.value,
+            passed_value,
         ):
             source_state = SourceState.REMOTE_REF
         elif re.match(COMMIT_SHA_REGEX, passed_value.lower()):

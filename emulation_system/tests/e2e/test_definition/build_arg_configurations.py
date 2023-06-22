@@ -5,7 +5,7 @@ from typing import Dict
 
 from docker.models.containers import Container  # type: ignore[import]
 
-from emulation_system import github_api_interaction
+from emulation_system import git_interaction
 from emulation_system.compose_file_creator.config_file_settings import (
     OpentronsRepository,
 )
@@ -48,9 +48,7 @@ class BuildArgConfigurations(Enum):
 
         if build_arg_val.endswith(head_ref):
             build_arg_state = cls.LATEST_BUILD_ARGS
-        elif github_api_interaction.check_if_ref_exists(
-            repo.OWNER, repo.value, build_arg_val
-        ):
+        elif git_interaction.check_if_ref_exists(repo.OWNER, repo.value, build_arg_val):
             build_arg_state = cls.REF_BUILD_ARGS
         else:
             raise ValueError("Build arg did not match anything.")
