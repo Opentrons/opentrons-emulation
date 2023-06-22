@@ -1,9 +1,8 @@
 """This module contains functions for interacting with git."""
 
+import subprocess
 from functools import lru_cache
 from typing import List
-
-import git
 
 
 def check_if_ref_exists(owner: str, repo: str, ref: str) -> bool:
@@ -38,9 +37,16 @@ def get_valid_ref_list(remote_url: str) -> List[str]:
         weird_tag_thing_removed = heads_path_removed.replace("^{}", "")
         return weird_tag_thing_removed
 
-    git_binary = git.Git()
-    formatted_refs = [
-        _format_line(item)
-        for item in git_binary.ls_remote("--tags", "--heads", remote_url).split("\n")
-    ]
+    try:
+        output = subprocess.run(
+            ["git", "ls-remote", "--tags", "--heads", remote_url],
+            capture_output=True,
+            check=True,
+            text=True,
+        ).stdout.strip()
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(
+            f"Unable to get valid ref list from {remote_url}. " f"Error: {e.stderr}"
+        )
+    formatted_refs = [_format_line(item) for item in output.split("\n")]
     return sorted(list(set(formatted_refs)))
