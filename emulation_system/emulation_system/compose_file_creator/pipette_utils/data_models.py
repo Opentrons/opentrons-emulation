@@ -38,25 +38,44 @@ def generate_eeprom_file_path(mount: Literal["left", "right"]) -> str:
     """Generates eeprom file path."""
     return f"/volumes/{mount}-pipette-eeprom/{_get_eeprom_file_name()}"
 
-
 @dataclass
 class PipetteInfo:
     """Class for pipette info."""
 
-    def __init__(
-        self,
-        pipette_lookup: Union["OT2PipetteLookup", "OT3PipetteLookup"],
-    ) -> None:
-        """Sets pipette info from pipette lookup."""
-        self.display_name: str = pipette_lookup.display_name
-        self.internal_name: str = pipette_lookup.pipette_name
-        self.restrictions: List[
-            PipetteRestrictions
-        ] = pipette_lookup.pipette_restrictions
-        self.pipette_type: PipetteTypes = pipette_lookup.pipette_type
-        self.model: int = pipette_lookup.get_pipette_model()
-        self.serial_code: str = _get_date_string()
-        self.eeprom_file_name: str = _get_eeprom_file_name()
+    display_name: str
+    internal_name: str
+    restrictions: List[PipetteRestrictions]
+    pipette_type: PipetteTypes
+    model: int
+    serial_code: str
+    eeprom_file_name: str
+
+
+    @classmethod
+    def from_pipette_lookup(cls, pipette_lookup: Union["OT2PipetteLookup", "OT3PipetteLookup"]) -> "PipetteInfo":
+        """Creates pipette info from pipette lookup."""
+        return cls(
+            display_name=pipette_lookup.display_name,
+            internal_name=pipette_lookup.pipette_name,
+            restrictions=pipette_lookup.pipette_restrictions,
+            pipette_type=pipette_lookup.pipette_type,
+            model=pipette_lookup.get_pipette_model(),
+            serial_code=_get_date_string(),
+            eeprom_file_name=_get_eeprom_file_name(),
+        )
+    
+    @classmethod
+    def EMPTY(cls) -> "PipetteInfo":
+        """Creates empty pipette info."""
+        return cls(
+            display_name="EMPTY",
+            internal_name="EMPTY",
+            restrictions=[],
+            pipette_type=PipetteTypes.SINGLE,
+            model=-1,
+            serial_code="",
+            eeprom_file_name=_get_eeprom_file_name()
+        )
 
     @property
     def simulator_name(self) -> str:
@@ -156,15 +175,17 @@ class RobotPipettes:
         content: Dict[str, str | int] = {
             "eeprom_file_path": generate_eeprom_file_path(mount)
         }
-        if pipette_info is not None:
-            content.update(
-                {
-                    "pipette_name": pipette_info.internal_name,
-                    "pipette_model": pipette_info.model,
-                    "pipette_serial_code": pipette_info.serial_code,
-                    "eeprom_file_path": generate_eeprom_file_path(mount),
-                }
-            )
+        if pipette_info is None:
+            pipette_info = PipetteInfo.EMPTY()
+
+        content.update(
+            {
+                "pipette_name": pipette_info.internal_name,
+                "pipette_model": pipette_info.model,
+                "pipette_serial_code": pipette_info.serial_code,
+                "eeprom_file_path": generate_eeprom_file_path(mount),
+            }
+        )
 
         return {env_var_name: json.dumps(content)}
 
