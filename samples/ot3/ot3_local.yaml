@@ -14,7 +14,6 @@ robot:
   id: otie
   hardware: ot3
   emulation-level: hardware
-  hardware-specific-attributes:
-    left-pipette: P1000 Multi
   
-monorepo-source: /home/server-user/opentrons
+monorepo-source: /absolute/path/to/opentrons
+ot3-firmware-source: /absolute/path/to/ot3-firmware
