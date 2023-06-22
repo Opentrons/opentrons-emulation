@@ -25,6 +25,8 @@ OT3_REMOTE = SystemTestDefinition(
     ot3_firmware_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
     opentrons_modules_build_args=BuildArgConfigurations.NO_BUILD_ARGS,
     module_configuration=ModuleConfiguration.NO_MODULES(),
+    left_pipette_expected=True,
+    right_pipette_expected=False,
 )
 
 OT3_FIRMWARE_DEV = SystemTestDefinition(
@@ -42,6 +44,8 @@ OT3_FIRMWARE_DEV = SystemTestDefinition(
     ot3_firmware_build_args=BuildArgConfigurations.LATEST_BUILD_ARGS,
     opentrons_modules_build_args=BuildArgConfigurations.NO_BUILD_ARGS,
     module_configuration=ModuleConfiguration.NO_MODULES(),
+    left_pipette_expected=False,
+    right_pipette_expected=True,
 )
 
 OT3_AND_MODULES = SystemTestDefinition(
@@ -64,6 +68,8 @@ OT3_AND_MODULES = SystemTestDefinition(
         fw_magnetic_module_names={"ot3-and-modules-magdeck"},
         fw_temperature_module_names={"ot3-and-modules-tempdeck"},
     ),
+    left_pipette_expected=True,
+    right_pipette_expected=True,
 )
 
 _TEST_DEFS: Dict[str, SystemTestDefinition] = {

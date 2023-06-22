@@ -67,3 +67,5 @@ class SystemTestDefinition:
     opentrons_modules_build_args: BuildArgConfigurations
 
     module_configuration: ModuleConfiguration
+    left_pipette_expected: bool
+    right_pipette_expected: bool

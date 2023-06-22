@@ -3,6 +3,8 @@
 from dataclasses import dataclass
 from typing import Set, Type
 
+from docker.models.containers import Container  # type: ignore[import]
+
 from tests.e2e.consts import (
     ENTRYPOINT_MOUNT,
     MONOREPO_WHEEL_VOLUME,
@@ -302,6 +304,42 @@ class OT3Binaries(ResultABC):
 
 
 @dataclass
+class PipetteEeproms(ResultABC):
+    """Validate that pipette eeproms are correct."""
+
+    left_pipette_eeprom_file_has_content: bool
+    right_pipette_eeprom_file_has_content: bool
+
+    @staticmethod
+    def _file_has_content(container: Container) -> bool:
+        return int(exec_in_container(container, "stat -c %s /eeprom/eeprom.bin")) > 0
+
+    @classmethod
+    def get_expected_results(
+        cls: Type["PipetteEeproms"], system_test_def: SystemTestDefinition
+    ) -> "PipetteEeproms":
+        """Generate expected pipette eeproms."""
+        return cls(
+            left_pipette_eeprom_file_has_content=system_test_def.left_pipette_expected,
+            right_pipette_eeprom_file_has_content=system_test_def.right_pipette_expected,
+        )
+
+    @classmethod
+    def get_actual_results(
+        cls: Type["PipetteEeproms"], system_under_test: E2EHostSystem
+    ) -> "PipetteEeproms":
+        """Load actual pipette eeproms."""
+        return cls(
+            left_pipette_eeprom_file_has_content=cls._file_has_content(
+                system_under_test.ot3_containers.left_pipette
+            ),
+            right_pipette_eeprom_file_has_content=cls._file_has_content(
+                system_under_test.ot3_containers.right_pipette
+            ),
+        )
+
+
+@dataclass
 class OT3Result(ResultABC):
     """Collect all ot3 result classes into a single dataclass."""
 
@@ -311,6 +349,7 @@ class OT3Result(ResultABC):
     emulator_mounts: OT3EmulatorMounts
     builder_named_volumes: OT3FirmwareBuilderNamedVolumes
     binaries: OT3Binaries
+    pipette_eeproms: PipetteEeproms
 
     @classmethod
     def get_actual_results(
@@ -330,6 +369,7 @@ class OT3Result(ResultABC):
                 system_under_test
             ),
             binaries=OT3Binaries.get_actual_results(system_under_test),
+            pipette_eeproms=PipetteEeproms.get_actual_results(system_under_test),
         )
 
     @classmethod
@@ -350,4 +390,5 @@ class OT3Result(ResultABC):
                 system_test_def
             ),
             binaries=OT3Binaries.get_expected_results(system_test_def),
+            pipette_eeproms=PipetteEeproms.get_expected_results(system_test_def),
         )
