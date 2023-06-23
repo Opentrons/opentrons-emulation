@@ -1,237 +1,192 @@
 EMULATION_SYSTEM_DIR := emulation_system
+DOCKER_COMPOSE_EXECUTABLE := docker-compose
+ABS_PATH := $(realpath ${file_path})
 
-SUB = {SUB}
+EMULATION_SYSTEM_CMD = (cd ./${EMULATION_SYSTEM_DIR} && poetry run python main.py emulation-system ${DEV} ${ABS_PATH} - ${REMOTE_ONLY}) | tee docker-compose.yaml
+COMPOSE_RUN_COMMAND = DOCKER_BUILDKIT=1 ${DOCKER_COMPOSE_EXECUTABLE} up --remove-orphans ${RUN_DETACHED_OPTION}
+COMPOSE_KILL_COMMAND = ${DOCKER_COMPOSE_EXECUTABLE} kill
+COMPOSE_START_COMMAND = ${DOCKER_COMPOSE_EXECUTABLE} start
+COMPOSE_STOP_COMMAND = ${DOCKER_COMPOSE_EXECUTABLE} stop
+COMPOSE_REMOVE_COMMAND = ${DOCKER_COMPOSE_EXECUTABLE} rm --force && docker volume prune -f
+COMPOSE_LOGS_COMMAND = ${DOCKER_COMPOSE_EXECUTABLE} logs -f
+COMPOSE_RESTART_COMMAND = ${DOCKER_COMPOSE_EXECUTABLE} restart --timeout 1
+BUILD_COMMAND = docker buildx bake --load ${BAKE_PROGRESS} ${BAKE_CACHE}
 
-EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system {SUB} -)
-DEV_EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system --dev {SUB} -)
-REMOTE_ONLY_EMULATION_SYSTEM_CMD := (cd ./emulation_system && poetry run python main.py emulation-system {SUB} - --remote-only)
-COMPOSE_RUN_COMMAND := DOCKER_BUILDKIT=1 docker-compose -f - up --remove-orphans
-COMPOSE_KILL_COMMAND := docker-compose -f - kill
-COMPOSE_START_COMMAND := docker-compose -f - start
-COMPOSE_STOP_COMMAND := docker-compose -f - stop
-COMPOSE_REMOVE_COMMAND := docker-compose -f - rm --force && docker volume prune -f
-COMPOSE_LOGS_COMMAND := docker-compose -f - logs -f
-COMPOSE_RESTART_COMMAND := docker-compose -f - restart --timeout 1
-BUILD_COMMAND := docker buildx bake --load --file ~/tmp-compose.yaml
 
-abs_path := $(realpath ${file_path})
+.PHONY: check-file-path
+check-file-path:
+	$(if $(file_path),,$(error file_path variable required))
+
 
 .PHONY: emulation-system
-emulation-system:
-	@$(MAKE) --no-print-directory remove file_path=${abs_path}
-	@$(MAKE) --no-print-directory build file_path=${abs_path}
-	@$(MAKE) --no-print-directory run-detached file_path=${abs_path}
-	@$(MAKE) --no-print-directory refresh-dev file_path=${abs_path}
-	@$(MAKE) --no-print-directory start-executables file_path=${abs_path}
-
+emulation-system: check-file-path remove build run-detached refresh-dev start-executables
 
 #####################################################
 ############# Generating Compose Files ##############
 #####################################################
 .PHONY: generate-compose-file
+generate-compose-file: check-file-path
 generate-compose-file:
-	$(if $(file_path),,$(error file_path variable required))
-	@$(subst $(SUB), ${abs_path}, $(EMULATION_SYSTEM_CMD))
+	@$(EMULATION_SYSTEM_CMD)
+	
+.PHONY: create-dev-dockerfile
+create-dev-dockerfile:
+	@./scripts/docker_convenience_scripts/create_dev_dockerfile.sh
 
 .PHONY: dev-generate-compose-file
-dev-generate-compose-file:
-	$(if $(file_path),,$(error file_path variable required))
-	@./scripts/docker_convenience_scripts/create_dev_dockerfile.sh
-	@$(subst $(SUB), ${abs_path}, $(DEV_EMULATION_SYSTEM_CMD))
+dev-generate-compose-file: DEV := --dev
+dev-generate-compose-file: create-dev-dockerfile
+dev-generate-compose-file: generate-compose-file
 
 
 #####################################################
 ############## Building Docker Images ###############
 #####################################################
 .PHONY: build
-build:
-	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory --quiet generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
+build: generate-compose-file 
 	@$(BUILD_COMMAND)
-	@rm ~/tmp-compose.yaml
 
 .PHONY: build-print
-build-print:
-	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory --quiet generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
-	@$(BUILD_COMMAND) --progress plain
-	@rm ~/tmp-compose.yaml
+build-print: BAKE_PROGRESS := --progress plain
+build-print: build
 
 .PHONY: build-no-cache
-build-no-cache:
-	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory --quiet generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
-	@$(BUILD_COMMAND) --no-cache
-	@rm ~/tmp-compose.yaml
+build-no-cache: BAKE_CACHE := --no-cache
+build-no-cache: build
 
 .PHONY: build-print-no-cache
-build-print-no-cache:
-	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory --quiet generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
-	@$(BUILD_COMMAND) --progress plain --no-cache
-	@rm ~/tmp-compose.yaml
+build-print-no-cache: BAKE_PROGRESS := --progress plain
+build-print-no-cache: BAKE_CACHE := --no-cache
+build-print-no-cache: build
 
 .PHONY: dev-build
-dev-build:
-	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory --quiet dev-generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
+dev-build: dev-generate-compose-file
 	@$(BUILD_COMMAND)
-	@rm ~/tmp-compose.yaml
 
 .PHONY: dev-build-print
-dev-build-print:
-	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory --quiet dev-generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
-	@$(BUILD_COMMAND) --progress plain
-	@rm ~/tmp-compose.yaml
+dev-build-print: BAKE_PROGRESS := --progress plain
+dev-build-print: dev-build
+
 
 .PHONY: dev-build-no-cache
-dev-build-no-cache:
-	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory --quiet dev-generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
-	@$(BUILD_COMMAND) --no-cache
-	@rm ~/tmp-compose.yaml
+dev-build-no-cache: BAKE_CACHE := --no-cache
+dev-build-no-cache: dev-build
 
 .PHONY: dev-build-print-no-cache
-dev-build-print-no-cache:
-	$(if $(file_path),@echo "Building system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory --quiet dev-generate-compose-file file_path=${abs_path} > ~/tmp-compose.yaml
-	@$(BUILD_COMMAND) --progress plain --no-cache
-	@rm ~/tmp-compose.yaml
+dev-build-print-no-cache: BAKE_PROGRESS := --progress plain
+dev-build-print-no-cache: BAKE_CACHE := --no-cache
+dev-build-print-no-cache: dev-build
 
 
 #####################################################
 ################ Running Emulation ##################
 #####################################################
 .PHONY: run
-run:
-	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_RUN_COMMAND)
+run: generate-compose-file
+	@$(COMPOSE_RUN_COMMAND)
 
 .PHONY: run-detached
-run-detached:
-	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_RUN_COMMAND) -d
+run-detached: RUN_DETACHED_OPTION := -d
+run-detached: run
 
 .PHONY: dev-run
-dev-run:
-	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory dev-generate-compose-file file_path=${abs_path} | $(COMPOSE_RUN_COMMAND)
+dev-run:  dev-generate-compose-file run
 
 .PHONY: dev-run-detached
-dev-run-detached:
-	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory dev-generate-compose-file file_path=${abs_path} | $(COMPOSE_RUN_COMMAND) -d
+dev-run-detached: RUN_DETACHED_OPTION := -d
+dev-run-detached: dev-run
 
 #####################################################
 ############## Controlling Emulation ################
 #####################################################
 .PHONY: start
-start:
-	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_START_COMMAND)
+start: generate-compose-file
+	@$(COMPOSE_START_COMMAND)
 
 .PHONY: stop
-stop:
-	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_STOP_COMMAND)
+stop: generate-compose-file
+	@$(COMPOSE_STOP_COMMAND)
 
 .PHONY: restart
-restart:
-	$(if $(file_path),@echo "Running system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_RESTART_COMMAND)
+restart: generate-compose-file
+	@$(COMPOSE_RESTART_COMMAND)
 
 .PHONY: remove
-remove:
-	$(if $(file_path),@echo "Removing system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_KILL_COMMAND)
-	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path} | $(COMPOSE_REMOVE_COMMAND)
+remove: generate-compose-file
+	$(COMPOSE_KILL_COMMAND)
+	$(COMPOSE_REMOVE_COMMAND)
 
 #####################################################
 ##################### Logging #######################
 #####################################################
 .PHONY: logs
-logs:
-	$(if $(file_path),@echo "Printing logs from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path}  | $(COMPOSE_LOGS_COMMAND)
+logs: generate-compose-file
+	@$(COMPOSE_LOGS_COMMAND)
 
 .PHONY: logs-tail
-logs-tail:
-	$(if $(file_path),@echo "Printing logs from $(file_path)",$(error file_path variable required))
+logs-tail: generate-compose-file
 	$(if $(number),,$(error number variable required))
-	@$(MAKE) --no-print-directory generate-compose-file file_path=${abs_path}  | $(COMPOSE_LOGS_COMMAND) --tail ${number}
+	@$(COMPOSE_LOGS_COMMAND) --tail ${number}
 
 #####################################################
 ############### Combination Commands ################
 #####################################################
 .PHONY: remove-build-run
-remove-build-run:
-	$(if $(file_path),@echo "Removing system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory remove file_path=${abs_path}
-	@$(MAKE) --no-print-directory build file_path=${abs_path}
-	@$(MAKE) --no-print-directory run file_path=${abs_path}
+remove-build-run: remove build run
 
 .PHONY: remove-build-run-detached
-remove-build-run-detached:
-	$(if $(file_path),@echo "Removing system from $(file_path)",$(error file_path variable required))
-	@$(MAKE) --no-print-directory remove file_path=${abs_path}
-	@$(MAKE) --no-print-directory build file_path=${abs_path}
-	@$(MAKE) --no-print-directory run-detached file_path=${abs_path}
+remove-build-run-detached: remove build run-detached
 
 ###########################################
 ######### OT-3 Specific Commands ##########
 ###########################################
 .PHONY: can-comm
-can-comm:
-	$(if $(file_path),,$(error file_path variable required))
+can-comm: check-file-path
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
-		file_path="${abs_path}" \
+		file_path="${ABS_PATH}" \
 		filter="can-server" \
 		| xargs --open-tty --no-run-if-empty --replace={} docker exec -it {} monorepo_python -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
 
 .PHONY: can-mon
-can-mon:
-	$(if $(file_path),,$(error file_path variable required))
+can-mon: check-file-path
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
-		file_path="${abs_path}" \
+		file_path="${ABS_PATH}" \
 		filter="can-server" \
 		| xargs --open-tty --no-run-if-empty --replace={} docker exec -it {} monorepo_python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
 
 .PHONY: refresh-dev
-refresh-dev:
-	$(if $(file_path),,$(error file_path variable required))
+refresh-dev: check-file-path
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
-		file_path="${abs_path}" \
+		file_path="${ABS_PATH}" \
 		filter="source-builders" \
 		| xargs --max-procs=4 --open-tty --no-run-if-empty --replace={} docker exec -t {} /build.sh
 
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
-		file_path="${abs_path}" \
+		file_path="${ABS_PATH}" \
 		filter="monorepo-containers" \
 		| xargs --max-procs=6 --open-tty --no-run-if-empty --replace={} docker exec -t {} bash -c "monorepo_python -m pip install /dist/*"
 
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
-		file_path="${abs_path}" \
+		file_path="${ABS_PATH}" \
 		filter="ot3-state-manager" \
 		| xargs --open-tty --no-run-if-empty --replace={} docker exec -t {} bash -c "state_manager_python -m pip install /state-manager-dist/* /dist/*"
 
 .PHONY: refresh-dev-ci
-refresh-dev-ci:
-	$(if $(file_path),,$(error file_path variable required))
+refresh-dev-ci: check-file-path
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
-		file_path="${abs_path}" \
+		file_path="${ABS_PATH}" \
 		filter="source-builders" \
 		| xargs --max-procs=4 --no-run-if-empty --replace={} docker exec -t {} /build.sh
 
@@ -239,39 +194,38 @@ refresh-dev-ci:
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
-		file_path="${abs_path}" \
+		file_path="${ABS_PATH}" \
 		filter="monorepo-containers" \
 		| xargs --max-procs=6 --no-run-if-empty --replace={} docker exec -t {} bash -c "monorepo_python -m pip install /dist/*"
 
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
-		file_path="${abs_path}" \
+		file_path="${ABS_PATH}" \
 		filter="ot3-state-manager" \
 		| xargs --no-run-if-empty --replace={} docker exec -t {} bash -c "state_manager_python -m pip install /state-manager-dist/* /dist/*"
 
 .PHONY: start-executables
-start-executables:
-	$(if $(file_path),,$(error file_path variable required))
+start-executables: check-file-path
 
 	# Start can-server, state-manager and emulator-proxy in the background
 
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
-		file_path="${abs_path}" \
+		file_path="${ABS_PATH}" \
 		filter="can-server" \
 		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
-		file_path="${abs_path}" \
+		file_path="${ABS_PATH}" \
 		filter="emulator-proxy" \
 		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
-		file_path="${abs_path}" \
+		file_path="${ABS_PATH}" \
 		filter="ot3-state-manager" \
 		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
 
@@ -284,19 +238,19 @@ start-executables:
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
-		file_path="${abs_path}" \
+		file_path="${ABS_PATH}" \
 		filter="smoothie" \
 		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
-		file_path="${abs_path}" \
+		file_path="${ABS_PATH}" \
 		filter="ot3-firmware" \
 		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
-		file_path="${abs_path}" \
+		file_path="${ABS_PATH}" \
 		filter="modules" \
 		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
 
@@ -305,7 +259,7 @@ start-executables:
 	@$(MAKE) \
 		--no-print-directory \
 		load-container-names \
-		file_path="${abs_path}" \
+		file_path="${ABS_PATH}" \
 		filter="robot-server" \
 		| xargs --open-tty --no-run-if-empty --replace={} docker exec -it {} /entrypoint.sh
 
@@ -313,16 +267,13 @@ start-executables:
 ############## Misc Commands ##############
 ###########################################
 .PHONY: load-container-names
-load-container-names:
-	$(if $(file_path),,$(error file_path variable required))
+load-container-names: check-file-path
 	$(if $(filter),,$(error filter variable required))
-	@(cd ./emulation_system && poetry run python3 main.py lc "${abs_path}" "${filter}")
+	@(cd ./emulation_system && poetry run python3 main.py lc "${ABS_PATH}" "${filter}")
 
 .PHONY: check-remote-only
-check-remote-only:
-	$(if $(file_path),,$(error file_path variable required))
-	@$(subst $(SUB), ${abs_path}, $(REMOTE_ONLY_EMULATION_SYSTEM_CMD)) > /dev/null
-	@echo "All services are remote"
+check-remote-only: REMOTE_ONLY := --remote-only
+check-remote-only: generate-compose-file
 
 .PHONY: push-docker-image-bases
 push-docker-image-bases:
@@ -332,10 +283,9 @@ push-docker-image-bases:
 OT2CONFIG ?= ./samples/ot2/ot2_with_all_modules.yaml
 
 .PHONY: ot2
-ot2:
-	$(MAKE) setup
-	$(MAKE) check-remote-only file_path="$(OT2CONFIG)"
-	$(MAKE) remove-build-run file_path="$(OT2CONFIG)"
+ot2: file_path := "${OT2CONFIG}"
+ot2: setup check-remote-only remove-build-run
+
 
 OT3CONFIG ?= ./samples/ot3/ot3_remote.yaml
 

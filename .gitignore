@@ -29,5 +29,8 @@ coverage.xml
 # Generated Dockerfile for development
 docker/dev_Dockerfile
 
+# Generated Docker Compose file
+docker-compose.yaml
+
 compose_file_creator_log.html
 compose_file_creator_log.txt
