@@ -20,7 +20,6 @@ robot:
   emulation-level: hardware
   hardware-specific-attributes:
     left-pipette: P1000 Multi
-    right-pipette: P50 Multi
 
 monorepo-source: latest
 ot3-firmware-source: latest
