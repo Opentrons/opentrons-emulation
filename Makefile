@@ -1,22 +1,21 @@
 EMULATION_SYSTEM_DIR := emulation_system
+DOCKER_EXECUTABLE := docker
 DOCKER_COMPOSE_EXECUTABLE := docker-compose
-ABS_PATH := $(realpath ${file_path})
 
-EMULATION_SYSTEM_CMD = (cd ./${EMULATION_SYSTEM_DIR} && poetry run python main.py emulation-system ${DEV} ${ABS_PATH} - ${REMOTE_ONLY}) | tee docker-compose.yaml
-COMPOSE_RUN_COMMAND = DOCKER_BUILDKIT=1 ${DOCKER_COMPOSE_EXECUTABLE} up --remove-orphans ${RUN_DETACHED_OPTION}
-COMPOSE_KILL_COMMAND = ${DOCKER_COMPOSE_EXECUTABLE} kill
-COMPOSE_START_COMMAND = ${DOCKER_COMPOSE_EXECUTABLE} start
-COMPOSE_STOP_COMMAND = ${DOCKER_COMPOSE_EXECUTABLE} stop
-COMPOSE_REMOVE_COMMAND = ${DOCKER_COMPOSE_EXECUTABLE} rm --force && docker volume prune -f
-COMPOSE_LOGS_COMMAND = ${DOCKER_COMPOSE_EXECUTABLE} logs -f
-COMPOSE_RESTART_COMMAND = ${DOCKER_COMPOSE_EXECUTABLE} restart --timeout 1
-BUILD_COMMAND = docker buildx bake --load ${BAKE_PROGRESS} ${BAKE_CACHE}
+ABS_PATH = $(realpath ${file_path})
+LOAD_CONTAINER_NAMES_CMD = (cd ./emulation_system && poetry run python3 main.py lc ${ABS_PATH} $(1))
 
+XARGS_COMMAND = xargs $(1) --max-procs $(2) --no-run-if-empty --replace={}
+XARGS_W_TTY = $(call XARGS_COMMAND,--open-tty,$(1))
+XARGS_WO_TTY = $(call XARGS_COMMAND,,$(1))
+
+DOCKER_EXEC = ${DOCKER_EXECUTABLE} exec $(1) {}
+DOCKER_EXEC_DETACHED = $(call DOCKER_EXEC,-d)
+DOCKER_EXEC_INTERACTIVE = $(call DOCKER_EXEC,-it)
+DOCKER_EXEC_TTY_ONLY = $(call DOCKER_EXEC,-t)
 
 .PHONY: check-file-path
-check-file-path:
-	$(if $(file_path),,$(error file_path variable required))
-
+check-file-path: $(if $(file_path),,$(error file_path variable required))
 
 .PHONY: emulation-system
 emulation-system: check-file-path remove build run-detached refresh-dev start-executables
@@ -27,7 +26,11 @@ emulation-system: check-file-path remove build run-detached refresh-dev start-ex
 .PHONY: generate-compose-file
 generate-compose-file: check-file-path
 generate-compose-file:
-	@$(EMULATION_SYSTEM_CMD)
+	@(\
+		cd ./${EMULATION_SYSTEM_DIR} &&\
+		poetry run python main.py emulation-system ${DEV} ${ABS_PATH} - ${REMOTE_ONLY}\
+	) | tee docker-compose.yaml
+	
 	
 .PHONY: create-dev-dockerfile
 create-dev-dockerfile:
@@ -44,7 +47,7 @@ dev-generate-compose-file: generate-compose-file
 #####################################################
 .PHONY: build
 build: generate-compose-file 
-	@$(BUILD_COMMAND)
+	@${DOCKER_EXECUTABLE} buildx bake --load ${BAKE_PROGRESS} ${BAKE_CACHE}
 
 .PHONY: build-print
 build-print: BAKE_PROGRESS := --progress plain
@@ -61,7 +64,7 @@ build-print-no-cache: build
 
 .PHONY: dev-build
 dev-build: dev-generate-compose-file
-	@$(BUILD_COMMAND)
+dev-build: build
 
 .PHONY: dev-build-print
 dev-build-print: BAKE_PROGRESS := --progress plain
@@ -83,7 +86,7 @@ dev-build-print-no-cache: dev-build
 #####################################################
 .PHONY: run
 run: generate-compose-file
-	@$(COMPOSE_RUN_COMMAND)
+	@DOCKER_BUILDKIT=1 ${DOCKER_COMPOSE_EXECUTABLE} up --remove-orphans ${RUN_DETACHED_OPTION}
 
 .PHONY: run-detached
 run-detached: RUN_DETACHED_OPTION := -d
@@ -101,32 +104,28 @@ dev-run-detached: dev-run
 #####################################################
 .PHONY: start
 start: generate-compose-file
-	@$(COMPOSE_START_COMMAND)
+	@${DOCKER_COMPOSE_EXECUTABLE} start
 
 .PHONY: stop
 stop: generate-compose-file
-	@$(COMPOSE_STOP_COMMAND)
+	@${DOCKER_COMPOSE_EXECUTABLE} stop
 
 .PHONY: restart
 restart: generate-compose-file
-	@$(COMPOSE_RESTART_COMMAND)
+	@${DOCKER_COMPOSE_EXECUTABLE} restart --timeout 1
 
 .PHONY: remove
 remove: generate-compose-file
-	$(COMPOSE_KILL_COMMAND)
-	$(COMPOSE_REMOVE_COMMAND)
+	@${DOCKER_COMPOSE_EXECUTABLE} kill
+	@${DOCKER_COMPOSE_EXECUTABLE} rm --force && ${DOCKER_EXECUTABLE} volume prune -f
 
 #####################################################
 ##################### Logging #######################
 #####################################################
 .PHONY: logs
+logs: NUMBER := 200
 logs: generate-compose-file
-	@$(COMPOSE_LOGS_COMMAND)
-
-.PHONY: logs-tail
-logs-tail: generate-compose-file
-	$(if $(number),,$(error number variable required))
-	@$(COMPOSE_LOGS_COMMAND) --tail ${number}
+	${DOCKER_COMPOSE_EXECUTABLE} logs -f --tail ${NUMBER}
 
 #####################################################
 ############### Combination Commands ################
@@ -140,136 +139,69 @@ remove-build-run-detached: remove build run-detached
 ###########################################
 ######### OT-3 Specific Commands ##########
 ###########################################
+
 .PHONY: can-comm
 can-comm: check-file-path
-	@$(MAKE) \
-		--no-print-directory \
-		load-container-names \
-		file_path="${ABS_PATH}" \
-		filter="can-server" \
-		| xargs --open-tty --no-run-if-empty --replace={} docker exec -it {} monorepo_python -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
+	@$(call LOAD_CONTAINER_NAMES_CMD,can-server) | $(call XARGS_W_TTY,1) $(DOCKER_EXEC_INTERACTIVE) monorepo_python -m opentrons_hardware.scripts.can_comm --interface opentrons_sock
 
 .PHONY: can-mon
 can-mon: check-file-path
-	@$(MAKE) \
-		--no-print-directory \
-		load-container-names \
-		file_path="${ABS_PATH}" \
-		filter="can-server" \
-		| xargs --open-tty --no-run-if-empty --replace={} docker exec -it {} monorepo_python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
-
-.PHONY: refresh-dev
-refresh-dev: check-file-path
-	@$(MAKE) \
-		--no-print-directory \
-		load-container-names \
-		file_path="${ABS_PATH}" \
-		filter="source-builders" \
-		| xargs --max-procs=4 --open-tty --no-run-if-empty --replace={} docker exec -t {} /build.sh
-
-	@$(MAKE) \
-		--no-print-directory \
-		load-container-names \
-		file_path="${ABS_PATH}" \
-		filter="monorepo-containers" \
-		| xargs --max-procs=6 --open-tty --no-run-if-empty --replace={} docker exec -t {} bash -c "monorepo_python -m pip install /dist/*"
-
-	@$(MAKE) \
-		--no-print-directory \
-		load-container-names \
-		file_path="${ABS_PATH}" \
-		filter="ot3-state-manager" \
-		| xargs --open-tty --no-run-if-empty --replace={} docker exec -t {} bash -c "state_manager_python -m pip install /state-manager-dist/* /dist/*"
+	@$(call LOAD_CONTAINER_NAMES_CMD,can-server) | $(call XARGS_W_TTY,1) $(DOCKER_EXEC_INTERACTIVE) monorepo_python -m opentrons_hardware.scripts.can_mon --interface opentrons_sock
 
 .PHONY: refresh-dev-ci
+refresh-dev-ci: XARGS_CMD_TO_RUN := XARGS_WO_TTY
 refresh-dev-ci: check-file-path
-	@$(MAKE) \
-		--no-print-directory \
-		load-container-names \
-		file_path="${ABS_PATH}" \
-		filter="source-builders" \
-		| xargs --max-procs=4 --no-run-if-empty --replace={} docker exec -t {} /build.sh
+
+	$(call LOAD_CONTAINER_NAMES_CMD,source-builders) | \
+	$(call ${XARGS_CMD_TO_RUN},4) \
+	$(DOCKER_EXEC_TTY_ONLY) \
+	/build.sh
+
+	$(call LOAD_CONTAINER_NAMES_CMD,monorepo-containers) | \
+	$(call ${XARGS_CMD_TO_RUN},6) \
+	$(DOCKER_EXEC_TTY_ONLY) \
+	bash -c "monorepo_python -m pip install /dist/*"
+
+	$(call LOAD_CONTAINER_NAMES_CMD,ot3-state-manager) | \
+	$(call ${XARGS_CMD_TO_RUN},1) \
+	$(DOCKER_EXEC_TTY_ONLY) \
 
 
-	@$(MAKE) \
-		--no-print-directory \
-		load-container-names \
-		file_path="${ABS_PATH}" \
-		filter="monorepo-containers" \
-		| xargs --max-procs=6 --no-run-if-empty --replace={} docker exec -t {} bash -c "monorepo_python -m pip install /dist/*"
-
-	@$(MAKE) \
-		--no-print-directory \
-		load-container-names \
-		file_path="${ABS_PATH}" \
-		filter="ot3-state-manager" \
-		| xargs --no-run-if-empty --replace={} docker exec -t {} bash -c "state_manager_python -m pip install /state-manager-dist/* /dist/*"
+.PHONY: refresh-dev
+refresh-dev: XARGS_CMD_TO_RUN := XARGS_W_TTY
+refresh-dev: refresh-dev-ci
 
 .PHONY: start-executables
+start-executables: TTY := --open-tty
 start-executables: check-file-path
 
 	# Start can-server, state-manager and emulator-proxy in the background
-
-	@$(MAKE) \
-		--no-print-directory \
-		load-container-names \
-		file_path="${ABS_PATH}" \
-		filter="can-server" \
-		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
-	@$(MAKE) \
-		--no-print-directory \
-		load-container-names \
-		file_path="${ABS_PATH}" \
-		filter="emulator-proxy" \
-		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
-	@$(MAKE) \
-		--no-print-directory \
-		load-container-names \
-		file_path="${ABS_PATH}" \
-		filter="ot3-state-manager" \
-		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
+	@$(\
+		foreach container,\
+		can-server emulator-proxy ot3-state-manager,\
+		$(call LOAD_CONTAINER_NAMES_CMD,$(container)) | $(XARGS_COMMAND) $(DOCKER_EXEC_DETACHED) /entrypoint.sh;\
+	)
 
 	# Giving CAN Server and emulator-proxy time to start
 
 	sleep 2
 
 	# Starting firmware and modules in background
-		
-	@$(MAKE) \
-		--no-print-directory \
-		load-container-names \
-		file_path="${ABS_PATH}" \
-		filter="smoothie" \
-		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
-	@$(MAKE) \
-		--no-print-directory \
-		load-container-names \
-		file_path="${ABS_PATH}" \
-		filter="ot3-firmware" \
-		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
-	@$(MAKE) \
-		--no-print-directory \
-		load-container-names \
-		file_path="${ABS_PATH}" \
-		filter="modules" \
-		| xargs --open-tty --no-run-if-empty --replace={} docker exec -d {} /entrypoint.sh
+	@$(\
+		foreach container,\
+		smoothie ot3-firmware modules,$(call LOAD_CONTAINER_NAMES_CMD,$(container)) | $(XARGS_COMMAND) $(DOCKER_EXEC_DETACHED) /entrypoint.sh;\
+	)
 
-	# Starting robot-server in the foreground
 
-	@$(MAKE) \
-		--no-print-directory \
-		load-container-names \
-		file_path="${ABS_PATH}" \
-		filter="robot-server" \
-		| xargs --open-tty --no-run-if-empty --replace={} docker exec -it {} /entrypoint.sh
+	# Starting robot-server in foreground
+	@$(call LOAD_CONTAINER_NAMES_CMD,robot-server) | $(XARGS_COMMAND) $(DOCKER_EXEC_INTERACTIVE) /entrypoint.sh
 
 ###########################################
 ############## Misc Commands ##############
 ###########################################
 .PHONY: load-container-names
-load-container-names: check-file-path
-	$(if $(filter),,$(error filter variable required))
-	@(cd ./emulation_system && poetry run python3 main.py lc "${ABS_PATH}" "${filter}")
+load-container-names: check-file-path check-filter
+	$(call LOAD_CONTAINER_NAMES_CMD,${filter})
 
 .PHONY: check-remote-only
 check-remote-only: REMOTE_ONLY := --remote-only
@@ -283,17 +215,15 @@ push-docker-image-bases:
 OT2CONFIG ?= ./samples/ot2/ot2_with_all_modules.yaml
 
 .PHONY: ot2
-ot2: file_path := "${OT2CONFIG}"
+ot2: file_path := ${OT2CONFIG}
 ot2: setup check-remote-only remove-build-run
 
 
 OT3CONFIG ?= ./samples/ot3/ot3_remote.yaml
 
 .PHONY: ot3
-ot3:
-	$(MAKE) setup
-	$(MAKE) check-remote-only file_path="$(OT3CONFIG)"
-	$(MAKE) remove-build-run file_path="$(OT3CONFIG)"
+ot3: file_path := ${OT3CONFIG}
+ot3: setup check-remote-only remove-build-run
 
 ROBOT_HOST := $(if $(shell python ./scripts/docker_convenience_scripts/in_docker.py),host.docker.internal,localhost)
 
