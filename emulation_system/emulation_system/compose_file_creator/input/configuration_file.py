@@ -11,7 +11,11 @@ from emulation_system.consts import DEFAULT_NETWORK_NAME
 from opentrons_pydantic_base_model import OpentronsBaseModel
 
 from ...source import MonorepoSource, OpentronsModulesSource, OT3FirmwareSource
-from ..config_file_settings import EmulationLevels, Hardware
+from ..config_file_settings import (
+    EmulationLevels,
+    ExtraMount,
+    Hardware,
+)
 from ..errors import DuplicateHardwareNameError
 from ..types.input_types import Containers, Modules, Robots
 from ..types.intermediate_types import IntermediateNetworks
@@ -43,6 +47,7 @@ class SystemConfigurationModel(OpentronsBaseModel):
     opentrons_modules_source: OpentronsModulesSource = Field(
         default=OpentronsModulesSource(source_location="latest")
     )
+    extra_mounts: List[ExtraMount] = Field(default=[])
 
     @root_validator(pre=True)
     def validate_names(cls, values) -> Dict[str, Dict[str, Containers]]:  # noqa: ANN001

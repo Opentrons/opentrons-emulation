@@ -2,6 +2,7 @@
 from enum import Enum
 from typing import TYPE_CHECKING, List, Optional, Union
 
+import pydantic
 from pydantic import DirectoryPath, Field, FilePath
 from typing_extensions import Literal
 
@@ -231,3 +232,11 @@ class FileMount(Mount):
 
     type: Literal[MountTypes.FILE]
     source_path: FilePath
+
+
+class ExtraMount(OpentronsBaseModel):
+    """Extra bind mounts for a container."""
+
+    container_names: List[str]
+    host_path: DirectoryPath | FilePath
+    container_path: str
