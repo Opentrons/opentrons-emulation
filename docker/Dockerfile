@@ -27,6 +27,8 @@ ENV OPENTRONS_HARDWARE "thermocycler-hardware"
 
 FROM ghcr.io/opentrons/cpp-base-${TARGETARCH} as ot3-pipettes-hardware
 ENV OPENTRONS_HARDWARE "ot3-pipettes-hardware"
+ENV POETRY_HOME="/usr/"
+RUN curl -sSL https://install.python-poetry.org | internal_python -
 
 FROM ghcr.io/opentrons/cpp-base-${TARGETARCH} as ot3-head-hardware
 ENV OPENTRONS_HARDWARE "ot3-head-hardware"
@@ -77,7 +79,6 @@ ENV OPENTRONS_HARDWARE "can-server"
 
 
 
-
 ############################################### vvv PLEASE READ ME vvv #################################################
 ############################################### vvv PLEASE READ ME vvv #################################################
 ############################################### vvv PLEASE READ ME vvv #################################################
@@ -102,7 +103,7 @@ ENV OPENTRONS_HARDWARE "can-server"
 # These should only be used for production targets.
 # There should only be one repo builder target per source code repo being utlized.
 
-# ot3-firmware-source:
+# ot3-fi (This pipette thing, selectively picking monorepo packages to install,  rmware-source:
 #   * Based off of cpp-base
 #   * Contains ot3-firmware source and entrypoint.sh
 

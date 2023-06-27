@@ -37,6 +37,7 @@ ARG DOCKER_CMD
 ARG DESCRIPTION
 ARG MONOREPO_PYTHON="python3.7"
 ARG STATE_MANAGER_PYTHON="python3.8"
+ARG INTERNAL_PYTHON="python3.10"
 
 LABEL opentrons-emulation.trigger=$TRIGGER
 LABEL opentrons-emulation.build_date=$BUILD_DATE
@@ -92,7 +93,8 @@ RUN add-apt-repository ppa:deadsnakes/ppa && \
 RUN ( \
     cd /usr/bin && \
     ln -s ${STATE_MANAGER_PYTHON} state_manager_python && \
-    ln -s ${MONOREPO_PYTHON} monorepo_python \
+    ln -s ${MONOREPO_PYTHON} monorepo_python && \
+    ln -s ${INTERNAL_PYTHON} internal_python \
     )
 
 

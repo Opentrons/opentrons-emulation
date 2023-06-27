@@ -14,6 +14,10 @@ robot:
   id: otie
   hardware: ot3
   emulation-level: hardware
-  
-monorepo-source: /absolute/path/to/opentrons
-ot3-firmware-source: /absolute/path/to/ot3-firmware
+
+extra-mounts:
+  - container-names: 
+      - ot3-left-pipette
+      - ot3-right-pipette
+    host-path: /home/server-user/opentrons-emulation/docker/entrypoints/pipette_management/
+    container-path: /pipette_management/
