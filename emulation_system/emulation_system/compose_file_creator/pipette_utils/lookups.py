@@ -102,11 +102,11 @@ class BasePipetteLookup(Enum):
 class OT2PipetteLookup(BasePipetteLookup):
     """Enum for OT-2 pipettes."""
 
-    P20_SINGLE = ("P20 Single", "p20_single_gen2", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
-    P20_MULTI = ("P20 Multi", "p20_multi_gen2", PipetteTypes.MULTI, [])  # type: ignore[var-annotated]
-    P300_SINGLE = ("P300 Single", "p300_single_gen2", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
-    P300_MULTI = ("P300 Multi", "p300_multi_gen2", PipetteTypes.MULTI, [])  # type: ignore[var-annotated]
-    P1000_SINGLE_GEN2 = ("P1000 Single", "p1000_single_gen2", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
+    P20_SINGLE = ("P20 Single", "p20_single", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
+    P20_MULTI = ("P20 Multi", "p20_multi", PipetteTypes.MULTI, [])  # type: ignore[var-annotated]
+    P300_SINGLE = ("P300 Single", "p300_single", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
+    P300_MULTI = ("P300 Multi", "p300_multi", PipetteTypes.MULTI, [])  # type: ignore[var-annotated]
+    P1000_SINGLE = ("P1000 Single", "p1000_single", PipetteTypes.SINGLE, [])  # type: ignore[var-annotated]
 
     def __init__(
         self,
@@ -124,6 +124,12 @@ class OT2PipetteLookup(BasePipetteLookup):
     def get_pipette_model(self) -> int:
         """Gets pipette model."""
         return self._get_pipette_model("ot2")
+
+    @property
+    def versioned_pipette_string(self) -> str:
+        """Gets pipette name."""
+        string_model = str(self.get_pipette_model())
+        return f"{self.pipette_name}_v{string_model[0]}.{string_model[1:]}"
 
 
 @unique
@@ -158,7 +164,6 @@ def lookup_pipette(
     """Looks up pipette by name."""
     if robot_type not in ["ot2", "ot3"]:
         raise ValueError(f"Robot type {robot_type} not found.")
-
     pipette_lookup: Union[Type[OT2PipetteLookup], Type[OT3PipetteLookup]] = (
         OT2PipetteLookup if robot_type == "ot2" else OT3PipetteLookup
     )

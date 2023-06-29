@@ -12,6 +12,9 @@ from emulation_system.compose_file_creator.pipette_utils.lookups import (
     PipetteRestrictions,
     PipetteTypes,
 )
+from emulation_system.compose_file_creator.types.intermediate_types import (
+    IntermediateEnvironmentVariables,
+)
 from emulation_system.consts import EEPROM_FILE_NAME
 
 OT3_SERIAL_CODE_MIN_CHARS = 1
@@ -50,21 +53,34 @@ class PipetteInfo:
     model: int
     serial_code: str
     eeprom_file_name: str
+    versioned_name_string: str | None = None
 
     @classmethod
     def from_pipette_lookup(
         cls, pipette_lookup: Union["OT2PipetteLookup", "OT3PipetteLookup"]
     ) -> "PipetteInfo":
         """Creates pipette info from pipette lookup."""
-        return cls(
-            display_name=pipette_lookup.display_name,
-            internal_name=pipette_lookup.pipette_name,
-            restrictions=pipette_lookup.pipette_restrictions,
-            pipette_type=pipette_lookup.pipette_type,
-            model=pipette_lookup.get_pipette_model(),
-            serial_code=_get_date_string(),
-            eeprom_file_name=_get_eeprom_file_name(),
-        )
+        if isinstance(pipette_lookup, OT3PipetteLookup):
+            return cls(
+                display_name=pipette_lookup.display_name,
+                internal_name=pipette_lookup.pipette_name,
+                restrictions=pipette_lookup.pipette_restrictions,
+                pipette_type=pipette_lookup.pipette_type,
+                model=pipette_lookup.get_pipette_model(),
+                serial_code=_get_date_string(),
+                eeprom_file_name=_get_eeprom_file_name(),
+            )
+        else:
+            return cls(
+                display_name=pipette_lookup.display_name,
+                internal_name=pipette_lookup.pipette_name,
+                restrictions=pipette_lookup.pipette_restrictions,
+                pipette_type=pipette_lookup.pipette_type,
+                model=pipette_lookup.get_pipette_model(),
+                serial_code=_get_date_string(),
+                eeprom_file_name=_get_eeprom_file_name(),
+                versioned_name_string=pipette_lookup.versioned_pipette_string,
+            )
 
     @classmethod
     def EMPTY(cls) -> "PipetteInfo":
@@ -198,3 +214,23 @@ class RobotPipettes:
     def get_right_pipette_env_var(self) -> Dict[str, str]:
         """Gets right pipette env var."""
         return self._to_ot3_env_var("right", self.right)
+
+    def get_ot2_pipette_env_var(self, port: str) -> IntermediateEnvironmentVariables:
+        """Gets ot2 pipette env var."""
+        env_dict: Dict[str, str | Dict[str, str]] = {}
+        env_dict["port"] = port
+
+        if self.left is not None:
+            assert self.left.versioned_name_string is not None
+            env_dict["left"] = {
+                "model": self.left.versioned_name_string,
+                "id": _get_date_string(),
+            }
+        if self.right is not None:
+            assert self.right.versioned_name_string is not None
+            env_dict["right"] = {
+                "model": self.right.versioned_name_string,
+                "id": _get_date_string(),
+            }
+
+        return {"OT_EMULATOR_smoothie": json.dumps(env_dict)}

@@ -11,18 +11,13 @@
 
 # All source code is pulled from the latest version in Github
 
-system-unique-id: ot2-with-all-modules
 robot:
   id: ot2
   hardware: ot2
   emulation-level: firmware
   hardware-specific-attributes:
-    left-pipette:
-      model: p10_single_v1
-      id: 123
-    right-pipette:
-      model: p300_single_v2.1
-      id: 321
+    left-pipette: P1000 Single
+    right-pipette: P300 Single
 
 modules:
   - id: thermocycler
