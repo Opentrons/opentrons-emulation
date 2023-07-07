@@ -21,7 +21,7 @@ class OT2Attributes(RobotAttributes):
     """Attributes specific to Robots."""
 
     ####################################################
-    # NOTE: Calling a method to define types is WERID. #
+    # NOTE: Calling a method to define types is WEIRD. #
     #   Refer to pipette_utils.py for an explanation   #
     ####################################################
 

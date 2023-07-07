@@ -1,5 +1,4 @@
 """Tests to confirm that SmoothieService builds the CAN Server Service correctly."""
-import json
 from typing import Any, Callable, Dict, cast
 
 import pytest
@@ -57,7 +56,6 @@ def test_simple_smoothie_values(
     service = SmoothieService(config_model, dev=dev).build_service()
 
     expected_dockerfile_name = DEV_DOCKERFILE_NAME if dev else DOCKERFILE_NAME
-    default_pipette_definition = None
 
     assert service.container_name == "smoothie"
     assert service.image == "smoothie"
@@ -80,14 +78,7 @@ def test_simple_smoothie_values(
     assert env_root is not None
     assert len(env_root.values()) == 1
     assert "OT_EMULATOR_smoothie" in env_root
-    smoothie_env_dict = json.loads(env_root["OT_EMULATOR_smoothie"])
-    assert smoothie_env_dict is not None
-    assert "left_pipette" in smoothie_env_dict
-    assert "right_pipette" in smoothie_env_dict
-    assert "port" in smoothie_env_dict
-    assert smoothie_env_dict["left_pipette"] == default_pipette_definition
-    assert smoothie_env_dict["right_pipette"] == default_pipette_definition
-    assert smoothie_env_dict["port"] == 11000
+    # Validating env var in test_pipette_utils.py
 
     assert service.tty
 

@@ -15,16 +15,16 @@ from emulation_system.compose_file_creator.pipette_utils.lookups import (
 )
 
 VALID_OT2_PIPETTE_NAMES = [
-    ("p20_single_gen2", OT2PipetteLookup.P20_SINGLE),
+    ("p20_single", OT2PipetteLookup.P20_SINGLE),
     ("P20 Single", OT2PipetteLookup.P20_SINGLE),
-    ("p20_multi_gen2", OT2PipetteLookup.P20_MULTI),
+    ("p20_multi", OT2PipetteLookup.P20_MULTI),
     ("P20 Multi", OT2PipetteLookup.P20_MULTI),
-    ("p300_single_gen2", OT2PipetteLookup.P300_SINGLE),
+    ("p300_single", OT2PipetteLookup.P300_SINGLE),
     ("P300 Single", OT2PipetteLookup.P300_SINGLE),
-    ("p300_multi_gen2", OT2PipetteLookup.P300_MULTI),
+    ("p300_multi", OT2PipetteLookup.P300_MULTI),
     ("P300 Multi", OT2PipetteLookup.P300_MULTI),
-    ("p1000_single_gen2", OT2PipetteLookup.P1000_SINGLE_GEN2),
-    ("P1000 Single", OT2PipetteLookup.P1000_SINGLE_GEN2),
+    ("p1000_single", OT2PipetteLookup.P1000_SINGLE),
+    ("P1000 Single", OT2PipetteLookup.P1000_SINGLE),
 ]
 
 VALID_OT3_PIPETTE_NAMES = [
@@ -53,11 +53,11 @@ INVALID_PIPETTE_NAMES = [
 EXPECTED_OT2_PIPETTE_NAME_ENUM = Enum(
     "OT2PipettesValidNames",
     [
-        ("P20_SINGLE_GEN2_NAME", "p20_single_gen2"),
-        ("P20_MULTI_GEN2_NAME", "p20_multi_gen2"),
-        ("P300_SINGLE_GEN2_NAME", "p300_single_gen2"),
-        ("P300_MULTI_GEN2_NAME", "p300_multi_gen2"),
-        ("P1000_SINGLE_GEN2_NAME", "p1000_single_gen2"),
+        ("P20_SINGLE_GEN2_NAME", "p20_single"),
+        ("P20_MULTI_GEN2_NAME", "p20_multi"),
+        ("P300_SINGLE_GEN2_NAME", "p300_single"),
+        ("P300_MULTI_GEN2_NAME", "p300_multi"),
+        ("P1000_SINGLE_NAME", "p1000_single"),
     ],
 )
 
@@ -131,6 +131,27 @@ def test_ot3_pipette_env_var() -> None:
     )
     assert actual_left_env_var == left_expected_env_var
     assert actual_right_env_var == right_expected_env_var
+
+
+def test_ot2_pipette_env_var() -> None:
+    """Tests generating OT2 pipette env var."""
+    expected_env_var = {
+        "OT_EMULATOR_smoothie": json.dumps(
+            {
+                "port": "11000",
+                "left": {
+                    "model": "p1000_single_v2.2",
+                    "id": datetime.datetime.now().strftime("%m%d%Y"),
+                },
+                "right": {
+                    "model": "p20_multi_v2.1",
+                    "id": datetime.datetime.now().strftime("%m%d%Y"),
+                },
+            }
+        )
+    }
+    pipettes = get_robot_pipettes("ot2", "P1000 Single", "P20 Multi")
+    assert pipettes.get_ot2_pipette_env_var("11000") == expected_env_var
 
 
 def test_pipette_name_enum() -> None:

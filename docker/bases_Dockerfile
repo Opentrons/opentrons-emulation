@@ -122,7 +122,7 @@ RUN apt-get update && \
     libpython3.10-dev \
     libpython3.8-dev \
     libpython3.7-dev \
-    python3-pip
+    python3-pip 
 
 RUN monorepo_python -m pip install --upgrade pip setuptools wheel && \
     monorepo_python -m pip install pipenv

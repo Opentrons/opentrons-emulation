@@ -1,9 +1,9 @@
 """Module containing SmoothieService."""
-import json
 from typing import Optional
 
 from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator.images import SmoothieImage
+from emulation_system.compose_file_creator.pipette_utils import get_robot_pipettes
 from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediateBuildArgs,
     IntermediateEnvironmentVariables,
@@ -22,7 +22,7 @@ class SmoothieService(AbstractService):
     """Concrete implementation of AbstractService for building a Smoothie Service."""
 
     SMOOTHIE_NAME = "smoothie"
-    SMOOTHIE_DEFAULT_PORT = 11000
+    SMOOTHIE_DEFAULT_PORT = "11000"
 
     def __init__(
         self,
@@ -96,11 +96,10 @@ class SmoothieService(AbstractService):
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
-        inner_env_vars = self._ot2.hardware_specific_attributes.dict()
-        inner_env_vars["port"] = self.SMOOTHIE_DEFAULT_PORT
-        env_vars: IntermediateEnvironmentVariables = {
-            "OT_EMULATOR_smoothie": json.dumps(inner_env_vars)
-        }
+        robot = self._ot2
+        env_vars: IntermediateEnvironmentVariables = get_robot_pipettes(
+            robot.hardware, robot.left_pipette, robot.right_pipette
+        ).get_ot2_pipette_env_var(self.SMOOTHIE_DEFAULT_PORT)
 
         assert isinstance(self._config_model.robot, OT2InputModel)
         if self._config_model.robot.smoothie_env_vars is not None:
