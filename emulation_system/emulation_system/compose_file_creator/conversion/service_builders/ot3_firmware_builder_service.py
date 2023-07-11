@@ -13,6 +13,7 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
+from emulation_system.compose_file_creator.utilities.hardware_utils import is_ot3
 
 from ...images import OT3FirmwareBuilderImage
 from .abstract_service import AbstractService
@@ -94,6 +95,11 @@ class OT3FirmwareBuilderService(AbstractService):
         pipettes = get_robot_pipettes(
             robot.hardware, robot.left_pipette, robot.right_pipette
         )
+
+        if is_ot3(robot):
+            env_vars = {
+                "OPENTRONS_PROJECT": "ot3",
+            }
 
         env_vars.update(pipettes.get_left_pipette_env_var())
         env_vars.update(pipettes.get_right_pipette_env_var())
