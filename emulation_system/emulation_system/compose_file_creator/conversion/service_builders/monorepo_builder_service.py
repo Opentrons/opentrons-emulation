@@ -10,6 +10,7 @@ from emulation_system.compose_file_creator.types.intermediate_types import (
     IntermediatePorts,
     IntermediateVolumes,
 )
+from emulation_system.compose_file_creator.utilities.hardware_utils import is_ot3
 
 from ...images import MonorepoBuilderImage
 from .abstract_service import AbstractService
@@ -76,4 +77,10 @@ class MonorepoBuilderService(AbstractService):
 
     def generate_env_vars(self) -> Optional[IntermediateEnvironmentVariables]:
         """Generates value for environment parameter."""
-        return None
+        env_vars: IntermediateEnvironmentVariables = {}
+        if is_ot3(self._config_model.robot):
+            env_vars = {
+                "OPENTRONS_PROJECT": "ot3",
+            }
+
+        return env_vars
