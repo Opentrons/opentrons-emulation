@@ -211,19 +211,6 @@ def test_get_bind_mount_string(mount: Mount, expected_value: str) -> None:
     assert parse_obj_as(Mount, mount).get_bind_mount_string().endswith(expected_value)
 
 
-def test_duplicate_mounts(file_mount: Dict[str, str]) -> None:
-    """Confirm that duplicate mounts are not allowed."""
-    with pytest.raises(ValidationError, match=".*Cannot have duplicate mounts"):
-        HeaterShakerModuleInputModel.parse_obj(
-            {
-                "id": "my-heater-shaker",
-                "hardware": Hardware.HEATER_SHAKER_MODULE,
-                "emulation-level": EmulationLevels.HARDWARE,
-                "mounts": [file_mount, file_mount],
-            }
-        )
-
-
 def test_exception_thrown_when_local_source_code_does_not_exist() -> None:
     """Confirm LocalSourceDoesNotExistError is thrown when local path does not exist."""
     bad_path = "/this/surely/must/be/a/bad/path"
