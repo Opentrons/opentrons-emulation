@@ -3,6 +3,7 @@
 ######################
 
 # This system builds a single OT3
+# It demonstrates how to mount a local directory/file into containers
 
 ########################
 # Required Source Code #
