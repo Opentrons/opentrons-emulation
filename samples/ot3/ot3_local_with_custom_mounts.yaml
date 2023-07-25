@@ -1,0 +1,33 @@
+######################
+# System Description #
+######################
+
+# This system builds a single OT3
+# It demonstrates how to mount a local directory/file into containers
+
+########################
+# Required Source Code #
+########################
+
+# Change the paths below to point to your local copies of the source code.
+
+robot:
+  id: otie
+  hardware: ot3
+  emulation-level: hardware
+  
+monorepo-source: /make/this/a/path/that/exists/opentrons
+ot3-firmware-source: /make/this/a/path/that/exists/ot3-firmware
+
+extra-mounts:
+  - container_names: [otie, ot3-state-manager]
+    # Have to make sure this file exists on your local machine before running
+    host_path: /make/this/a/path/that/exists/extra.env
+    container_path: /extra.env
+
+  - container_names: [ot3-left-pipette]
+    # Have to make sure this dir exists on your local machine before running
+    host_path: /make/this/a/path/that/exists/test_dir
+    container_path: /test_dir
+
+

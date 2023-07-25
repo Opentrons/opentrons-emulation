@@ -195,7 +195,7 @@ class MountTypes(str, Enum):
 
 
 class Mount(OpentronsBaseModel):
-    """Contains infomation about a single extra bind mount."""
+    """Contains information about a single extra bind mount."""
 
     type: str
     mount_path: str
@@ -231,3 +231,11 @@ class FileMount(Mount):
 
     type: Literal[MountTypes.FILE]
     source_path: FilePath
+
+
+class ExtraMount(OpentronsBaseModel):
+    """Extra bind mount for one or more containers."""
+
+    container_names: List[str]
+    host_path: DirectoryPath | FilePath
+    container_path: str

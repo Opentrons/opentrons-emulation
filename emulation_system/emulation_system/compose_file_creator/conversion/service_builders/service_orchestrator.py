@@ -172,6 +172,23 @@ class ServiceOrchestrator:
         assert monorepo_builder.container_name is not None
         self._services[monorepo_builder.container_name] = monorepo_builder
 
+    def _confirm_all_extra_mounts_mapped(self, service_name_list: List[str]) -> None:
+        if len(self._config_model.extra_mounts) == 0:
+            return
+
+        expected_container_names = set()
+        for mount in self._config_model.extra_mounts:
+            expected_container_names.update(mount.container_names)
+
+        service_name_set = set(service_name_list)
+        bad_mount_container_names = expected_container_names.difference(
+            service_name_set
+        )
+        if len(bad_mount_container_names) > 0:
+            raise ValueError(
+                f'The following "container_names" specified in "extra-mounts" do not exist in the emulated system: {list(bad_mount_container_names)}'
+            )
+
     def build_services(self) -> DockerServices:
         """Build services."""
         emulator_proxy_name = self._add_emulator_proxy_service()
@@ -190,5 +207,5 @@ class ServiceOrchestrator:
 
         if self._config_model.local_monorepo_builder_required:
             self._add_monorepo_builder()
-
+        self._confirm_all_extra_mounts_mapped(list(self._services.keys()))
         return DockerServices(self._services)

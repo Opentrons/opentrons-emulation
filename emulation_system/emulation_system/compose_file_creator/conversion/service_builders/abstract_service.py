@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pathlib
 from abc import ABC, abstractmethod
-from typing import Optional, Type, cast
+from typing import List, Optional, Type, cast
 
 from emulation_system import SystemConfigurationModel
 from emulation_system.compose_file_creator import BuildItem, Service
@@ -199,12 +199,27 @@ class AbstractService(ABC):
         """Method calling all generate* methods to build Service object."""
         intermediate_healthcheck = self.generate_healthcheck()
 
+        container_name = self.generate_container_name()
+        mounts = self.generate_volumes()
+        extra_mounts = self._config_model.extra_mounts
+
+        if len(extra_mounts) > 0:
+            mounts_to_add: List[str] = []
+
+            for mount in extra_mounts:
+                if container_name in mount.container_names:
+                    mounts_to_add.append(f"{mount.host_path}:{mount.container_path}")
+            if mounts is not None:
+                mounts.extend(mounts_to_add)
+            else:
+                mounts = mounts_to_add
+
         return Service(
-            container_name=cast(ServiceContainerName, self.generate_container_name()),
+            container_name=cast(ServiceContainerName, container_name),
             image=cast(ServiceImage, self.generate_image()),
             build=cast(ServiceBuild, self.generate_build()),
             tty=cast(ServiceTTY, self.is_tty()),
-            volumes=cast(ServiceVolumes, self.generate_volumes()),
+            volumes=cast(ServiceVolumes, mounts),
             ports=cast(ServicePorts, self.generate_ports()),
             environment=cast(ServiceEnvironment, self.generate_env_vars()),
             networks=self.generate_networks(),
