@@ -16,18 +16,18 @@ robot:
   hardware: ot3
   emulation-level: hardware
   
-monorepo-source: /home/derek-maggio/Documents/repos/opentrons
-ot3-firmware-source: /home/derek-maggio/Documents/repos/ot3-firmware
+monorepo-source: /make/this/a/path/that/exists/opentrons
+ot3-firmware-source: /make/this/a/path/that/exists/ot3-firmware
 
 extra-mounts:
   - container_names: [otie, ot3-state-manager]
     # Have to make sure this file exists on your local machine before running
-    host_path: /home/derek-maggio/Documents/extra.env
+    host_path: /make/this/a/path/that/exists/extra.env
     container_path: /extra.env
 
   - container_names: [ot3-left-pipette]
     # Have to make sure this dir exists on your local machine before running
-    host_path: /home/derek-maggio/Documents/test_dir
+    host_path: /make/this/a/path/that/exists/test_dir
     container_path: /test_dir
 
 
