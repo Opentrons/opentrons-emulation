@@ -1,8 +1,10 @@
-EMULATION_SYSTEM_DIR := emulation_system
-DOCKER_EXECUTABLE := docker
-DOCKER_COMPOSE_EXECUTABLE := docker-compose
+#!make
+# include .env
+# export $(shell sed 's/=.*//' .env)
 
-ABS_PATH = $(realpath ${file_path})
+EMULATION_SYSTEM_DIR := emulation_system
+
+ABS_PATH := $(realpath ${file_path})
 LOAD_CONTAINER_NAMES_CMD = (cd ./emulation_system && poetry run python3 main.py lc ${ABS_PATH} $(1))
 
 XARGS_COMMAND = xargs $(1) --max-procs $(2) --no-run-if-empty --replace={}
@@ -14,8 +16,17 @@ DOCKER_EXEC_DETACHED = $(call DOCKER_EXEC,-d)
 DOCKER_EXEC_INTERACTIVE = $(call DOCKER_EXEC,-it)
 DOCKER_EXEC_TTY_ONLY = $(call DOCKER_EXEC,-t)
 
+.PHONY: check-env
+check-env:
+ifeq (,$(wildcard ./.env))
+	@printf "No .env file found. Please create one using 'cp example.env .env' and edit the values as needed. \n\n"Exiting"...\n\n"
+	@exit 1 
+endif
+
 .PHONY: check-file-path
-check-file-path: $(if $(file_path),,$(error file_path variable required))
+check-file-path: check-env
+	$(if $(file_path),,$(error file_path variable required))
+
 
 .PHONY: emulation-system
 emulation-system: check-file-path remove build run-detached refresh-dev start-executables
@@ -27,8 +38,8 @@ emulation-system: check-file-path remove build run-detached refresh-dev start-ex
 generate-compose-file: check-file-path
 generate-compose-file:
 	@(\
-		cd ./${EMULATION_SYSTEM_DIR} &&\
-		poetry run python main.py emulation-system ${DEV} ${ABS_PATH} - ${REMOTE_ONLY}\
+		cd ./${EMULATION_SYSTEM_DIR} && \
+		poetry run python main.py emulation-system ${DEV} ${ABS_PATH} - ${REMOTE_ONLY} \
 	) | tee docker-compose.yaml
 	
 	
