@@ -1,5 +1,5 @@
-# Opentrons Flex Emualtion (Emulation Revamp)
+# Opentrons Flex Emualtion (POC)
 
 The old emulation project has been deprecated.
 
-Stay tuned for the new emulation project.
+This is a proof of concept for a new emulation project.
