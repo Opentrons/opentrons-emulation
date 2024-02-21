@@ -1,7 +1,6 @@
 name: Build Mosquitto
 
 on:
-  push:
   workflow_dispatch:
 
 
