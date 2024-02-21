@@ -1,6 +1,7 @@
 name: Build Mosquitto
 
 on:
+  push:
   workflow_dispatch:
 
 
@@ -48,7 +49,7 @@ jobs:
         with:
           name: mosquitto-binary-windows
           path: mosquitto.exe
-          
+    
   build-mac:
     strategy:
       matrix:
