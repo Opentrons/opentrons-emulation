@@ -16,6 +16,9 @@ jobs:
             arch: arm64
     runs-on: ${{ matrix.os }}
     steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v2
           
       - name: Build Mosquitto
         run: make build-mosquitto
