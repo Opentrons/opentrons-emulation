@@ -34,3 +34,8 @@ setup: setup-frontend
 dev-frontend:
 	@echo "Starting frontend dev..."
 	@(cd apps/frontend && yarn tauri dev)
+
+.PHONY: build-mosquitto
+build-mosquitto:
+	@echo "Building mosquitto..."
+	@(./scripts/build_mosquitto.sh)
