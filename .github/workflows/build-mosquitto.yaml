@@ -48,42 +48,40 @@ jobs:
         with:
           name: mosquitto-binary-windows
           path: mosquitto.exe
-    
+          
+  build-mac:
+    strategy:
+      matrix:
+        include:
+          - os: macos-13
+            arch: x86-64
+          # Mac M1 is in beta and is labeled as macos-14
+          - os: macos-14
+            arch: arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Set up build environment
+        run: |
+          brew install cmake
+          brew install openssl
+          brew install libwebsockets
+          brew install ossp-uuid
+          brew install wget
 
-build-mac:
-  strategy:
-    matrix:
-      include:
-        - os: macos-13
-          arch: x86-64
-        # Mac M1 is in beta and is labeled as macos-14
-        - os: macos-14
-          arch: arm64
-  runs-on: ${{ matrix.os }}
+      - name: Get Mosquitto Source
+        run: |
+          wget https://mosquitto.org/files/source/mosquitto-2.0.18.tar.gz
+          tar xvf mosquitto-2.0.18.tar.gz
+          mv mosquitto-2.0.18 mosquitto
+          
+      - name: Build Mosquitto
+        run: |
+          cd mosquitto
+          cmake -DCMAKE_MODULE_LINKER_FLAGS="-undefined dynamic_lookup" .
+          WITH_DOCS=no cmake --build .
 
-  steps:
-    - name: Set up build environment
-      run: |
-        brew install cmake
-        brew install openssl
-        brew install libwebsockets
-        brew install ossp-uuid
-        brew install wget
-
-    - name: Get Mosquitto Source
-      run: |
-        wget https://mosquitto.org/files/source/mosquitto-2.0.18.tar.gz
-        tar xvf mosquitto-2.0.18.tar.gz
-        mv mosquitto-2.0.18 mosquitto
-        
-    - name: Build Mosquitto
-      run: |
-        cd mosquitto
-        cmake -DCMAKE_MODULE_LINKER_FLAGS="-undefined dynamic_lookup" .
-        WITH_DOCS=no cmake --build .
-
-    - name: Archive artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: mosquitto-binary-mac-${{ matrix.arch }}
-        path: mosquitto/src/mosquitto
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mosquitto-binary-mac-${{ matrix.arch }}
+          path: mosquitto/src/mosquitto
