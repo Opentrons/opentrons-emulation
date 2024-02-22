@@ -18,7 +18,7 @@
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:3000",
-    "frontendDist": "../dist"
+    "frontendDist": "../out"
   },
   "bundle": {
     "active": true,
@@ -29,9 +29,13 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "targets": "all"
+    "targets": "all",
+    "externalBin": [
+      "binaries/mosquitto"
+    ]
   },
-  "identifier": "com.tauri.dev",
+
+  "identifier": "com.opentrons.emulation",
   "productName": "frontend",
   "version": "0.1.0"
 }

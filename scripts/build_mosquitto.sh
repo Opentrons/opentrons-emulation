@@ -12,6 +12,9 @@ DOWNLOAD_DIR="$BIN_DIR/mosquitto-source/downloads"
 # Set build directory
 BUILD_DIR="$BIN_DIR/mosquitto-source/build"
 
+# Set binary name
+BINARY_NAME="$1"
+
 # Create directories if they do not exist
 mkdir -p "$DOWNLOAD_DIR"
 mkdir -p "$BUILD_DIR"
@@ -58,8 +61,8 @@ if [[ "$(uname)" == "Darwin" ]]; then
     WITH_WEBSOCKETS=yes WITH_DOCS=no cmake --build .
 fi
 
-    # Move mosquitto binary to bin directory
-    mv "$BUILD_DIR/mosquitto/src/mosquitto" "$BIN_DIR"
+# Move mosquitto binary to bin directory
+mv "$BUILD_DIR/mosquitto/src/mosquitto" "$BIN_DIR/$BINARY_NAME"
 
-    # Move mosquitto.conf to bin directory
-    mv "$BUILD_DIR/mosquitto/mosquitto.conf" "$BIN_DIR"
+# Copy mosquitto.conf to bin directory
+cp "$BUILD_DIR/mosquitto/mosquitto.conf" "$BIN_DIR"

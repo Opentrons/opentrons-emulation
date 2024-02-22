@@ -1,3 +1,5 @@
+TAURI_BINARY_DIR = ./apps/frontend/src-tauri/binaries
+
 .PHONY: check-asdf
 check-asdf:
 	@echo "Checking if asdf is installed..."
@@ -38,4 +40,10 @@ dev-frontend:
 .PHONY: build-mosquitto
 build-mosquitto:
 	@echo "Building mosquitto..."
-	@(./scripts/build_mosquitto.sh)
+	@./scripts/build_mosquitto.sh
+
+.PHONY: add-mosquitto-sidecar
+add-mosquitto-sidecar: build-mosquitto
+	@echo "Adding mosquitto sidecar to tauri..."
+	@mkdir -p $(TAURI_BINARY_DIR)
+	@cp ./bin/mosquitto $(TAURI_BINARY_DIR)/$$(cd apps/frontend && yarn --silent get-sidecar-name ../../bin/mosquitto)
