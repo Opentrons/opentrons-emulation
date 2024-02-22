@@ -46,4 +46,4 @@ build-mosquitto:
 add-mosquitto-sidecar: build-mosquitto
 	@echo "Adding mosquitto sidecar to tauri..."
 	@mkdir -p $(TAURI_BINARY_DIR)
-	@cp ./bin/mosquitto $(TAURI_BINARY_DIR)/$$(yarn --silent get-sidecar-name ../../bin/mosquitto)
+	@cp ./bin/mosquitto $(TAURI_BINARY_DIR)/$$(yarn --silent get-sidecar-name ./bin/mosquitto)
