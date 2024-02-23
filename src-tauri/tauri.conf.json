@@ -29,7 +29,11 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "targets": "all",
+    "targets": [
+      "deb",
+      "nsis",
+      "dmg"
+    ],
     "externalBin": [
       "binaries/mosquitto"
     ]

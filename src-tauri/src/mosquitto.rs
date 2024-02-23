@@ -1,7 +1,7 @@
-
 pub mod mosquitto {
+    use crate::env_resolve::get_external_binary_path;
     use std::fmt;
-    use std::process::{Command, Stdio, Child};
+    use std::process::{Child, Command, Stdio};
     use target_lexicon::Triple;
 
     pub struct Mosquitto {
@@ -13,7 +13,7 @@ pub mod mosquitto {
     pub enum MosquittoStateValues {
         Running,
         StoppedWithError,
-        Stopped
+        Stopped,
     }
 
     impl fmt::Display for MosquittoStateValues {
@@ -26,45 +26,32 @@ pub mod mosquitto {
         }
     }
 
-
-    fn get_triple_target() -> String {
-        return Triple::host().to_string()
+    pub fn get_triple_target() -> String {
+        return format!("{}-{}", "mosquitto", Triple::host().to_string());
     }
 
-    fn get_mosquitto_binary_path() -> String {
-        return format!("binaries/mosquitto-{}", get_triple_target())
-    }
-
-    
     impl Mosquitto {
         pub fn new() -> Mosquitto {
             return Mosquitto {
                 process: None,
-                state: MosquittoStateValues::Stopped
+                state: MosquittoStateValues::Stopped,
             };
         }
 
-        pub fn get_mosquitto_state(&mut self) -> MosquittoStateValues {
-            return self.state.clone();
-        }
-    
-        pub fn start_mosquitto(&mut self){
-            match Command::new(get_mosquitto_binary_path())
-            .stdout(Stdio::piped())
-            .spawn() {
+        pub fn start_mosquitto(&mut self) {
+            let binary_path = get_external_binary_path().join(get_triple_target());
+            match Command::new(binary_path).stdout(Stdio::piped()).spawn() {
                 Ok(child) => {
-                    info!("Mosquitto started");
+                    println!("Mosquitto started");
                     self.process = Some(child);
                     self.state = MosquittoStateValues::Running;
-                },
+                }
                 Err(e) => {
-                    error!("Error starting mosquitto: {}", e);
+                    println!("Error starting mosquitto: {}", e);
                     self.process = None;
                     self.state = MosquittoStateValues::StoppedWithError;
                 }
             }
-            
         }
     }
 }
-
