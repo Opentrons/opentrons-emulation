@@ -9,10 +9,16 @@ The opentrons-emulation project uses [asdf](https://asdf-vm.com/) to manage our 
 To set up your development environment, follow these steps:
 
 1. [Install asdf]([text](https://asdf-vm.com/guide/getting-started.html))
-2. Run `make setup-asdf` to install node.js and Rust
-3. Close your terminal and open a new one 
-4. Run `make setup-fronted` to setup the frontend project
+2. Run `make setup-dev-dependencies` to:
+    - Configure and install node.js and rust with asdf
+    - Install yarn globally
+    - Download, build, bundle, and place mosquitto broker executable inside tauri project
+    - Install all node.js dependencies
 
 ## Run Development Server
 
-1. Run `make dev-frontend`
+1. Run `make dev` to:
+    - Install all rust dependencies
+    - Start the Next.js server
+    - Compile the tauri app
+    - Start the tauri app in development mode
