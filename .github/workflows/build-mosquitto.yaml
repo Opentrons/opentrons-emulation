@@ -1,0 +1,49 @@
+name: Build Mosquitto
+
+on: workflow_dispatch
+
+jobs:
+  build-linux-macos-binaries:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-20.04
+            arch: x86-64
+          - os: macos-13
+            arch: x86-64
+          # Mac M1 is in beta and is labeled as macos-14
+          - os: macos-14
+            arch: arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+          
+      - name: Build Mosquitto
+        run: make build-mosquitto
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mosquitto-binary-${{ matrix.os }}-${{ matrix.arch }}
+          path: bin/mosquitto
+
+  get-windows-binary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget
+
+      - name: Get Mosquitto Source
+        run: |
+          wget https://mosquitto.org/files/binary/win64/mosquitto-2.0.18-install-windows-x64.exe
+          mv mosquitto-2.0.18-install-windows-x64.exe mosquitto.exe
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mosquitto-binary-windows-exe
+          path: mosquitto.exe
