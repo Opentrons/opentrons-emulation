@@ -1,6 +1,3 @@
-TAURI_DIR = ./src-tauri
-TAURI_BINARY_DIR = $(TAURI_DIR)/binaries
-
 .PHONY: verify-asdf-installed
 verify-asdf-installed:
 	@echo "Verifying asdf is installed..."
@@ -17,11 +14,6 @@ verify-asdf-installed:
 verify-asdf-configured: verify-asdf-installed
 	@echo "Verifying asdf is configured..."
 	@asdf current | grep -qP "nodejs +\d+.\d+.\d+" \
-		|| ( \
-			echo "\n\nasdf is not configured. Run 'make setup-asdf' to configure it.\n\n" \
-			&& exit 1 \
-		)
-	@asdf current | grep -qP "rust +\d+.\d+.\d+" \
 		|| ( \
 			echo "\n\nasdf is not configured. Run 'make setup-asdf' to configure it.\n\n" \
 			&& exit 1 \
@@ -46,20 +38,17 @@ add-asdf-plugins: verify-asdf-installed
 	@asdf plugin-add nodejs
 	@echo
 
-	@echo "Adding rust asdf plugin..."
-	@asdf plugin-add rust
-	@echo
 
 .PHONY: setup-asdf
 setup-asdf: add-asdf-plugins
-	@echo "Installing nodejs and rust..."
+	@echo "Installing nodejs..."
 	@asdf install
 	@echo
 
 .PHONY: teardown-asdf
 teardown-asdf:
-	@echo "Uninstalling nodejs and rust..."
-	@asdf plugin remove rust || asdf plugin remove nodejs
+	@echo "Uninstalling nodejs"
+	@asdf plugin remove nodejs
 	@echo
 
 .PHONY: setup-yarn
