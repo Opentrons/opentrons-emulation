@@ -27,7 +27,7 @@ export class Mosquitto {
 
         
         this.mosquittoProcess.on('error', (err) => {
-            console.error('Failed to start subprocess.');
+            console.error('Failed to start subprocess. Error: ', err);
         });
 
         this.mosquittoProcess.stdout?.on('data', (data) => {

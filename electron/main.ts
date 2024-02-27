@@ -18,7 +18,7 @@ app.whenReady().then(() => {
         win.loadFile('dist/index.html');
     }
 
-    let mosquitto = new Mosquitto(__dirname);
+    const mosquitto = new Mosquitto(__dirname);
     mosquitto.start();
    
 })
