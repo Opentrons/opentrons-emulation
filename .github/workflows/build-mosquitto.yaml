@@ -1,7 +1,13 @@
 name: Build Mosquitto
 
-on: workflow_dispatch
-
+on: 
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/build_mosquitto.sh'
+      - '.github/workflows/build-mosquitto.yaml'
+      - 'Makefile'
+  
 jobs:
   build-linux-macos-binaries:
     strategy:
