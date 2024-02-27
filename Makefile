@@ -21,15 +21,15 @@ verify-asdf-configured: verify-asdf-installed
 	@echo "asdf is configured."
 	@echo
 
-.PHONY: verify-yarn-installed
-verify-yarn-installed:
-	@echo "Verifying yarn is installed..."
-	@yarn --version > /dev/null \
+.PHONY: verify-pnpm-installed
+verify-pnpm-installed:
+	@echo "Verifying pnpm is installed..."
+	@pnpm --version > /dev/null \
 		|| ( \
-			echo "\n\nyarn is not installed. Run 'make setup-yarn' to install it.\n\n" \
+			echo "\n\npnpm is not installed. Run 'make setup-pnpm' to install it.\n\n" \
 			&& exit 1 \
 		)
-	@echo "yarn is installed."
+	@echo "pnpm is installed."
 	@echo
 
 .PHONY: add-asdf-plugins
@@ -51,51 +51,32 @@ teardown-asdf:
 	@asdf plugin remove nodejs
 	@echo
 
-.PHONY: setup-yarn
-setup-yarn: verify-asdf-configured
-	@echo "Installing yarn..."
-	@npm install -g yarn@v1
-	@echo
-
-.PHONY: setup-frontend
-setup-frontend: verify-asdf-configured verify-yarn-installed
-	@echo "Installing frontend dependencies..."
-	@yarn install
+.PHONY: setup-pnpm
+setup-pnpm: verify-asdf-configured
+	@echo "Installing pnpm..."
+	@npm install -g pnpm
 	@echo
 
 .PHONY: setup-dev-dependencies
-setup-dev-dependencies: setup-asdf setup-yarn setup-frontend add-mosquitto-sidecar
+setup-dev-dependencies: verify-asdf-configured verify-pnpm-installed
+	@echo "Installing dev dependencies..."
+	@pnpm install
+	@echo
 
 .PHONY: clean
 clean:
 	@echo "Cleaning up..."
-	@rm -rf $(TAURI_BINARY_DIR) \
-		$(TAURI_DIR)/.env \
-		$(TAURI_DIR)/out \
-		$(TAURI_DIR)/target \
-		node_modules \
+	@rm -rf node_modules \
 		bin \
-		.next
+		dist-electron
 	@echo
 
 .PHONY: dev
 dev:
 	@echo "Starting dev env..."
-	@cp .dev.env $(TAURI_DIR)/.env
-	@yarn tauri dev
-
-.PHONY: build 
-build:
-	@echo "Building tauri..."
-	@yarn tauri build
+	@pnpm run dev
 
 .PHONY: build-mosquitto
 build-mosquitto:
 	@echo "Building mosquitto..."
 	@./scripts/build_mosquitto.sh
-
-.PHONY: add-mosquitto-sidecar
-add-mosquitto-sidecar: build-mosquitto
-	@echo "Adding mosquitto sidecar to tauri..."
-	@mkdir -p $(TAURI_BINARY_DIR)
-	@cp ./bin/mosquitto $(TAURI_BINARY_DIR)/$$(yarn --silent get-sidecar-name ./bin/mosquitto)
