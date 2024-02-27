@@ -32,6 +32,17 @@ verify-pnpm-installed:
 	@echo "pnpm is installed."
 	@echo
 
+.PHONY: verify-mosquitto
+verify-mosquitto:
+	@echo "Verifying mosquitto executable exists..."
+	@bin/mosquitto --help | grep "mosquitto version" > /dev/null \
+		|| ( \
+			echo "\n\nmosquitto executable does not exist. Run 'make build-mosquitto' to build it.\n\n" \
+			&& exit 1 \
+		)
+	@echo "mosquitto executable exists."
+	@echo
+
 .PHONY: add-asdf-plugins
 add-asdf-plugins: verify-asdf-installed
 	@echo "Adding nodejs asdf plugin..."
@@ -58,7 +69,7 @@ setup-pnpm: verify-asdf-configured
 	@echo
 
 .PHONY: setup-dev-dependencies
-setup-dev-dependencies: verify-asdf-configured verify-pnpm-installed
+setup-dev-dependencies: verify-asdf-configured verify-pnpm-installed verify-mosquitto add-mosquitto-to-electron
 	@echo "Installing dev dependencies..."
 	@pnpm install
 	@echo
@@ -80,3 +91,11 @@ dev:
 build-mosquitto:
 	@echo "Building mosquitto..."
 	@./scripts/build_mosquitto.sh
+
+.PHONY: add-mosquitto-to-electron
+add-mosquitto-to-electron:
+	@echo "Adding mosquitto to electron..."
+	@mkdir -p dist-electron
+	@cp bin/mosquitto dist-electron
+	@echo
+

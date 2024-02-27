@@ -85,15 +85,14 @@ run by the main process. The should each receive a configuration file that defin
 
 ## Questions 
 
-- Are all these utility processes too heavy? 
-- Would the sandboxing of the executables inside the utility processes be beneficial for security?
-- Can we establish communication between the various processes using the utility process messaging system?
-    - We would still use, MQTT, CAN, and Serial but use the utility process messaging system as the transport layer.
+I looked at how we execute the python script to run analysis in the app to see if it would be suitable for running the emulation executables.
+We use Redux Actions. The issues is yhey aren't really meant for long-running native processes like the emulator executables. 
 
+The best options would either be using [electron utilityProcesses](https://www.electronjs.org/docs/latest/api/utility-process) or utilizing child_process.fork
 
-So we use Redux Actions for running the analysis. 
-They aren't really meant for running native processes like the emulator executables. 
+Utility processes provide the equivalent of child_process.fork in an electron context. 
+They also provide sandboxing, life-cycle management. and an isolated way to communicate with the child processes through a built-in peer-to-peer messaging system.
+My idea would be to wrap the executables in a utility process and wrap all communication with the built-in messaging system.
 
-The best options would either be using the utilityProcess or utilizing child_process.fork
-
-Utility processes provide the equivalent of child_process.fork. They provide a way to directly manage the lifecycle of the child process from the electron context. They also provide an isolated way to communicate with the child processes.
+Is it worth it to see if can use the built-in messaging system to communicate with the MQTT, CAN, and Serial communication? Or just use the protocols directly?
+The only reason I would use the built-in messaging system is to provide better isolation between the executables and the OS.
