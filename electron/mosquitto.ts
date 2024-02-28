@@ -1,3 +1,4 @@
+import { ipcMain } from 'electron';
 import { spawn, ChildProcess } from 'child_process';
 import path from 'path';
 
@@ -9,24 +10,43 @@ export enum MosquittoStatus {
     RUNNING,
 }
 
+
+
+
 export class Mosquitto {
-    mosquittoDir: string;
+
+    mosquittoPath: string;
     mosquittoProcess: ChildProcess | undefined = undefined;
     status: MosquittoStatus = MosquittoStatus.STOPPED;
 
     constructor(mosquittoDir: string) {
-        this.mosquittoDir = mosquittoDir;
+        this.mosquittoPath = path.join(mosquittoDir, MOSQUITTO_EXECUTABLE);;
     }
 
-    start() {
-        const mosquittoPath = path.join(this.mosquittoDir, MOSQUITTO_EXECUTABLE);
-        this.mosquittoProcess = spawn(
-            mosquittoPath,
-            {stdio: "pipe"}
-        ) ?? new Error('Failed to start subprocess.');
+    private instanceExists() : boolean {
+        return this.mosquittoProcess !== undefined;
+    }
+
+    isRunning(): boolean {
+        return this.status === MosquittoStatus.RUNNING
+    }
+
+    async start() : Promise<MosquittoStatus | Error>{
+
+        if (this.instanceExists()) {
+            console.error('Mosquitto is already running.');
+            return MosquittoStatus.RUNNING;
+        }
+
+        this.mosquittoProcess = spawn(this.mosquittoPath)
+            ?? new Error('Failed to start subprocess.');
+        this.status = MosquittoStatus.RUNNING;
 
         
         this.mosquittoProcess.on('error', (err) => {
+            this.status = MosquittoStatus.STOPPED_ERROR;
+            this.mosquittoProcess = undefined;
+
             console.error('Failed to start subprocess. Error: ', err);
         });
 
@@ -39,7 +59,25 @@ export class Mosquitto {
         });
 
         this.mosquittoProcess.on('close', (code) => {
+            this.status = MosquittoStatus.STOPPED;
+            this.mosquittoProcess = undefined;
+            
             console.log(`child process exited with code ${code}`);
         });
+
+        return this.status;
+    }
+
+    async stop(): Promise<MosquittoStatus>{
+        if (this.mosquittoProcess) {
+            this.mosquittoProcess.kill("SIGTERM");
+            this.mosquittoProcess = undefined;
+            this.status = MosquittoStatus.STOPPED;
+        } else {
+            console.error('Mosquitto is not running.');
+        }
+
+        return this.status;
+
     }
 }

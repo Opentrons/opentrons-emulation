@@ -1,12 +1,12 @@
-import './App.css'
+import './App.css';
+import { MosquittoToggleButton } from './components/MosquittoToggleButton';
 
 function App() {
-
   return (
-    <>
-      <p>Sup, from emulation</p>
-    </>
-  )
+    <div>
+      <MosquittoToggleButton />
+    </div>
+  );
 }
 
-export default App
+export default App;
