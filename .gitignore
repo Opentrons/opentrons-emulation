@@ -24,5 +24,6 @@ dist-ssr
 *.sw?
 
 # Generated files
-bin
+bin/
+
 dist-electron/
